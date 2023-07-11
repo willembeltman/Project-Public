@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33110.190
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YoutubeMixer", "YoutubeMixer\YoutubeMixer.csproj", "{BAD7CAEA-17FF-4A65-AD8C-57F5F2BB1A4B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BAD7CAEA-17FF-4A65-AD8C-57F5F2BB1A4B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BAD7CAEA-17FF-4A65-AD8C-57F5F2BB1A4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BAD7CAEA-17FF-4A65-AD8C-57F5F2BB1A4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BAD7CAEA-17FF-4A65-AD8C-57F5F2BB1A4B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D6094CAD-98E7-4014-9E98-E98F929B7C8F}
+	EndGlobalSection
+EndGlobal
