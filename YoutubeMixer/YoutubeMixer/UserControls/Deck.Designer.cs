@@ -28,202 +28,199 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
-            this.labelPitch = new System.Windows.Forms.Label();
-            this.buttonPitchControl = new System.Windows.Forms.Button();
-            this.buttonPitchRange = new System.Windows.Forms.Button();
-            this.buttonSetHotcue = new System.Windows.Forms.Button();
-            this.buttonCue = new System.Windows.Forms.Button();
-            this.buttonPlayPause = new System.Windows.Forms.Button();
-            this.buttonHotcue4 = new System.Windows.Forms.Button();
-            this.buttonHotcue3 = new System.Windows.Forms.Button();
-            this.buttonHotcue2 = new System.Windows.Forms.Button();
-            this.buttonHotcue1 = new System.Windows.Forms.Button();
-            this.trackBarPitch = new System.Windows.Forms.TrackBar();
-            this.DisplayControl = new YoutubeMixer.Controls.DisplayControl();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBarPitch)).BeginInit();
-            this.SuspendLayout();
+            backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            labelPitch = new Label();
+            buttonPitchControl = new Button();
+            buttonPitchRange = new Button();
+            buttonSetHotcue = new Button();
+            buttonCue = new Button();
+            buttonPlayPause = new Button();
+            buttonHotcue4 = new Button();
+            buttonHotcue3 = new Button();
+            buttonHotcue2 = new Button();
+            buttonHotcue1 = new Button();
+            trackBarPitch = new TrackBar();
+            DisplayControl = new Controls.DisplayControl();
+            ((System.ComponentModel.ISupportInitialize)trackBarPitch).BeginInit();
+            SuspendLayout();
             // 
             // labelPitch
             // 
-            this.labelPitch.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.labelPitch.AutoSize = true;
-            this.labelPitch.Font = new System.Drawing.Font("Arial", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.labelPitch.Location = new System.Drawing.Point(1027, 668);
-            this.labelPitch.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.labelPitch.Name = "labelPitch";
-            this.labelPitch.Size = new System.Drawing.Size(38, 22);
-            this.labelPitch.TabIndex = 16;
-            this.labelPitch.Text = "0%";
+            labelPitch.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            labelPitch.AutoSize = true;
+            labelPitch.Font = new Font("Arial", 8F, FontStyle.Regular, GraphicsUnit.Point);
+            labelPitch.Location = new Point(392, 312);
+            labelPitch.Margin = new Padding(2, 0, 2, 0);
+            labelPitch.Name = "labelPitch";
+            labelPitch.Size = new Size(23, 14);
+            labelPitch.TabIndex = 16;
+            labelPitch.Text = "0%";
             // 
             // buttonPitchControl
             // 
-            this.buttonPitchControl.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonPitchControl.BackColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.buttonPitchControl.Font = new System.Drawing.Font("Arial", 5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.buttonPitchControl.Location = new System.Drawing.Point(1022, 41);
-            this.buttonPitchControl.Margin = new System.Windows.Forms.Padding(4);
-            this.buttonPitchControl.Name = "buttonPitchControl";
-            this.buttonPitchControl.Size = new System.Drawing.Size(84, 33);
-            this.buttonPitchControl.TabIndex = 13;
-            this.buttonPitchControl.Text = "PitchControl";
-            this.buttonPitchControl.UseVisualStyleBackColor = false;
-            this.buttonPitchControl.Click += new System.EventHandler(this.buttonPitchControl_Click);
+            buttonPitchControl.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            buttonPitchControl.BackColor = SystemColors.ButtonHighlight;
+            buttonPitchControl.Font = new Font("Arial", 5F, FontStyle.Regular, GraphicsUnit.Point);
+            buttonPitchControl.Location = new Point(389, 20);
+            buttonPitchControl.Margin = new Padding(2, 2, 2, 2);
+            buttonPitchControl.Name = "buttonPitchControl";
+            buttonPitchControl.Size = new Size(49, 16);
+            buttonPitchControl.TabIndex = 13;
+            buttonPitchControl.Text = "PitchControl";
+            buttonPitchControl.UseVisualStyleBackColor = false;
+            buttonPitchControl.Click += buttonPitchControl_Click;
             // 
             // buttonPitchRange
             // 
-            this.buttonPitchRange.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonPitchRange.Font = new System.Drawing.Font("Arial", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.buttonPitchRange.Location = new System.Drawing.Point(1022, 0);
-            this.buttonPitchRange.Margin = new System.Windows.Forms.Padding(4);
-            this.buttonPitchRange.Name = "buttonPitchRange";
-            this.buttonPitchRange.Size = new System.Drawing.Size(84, 33);
-            this.buttonPitchRange.TabIndex = 14;
-            this.buttonPitchRange.Text = "16%";
-            this.buttonPitchRange.UseVisualStyleBackColor = true;
-            this.buttonPitchRange.Click += new System.EventHandler(this.buttonPitchRange_Click);
+            buttonPitchRange.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            buttonPitchRange.Font = new Font("Arial", 8F, FontStyle.Bold, GraphicsUnit.Point);
+            buttonPitchRange.Location = new Point(389, 0);
+            buttonPitchRange.Margin = new Padding(2, 2, 2, 2);
+            buttonPitchRange.Name = "buttonPitchRange";
+            buttonPitchRange.Size = new Size(49, 16);
+            buttonPitchRange.TabIndex = 14;
+            buttonPitchRange.Text = "16%";
+            buttonPitchRange.UseVisualStyleBackColor = true;
+            buttonPitchRange.Click += buttonPitchRange_Click;
             // 
             // buttonSetHotcue
             // 
-            this.buttonSetHotcue.Font = new System.Drawing.Font("Arial", 5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.buttonSetHotcue.Location = new System.Drawing.Point(0, 332);
-            this.buttonSetHotcue.Margin = new System.Windows.Forms.Padding(4);
-            this.buttonSetHotcue.Name = "buttonSetHotcue";
-            this.buttonSetHotcue.Size = new System.Drawing.Size(103, 32);
-            this.buttonSetHotcue.TabIndex = 15;
-            this.buttonSetHotcue.Text = "Set Hotcue";
-            this.buttonSetHotcue.UseVisualStyleBackColor = true;
-            this.buttonSetHotcue.Click += new System.EventHandler(this.buttonSetHotcue_Click);
+            buttonSetHotcue.Font = new Font("Arial", 5F, FontStyle.Regular, GraphicsUnit.Point);
+            buttonSetHotcue.Location = new Point(0, 166);
+            buttonSetHotcue.Margin = new Padding(2, 2, 2, 2);
+            buttonSetHotcue.Name = "buttonSetHotcue";
+            buttonSetHotcue.Size = new Size(60, 16);
+            buttonSetHotcue.TabIndex = 15;
+            buttonSetHotcue.Text = "Set Hotcue";
+            buttonSetHotcue.UseVisualStyleBackColor = true;
+            buttonSetHotcue.Click += buttonSetHotcue_Click;
             // 
             // buttonCue
             // 
-            this.buttonCue.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonCue.Font = new System.Drawing.Font("Arial", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.buttonCue.Location = new System.Drawing.Point(0, 540);
-            this.buttonCue.Margin = new System.Windows.Forms.Padding(4);
-            this.buttonCue.Name = "buttonCue";
-            this.buttonCue.Size = new System.Drawing.Size(103, 75);
-            this.buttonCue.TabIndex = 7;
-            this.buttonCue.Text = "Cue";
-            this.buttonCue.UseVisualStyleBackColor = true;
-            this.buttonCue.Click += new System.EventHandler(this.buttonCue_Click);
+            buttonCue.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            buttonCue.Font = new Font("Arial", 8F, FontStyle.Regular, GraphicsUnit.Point);
+            buttonCue.Location = new Point(0, 248);
+            buttonCue.Margin = new Padding(2, 2, 2, 2);
+            buttonCue.Name = "buttonCue";
+            buttonCue.Size = new Size(60, 38);
+            buttonCue.TabIndex = 7;
+            buttonCue.Text = "Cue";
+            buttonCue.UseVisualStyleBackColor = true;
+            buttonCue.Click += buttonCue_Click;
             // 
             // buttonPlayPause
             // 
-            this.buttonPlayPause.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonPlayPause.Font = new System.Drawing.Font("Arial", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.buttonPlayPause.Location = new System.Drawing.Point(0, 622);
-            this.buttonPlayPause.Margin = new System.Windows.Forms.Padding(4);
-            this.buttonPlayPause.Name = "buttonPlayPause";
-            this.buttonPlayPause.Size = new System.Drawing.Size(103, 75);
-            this.buttonPlayPause.TabIndex = 8;
-            this.buttonPlayPause.Text = "Play";
-            this.buttonPlayPause.UseVisualStyleBackColor = true;
-            this.buttonPlayPause.Click += new System.EventHandler(this.buttonPlayPause_Click);
+            buttonPlayPause.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            buttonPlayPause.Font = new Font("Arial", 8F, FontStyle.Regular, GraphicsUnit.Point);
+            buttonPlayPause.Location = new Point(0, 289);
+            buttonPlayPause.Margin = new Padding(2, 2, 2, 2);
+            buttonPlayPause.Name = "buttonPlayPause";
+            buttonPlayPause.Size = new Size(60, 38);
+            buttonPlayPause.TabIndex = 8;
+            buttonPlayPause.Text = "Play";
+            buttonPlayPause.UseVisualStyleBackColor = true;
+            buttonPlayPause.Click += buttonPlayPause_Click;
             // 
             // buttonHotcue4
             // 
-            this.buttonHotcue4.Font = new System.Drawing.Font("Arial", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.buttonHotcue4.Location = new System.Drawing.Point(0, 249);
-            this.buttonHotcue4.Margin = new System.Windows.Forms.Padding(4);
-            this.buttonHotcue4.Name = "buttonHotcue4";
-            this.buttonHotcue4.Size = new System.Drawing.Size(103, 75);
-            this.buttonHotcue4.TabIndex = 9;
-            this.buttonHotcue4.Text = "Hotcue 4";
-            this.buttonHotcue4.UseVisualStyleBackColor = true;
-            this.buttonHotcue4.Click += new System.EventHandler(this.buttonHotcue4_Click);
+            buttonHotcue4.Font = new Font("Arial", 8F, FontStyle.Regular, GraphicsUnit.Point);
+            buttonHotcue4.Location = new Point(0, 124);
+            buttonHotcue4.Margin = new Padding(2, 2, 2, 2);
+            buttonHotcue4.Name = "buttonHotcue4";
+            buttonHotcue4.Size = new Size(60, 38);
+            buttonHotcue4.TabIndex = 9;
+            buttonHotcue4.Text = "Hotcue 4";
+            buttonHotcue4.UseVisualStyleBackColor = true;
+            buttonHotcue4.Click += buttonHotcue4_Click;
             // 
             // buttonHotcue3
             // 
-            this.buttonHotcue3.Font = new System.Drawing.Font("Arial", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.buttonHotcue3.Location = new System.Drawing.Point(0, 166);
-            this.buttonHotcue3.Margin = new System.Windows.Forms.Padding(4);
-            this.buttonHotcue3.Name = "buttonHotcue3";
-            this.buttonHotcue3.Size = new System.Drawing.Size(103, 75);
-            this.buttonHotcue3.TabIndex = 10;
-            this.buttonHotcue3.Text = "Hotcue 3";
-            this.buttonHotcue3.UseVisualStyleBackColor = true;
-            this.buttonHotcue3.Click += new System.EventHandler(this.buttonHotcue3_Click);
+            buttonHotcue3.Font = new Font("Arial", 8F, FontStyle.Regular, GraphicsUnit.Point);
+            buttonHotcue3.Location = new Point(0, 83);
+            buttonHotcue3.Margin = new Padding(2, 2, 2, 2);
+            buttonHotcue3.Name = "buttonHotcue3";
+            buttonHotcue3.Size = new Size(60, 38);
+            buttonHotcue3.TabIndex = 10;
+            buttonHotcue3.Text = "Hotcue 3";
+            buttonHotcue3.UseVisualStyleBackColor = true;
+            buttonHotcue3.Click += buttonHotcue3_Click;
             // 
             // buttonHotcue2
             // 
-            this.buttonHotcue2.Font = new System.Drawing.Font("Arial", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.buttonHotcue2.Location = new System.Drawing.Point(0, 82);
-            this.buttonHotcue2.Margin = new System.Windows.Forms.Padding(4);
-            this.buttonHotcue2.Name = "buttonHotcue2";
-            this.buttonHotcue2.Size = new System.Drawing.Size(103, 75);
-            this.buttonHotcue2.TabIndex = 11;
-            this.buttonHotcue2.Text = "Hotcue 2";
-            this.buttonHotcue2.UseVisualStyleBackColor = true;
-            this.buttonHotcue2.Click += new System.EventHandler(this.buttonHotcue2_Click);
+            buttonHotcue2.Font = new Font("Arial", 8F, FontStyle.Regular, GraphicsUnit.Point);
+            buttonHotcue2.Location = new Point(0, 41);
+            buttonHotcue2.Margin = new Padding(2, 2, 2, 2);
+            buttonHotcue2.Name = "buttonHotcue2";
+            buttonHotcue2.Size = new Size(60, 38);
+            buttonHotcue2.TabIndex = 11;
+            buttonHotcue2.Text = "Hotcue 2";
+            buttonHotcue2.UseVisualStyleBackColor = true;
+            buttonHotcue2.Click += buttonHotcue2_Click;
             // 
             // buttonHotcue1
             // 
-            this.buttonHotcue1.Font = new System.Drawing.Font("Arial", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.buttonHotcue1.Location = new System.Drawing.Point(0, 0);
-            this.buttonHotcue1.Margin = new System.Windows.Forms.Padding(4);
-            this.buttonHotcue1.Name = "buttonHotcue1";
-            this.buttonHotcue1.Size = new System.Drawing.Size(103, 75);
-            this.buttonHotcue1.TabIndex = 12;
-            this.buttonHotcue1.Text = "Hotcue 1";
-            this.buttonHotcue1.UseVisualStyleBackColor = true;
-            this.buttonHotcue1.Click += new System.EventHandler(this.buttonHotcue1_Click);
+            buttonHotcue1.Font = new Font("Arial", 8F, FontStyle.Regular, GraphicsUnit.Point);
+            buttonHotcue1.Location = new Point(0, 0);
+            buttonHotcue1.Margin = new Padding(2, 2, 2, 2);
+            buttonHotcue1.Name = "buttonHotcue1";
+            buttonHotcue1.Size = new Size(60, 38);
+            buttonHotcue1.TabIndex = 12;
+            buttonHotcue1.Text = "Hotcue 1";
+            buttonHotcue1.UseVisualStyleBackColor = true;
+            buttonHotcue1.Click += buttonHotcue1_Click;
             // 
             // trackBarPitch
             // 
-            this.trackBarPitch.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.trackBarPitch.Location = new System.Drawing.Point(1018, 82);
-            this.trackBarPitch.Margin = new System.Windows.Forms.Padding(4);
-            this.trackBarPitch.Maximum = 10000;
-            this.trackBarPitch.Name = "trackBarPitch";
-            this.trackBarPitch.Orientation = System.Windows.Forms.Orientation.Vertical;
-            this.trackBarPitch.Size = new System.Drawing.Size(80, 582);
-            this.trackBarPitch.TabIndex = 5;
-            this.trackBarPitch.TickStyle = System.Windows.Forms.TickStyle.Both;
-            this.trackBarPitch.Value = 5000;
-            this.trackBarPitch.Scroll += new System.EventHandler(this.trackBarPitch_Scroll);
+            trackBarPitch.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Right;
+            trackBarPitch.Location = new Point(387, 41);
+            trackBarPitch.Margin = new Padding(2, 2, 2, 2);
+            trackBarPitch.Maximum = 10000;
+            trackBarPitch.Name = "trackBarPitch";
+            trackBarPitch.Orientation = Orientation.Vertical;
+            trackBarPitch.Size = new Size(45, 269);
+            trackBarPitch.TabIndex = 5;
+            trackBarPitch.TickStyle = TickStyle.Both;
+            trackBarPitch.Value = 5000;
+            trackBarPitch.Scroll += trackBarPitch_Scroll;
             // 
             // DisplayControl
             // 
-            this.DisplayControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.DisplayControl.CurrentTime = System.TimeSpan.Parse("00:00:31.2000000");
-            this.DisplayControl.Location = new System.Drawing.Point(111, 0);
-            this.DisplayControl.Margin = new System.Windows.Forms.Padding(4);
-            this.DisplayControl.Name = "DisplayControl";
-            this.DisplayControl.Size = new System.Drawing.Size(907, 698);
-            this.DisplayControl.TabIndex = 17;
-            this.DisplayControl.Text = "displayControl1";
-            this.DisplayControl.Title = null;
-            this.DisplayControl.TotalTime = System.TimeSpan.Parse("00:01:00");
-            this.DisplayControl.MouseDown += new System.Windows.Forms.MouseEventHandler(this.PlaybackDisplay_MouseDown);
-            this.DisplayControl.MouseMove += new System.Windows.Forms.MouseEventHandler(this.PlaybackDisplay_MouseMove);
-            this.DisplayControl.MouseUp += new System.Windows.Forms.MouseEventHandler(this.PlaybackDisplay_MouseUp);
+            DisplayControl.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            DisplayControl.CurrentTime = TimeSpan.Parse("00:00:31.2000000");
+            DisplayControl.Location = new Point(65, 0);
+            DisplayControl.Margin = new Padding(2, 2, 2, 2);
+            DisplayControl.Name = "DisplayControl";
+            DisplayControl.Size = new Size(322, 327);
+            DisplayControl.TabIndex = 17;
+            DisplayControl.Text = "displayControl1";
+            DisplayControl.Title = null;
+            DisplayControl.TotalTime = TimeSpan.Parse("00:01:00");
+            DisplayControl.MouseDown += PlaybackDisplay_MouseDown;
+            DisplayControl.MouseMove += PlaybackDisplay_MouseMove;
+            DisplayControl.MouseUp += PlaybackDisplay_MouseUp;
             // 
             // Deck
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 30F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.DisplayControl);
-            this.Controls.Add(this.labelPitch);
-            this.Controls.Add(this.buttonPitchControl);
-            this.Controls.Add(this.buttonPitchRange);
-            this.Controls.Add(this.buttonSetHotcue);
-            this.Controls.Add(this.buttonCue);
-            this.Controls.Add(this.buttonPlayPause);
-            this.Controls.Add(this.buttonHotcue4);
-            this.Controls.Add(this.buttonHotcue3);
-            this.Controls.Add(this.buttonHotcue2);
-            this.Controls.Add(this.buttonHotcue1);
-            this.Controls.Add(this.trackBarPitch);
-            this.Name = "Deck";
-            this.Size = new System.Drawing.Size(1106, 698);
-            ((System.ComponentModel.ISupportInitialize)(this.trackBarPitch)).EndInit();
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
+            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleMode = AutoScaleMode.Font;
+            Controls.Add(DisplayControl);
+            Controls.Add(labelPitch);
+            Controls.Add(buttonPitchControl);
+            Controls.Add(buttonPitchRange);
+            Controls.Add(buttonSetHotcue);
+            Controls.Add(buttonCue);
+            Controls.Add(buttonPlayPause);
+            Controls.Add(buttonHotcue4);
+            Controls.Add(buttonHotcue3);
+            Controls.Add(buttonHotcue2);
+            Controls.Add(buttonHotcue1);
+            Controls.Add(trackBarPitch);
+            Margin = new Padding(2, 2, 2, 2);
+            Name = "Deck";
+            Size = new Size(438, 327);
+            ((System.ComponentModel.ISupportInitialize)trackBarPitch).EndInit();
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion

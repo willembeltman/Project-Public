@@ -1,4 +1,5 @@
-﻿using YoutubeMixer.Properties;
+﻿using OpenQA.Selenium.DevTools.V117.Runtime;
+using YoutubeMixer.Properties;
 
 namespace YoutubeMixer.Controls
 {
@@ -22,6 +23,7 @@ namespace YoutubeMixer.Controls
 
             // Calculate the progress percentage
             double progress = CurrentTime.TotalSeconds / TotalTime.TotalSeconds;
+            if (double.IsNaN(progress)) progress = 0;
 
             // Calculate the rotation angle based on the current time position of the playback
             double revolutionsPerSecond = 45d / 60.0;
@@ -48,7 +50,7 @@ namespace YoutubeMixer.Controls
                 {
                     // Rotate the record image
                     rotatedRecordGraphics.TranslateTransform(recordWidth / 2, recordHeight / 2);
-                    rotatedRecordGraphics.RotateTransform((float)rotationAngle);
+                    rotatedRecordGraphics.RotateTransform(Convert.ToSingle(rotationAngle));
                     rotatedRecordGraphics.DrawImage(RecordImage, -recordWidth / 2, -recordHeight / 2, recordWidth, recordHeight);
                     rotatedRecordGraphics.ResetTransform();
                 }

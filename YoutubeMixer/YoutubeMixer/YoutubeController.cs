@@ -3,6 +3,7 @@ using OpenQA.Selenium.Support.UI;
 using OpenQA.Selenium;
 using System.Diagnostics;
 using YoutubeMixer.UserControls;
+using System.Windows.Forms;
 
 namespace YoutubeMixer
 {
@@ -15,7 +16,7 @@ namespace YoutubeMixer
     /// - Hele cue systeem
     /// </summary>
 
-    public class YoutubeController
+    public class YoutubeController : IController
     {
         public YoutubeController(Deck deck, MixerChannel mixerChannel)
         {
@@ -27,116 +28,105 @@ namespace YoutubeMixer
 
             Driver = new ChromeDriver();
             JsExecutor = Driver;
-
-            Thread = new Thread(new ThreadStart(Thread_Start));
         }
 
         private Deck Deck { get; }
         private MixerChannel MixerChannel { get; }
         private ChromeDriver Driver { get; }
         private IJavaScriptExecutor JsExecutor { get; }
-        private Thread Thread { get; }
 
-        private bool KillSwitch { get; set; }
-        private bool ResetVolume { get; set; }
-        private bool ResetEqualizer { get; set; }
-        private bool ResetPlaybackSpeed { get; set; }
+        private bool _SetVolume { get; set; }
+        private bool _SetEqualizer { get; set; }
+        private bool _SetPlaybackSpeed { get; set; }
 
-        private double Volume { get; set; }
-        private double BassVolume { get; set; }
-        private double MidVolume { get; set; }
-        private double HighVolume { get; set; }
-        private double PlaybackSpeed { get; set; } = 1;
+        private double _Volume { get; set; }
+        private double _BassVolume { get; set; }
+        private double _MidVolume { get; set; }
+        private double _HighVolume { get; set; }
+        private double _PlaybackSpeed { get; set; } = 1;
+
+        private IWebElement? VideoElement { get; set; }
 
         public void SetVolume(double volume)
         {
-            Volume = volume;
-            ResetVolume = true;
+            _Volume = volume;
+            _SetVolume = true;
         }
         public void SetEqualizer(double bassVolume, double midVolume, double highVolume)
         {
-            BassVolume = bassVolume;
-            MidVolume = midVolume;
-            HighVolume = highVolume;
-            ResetEqualizer = true;
+            _BassVolume = bassVolume;
+            _MidVolume = midVolume;
+            _HighVolume = highVolume;
+            _SetEqualizer = true;
         }
         public void SetPlaybackSpeed(double playbackSpeed)
         {
-            PlaybackSpeed = playbackSpeed;
-            ResetVolume = true;
+            _PlaybackSpeed = playbackSpeed;
+            _SetVolume = true;
         }
 
         public void Start()
         {
-            Thread.Start();
-        }
-        private void Thread_Start()
-        {
             // Navigate browser to YouTube
             Driver.Navigate().GoToUrl("https://www.youtube.com");
+        }
+        public bool Loop()
+        {
+            try
+            {
+                // If the video element has not been loaded
+                if (VideoElement == null)
+                {
+                    // Try to ge the video element
+                    VideoElement = Driver.FindElement(By.CssSelector("video.html5-main-video"));
 
-            // Wait for the video to load and pause it
-            Thread_Mainloop();
+                    // Try to inject the equalizer and vu meter
+                    TryInjectEqualizerAndVuMeter();
+                }
 
+                // If the video element has been found
+                if (VideoElement != null)
+                {
+                    // If video is playing
+                    if (VideoElement.GetAttribute("paused") != "true")
+                    {
+                        // Do playing operations
+                        SyncVideoInformation();
+                        SetPitchbendIfNeeded();
+                        SetVolumeIfNeeded();
+                        SetEqualizerIfNeeded();
+
+                        // Ask for short delay
+                        return true;
+                    }
+                    else
+                    {
+                        // Reset videoelement and try again
+                        VideoElement = null;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Error occured, write error to console
+                Debug.WriteLine(ex.Message);
+
+                // Reset videoelement and try again
+                VideoElement = null;
+            }
+            return false;
+        }
+        public void Stop()
+        {
             // Quit the Chrome driver
             Driver.Quit();
-
-
-            // Wait for the videos to load and pause them
-            //WaitForAndPauseVideo();
-            //WaitForAndPauseVideo(driver2);
-
-            // Get the URLs of the paused videos
-            //string videoUrl1 = GetPausedVideoUrl(driver1);
-            //string videoUrl2 = GetPausedVideoUrl(driver2);
-
-            // Process the video URLs in your program
-            //ProcessVideoUrls(videoUrl1);//, videoUrl2);
-
-            // Quit the Chrome drivers
-            //driver1.Quit();
-            //driver2.Quit();
-
-            //DrawPlaybackDisplay("My Video Title", TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(60), 0.5);
-        }
-        private void Thread_Mainloop()
-        {
-            while (!KillSwitch)
-            {
-                try
-                {
-                    var video = GetVideoElement();
-                    InjectEqualizer(video);
-                    TrackWhilePlaying(video);
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine(ex.Message);
-                    Thread.Sleep(100);
-                }
-            }
         }
 
-        private IWebElement GetVideoElement()
+        private void TryInjectEqualizerAndVuMeter()
         {
-            // Wait for the video to load
-            //var wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(10));
-            var video = Driver.FindElement(By.CssSelector("video.html5-main-video"));
-            while (!KillSwitch && video.GetAttribute("paused") == "true")
-            {
-                Thread.Sleep(100);
-            }
-
-            return video;
-        }
-
-        private void InjectEqualizer(IWebElement video)
-        {
-            bool hasAttribute = (bool)JsExecutor.ExecuteScript("return arguments[0].hasAttribute('eq-injected')", video);
+            bool hasAttribute = (bool)JsExecutor.ExecuteScript("return arguments[0].hasAttribute('eq-injected')", VideoElement);
             if (!hasAttribute)
             {
-                JsExecutor.ExecuteScript("arguments[0].setAttribute('eq-injected', 'true')", video);
-
                 string filterCode = @"
                     var context = new AudioContext();
                     var source = context.createMediaElementSource(arguments[0]);
@@ -160,8 +150,6 @@ namespace YoutubeMixer
                     }
                     filters[filters.length - 1].connect(context.destination);
 
-                    // play the video
-                    arguments[0].play();
 
                     // function to update filter parameters
                     function updateFilterParams(newGains) {
@@ -178,85 +166,76 @@ namespace YoutubeMixer
 
 
                     // create a meter using a ScriptProcessorNode
-                    var bufferSize = 2048;
+                    var bufferSize = 512;
                     var meter = context.createScriptProcessor(bufferSize, 1, 1);
-                    var sampleBuffer = new Float32Array(bufferSize);
-                    var rms = 0;
+                    var maxLevel = 0;
 
                     meter.onaudioprocess = function(event) {
-                        var inputBuffer = event.inputBuffer;
-                        var inputData = inputBuffer.getChannelData(0);
-                        for (var i = 0; i < inputData.length; i++) {
-                            sampleBuffer[i] = inputData[i];
+                        try {
+                            var inputBuffer = event.inputBuffer;
+                            var inputData1 = inputBuffer.getChannelData(0);
+                            for (var i = 0; i < inputData1.length; i++) {
+                                let data = inputData1[i];
+                                if (data < 0) {
+                                    data = data * -1;           
+                                }
+                                if (maxLevel < data) {
+                                    maxLevel = data;           
+                                }
+                            }
                         }
-                        // calculate the RMS level of the samples
-                        rms = 0;
-                        for (var i = 0; i < sampleBuffer.length; i++) {
-                            rms += sampleBuffer[i] * sampleBuffer[i];
+                        catch (e) {
+                            console.log(e);
                         }
-                        rms = Math.sqrt(rms / sampleBuffer.length);
                     }
 
                     // connect the meter to the source
                     source.connect(meter);
                     meter.connect(context.destination);
 
-                    // play the video
-                    arguments[0].play();
-
                     // function to get the current vu-meter reading
                     function getVuMeter() {
-                        return rms;
+                        let res = maxLevel;
+                        maxLevel = 0;
+                        return res;
                     }
 
                     // expose the getVuMeter function to the global scope
                     window.getVuMeter = getVuMeter;
 
 
+
+                    arguments[0].setAttribute('eq-injected', 'true');
                 ";
 
-                JsExecutor.ExecuteScript(filterCode, video);
-            }
-        }
-        private void TrackWhilePlaying(IWebElement video)
-        {
-            while (!KillSwitch && video.GetAttribute("paused") != "true")
-            {
-                if (MixerChannel != null && Deck != null)
-                {
-                    SyncVideoInformation(video);
-                    SetPitchbendIfNeeded(video);
-                    SetVolumeIfNeeded(video);
-                    SetEqualizerIfNeeded(video);
-                }
+                JsExecutor.ExecuteScript(filterCode, VideoElement);
 
-                // Sleep the thread for 16 ms (60fps)
-                Thread.Sleep(16);
             }
         }
-        private void SetEqualizerIfNeeded(IWebElement video)
+
+        private void SetEqualizerIfNeeded()
         {
-            if (ResetEqualizer)
+            if (_SetEqualizer)
             {
-                ResetEqualizer = false;
-                double[] newGains = { BassVolume, BassVolume, MidVolume, MidVolume, HighVolume, HighVolume };
+                _SetEqualizer = false;
+                double[] newGains = { _BassVolume, _BassVolume, _MidVolume, _MidVolume, _HighVolume, _HighVolume };
                 JsExecutor.ExecuteScript("window.updateFilterParams(arguments[0]);", newGains);
             }
         }
-        private void SetVolumeIfNeeded(IWebElement video)
+        private void SetVolumeIfNeeded()
         {
-            if (ResetVolume)
+            if (_SetVolume)
             {
-                ResetVolume = false;
-                JsExecutor.ExecuteScript("arguments[0].volume = arguments[1];", video, Volume);
+                _SetVolume = false;
+                JsExecutor.ExecuteScript("arguments[0].volume = arguments[1];", VideoElement, _Volume);
             }
         }
-        private void SetPitchbendIfNeeded(IWebElement video)
+        private void SetPitchbendIfNeeded()
         {
             var pitchbendState = Deck.GetPitchbendState();
             if (pitchbendState.IsDragging)
             {
-                ResetPlaybackSpeed = true;
+                _SetPlaybackSpeed = true;
 
                 int deltaY = pitchbendState.DeltaY;
                 Debug.WriteLine($"DeltaY = {deltaY}");
@@ -264,27 +243,27 @@ namespace YoutubeMixer
                 if (pitchbendState.DeltaY > 0)
                 {
                     double speedChange = deltaY * 0.01; // adjust this constant to control the sensitivity of the control
-                    double newSpeed = Math.Max(0.25, Math.Min(4.0, PlaybackSpeed + speedChange)); // limit the speed to a reasonable range
-                    JsExecutor.ExecuteScript($"arguments[0].playbackRate = {newSpeed.ToString("F3").Replace(",", ".")};", video);
+                    double newSpeed = Math.Max(0.25, Math.Min(4.0, _PlaybackSpeed + speedChange)); // limit the speed to a reasonable range
+                    JsExecutor.ExecuteScript($"arguments[0].playbackRate = {newSpeed.ToString("F3").Replace(",", ".")};", VideoElement);
                 }
                 else
                 {
                     double speedChange = deltaY * 0.005; // adjust this constant to control the sensitivity of the control
-                    double newSpeed = Math.Max(0.25, Math.Min(4.0, PlaybackSpeed + speedChange)); // limit the speed to a reasonable range
-                    JsExecutor.ExecuteScript($"arguments[0].playbackRate = {newSpeed.ToString("F3").Replace(",", ".")};", video);
+                    double newSpeed = Math.Max(0.25, Math.Min(4.0, _PlaybackSpeed + speedChange)); // limit the speed to a reasonable range
+                    JsExecutor.ExecuteScript($"arguments[0].playbackRate = {newSpeed.ToString("F3").Replace(",", ".")};", VideoElement);
                 }
             }
-            else if (ResetPlaybackSpeed)
+            else if (_SetPlaybackSpeed)
             {
-                JsExecutor.ExecuteScript($"arguments[0].playbackRate = {PlaybackSpeed.ToString("F3").Replace(",", ".")};", video);
-                ResetPlaybackSpeed = false;
+                JsExecutor.ExecuteScript($"arguments[0].playbackRate = {_PlaybackSpeed.ToString("F3").Replace(",", ".")};", VideoElement);
+                _SetPlaybackSpeed = false;
             }
         }
-        private void SyncVideoInformation(IWebElement video)
+        private void SyncVideoInformation()
         {
             var title = Driver?.Title ?? "";
             var state = (Dictionary<string, object>)JsExecutor
-                .ExecuteScript(@"return { vuMeter: window.getVuMeter(), currentTime: arguments[0].currentTime, totalDuration: arguments[0].duration };", video);
+                .ExecuteScript(@"return { vuMeter: window.getVuMeter(), currentTime: arguments[0].currentTime, totalDuration: arguments[0].duration };", VideoElement);
             var vuMeter = Convert.ToDouble(state["vuMeter"]);
             var currentTime = Convert.ToDouble(state["currentTime"]);
             var totalDuration = Convert.ToDouble(state["totalDuration"]);
@@ -293,11 +272,6 @@ namespace YoutubeMixer
             Deck.SetVideoInformation(title, currentTime, totalDuration);
         }
 
-        public void Quit()
-        {
-            KillSwitch = true;
-            Thread.Join();
-        }
 
     }
 }

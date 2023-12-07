@@ -28,52 +28,55 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.FaderCross = new System.Windows.Forms.TrackBar();
-            this.LeftMixerChannel = new YoutubeMixer.UserControls.MixerChannel();
-            this.RightMixerChannel = new YoutubeMixer.UserControls.MixerChannel();
-            ((System.ComponentModel.ISupportInitialize)(this.FaderCross)).BeginInit();
-            this.SuspendLayout();
+            FaderCross = new TrackBar();
+            LeftMixerChannel = new MixerChannel();
+            RightMixerChannel = new MixerChannel();
+            ((System.ComponentModel.ISupportInitialize)FaderCross).BeginInit();
+            SuspendLayout();
             // 
             // FaderCross
             // 
-            this.FaderCross.Location = new System.Drawing.Point(1, 504);
-            this.FaderCross.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.FaderCross.Maximum = 100;
-            this.FaderCross.Name = "FaderCross";
-            this.FaderCross.Size = new System.Drawing.Size(175, 80);
-            this.FaderCross.TabIndex = 0;
-            this.FaderCross.Value = 50;
+            FaderCross.Location = new Point(1, 252);
+            FaderCross.Margin = new Padding(2, 2, 2, 2);
+            FaderCross.Maximum = 100;
+            FaderCross.Name = "FaderCross";
+            FaderCross.Size = new Size(102, 45);
+            FaderCross.TabIndex = 0;
+            FaderCross.Value = 50;
             // 
             // LeftMixerChannel
             // 
-            this.LeftMixerChannel.Controller = null;
-            this.LeftMixerChannel.Location = new System.Drawing.Point(3, 3);
-            this.LeftMixerChannel.Name = "LeftMixerChannel";
-            this.LeftMixerChannel.Size = new System.Drawing.Size(86, 494);
-            this.LeftMixerChannel.TabIndex = 1;
+            LeftMixerChannel.Controller = null;
+            LeftMixerChannel.Location = new Point(2, 2);
+            LeftMixerChannel.Margin = new Padding(1, 1, 1, 1);
+            LeftMixerChannel.Mixer = null;
+            LeftMixerChannel.Name = "LeftMixerChannel";
+            LeftMixerChannel.Size = new Size(50, 247);
+            LeftMixerChannel.TabIndex = 1;
             // 
             // RightMixerChannel
             // 
-            this.RightMixerChannel.Controller = null;
-            this.RightMixerChannel.Location = new System.Drawing.Point(92, 3);
-            this.RightMixerChannel.Name = "RightMixerChannel";
-            this.RightMixerChannel.Size = new System.Drawing.Size(86, 494);
-            this.RightMixerChannel.TabIndex = 2;
+            RightMixerChannel.Controller = null;
+            RightMixerChannel.Location = new Point(54, 2);
+            RightMixerChannel.Margin = new Padding(1, 1, 1, 1);
+            RightMixerChannel.Mixer = null;
+            RightMixerChannel.Name = "RightMixerChannel";
+            RightMixerChannel.Size = new Size(50, 247);
+            RightMixerChannel.TabIndex = 2;
             // 
-            // MixerControl
+            // Mixer
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 30F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.RightMixerChannel);
-            this.Controls.Add(this.LeftMixerChannel);
-            this.Controls.Add(this.FaderCross);
-            this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.Name = "MixerControl";
-            this.Size = new System.Drawing.Size(178, 552);
-            ((System.ComponentModel.ISupportInitialize)(this.FaderCross)).EndInit();
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
+            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleMode = AutoScaleMode.Font;
+            Controls.Add(RightMixerChannel);
+            Controls.Add(LeftMixerChannel);
+            Controls.Add(FaderCross);
+            Margin = new Padding(2, 2, 2, 2);
+            Name = "Mixer";
+            Size = new Size(104, 276);
+            ((System.ComponentModel.ISupportInitialize)FaderCross).EndInit();
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion

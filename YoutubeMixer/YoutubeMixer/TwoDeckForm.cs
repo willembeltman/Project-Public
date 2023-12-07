@@ -6,12 +6,12 @@ namespace YoutubeMixer.Forms
         {
             InitializeComponent();
 
-            LeftYoutubeController = new YoutubeController(DeckLeft, Mixer.LeftMixerChannel);
-            //RightYoutubeController = new YoutubeController(DeckRight, Mixer.RightMixerChannel);
+            Router = new Router();
+            Router.AddController(new YoutubeController(DeckLeft, Mixer.LeftMixerChannel));
+            //Router.AddController(new YoutubeController(DeckRight, Mixer.RightMixerChannel));
         }
 
-        public YoutubeController LeftYoutubeController { get; }
-        //public YoutubeController RightYoutubeController { get; }
+        private Router Router { get; }
 
         private void DeckForm_Load(object sender, EventArgs e)
         {
@@ -25,9 +25,10 @@ namespace YoutubeMixer.Forms
             int formY = screenHeight - formHeight;
             this.Location = new Point(formX, formY);
 
-            // Start the youtube controllers
-            LeftYoutubeController.Start();
-            //RightYoutubeController.Start();
+            TwoDeckForm_Resize(sender, e);
+
+            // Start everything
+            Router.Start();
         }
         private void TwoDeckForm_Resize(object sender, EventArgs e)
         {
@@ -54,8 +55,7 @@ namespace YoutubeMixer.Forms
         }
         private void TwoDeckForm_FormClosing(object? sender, FormClosingEventArgs e)
         {
-            LeftYoutubeController.Quit();
-            //RightYoutubeController.Dispose();
+            Router.Quit();
         }
     }
 }
