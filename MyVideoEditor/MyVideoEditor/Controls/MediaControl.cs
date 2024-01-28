@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MyVideoEditor.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -10,11 +11,14 @@ using System.Windows.Forms;
 
 namespace MyVideoEditor
 {
-    public partial class LibraryControl : UserControl
+    public partial class MediaControl : UserControl
     {
-        public LibraryControl()
+        public MediaControl(Project project)
         {
+            Project = project;
             InitializeComponent();
         }
+
+        public Project Project { get; }
     }
 }

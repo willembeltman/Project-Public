@@ -2,7 +2,7 @@
 {
     public class AudioStreamReader
     {
-        public AudioStreamReader(DirectoryInfo ffmpegDirectory, MediaContainer containerReader, StreamInfo streamInfo)
+        public AudioStreamReader(FfmpegExecuteblesPaths ffmpegExecuteblesPaths, MediaContainer containerReader, StreamInfo streamInfo)
         {
             StreamInfo = streamInfo;
         }

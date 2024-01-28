@@ -1,6 +1,6 @@
-﻿namespace MyVideoEditor
+﻿namespace MyVideoEditor.Controls
 {
-    partial class LibraryControl
+    partial class TimelinesControl
     {
         /// <summary> 
         /// Required designer variable.
@@ -35,18 +35,19 @@
             // 
             label1.AutoSize = true;
             label1.Location = new Point(0, 0);
+            label1.Margin = new Padding(2, 0, 2, 0);
             label1.Name = "label1";
-            label1.Size = new Size(75, 30);
-            label1.TabIndex = 0;
-            label1.Text = "Library";
+            label1.Size = new Size(85, 25);
+            label1.TabIndex = 1;
+            label1.Text = "Timelines";
             // 
-            // LibraryControl
+            // TimelinesControl
             // 
-            AutoScaleDimensions = new SizeF(12F, 30F);
+            AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             Controls.Add(label1);
-            Name = "LibraryControl";
-            Size = new Size(464, 710);
+            Name = "TimelinesControl";
+            Size = new Size(1099, 606);
             ResumeLayout(false);
             PerformLayout();
         }

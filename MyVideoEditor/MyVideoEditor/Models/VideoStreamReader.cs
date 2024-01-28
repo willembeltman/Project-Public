@@ -4,18 +4,18 @@ namespace MyVideoEditor.Models
 {
     public class VideoStreamReader : IDisposable
     {
-        public VideoStreamReader(DirectoryInfo ffmpegDirectory, MediaContainer mediaContainer, StreamInfo streaminfo)
+        public VideoStreamReader(FfmpegExecuteblesPaths ffmpegExecuteblesPaths, MediaContainer mediaContainer, StreamInfo streaminfo)
         {
             if (streaminfo.Resolution == null) throw new Exception("Resolution must be known");
             if (streaminfo.FramerateBase == null) throw new Exception("Framerate must be known");
             if (streaminfo.FramerateDivider == null) throw new Exception("Framerate must be known");
 
-            FFMpegDirectory = ffmpegDirectory;
+            FfmpegExecuteblesPaths = ffmpegExecuteblesPaths;
             MediaContainer = mediaContainer;
             StreamInfo = streaminfo;
         }
 
-        public DirectoryInfo FFMpegDirectory { get; }
+        public FfmpegExecuteblesPaths FfmpegExecuteblesPaths { get; }
         public MediaContainer MediaContainer { get; }
         public StreamInfo StreamInfo { get; }
 
@@ -73,8 +73,8 @@ namespace MyVideoEditor.Models
             {
                 StartInfo = new ProcessStartInfo()
                 {
-                    FileName = Path.Combine(FFMpegDirectory.FullName, "ffmpeg.exe"),
-                    WorkingDirectory = FFMpegDirectory.FullName,
+                    FileName = Path.Combine(FfmpegExecuteblesPaths.FFMpeg.FullName, "ffmpeg.exe"),
+                    WorkingDirectory = FfmpegExecuteblesPaths.FFMpeg.FullName,
                     Arguments = $"-i \"{MediaContainer.FullName}\" -ss {ss} -f rawvideo -pix_fmt rgb24 -",
                     RedirectStandardOutput = true,
                     UseShellExecute = false,

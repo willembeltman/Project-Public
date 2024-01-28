@@ -1,19 +1,20 @@
 ﻿using MyVideoEditor.Enums;
 using System.Diagnostics;
+using System.Linq;
 
 namespace MyVideoEditor.Models
 {
     public class MediaContainer
     {
-        public MediaContainer(DirectoryInfo ffmpegDirectory, string fullName)
+        public MediaContainer(FfmpegExecuteblesPaths ffmpegExecuteblesPaths, string fullName)
         {
-            FFMpegDirectory = ffmpegDirectory;
+            FFMpegPaths = ffmpegExecuteblesPaths;
             FullName = fullName;
 
             var startinfo = new ProcessStartInfo()
             {
-                FileName = Path.Combine(FFMpegDirectory.FullName, "ffprobe.exe"),
-                WorkingDirectory = FFMpegDirectory.FullName,
+                FileName = Path.Combine(FFMpegPaths.FFMpeg.FullName, "ffprobe.exe"),
+                WorkingDirectory = FFMpegPaths.FFMpeg.FullName,
                 Arguments = " -v error -show_entries stream=codec_long_name,codec_type,width,height,r_frame_rate,duration,bit_rate -of csv=s=,:p=0 \"" + FullName + "\"",
                 CreateNoWindow = true,
                 RedirectStandardOutput = true,
@@ -45,17 +46,17 @@ namespace MyVideoEditor.Models
 
                 VideoStreams = streaminfos
                     .Where(a => a.CodecType == CodecTypeEnum.Video)
-                    .Select(a => new VideoStreamReader(ffmpegDirectory, this, a))
+                    .Select(a => new VideoStreamReader(ffmpegExecuteblesPaths, this, a))
                     .ToArray();
 
                 AudioStreams = streaminfos
                     .Where(a => a.CodecType == CodecTypeEnum.Audio)
-                    .Select(a => new AudioStreamReader(ffmpegDirectory, this, a))
+                    .Select(a => new AudioStreamReader(ffmpegExecuteblesPaths, this, a))
                     .ToArray();
             }
         }
 
-        public DirectoryInfo FFMpegDirectory { get; }
+        public FfmpegExecuteblesPaths FFMpegPaths { get; }
         public string FullName { get; }
         public VideoStreamReader[] VideoStreams { get; } 
         public AudioStreamReader[] AudioStreams { get; } 

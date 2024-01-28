@@ -10,6 +10,12 @@ namespace MyVideoEditor.Services
     {
         static string[] supportedExtensions = { ".mp4", ".avi", ".mkv", ".mov", ".wmv" };
 
+        public static string[] Filter(string[] files)
+        {
+            return files
+                .Where(a => Check(a))
+                .ToArray();
+        }
         public static bool Check(string[] files)
         {
             foreach (var file in files)
