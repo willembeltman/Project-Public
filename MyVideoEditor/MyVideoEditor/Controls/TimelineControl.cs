@@ -1,10 +1,8 @@
-﻿using MyVideoEditor.Controls;
-using MyVideoEditor.Models;
+﻿using MyVideoEditor.DTOs;
 using MyVideoEditor.Services;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Drawing;
 using System.Linq;
@@ -12,104 +10,125 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace MyVideoEditor
+namespace MyVideoEditor.Controls
 {
     public partial class TimelineControl : UserControl
     {
-        public Project Project { get; set; }
+        #region Props 
 
-        public TimelineControl(Project project)
+        MainForm MainForm { get; }
+
+        ProjectService ProjectService => MainForm.ProjectService;
+        MediaContainerService MediaContainerService => MainForm.MediaContainerService;
+        TimelineService TimelineService => MainForm.TimelineService;
+        TimeStampService TimeStampService => MainForm.TimeStampService;
+
+        Project? Project => MainForm?.Project;
+        Timeline? Timeline => MainForm?.Timeline;
+
+        #endregion
+
+        public TimelineControl(MainForm mainForm)
         {
-            Project = project;
-
+            MainForm = mainForm;
             InitializeComponent();
         }
 
-        private void TimelineControl_Load(object sender, EventArgs e)
-        {
-            TimelinePanel_Resize(sender, e);
-        }
-        public void TimelinePanel_Resize(object sender, EventArgs e)
-        {
-            var buttonwidth = 47;
-            var buttonheight = 50;
-            var buttonfontsize = 15f;
-            var marge = 6;
-            var panelheight = (ClientRectangle.Height - TimelineScrollBar.Height - marge * 3) / 4;
-
-            TimelineDisplayPanel.Left = 0;
-            TimelineDisplayPanel.Top = 0;
-            TimelineDisplayPanel.Width = ClientRectangle.Width;
-            TimelineDisplayPanel.Height = panelheight * 2;
-
-            buttonBackward.Width = buttonwidth;
-            buttonBackward.Height = buttonheight;
-            buttonPause.Width = buttonwidth;
-            buttonPause.Height = buttonheight;
-            buttonPlay.Width = buttonwidth;
-            buttonPlay.Height = buttonheight;
-            buttonForward.Width = buttonwidth;
-            buttonForward.Height = buttonheight;
-
-            buttonBackward.Left = (ClientRectangle.Width - buttonwidth * 3 + marge * 2) / 2;
-            buttonPause.Left = buttonBackward.Right + marge;
-            buttonPlay.Left = buttonBackward.Right + marge;
-            buttonForward.Left = buttonPlay.Right + marge;
-
-            buttonBackward.Top = TimelineDisplayPanel.Bottom - marge - buttonheight;
-            buttonPause.Top = TimelineDisplayPanel.Bottom - marge - buttonheight;
-            buttonPlay.Top = TimelineDisplayPanel.Bottom - marge - buttonheight;
-            buttonForward.Top = TimelineDisplayPanel.Bottom - marge - buttonheight;
-
-            buttonBackward.Font = new Font(buttonForward.Font.FontFamily.Name, buttonfontsize);
-            buttonPause.Font = new Font(buttonForward.Font.FontFamily.Name, buttonfontsize);
-            buttonPlay.Font = new Font(buttonForward.Font.FontFamily.Name, buttonfontsize);
-            buttonForward.Font = new Font(buttonForward.Font.FontFamily.Name, buttonfontsize);
-
-
-            TimelineVideoPanel.Left = 0;
-            TimelineVideoPanel.Top = TimelineDisplayPanel.Bottom + marge;
-            TimelineVideoPanel.Width = ClientRectangle.Width;
-            TimelineVideoPanel.Height = panelheight;
-
-            TimelineAudioPanel.Left = 0;
-            TimelineAudioPanel.Top = TimelineVideoPanel.Bottom + marge;
-            TimelineAudioPanel.Width = ClientRectangle.Width;
-            TimelineAudioPanel.Height = panelheight;
-
-            TimelineScrollBar.Left = 0;
-            TimelineScrollBar.Top = TimelineAudioPanel.Bottom + marge;
-            TimelineScrollBar.Width = ClientRectangle.Width;
-        }
         private void TimelineControl_Paint(object sender, PaintEventArgs e)
         {
             if (Project == null) return;
+            if (Timeline == null) return;
 
-            foreach (var item in Project.CurrentTimeline.VideoItems)
+            // Huidige timecode bepalen / zichtbare selectie
+
+            var timelinelength = Timeline.TotalLength;
+            if (timelinelength < 60) timelinelength = 60;
+            var timelinestart = Timeline.DisplayStart;
+            var timelineend = timelinestart + timelinelength;
+
+            // Video items tekenen
+            var list = Timeline.TimelineVideos
+                //.Where(a =>
+                //    (a.TimelineStartTime >= timelinestart && a.TimelineStartTime <= timelineend) ||
+                //    (a.TimelineEndTime >= timelinestart && a.TimelineEndTime <= timelineend))
+                .OrderBy(a => a.TimelineStartTime)
+                .ToArray();
+
+            var marge = 8;
+
+            var height = (Height - marge) / 2;
+            var top1 = 0;
+            var top2 = height + marge;
+
+            var videorect = new Rectangle(Left, top1, Width, height);
+            var audiorect = new Rectangle(Left, top2, Width, height);
+
+            var g = e.Graphics;
+            g.Clear(Color.White);
+            g.FillRectangle(Brushes.LightGray, videorect);
+            g.DrawLine(Pens.Black, videorect.Left, videorect.Top, videorect.Right, videorect.Top);
+            g.DrawLine(Pens.Black, videorect.Left, videorect.Bottom, videorect.Right, videorect.Bottom);
+
+            g.FillRectangle(Brushes.LightGray, audiorect);
+            g.DrawLine(Pens.Black, audiorect.Left, audiorect.Top, audiorect.Right, audiorect.Top);
+            g.DrawLine(Pens.Black, audiorect.Left, audiorect.Bottom, audiorect.Right, audiorect.Bottom);
+
+
+            var items = 10;
+            var step = 1d;
+            while (true)
+            {
+                if (timelinelength / step > items)
+                {
+                    step = step * 10;
+                }
+                else if (timelinelength / step < items / 5)
+                {
+                    step = step * 10;
+                }
+                else break;
+            }
+
+            for (var i = timelinestart; i <= timelineend; i += step)
+            {
+                var left = Convert.ToInt32(videorect.Width / timelinelength * i);
+
+                // Draw mark line 
+                g.DrawLine(Pens.Gray, left, videorect.Top + 1, left, videorect.Bottom - 1);
+                g.DrawLine(Pens.Gray, left, audiorect.Top + 1, left, audiorect.Bottom - 1);
+
+                // Draw current time (i)
+                var textrect = g.MeasureString($"{i:F2}", SystemFonts.DefaultFont);
+                g.DrawString($"{i:F2}", SystemFonts.DefaultFont, Brushes.Black, left, audiorect.Bottom - textrect.Height);
+            }
+
+
+            foreach (var item in list)
+            {
+                var leftperc = (item.TimelineStartTime - timelinestart) / timelinelength;
+                var rightperc = (item.TimelineEndTime - timelineend) / timelinelength;
+
+                var left = Convert.ToInt32(videorect.Width * leftperc);
+                var right = Convert.ToInt32(videorect.Width * rightperc);
+                var width = right - left;
+
+                var rect = new Rectangle(videorect.Left + left, videorect.Top + 5, width, videorect.Height - 10);
+
+                g.FillRectangle(Brushes.Black, rect);
+            }
+
+            // Audio items tekenen
+            foreach (var item in Timeline.TimelineAudios)
             {
 
             }
 
+            g.Dispose();
         }
 
-        private void TimelinePanel_DragEnter(object sender, DragEventArgs e)
+        private void TimelineControl_Resize(object sender, EventArgs e)
         {
-            Project.DragEnter(sender, e);
-        }
-        private void TimelinePanel_DragDrop(object sender, DragEventArgs e)
-        {
-            Project.DragDrop(sender, e);
-        }
-
-        private void buttonPlay_Click(object sender, EventArgs e) => Project.Play();
-        private void buttonPause_Click(object sender, EventArgs e) => Project.Pause();
-        private void buttonForward_Click(object sender, EventArgs e) => Project.Forward();
-        private void buttonBackward_Click(object sender, EventArgs e) => Project.Backward();
-
-        private void timer1_Tick(object sender, EventArgs e)
-        {
-            buttonPlay.Visible = !Project.IsPlaying();
-            buttonPause.Visible = !Project.IsPaused();
+            Invalidate();
         }
     }
 }

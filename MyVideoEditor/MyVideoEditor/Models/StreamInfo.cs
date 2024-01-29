@@ -30,9 +30,9 @@ namespace MyVideoEditor.Models
                 var fpsparameters = parameters[4].Split(new string[] { "/" }, StringSplitOptions.None);
                 if (fpsparameters.Length == 2)
                 {
-                    if (int.TryParse(fpsparameters[0], out int fpsbase))
+                    if (long.TryParse(fpsparameters[0], out long fpsbase))
                         FramerateBase = fpsbase;
-                    if (int.TryParse(fpsparameters[1], out int fpsdivider))
+                    if (long.TryParse(fpsparameters[1], out long fpsdivider))
                         FramerateDivider = fpsdivider;
                 }
 
@@ -53,8 +53,8 @@ namespace MyVideoEditor.Models
         public double? Duration { get; set; }
         public int? Bitrate { get; set; }
         public Size? Resolution { get; set; }
-        public int? FramerateBase { get; set; }
-        public int? FramerateDivider { get; set; }
+        public long? FramerateBase { get; set; }
+        public long? FramerateDivider { get; set; }
         public double? Framerate => FramerateBase / FramerateDivider;
     }
 }

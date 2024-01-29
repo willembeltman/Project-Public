@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
+using MyVideoEditor.Models;
 
-namespace MyVideoEditor.Models
+namespace MyVideoEditor.VideoObjects
 {
     public class VideoStreamWriter : IDisposable
     {
@@ -33,7 +34,7 @@ namespace MyVideoEditor.Models
 
         public void WriteFrame(VideoFrame frame)
         {
-            if (frame.Width != FrameWidth || frame.Height != FrameHeight) 
+            if (frame.Width != FrameWidth || frame.Height != FrameHeight)
                 throw new Exception($"Frame size ({frame.Width}X{frame.Height}) not the same as videostream size ({FrameWidth}X{FrameHeight})");
             StreamWriter.Write(frame.FrameData);
         }

@@ -1,4 +1,4 @@
-﻿namespace MyVideoEditor.Models
+﻿namespace MyVideoEditor.VideoObjects
 {
     public class FfmpegExecuteblesPaths
     {
@@ -7,7 +7,7 @@
             if (executeblesDirectoryName == null || executeblesDirectoryName.Length == 0)
                 throw new Exception("ExecuteblesPath is empty");
 
-            var processPathFileInfo = new FileInfo(processPath);   
+            var processPathFileInfo = new FileInfo(processPath);
 
             if (processPathFileInfo.Directory == null || processPathFileInfo.Directory.Exists == false)
                 throw new Exception("processPathFileInfo is empty");
