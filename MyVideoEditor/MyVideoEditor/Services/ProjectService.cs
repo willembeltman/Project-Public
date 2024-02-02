@@ -13,23 +13,29 @@ namespace MyVideoEditor.Services
 {
     public class ProjectService
     {
-        public FfmpegExecuteblesPaths FfmpegExecuteblesPaths { get; }
-        public MediaContainerService MediaContainerService { get; }
+        #region Props 
 
-        public ProjectService(
-            FfmpegExecuteblesPaths ffmpegExecuteblesPaths, 
-            MediaContainerService mediaContainerService)
+        MainForm MainForm { get; }
+
+        MediaContainerService MediaContainerService => MainForm.MediaContainerService;
+        TimelineService TimelineService => MainForm.TimelineService;
+        TimeStampService TimeStampService => MainForm.TimeStampService;
+
+        Project? Project => MainForm.Project;
+        Timeline? Timeline => MainForm.Timeline;
+
+        public ProjectService(MainForm mainForm)
         {
-            FfmpegExecuteblesPaths = ffmpegExecuteblesPaths;
-            MediaContainerService = mediaContainerService;
+            MainForm = mainForm;
         }
 
+        #endregion
 
-        public bool Close(Project project)
+        public bool Close()
         {
-            if (HasProjectFile(project))
+            if (HasProjectFile())
             {
-                SaveProjectClicked(project);
+                SaveProjectClicked();
                 return true;
             }
             else
@@ -38,7 +44,7 @@ namespace MyVideoEditor.Services
                 dialog.Filter = "*.wjvproj";
                 if (dialog.ShowDialog() == DialogResult.OK)
                 {
-                    SaveProject(project, dialog.FileName);
+                    SaveProject(dialog.FileName);
                     return true;
                 }
             }
@@ -65,31 +71,31 @@ namespace MyVideoEditor.Services
             //return MediaContainerService.Open(files);
         }
 
-        public bool HasProjectFile(Project project)
+        public bool HasProjectFile()
         {
             throw new NotImplementedException();
         }
-        public void SaveProjectClicked(Project project)
+        public void SaveProjectClicked()
         {
             throw new NotImplementedException();
         }
-        public void SaveProject(Project project, string fileName)
+        public void SaveProject(string fileName)
         {
             throw new NotImplementedException();
         }
 
-        public void DragEnter(Project project, Timeline timeline, object sender, DragEventArgs e)
+        public void DragEnter(object sender, DragEventArgs e)
         {
             var files = GetDragAndDropFiles(e);
             if (files.Any())
                 e.Effect = DragDropEffects.Copy;
         }
-        public void DragDrop(Project project, Timeline timeline, object sender, DragEventArgs e)
+        public void DragDrop(object sender, DragEventArgs e)
         {
             var files = GetDragAndDropFiles(e);
             if (files.Any())
             {
-                InsertVideos(project, timeline, files);
+                InsertVideos(files);
             }
         }
 
@@ -102,7 +108,7 @@ namespace MyVideoEditor.Services
             return new Project()
             {
                 Timelines = new List<Timeline>() { defaultTimeline },
-                Medias = new List<Media>(),
+                Medias = new List<DTOs.Container>(),
                 Width = 1920,
                 Height = 1080,
                 FramerateBase = 60,
@@ -115,37 +121,40 @@ namespace MyVideoEditor.Services
             throw new NotImplementedException();
         }
 
-        public void SaveAsProjectClicked(Project project)
+        public void SaveAsProjectClicked()
         {
             throw new NotImplementedException();
         }
 
-        public void InsertVideosButtonClicked(Project project, Timeline timeline)
+        public void InsertVideosButtonClicked()
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Filter = "Video Files|*.mp4;*.avi;*.mkv;*.mov;*.wmv|All Files|*.*";
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
-                InsertVideos(project, timeline, openFileDialog.FileNames);
+                InsertVideos(openFileDialog.FileNames);
             }
         }
-        private void InsertVideos(Project project, Timeline timeline, string[] files)
+        private void InsertVideos(string[] files)
         {
+            if (Project == null) return;
+            if (Timeline == null) return;
+
             var mediaContainers = MediaContainerService.Open(files);
             if (mediaContainers.Any())
             {
-                var timelinestart = timeline.TotalLength;
+                var timelinestart = Timeline.TotalLength;
 
                 foreach (var mediaContainer in mediaContainers)
                 {
                     var groupid = Guid.NewGuid();
                     var duration = 0d;
 
-                    var media = new Media()
+                    var media = new DTOs.Container()
                     {
                         FullName = mediaContainer.FullName
                     };
-                    project.Medias.Add(media);
+                    Project.Medias.Add(media);
 
                     foreach (var videostream in mediaContainer.VideoStreams)
                     {
@@ -155,7 +164,8 @@ namespace MyVideoEditor.Services
                             duration = videostream.StreamInfo.Duration.Value;
                         }
 
-                        var mediavideo = new MediaVideo()
+                        // Blauwdruk aanmaken
+                        var mediavideo = new ContainerVideo()
                         {
                             MediaId = media.Id,
                             StreamIndex = videostream.StreamInfo.Index,
@@ -175,7 +185,10 @@ namespace MyVideoEditor.Services
                             MediaStartTime = 0,
                             MediaEndTime = duration,
                         };
-                        timeline.TimelineVideos.Add(videoitem);
+                        Timeline.TimelineVideos.Add(videoitem);
+
+                        // Control aanmaken
+                        MainForm.MainTimelineControl.TimelineControl.AddTimelineVideoControl(mediavideo, videoitem, videostream);
                     }
                     foreach (var audiostream in mediaContainer.AudioStreams)
                     {
@@ -185,7 +198,7 @@ namespace MyVideoEditor.Services
                             duration = audiostream.StreamInfo.Duration.Value;
                         }
 
-                        var mediaaudio = new MediaAudio()
+                        var mediaaudio = new ContainerAudio()
                         {
                             MediaId = media.Id,
                             StreamIndex = audiostream.StreamInfo.Index,
@@ -202,13 +215,18 @@ namespace MyVideoEditor.Services
                             MediaStartTime = 0,
                             MediaEndTime = duration,
                         };
-                        timeline.TimelineAudios.Add(audioitem);
+                        Timeline.TimelineAudios.Add(audioitem);
+
+                        // Control aanmaken
+                        MainForm.MainTimelineControl.TimelineControl.AddTimelineAudioControl(mediaaudio, audioitem, audiostream);
                     }
 
                     timelinestart += duration;
                 }
 
-                timeline.TotalLength = timelinestart;
+                Timeline.TotalLength = timelinestart;
+
+                MainForm.MainTimelineControl.TimelineControl.Invalidate();
             }
         }
     }

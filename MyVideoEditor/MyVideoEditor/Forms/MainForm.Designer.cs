@@ -166,7 +166,7 @@
             insertAFileToolStripMenuItem.Name = "insertAFileToolStripMenuItem";
             insertAFileToolStripMenuItem.Size = new Size(293, 34);
             insertAFileToolStripMenuItem.Text = "Insert video in timeline";
-            insertAFileToolStripMenuItem.Click += insertAFileToolStripMenuItem_Click;
+            insertAFileToolStripMenuItem.Click += insertFileToolStripMenuItem_Click;
             // 
             // MainForm
             // 

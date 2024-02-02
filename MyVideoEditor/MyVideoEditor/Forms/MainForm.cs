@@ -7,9 +7,9 @@ namespace MyVideoEditor
 {
     public partial class MainForm : Form
     {
-        public MediaMainControl MediaControl { get; }
-        public TimelinesMainControl TimelinesControl { get; }
-        public TimelineMainControl TimelineControl { get; }
+        public MainMediaControl MediaControl { get; }
+        public MainTimelinesControl MainTimelinesControl { get; }
+        public MainTimelineControl MainTimelineControl { get; }
 
         public FfmpegExecuteblesPaths FfmpegExecuteblesPaths { get; }
         public ProjectService ProjectService { get; }
@@ -28,8 +28,8 @@ namespace MyVideoEditor
             {
                 _Project = value;
                 MediaControl.ProjectSet();
-                TimelinesControl.ProjectSet();
-                TimelineControl.ProjectSet();
+                MainTimelinesControl.ProjectSet();
+                MainTimelineControl.ProjectSet();
             }
         }
 
@@ -63,19 +63,20 @@ namespace MyVideoEditor
             MediaContainerService =
                 new MediaContainerService(FfmpegExecuteblesPaths);
             ProjectService =
-                new ProjectService(FfmpegExecuteblesPaths, MediaContainerService);
+                new ProjectService(this);
             TimelineService =
-                new TimelineService();
+                new TimelineService(this);
             TimeStampService =
                 new TimeStampService();
 
-            MediaControl = new MediaMainControl(this);
-            TimelinesControl = new TimelinesMainControl(this);
-            TimelineControl = new TimelineMainControl(this);
-
-            Controls.Add(TimelineControl);
-            Controls.Add(TimelinesControl);
+            MediaControl = new MainMediaControl(this);
             Controls.Add(MediaControl);
+
+            MainTimelinesControl = new MainTimelinesControl(this);
+            Controls.Add(MainTimelinesControl);
+
+            MainTimelineControl = new MainTimelineControl(this);
+            Controls.Add(MainTimelineControl);
 
             InitializeComponent();
         }
@@ -85,6 +86,7 @@ namespace MyVideoEditor
             MainForm_Resize(sender, e);
 
             Project = ProjectService.NewProjectClicked_AfterConfirm();
+            timelineToolStripMenuItem_Click(sender, e);
         }
         private void MainForm_Resize(object sender, EventArgs e)
         {
@@ -93,23 +95,23 @@ namespace MyVideoEditor
             MediaControl.Width = ClientRectangle.Width;
             MediaControl.Height = ClientRectangle.Height - menuStrip1.Height;
 
-            TimelinesControl.Left = 0;
-            TimelinesControl.Top = menuStrip1.Height;
-            TimelinesControl.Width = ClientRectangle.Width;
-            TimelinesControl.Height = ClientRectangle.Height - menuStrip1.Height;
+            MainTimelinesControl.Left = 0;
+            MainTimelinesControl.Top = menuStrip1.Height;
+            MainTimelinesControl.Width = ClientRectangle.Width;
+            MainTimelinesControl.Height = ClientRectangle.Height - menuStrip1.Height;
 
-            TimelineControl.Left = 0;
-            TimelineControl.Top = menuStrip1.Height;
-            TimelineControl.Width = ClientRectangle.Width;
-            TimelineControl.Height = ClientRectangle.Height - menuStrip1.Height;
+            MainTimelineControl.Left = 0;
+            MainTimelineControl.Top = menuStrip1.Height;
+            MainTimelineControl.Width = ClientRectangle.Width;
+            MainTimelineControl.Height = ClientRectangle.Height - menuStrip1.Height;
 
-            TimelineControl.TimelinePanel_Resize(sender, e);
+            MainTimelineControl.TimelinePanel_Resize(sender, e);
         }
 
         private void newProjectToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (Project != null)
-                if (ProjectService.Close(Project) == false)
+                if (ProjectService.Close() == false)
                     return;
 
             Project = ProjectService.NewProjectClicked_AfterConfirm();
@@ -117,7 +119,7 @@ namespace MyVideoEditor
         private void openProjectToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (Project != null)
-                if (ProjectService.Close(Project) == false)
+                if (ProjectService.Close() == false)
                     return;
 
             Project = ProjectService.OpenProjectClicked_AfterConfirm();
@@ -129,7 +131,7 @@ namespace MyVideoEditor
                 MessageBox.Show("No project open?");
                 return;
             }
-            ProjectService.SaveProjectClicked(Project);
+            ProjectService.SaveProjectClicked();
         }
         private void saveProjectAsToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -138,12 +140,12 @@ namespace MyVideoEditor
                 MessageBox.Show("No project open?");
                 return;
             }
-            ProjectService.SaveAsProjectClicked(Project);
+            ProjectService.SaveAsProjectClicked();
         }
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (Project == null) return;
-            ProjectService.Close(Project);
+            ProjectService.Close();
             Close();
         }
 
@@ -154,8 +156,8 @@ namespace MyVideoEditor
             timelineToolStripMenuItem.BackColor = SystemColors.Control;
 
             MediaControl.Visible = true;
-            TimelinesControl.Visible = false;
-            TimelineControl.Visible = false;
+            MainTimelinesControl.Visible = false;
+            MainTimelineControl.Visible = false;
 
             Invalidate();
         }
@@ -166,8 +168,8 @@ namespace MyVideoEditor
             timelineToolStripMenuItem.BackColor = SystemColors.Control;
 
             MediaControl.Visible = false;
-            TimelinesControl.Visible = true;
-            TimelineControl.Visible = false;
+            MainTimelinesControl.Visible = true;
+            MainTimelineControl.Visible = false;
 
             Invalidate();
         }
@@ -178,20 +180,20 @@ namespace MyVideoEditor
             timelineToolStripMenuItem.BackColor = SystemColors.ControlDark;
 
             MediaControl.Visible = false;
-            TimelinesControl.Visible = false;
-            TimelineControl.Visible = true;
+            MainTimelinesControl.Visible = false;
+            MainTimelineControl.Visible = true;
 
             Invalidate();
         }
 
-        private void insertAFileToolStripMenuItem_Click(object sender, EventArgs e)
+        private void insertFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (Project == null || Timeline == null)
             {
                 MessageBox.Show("No project open?");
                 return;
             }
-            ProjectService.InsertVideosButtonClicked(Project, Timeline);
+            ProjectService.InsertVideosButtonClicked();
             Invalidate();
         }
     }

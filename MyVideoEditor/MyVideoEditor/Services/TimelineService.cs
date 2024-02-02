@@ -11,42 +11,55 @@ namespace MyVideoEditor.Services
 {
     public class TimelineService
     {
-        public TimelineService()
-        {
+        #region Props 
 
+        MainForm MainForm { get; }
+
+        ProjectService ProjectService => MainForm.ProjectService;
+        MediaContainerService MediaContainerService => MainForm.MediaContainerService;
+        TimeStampService TimeStampService => MainForm.TimeStampService;
+
+        Project? Project => MainForm.Project;
+        Timeline? Timeline => MainForm.Timeline;
+
+        #endregion
+
+        public TimelineService(MainForm mainForm)
+        {
+            MainForm = mainForm;
         }
 
-        public Timeline? GetCurrentTimeline(Project project, Timeline timeline)
+        public Timeline? GetCurrentTimeline()
         {
-            if (project == null) return null;
-            return project.Timelines.First(a => a.Id == project.CurrentTimelineId);
+            if (Project == null) return null;
+            return Project.Timelines.First(a => a.Id == Project.CurrentTimelineId);
         }
 
-        public bool IsPlaying(Project project, Timeline timeline)
+        public bool IsPlaying()
         {
             return false;
         }
-        public bool IsPaused(Project project, Timeline timeline)
+        public bool IsPaused()
         {
             return true;
         }
 
-        public void Play(Project project, Timeline? timeline)
+        public void Play()
         {
             throw new NotImplementedException();
         }
 
-        public void Pause(Project project, Timeline? timeline)
+        public void Pause()
         {
             throw new NotImplementedException();
         }
 
-        public void Forward(Project project, Timeline? timeline)
+        public void Forward()
         {
             throw new NotImplementedException();
         }
 
-        public void Backward(Project project, Timeline? timeline)
+        public void Backward()
         {
             throw new NotImplementedException();
         }

@@ -11,7 +11,7 @@ namespace MyVideoEditor.DTOs
     public class Project
     {
         public List<Timeline> Timelines { get; set; } = new List<Timeline>();
-        public List<Media> Medias { get; set; } = new List<Media>();
+        public List<Container> Medias { get; set; } = new List<Container>();
 
         public int Width { get; set; }
         public int Height { get; set; }

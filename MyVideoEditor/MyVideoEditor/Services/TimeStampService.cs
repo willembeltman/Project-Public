@@ -8,6 +8,10 @@ namespace MyVideoEditor.Services
 {
     public class TimeStampService
     {
+        public TimeStampService()
+        {
+        }
+
         public string GetTimeStamp(long frameIndex, long framerateBase, long framerateDivider)
         {
             double seconds = frameIndex / (framerateBase / (double)framerateDivider);

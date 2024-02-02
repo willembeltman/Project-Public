@@ -12,22 +12,24 @@ using System.Windows.Forms;
 
 namespace MyVideoEditor.Controls
 {
-    public partial class TimelinesMainControl : UserControl
+    public partial class MainTimelinesControl : UserControl
     {
+
         #region Props 
 
-        public MainForm MainForm { get; }
+        MainForm MainForm { get; }
 
-        public ProjectService ProjectService => MainForm.ProjectService;
-        public MediaContainerService MediaContainerService => MainForm.MediaContainerService;
-        public TimelineService TimelineService => MainForm.TimelineService;
+        ProjectService ProjectService => MainForm.ProjectService;
+        MediaContainerService MediaContainerService => MainForm.MediaContainerService;
+        TimelineService TimelineService => MainForm.TimelineService;
+        TimeStampService TimeStampService => MainForm.TimeStampService;
 
-        public Project? Project => MainForm.Project;
-        public Timeline? Timeline => MainForm.Timeline;
+        Project? Project => MainForm.Project;
+        Timeline? Timeline => MainForm.Timeline;
 
         #endregion
 
-        public TimelinesMainControl(MainForm mainForm)
+        public MainTimelinesControl(MainForm mainForm)
         {
             MainForm = mainForm;
             InitializeComponent();

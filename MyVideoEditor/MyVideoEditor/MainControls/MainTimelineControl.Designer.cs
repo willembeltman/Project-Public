@@ -1,6 +1,6 @@
 ﻿namespace MyVideoEditor
 {
-    partial class TimelineMainControl
+    partial class MainTimelineControl
     {
         /// <summary> 
         /// Required designer variable.
@@ -35,7 +35,6 @@
             buttonForward = new Button();
             buttonPlay = new Button();
             buttonPause = new Button();
-            timer1 = new System.Windows.Forms.Timer(components);
             groupBoxProjectSettings = new GroupBox();
             ProjectFramerate = new ComboBox();
             label3 = new Label();
@@ -45,11 +44,14 @@
             label1 = new Label();
             groupBoxClipSettings = new GroupBox();
             groupBoxTimelineTools = new GroupBox();
-            textBoxZoom = new TextBox();
             checkBoxRealtime = new CheckBox();
             checkBoxTrackTimelineToCursor = new CheckBox();
             buttonSelectionTool = new Button();
             buttonCutTool = new Button();
+            textBoxZoom = new TextBox();
+            buttonPlus = new Button();
+            buttonMin = new Button();
+            timer1 = new System.Windows.Forms.Timer(components);
             groupBoxProjectSettings.SuspendLayout();
             groupBoxTimelineTools.SuspendLayout();
             SuspendLayout();
@@ -57,9 +59,9 @@
             // TimelineScrollBar
             // 
             TimelineScrollBar.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            TimelineScrollBar.Location = new Point(0, 890);
+            TimelineScrollBar.Location = new Point(0, 689);
             TimelineScrollBar.Name = "TimelineScrollBar";
-            TimelineScrollBar.Size = new Size(853, 32);
+            TimelineScrollBar.Size = new Size(705, 31);
             TimelineScrollBar.TabIndex = 4;
             // 
             // TimelineDisplayPanel
@@ -118,11 +120,6 @@
             buttonPause.Text = "⏸️";
             buttonPause.UseVisualStyleBackColor = true;
             buttonPause.Click += buttonPause_Click;
-            // 
-            // timer1
-            // 
-            timer1.Enabled = true;
-            timer1.Tick += timer1_Tick;
             // 
             // groupBoxProjectSettings
             // 
@@ -201,7 +198,6 @@
             // 
             // groupBoxTimelineTools
             // 
-            groupBoxTimelineTools.Controls.Add(textBoxZoom);
             groupBoxTimelineTools.Controls.Add(checkBoxRealtime);
             groupBoxTimelineTools.Controls.Add(checkBoxTrackTimelineToCursor);
             groupBoxTimelineTools.Controls.Add(buttonSelectionTool);
@@ -212,15 +208,6 @@
             groupBoxTimelineTools.TabIndex = 10;
             groupBoxTimelineTools.TabStop = false;
             groupBoxTimelineTools.Text = "Timeline tools";
-            // 
-            // textBoxZoom
-            // 
-            textBoxZoom.Location = new Point(188, 28);
-            textBoxZoom.Name = "textBoxZoom";
-            textBoxZoom.Size = new Size(75, 31);
-            textBoxZoom.TabIndex = 6;
-            textBoxZoom.Text = "1";
-            textBoxZoom.TextAlign = HorizontalAlignment.Center;
             // 
             // checkBoxRealtime
             // 
@@ -248,7 +235,7 @@
             buttonSelectionTool.BackColor = SystemColors.ControlDark;
             buttonSelectionTool.Location = new Point(6, 28);
             buttonSelectionTool.Name = "buttonSelectionTool";
-            buttonSelectionTool.Size = new Size(87, 31);
+            buttonSelectionTool.Size = new Size(79, 31);
             buttonSelectionTool.TabIndex = 2;
             buttonSelectionTool.Text = "👆";
             buttonSelectionTool.UseVisualStyleBackColor = false;
@@ -256,21 +243,61 @@
             // 
             // buttonCutTool
             // 
-            buttonCutTool.Location = new Point(99, 28);
+            buttonCutTool.Location = new Point(91, 28);
             buttonCutTool.Name = "buttonCutTool";
-            buttonCutTool.Size = new Size(83, 31);
+            buttonCutTool.Size = new Size(71, 31);
             buttonCutTool.TabIndex = 1;
             buttonCutTool.Text = "✂️";
             buttonCutTool.UseVisualStyleBackColor = true;
             buttonCutTool.Click += buttonCutTool_Click;
             // 
-            // TimelineMainControl
+            // textBoxZoom
+            // 
+            textBoxZoom.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            textBoxZoom.Location = new Point(731, 689);
+            textBoxZoom.Name = "textBoxZoom";
+            textBoxZoom.Size = new Size(92, 31);
+            textBoxZoom.TabIndex = 6;
+            textBoxZoom.Text = "1";
+            textBoxZoom.TextAlign = HorizontalAlignment.Center;
+            // 
+            // buttonPlus
+            // 
+            buttonPlus.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            buttonPlus.Font = new Font("Segoe UI", 6F, FontStyle.Regular, GraphicsUnit.Point);
+            buttonPlus.Location = new Point(701, 689);
+            buttonPlus.Name = "buttonPlus";
+            buttonPlus.Size = new Size(30, 31);
+            buttonPlus.TabIndex = 11;
+            buttonPlus.Text = "+";
+            buttonPlus.UseVisualStyleBackColor = true;
+            // 
+            // buttonMin
+            // 
+            buttonMin.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            buttonMin.Font = new Font("Segoe UI", 6F, FontStyle.Regular, GraphicsUnit.Point);
+            buttonMin.Location = new Point(823, 689);
+            buttonMin.Name = "buttonMin";
+            buttonMin.Size = new Size(30, 31);
+            buttonMin.TabIndex = 12;
+            buttonMin.Text = "-";
+            buttonMin.UseVisualStyleBackColor = true;
+            // 
+            // timer1
+            // 
+            timer1.Enabled = true;
+            timer1.Tick += timer1_Tick;
+            // 
+            // MainTimelineControl
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.Control;
+            Controls.Add(buttonMin);
             Controls.Add(groupBoxTimelineTools);
+            Controls.Add(buttonPlus);
             Controls.Add(buttonBackward);
+            Controls.Add(textBoxZoom);
             Controls.Add(buttonForward);
             Controls.Add(buttonPlay);
             Controls.Add(buttonPause);
@@ -279,14 +306,15 @@
             Controls.Add(TimelineDisplayPanel);
             Controls.Add(TimelineScrollBar);
             Margin = new Padding(2);
-            Name = "TimelineMainControl";
-            Size = new Size(853, 924);
+            Name = "MainTimelineControl";
+            Size = new Size(853, 720);
             Load += TimelineControl_Load;
             groupBoxProjectSettings.ResumeLayout(false);
             groupBoxProjectSettings.PerformLayout();
             groupBoxTimelineTools.ResumeLayout(false);
             groupBoxTimelineTools.PerformLayout();
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
@@ -297,7 +325,6 @@
         private Button buttonPlay;
         private Button buttonPause;
         private Button buttonBackward;
-        private System.Windows.Forms.Timer timer1;
         private GroupBox groupBoxProjectSettings;
         private Label label3;
         private TextBox ProjectHeight;
@@ -312,5 +339,8 @@
         private Button buttonSelectionTool;
         private Button buttonCutTool;
         private TextBox textBoxZoom;
+        private Button buttonPlus;
+        private Button buttonMin;
+        private System.Windows.Forms.Timer timer1;
     }
 }
