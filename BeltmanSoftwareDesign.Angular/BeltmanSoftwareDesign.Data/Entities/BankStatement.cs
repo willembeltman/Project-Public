@@ -1,4 +1,5 @@
-﻿using BeltmanSoftwareDesign.Shared.Enums;
+﻿using BeltmanSoftwareDesign.Data.Attributes;
+using BeltmanSoftwareDesign.Shared.Enums;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -34,6 +35,7 @@ namespace BeltmanSoftwareDesign.Data.Entities
         //public virtual ICollection<BankStatementInvoice> BankStatementInvoices { get; set; }
         //public virtual ICollection<BankStatementExpense> BankStatementExpenses { get; set; }
 
+        [Name]
         [NotMapped]
         public string Description => Description1 + Environment.NewLine + Description2 + Environment.NewLine + Description3;
         [NotMapped]

@@ -38,14 +38,14 @@ namespace BeltmanSoftwareDesign.Data.Entities
         public DateTime? DatePayed { get; set; }
         public string PaymentCode { get; set; }
 
-        public virtual ICollection<InvoiceWorkorder> InvoiceWorkorders { get; set; }
+        public virtual ICollection<InvoiceWorkorderRate> InvoiceWorkorders { get; set; }
         public virtual ICollection<InvoiceRow>? InvoiceRows { get; set; }
 
         //public virtual ICollection<InvoiceProduct> InvoiceProducts { get; set; }
         //public virtual ICollection<InvoiceAttachment> InvoiceAttachments { get; set; }
         //public virtual ICollection<InvoiceEmail> InvoiceEmails { get; set; }
-        //public virtual ICollection<Transaction> Transacties { get; set; }
-        //public virtual ICollection<TransactionLog> TransactieLogs { get; set; }
+        //public virtual ICollection<Transaction> Transactions { get; set; }
+        //public virtual ICollection<TransactionLog> TransactionLogs { get; set; }
         //public virtual ICollection<BankStatementInvoice> BankStatementInvoices { get; set; }
         //[NotMapped]
         //public double Tax => (RatePrice ?? 0) / 100 * (TaxRate == null ? 0 : TaxRate.Percentage);

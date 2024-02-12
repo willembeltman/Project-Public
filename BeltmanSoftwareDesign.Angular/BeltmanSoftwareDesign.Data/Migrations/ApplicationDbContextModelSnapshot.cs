@@ -135,84 +135,6 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                     b.ToTable("BankStatementInvoices");
                 });
 
-            modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.Change", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("ChangeSetPathId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ChangeType")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)");
-
-                    b.Property<int?>("ChangesetId")
-                        .HasColumnType("int");
-
-                    b.Property<long>("Size")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Changes");
-                });
-
-            modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.ChangePath", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<long>("CompanyId")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ChangePaths");
-                });
-
-            modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.ChangeSet", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Author")
-                        .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
-
-                    b.Property<string>("Comment")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<long>("CompanyId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("RealChangesetId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ChangeSets");
-                });
-
             modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.ClientBearer", b =>
                 {
                     b.Property<string>("id")
@@ -327,15 +249,6 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                     b.Property<long?>("CountryId")
                         .HasColumnType("bigint");
 
-                    b.Property<DateTime?>("DateDelete")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("DateInsert")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DateUpdate")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(256)
@@ -401,33 +314,6 @@ namespace BeltmanSoftwareDesign.Data.Migrations
 
                     b.Property<long>("CompanyId")
                         .HasColumnType("bigint");
-
-                    b.Property<long?>("CurrentCustomerId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long?>("CurrentExpenseTypeId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long?>("CurrentInvoiceTypeId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long?>("CurrentProjectId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long?>("CurrentRateId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long?>("CurrentSupplierId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime?>("DateDelete")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("DateInsert")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DateUpdate")
-                        .HasColumnType("datetime2");
 
                     b.Property<bool>("Eigenaar")
                         .HasColumnType("bit");
@@ -1136,7 +1022,7 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                     b.ToTable("InvoiceTypes");
                 });
 
-            modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.InvoiceWorkorder", b =>
+            modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.InvoiceWorkorderRate", b =>
                 {
                     b.Property<long>("id")
                         .ValueGeneratedOnAdd()
@@ -1484,17 +1370,21 @@ namespace BeltmanSoftwareDesign.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("id"));
 
-                    b.Property<DateTime?>("BetaalAnnuleringsDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<double>("ConsumentenPrice")
-                        .HasColumnType("float");
+                    b.Property<long>("CompanyId")
+                        .HasColumnType("bigint");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateTime?>("DateCancelled")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime?>("DatePayed")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("ExternalTransactionId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsPayed")
                         .HasColumnType("bit");
@@ -1502,37 +1392,9 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                     b.Property<double>("Price")
                         .HasColumnType("float");
 
-                    b.Property<string>("RequestCode")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("RequestMessage")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("RequestResult")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("TransactionId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("TransactionPaymentReference")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("TransactionPaymentURL")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool?>("TransactionPopupAllowed")
-                        .HasColumnType("bit");
-
                     b.HasKey("id");
+
+                    b.HasIndex("CompanyId");
 
                     b.ToTable("Transactions");
                 });
@@ -1545,281 +1407,71 @@ namespace BeltmanSoftwareDesign.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("id"));
 
-                    b.Property<long>("CompanyId")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("Connection_BrowserData")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Connection_City")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Connection_Country")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Connection_Host")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Connection_IP")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Connection_LocationLat")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Connection_LocationLon")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Connection_MerchantCode")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Connection_MerchantName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Connection_OrderIP")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Connection_OrderReturnUrl")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("Connection_Trust")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime2");
 
-                    b.Property<long?>("InvoiceId")
+                    b.Property<long?>("TransactionId")
                         .HasColumnType("bigint");
 
-                    b.Property<int>("PaymentDetails_Amount")
-                        .HasColumnType("int");
+                    b.HasKey("id");
 
-                    b.Property<string>("PaymentDetails_Created")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.HasIndex("TransactionId");
 
-                    b.Property<int>("PaymentDetails_CurrencyAmount")
-                        .HasColumnType("int");
+                    b.ToTable("TransactionLogs");
+                });
 
-                    b.Property<string>("PaymentDetails_Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PaymentDetails_Exchange")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PaymentDetails_IdentifierHash")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PaymentDetails_IdentifierName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PaymentDetails_IdentifierPublic")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PaymentDetails_Modified")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PaymentDetails_PaidAmount")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PaymentDetails_PaidAttemps")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PaymentDetails_PaidBase")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PaymentDetails_PaidCosts")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PaymentDetails_PaidCostsVat")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PaymentDetails_PaidCurrencyAmount")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PaymentDetails_PaidCurreny")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PaymentDetails_PaidDuration")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PaymentDetails_PaymentMethodDescription")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PaymentDetails_PaymentMethodId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PaymentDetails_PaymentMethodName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("PaymentDetails_PaymentOptionId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("PaymentDetails_PaymentOptionSubId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("PaymentDetails_PaymentProfileName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PaymentDetails_ProcessTime")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("PaymentDetails_Secure")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("PaymentDetails_SecureStatus")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PaymentDetails_ServiceDescription")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PaymentDetails_ServiceId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PaymentDetails_ServiceName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PaymentDetails_State")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PaymentDetails_StateDescription")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PaymentDetails_StateName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("PaymentDetails_Storno")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Request")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Request_Code")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Request_Message")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("Request_Result")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Response")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("StatsDetails_Extra1")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("StatsDetails_Extra2")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("StatsDetails_Extra3")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("StatsDetails_Info")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("StatsDetails_Object")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("StatsDetails_PaymentSessionId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("StatsDetails_PromotorId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("StatsDetails_Tool")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("StornoDetails_BankAccount")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("StornoDetails_City")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("StornoDetails_Date")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("StornoDetails_EmailAddress")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("StornoDetails_IBAN")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("StornoDetails_Reason")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("StornoDetails_StornoAmount")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("StornoDetails_StornoId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("StornoDetails_bic")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<long?>("TransactieId")
+            modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.TransactionLogParameter", b =>
+                {
+                    b.Property<long>("id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    b.Property<string>("Url")
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<long>("TransactionLogId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Value")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("id");
 
-                    b.ToTable("TransactionLogs");
+                    b.HasIndex("TransactionLogId");
+
+                    b.ToTable("TransactionLogParameters");
+                });
+
+            modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.TransactionParameter", b =>
+                {
+                    b.Property<long>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<long>("TransactionId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("TransactionId");
+
+                    b.ToTable("TransactionParameters");
                 });
 
             modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.User", b =>
@@ -2025,7 +1677,7 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                     b.HasOne("BeltmanSoftwareDesign.Data.Entities.Company", "Company")
                         .WithMany("Invoices")
                         .HasForeignKey("CompanyId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("BeltmanSoftwareDesign.Data.Entities.Customer", "Customer")
@@ -2081,28 +1733,28 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                     b.HasOne("BeltmanSoftwareDesign.Data.Entities.Company", "Company")
                         .WithMany("InvoiceTypes")
                         .HasForeignKey("CompanyId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Company");
                 });
 
-            modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.InvoiceWorkorder", b =>
+            modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.InvoiceWorkorderRate", b =>
                 {
                     b.HasOne("BeltmanSoftwareDesign.Data.Entities.Invoice", "Invoice")
                         .WithMany("InvoiceWorkorders")
                         .HasForeignKey("InvoiceId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("BeltmanSoftwareDesign.Data.Entities.Rate", "Rate")
                         .WithMany("InvoiceWorkorders")
                         .HasForeignKey("RateId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("BeltmanSoftwareDesign.Data.Entities.Workorder", "Workorder")
                         .WithMany("InvoiceWorkorders")
                         .HasForeignKey("WorkorderId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("Invoice");
 
@@ -2134,7 +1786,7 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                     b.HasOne("BeltmanSoftwareDesign.Data.Entities.Company", "Company")
                         .WithMany("Rates")
                         .HasForeignKey("CompanyId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("BeltmanSoftwareDesign.Data.Entities.TaxRate", "TaxRate")
@@ -2152,7 +1804,7 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                     b.HasOne("BeltmanSoftwareDesign.Data.Entities.Company", "Company")
                         .WithMany("TaxRates")
                         .HasForeignKey("CompanyId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("BeltmanSoftwareDesign.Data.Entities.Country", "Country")
@@ -2163,6 +1815,49 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                     b.Navigation("Company");
 
                     b.Navigation("Country");
+                });
+
+            modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.Transaction", b =>
+                {
+                    b.HasOne("BeltmanSoftwareDesign.Data.Entities.Company", "Company")
+                        .WithMany("Transactions")
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Company");
+                });
+
+            modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.TransactionLog", b =>
+                {
+                    b.HasOne("BeltmanSoftwareDesign.Data.Entities.Transaction", "Transaction")
+                        .WithMany("TransactionLogs")
+                        .HasForeignKey("TransactionId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("Transaction");
+                });
+
+            modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.TransactionLogParameter", b =>
+                {
+                    b.HasOne("BeltmanSoftwareDesign.Data.Entities.TransactionLog", "TransactionLog")
+                        .WithMany("TransactionLogParameters")
+                        .HasForeignKey("TransactionLogId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("TransactionLog");
+                });
+
+            modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.TransactionParameter", b =>
+                {
+                    b.HasOne("BeltmanSoftwareDesign.Data.Entities.Transaction", "Transaction")
+                        .WithMany("TransactionParameters")
+                        .HasForeignKey("TransactionId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Transaction");
                 });
 
             modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.User", b =>
@@ -2250,6 +1945,8 @@ namespace BeltmanSoftwareDesign.Data.Migrations
 
                     b.Navigation("TaxRates");
 
+                    b.Navigation("Transactions");
+
                     b.Navigation("Workorders");
                 });
 
@@ -2307,6 +2004,18 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                     b.Navigation("Invoices");
 
                     b.Navigation("Rates");
+                });
+
+            modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.Transaction", b =>
+                {
+                    b.Navigation("TransactionLogs");
+
+                    b.Navigation("TransactionParameters");
+                });
+
+            modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.TransactionLog", b =>
+                {
+                    b.Navigation("TransactionLogParameters");
                 });
 
             modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.User", b =>

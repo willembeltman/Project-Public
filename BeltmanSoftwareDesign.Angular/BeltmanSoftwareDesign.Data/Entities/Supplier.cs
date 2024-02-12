@@ -1,11 +1,5 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BeltmanSoftwareDesign.Data.Entities
 {
@@ -16,7 +10,9 @@ namespace BeltmanSoftwareDesign.Data.Entities
         public long id { get; set; }
 
         public long CompanyId { get; set; }
+        //public virtual Company? Company { get; set; }
         public long? CountryId { get; set; }
+        //public virtual Country? Country { get; set; }
 
         public string Name { get; set; }
         public string Address { get; set; }
@@ -26,8 +22,7 @@ namespace BeltmanSoftwareDesign.Data.Entities
         public string RekeningNumber { get; set; }
 
         public bool Publiekelijk { get; set; }
-        //public virtual Country Country { get; set; }
-        //public virtual Company Company { get; set; }
+
         //public virtual ICollection<Expense> Expenses { get; set; }
         //public virtual ICollection<Product> Products { get; set; }
         //public virtual ICollection<Document> Documents { get; set; }

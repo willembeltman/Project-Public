@@ -18,7 +18,7 @@ namespace BeltmanSoftwareDesign.Data.Entities
         public string Description { get; set; } = string.Empty;
         public double Price { get; set; }
         public double? Tax { get; set; }
-        public virtual ICollection<InvoiceWorkorder>? InvoiceWorkorders { get; set; }
+        public virtual ICollection<InvoiceWorkorderRate>? InvoiceWorkorders { get; set; }
         public virtual ICollection<Workorder>? Workorders { get; set; }
 
         //public double GetTax()

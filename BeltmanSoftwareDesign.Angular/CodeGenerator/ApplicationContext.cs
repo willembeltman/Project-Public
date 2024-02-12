@@ -11,11 +11,11 @@ namespace CodeGenerator
 
     public class ApplicationContext
     {
-        static string angular_app_directory = @"D:\Projects\BeltmanSoftwareDesign.Angular\BeltmanSoftwareDesign.Angular\src\app";
+        static string angular_app_directory = @"D:\Project-Public\BeltmanSoftwareDesign.Angular\BeltmanSoftwareDesign.Angular\src\app";
 
-        static string angular_apiservices_directory = @"D:\Projects\BeltmanSoftwareDesign.Angular\BeltmanSoftwareDesign.Angular\src\app\apiservices";
+        static string angular_apiservices_directory = @"D:\Project-Public\BeltmanSoftwareDesign.Angular\BeltmanSoftwareDesign.Angular\src\app\apiservices";
 
-        static string dotnet_controllers_directory = @"D:\Projects\BeltmanSoftwareDesign.Angular\BeltmanSoftwareDesign.Api\Controllers";
+        static string dotnet_controllers_directory = @"D:\Project-Public\BeltmanSoftwareDesign.Angular\BeltmanSoftwareDesign.Api\Controllers";
 
         public void Run(string[] args)
         {

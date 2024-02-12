@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BeltmanSoftwareDesign.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class Initialmigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -533,116 +533,6 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "TransactionLogs",
-                columns: table => new
-                {
-                    id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    CompanyId = table.Column<long>(type: "bigint", nullable: false),
-                    InvoiceId = table.Column<long>(type: "bigint", nullable: true),
-                    TransactieId = table.Column<long>(type: "bigint", nullable: true),
-                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Url = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Request = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Response = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PaymentDetails_Amount = table.Column<int>(type: "int", nullable: false),
-                    PaymentDetails_Created = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PaymentDetails_CurrencyAmount = table.Column<int>(type: "int", nullable: false),
-                    PaymentDetails_Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PaymentDetails_Exchange = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PaymentDetails_IdentifierHash = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PaymentDetails_IdentifierName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PaymentDetails_IdentifierPublic = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PaymentDetails_Modified = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PaymentDetails_PaidAmount = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PaymentDetails_PaidAttemps = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PaymentDetails_PaidBase = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PaymentDetails_PaidCosts = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PaymentDetails_PaidCostsVat = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PaymentDetails_PaidCurrencyAmount = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PaymentDetails_PaidCurreny = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PaymentDetails_PaidDuration = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PaymentDetails_PaymentMethodDescription = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PaymentDetails_PaymentMethodId = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PaymentDetails_PaymentMethodName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PaymentDetails_PaymentOptionId = table.Column<int>(type: "int", nullable: false),
-                    PaymentDetails_PaymentOptionSubId = table.Column<int>(type: "int", nullable: false),
-                    PaymentDetails_PaymentProfileName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PaymentDetails_ProcessTime = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PaymentDetails_Secure = table.Column<bool>(type: "bit", nullable: false),
-                    PaymentDetails_SecureStatus = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PaymentDetails_ServiceDescription = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PaymentDetails_ServiceId = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PaymentDetails_ServiceName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PaymentDetails_State = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PaymentDetails_StateDescription = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PaymentDetails_StateName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PaymentDetails_Storno = table.Column<bool>(type: "bit", nullable: false),
-                    Connection_BrowserData = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Connection_City = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Connection_Country = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Connection_Host = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Connection_IP = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Connection_LocationLat = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Connection_LocationLon = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Connection_MerchantCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Connection_MerchantName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Connection_OrderIP = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Connection_OrderReturnUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Connection_Trust = table.Column<int>(type: "int", nullable: true),
-                    Request_Code = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Request_Message = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Request_Result = table.Column<bool>(type: "bit", nullable: false),
-                    StatsDetails_Extra1 = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    StatsDetails_Extra2 = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    StatsDetails_Extra3 = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    StatsDetails_Info = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    StatsDetails_Object = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    StatsDetails_PaymentSessionId = table.Column<int>(type: "int", nullable: true),
-                    StatsDetails_PromotorId = table.Column<int>(type: "int", nullable: true),
-                    StatsDetails_Tool = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    StornoDetails_BankAccount = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    StornoDetails_bic = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    StornoDetails_City = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    StornoDetails_Date = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    StornoDetails_EmailAddress = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    StornoDetails_IBAN = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    StornoDetails_Reason = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    StornoDetails_StornoAmount = table.Column<int>(type: "int", nullable: true),
-                    StornoDetails_StornoId = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TransactionLogs", x => x.id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Transactions",
-                columns: table => new
-                {
-                    id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Price = table.Column<double>(type: "float", nullable: false),
-                    ConsumentenPrice = table.Column<double>(type: "float", nullable: false),
-                    TransactionId = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    TransactionPaymentReference = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    TransactionPaymentURL = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    TransactionPopupAllowed = table.Column<bool>(type: "bit", nullable: true),
-                    RequestCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    RequestMessage = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    RequestResult = table.Column<bool>(type: "bit", nullable: false),
-                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    IsPayed = table.Column<bool>(type: "bit", nullable: false),
-                    DatePayed = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    BetaalAnnuleringsDate = table.Column<DateTime>(type: "datetime2", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Transactions", x => x.id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "ClientDeviceProperties",
                 columns: table => new
                 {
@@ -746,7 +636,8 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                         name: "FK_InvoiceTypes_Companies_CompanyId",
                         column: x => x.CompanyId,
                         principalTable: "Companies",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -767,12 +658,38 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                         name: "FK_TaxRates_Companies_CompanyId",
                         column: x => x.CompanyId,
                         principalTable: "Companies",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_TaxRates_Countries_CountryId",
                         column: x => x.CountryId,
                         principalTable: "Countries",
                         principalColumn: "id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Transactions",
+                columns: table => new
+                {
+                    id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CompanyId = table.Column<long>(type: "bigint", nullable: false),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Price = table.Column<double>(type: "float", nullable: false),
+                    ExternalTransactionId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsPayed = table.Column<bool>(type: "bit", nullable: false),
+                    DatePayed = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DateCancelled = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Transactions", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_Transactions_Companies_CompanyId",
+                        column: x => x.CompanyId,
+                        principalTable: "Companies",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -843,11 +760,51 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                         name: "FK_WorkRates_Companies_CompanyId",
                         column: x => x.CompanyId,
                         principalTable: "Companies",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_WorkRates_TaxRates_TaxRateId",
                         column: x => x.TaxRateId,
                         principalTable: "TaxRates",
+                        principalColumn: "id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TransactionLogs",
+                columns: table => new
+                {
+                    id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TransactionId = table.Column<long>(type: "bigint", nullable: true),
+                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TransactionLogs", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_TransactionLogs_Transactions_TransactionId",
+                        column: x => x.TransactionId,
+                        principalTable: "Transactions",
+                        principalColumn: "id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TransactionParameters",
+                columns: table => new
+                {
+                    id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TransactionId = table.Column<long>(type: "bigint", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Value = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TransactionParameters", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_TransactionParameters_Transactions_TransactionId",
+                        column: x => x.TransactionId,
+                        principalTable: "Transactions",
                         principalColumn: "id");
                 });
 
@@ -964,6 +921,26 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "TransactionLogParameters",
+                columns: table => new
+                {
+                    id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TransactionLogId = table.Column<long>(type: "bigint", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Value = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TransactionLogParameters", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_TransactionLogParameters_TransactionLogs_TransactionLogId",
+                        column: x => x.TransactionLogId,
+                        principalTable: "TransactionLogs",
+                        principalColumn: "id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Invoices",
                 columns: table => new
                 {
@@ -991,7 +968,8 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                         name: "FK_Invoices_Companies_CompanyId",
                         column: x => x.CompanyId,
                         principalTable: "Companies",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Invoices_CompanyUsers_SetToPayed_By_CompanyUserId",
                         column: x => x.SetToPayed_By_CompanyUserId,
@@ -1083,20 +1061,17 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                         name: "FK_InvoiceWorkorders_Invoices_InvoiceId",
                         column: x => x.InvoiceId,
                         principalTable: "Invoices",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "id");
                     table.ForeignKey(
                         name: "FK_InvoiceWorkorders_WorkRates_RateId",
                         column: x => x.RateId,
                         principalTable: "WorkRates",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "id");
                     table.ForeignKey(
                         name: "FK_InvoiceWorkorders_Workorders_WorkorderId",
                         column: x => x.WorkorderId,
                         principalTable: "Workorders",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "id");
                 });
 
             migrationBuilder.CreateIndex(
@@ -1218,6 +1193,26 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                 name: "IX_TaxRates_CountryId",
                 table: "TaxRates",
                 column: "CountryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TransactionLogParameters_TransactionLogId",
+                table: "TransactionLogParameters",
+                column: "TransactionLogId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TransactionLogs_TransactionId",
+                table: "TransactionLogs",
+                column: "TransactionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TransactionParameters_TransactionId",
+                table: "TransactionParameters",
+                column: "TransactionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Transactions_CompanyId",
+                table: "Transactions",
+                column: "CompanyId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_CurrentCompanyId",
@@ -1347,10 +1342,10 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                 name: "TrafficRegistrations");
 
             migrationBuilder.DropTable(
-                name: "TransactionLogs");
+                name: "TransactionLogParameters");
 
             migrationBuilder.DropTable(
-                name: "Transactions");
+                name: "TransactionParameters");
 
             migrationBuilder.DropTable(
                 name: "WorkorderAttachments");
@@ -1365,6 +1360,9 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                 name: "Invoices");
 
             migrationBuilder.DropTable(
+                name: "TransactionLogs");
+
+            migrationBuilder.DropTable(
                 name: "Workorders");
 
             migrationBuilder.DropTable(
@@ -1372,6 +1370,9 @@ namespace BeltmanSoftwareDesign.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "InvoiceTypes");
+
+            migrationBuilder.DropTable(
+                name: "Transactions");
 
             migrationBuilder.DropTable(
                 name: "Projects");

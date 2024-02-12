@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BeltmanSoftwareDesign.Data.Entities
 {
-    public class InvoiceWorkorder
+    public class InvoiceWorkorderRate
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

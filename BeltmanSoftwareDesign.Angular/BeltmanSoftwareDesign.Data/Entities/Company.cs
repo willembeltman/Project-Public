@@ -1,3 +1,4 @@
+using BeltmanSoftwareDesign.Data.Attributes;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -12,6 +13,7 @@ namespace BeltmanSoftwareDesign.Data.Entities
         public long? CountryId { get; set; }
         public virtual Country? Country { get; set; }
 
+        [Name]
         [StringLength(256)]
         public string Name { get; set; } = string.Empty;
         [StringLength(256)]
@@ -37,10 +39,6 @@ namespace BeltmanSoftwareDesign.Data.Entities
         [StringLength(256)]
         public string? PayNL_ServiceId { get; set; }
 
-        public DateTime DateInsert { get; set; }
-        public DateTime? DateUpdate { get; set; }
-        public DateTime? DateDelete { get; set; }
-
         public virtual ICollection<CompanyUser>? CompanyUsers { get; set; } = new List<CompanyUser>();
         public virtual ICollection<User>? CurrentUsers { get; set; }
         public virtual ICollection<Workorder>? Workorders { get; set; }
@@ -50,6 +48,7 @@ namespace BeltmanSoftwareDesign.Data.Entities
         public virtual ICollection<InvoiceType>? InvoiceTypes { get; set; }
         public virtual ICollection<TaxRate>? TaxRates { get; set; }
         public virtual ICollection<Rate>? Rates { get; set; }
+        public virtual ICollection<Transaction>? Transactions { get; set; }
 
         //public virtual ICollection<Product> Products { get; set; }
 

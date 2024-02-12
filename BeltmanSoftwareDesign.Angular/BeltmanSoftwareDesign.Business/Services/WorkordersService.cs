@@ -25,7 +25,7 @@ namespace BeltmanSoftwareDesign.Business.Services
             StorageFileService = storageFileService;
             AuthenticationService = authenticationService;
             WorkorderFactory = new WorkorderFactory(storageFileService);
-        } 
+        }
 
         [TsServiceMethod("Workorders", "Create")]
         public WorkorderCreateResponse Create(WorkorderCreateRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
@@ -182,14 +182,14 @@ namespace BeltmanSoftwareDesign.Business.Services
             if (dbworkorder == null)
                 return new WorkorderDeleteResponse()
                 {
-                    ErrorWorkorderNotFound = true,
+                    ErrorItemNotFound = true,
                     State = authentication
                 };
 
             if (dbworkorder.CompanyId != authentication.DbCurrentCompany.Id)
                 return new WorkorderDeleteResponse()
                 {
-                    ErrorCurrentCompanyDifferentThanWorkorderCompany = true,
+                    ErrorWrongCompany = true,
                     State = authentication
                 };
 

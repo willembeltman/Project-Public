@@ -2,7 +2,6 @@
 using BeltmanSoftwareDesign.Data;
 using BeltmanSoftwareDesign.Data.Factories;
 using BeltmanSoftwareDesign.Shared.Attributes;
-using BeltmanSoftwareDesign.Shared.Jsons;
 using BeltmanSoftwareDesign.Shared.RequestJsons;
 using BeltmanSoftwareDesign.Shared.ResponseJsons;
 using BeltmanSoftwareDesign.StorageBlob.Business.Interfaces;
@@ -72,7 +71,7 @@ namespace BeltmanSoftwareDesign.Business.Services
                 Admin = true,
                 Actief = true,
             };
-            dbcompany.CompanyUsers.Add(dbcompanyuser);
+            db.CompanyUsers.Add(dbcompanyuser);
             db.SaveChanges();
 
             // Convert it back

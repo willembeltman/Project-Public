@@ -28,13 +28,13 @@
         public string PaymentCode { get; set; }
 
         public InvoiceWorkorder[] InvoiceWorkorders { get; set; }
-        //public Transaction[] Transacties { get; set; }
+        //public Transaction[] Transactions { get; set; }
 
         //public virtual ICollection<InvoiceProduct> InvoiceProducts { get; set; }
         //public virtual ICollection<InvoiceRow> InvoiceRegels { get; set; }
         //public virtual ICollection<InvoiceAttachment> InvoiceAttachments { get; set; }
         //public virtual ICollection<InvoiceEmail> InvoiceEmails { get; set; }
-        //public virtual ICollection<TransactionLog> TransactieLogs { get; set; }
+        //public virtual ICollection<TransactionLog> TransactionLogs { get; set; }
         //public virtual ICollection<BankStatementInvoice> BankStatementInvoices { get; set; }
 
     }
