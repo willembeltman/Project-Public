@@ -9,6 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Emgu.CV.runtime.windows" Version="4.8.1.5350" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="Executebles\ffmpeg.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

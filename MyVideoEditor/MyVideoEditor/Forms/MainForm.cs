@@ -3,7 +3,7 @@ using MyVideoEditor.DTOs;
 using MyVideoEditor.Services;
 using MyVideoEditor.VideoObjects;
 
-namespace MyVideoEditor
+namespace MyVideoEditor.Forms
 {
     public partial class MainForm : Form
     {
@@ -16,6 +16,8 @@ namespace MyVideoEditor
         public MediaContainerService MediaContainerService { get; }
         public TimelineService TimelineService { get; }
         public TimeStampService TimeStampService { get; }
+
+        public ConsoleForm ConsoleForm { get; }
 
         Project? _Project { get; set; }
         public Project? Project
@@ -54,6 +56,7 @@ namespace MyVideoEditor
             }
         }
 
+
         public MainForm()
         {
             if (Environment.ProcessPath == null) throw new Exception("Cannot get execution path");
@@ -78,8 +81,12 @@ namespace MyVideoEditor
             MainTimelineControl = new MainTimelineControl(this);
             Controls.Add(MainTimelineControl);
 
+            ConsoleForm = new ConsoleForm(this);
+            ConsoleForm.Show();
+
             InitializeComponent();
         }
+
 
         private void MainForm_Load(object sender, EventArgs e)
         {
@@ -195,6 +202,13 @@ namespace MyVideoEditor
             }
             ProjectService.InsertVideosButtonClicked();
             Invalidate();
+        }
+
+        private void findVisualStudioToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            FindVisualStudioForm form = new FindVisualStudioForm(MediaContainerService, ConsoleForm);
+            form.ShowDialog();
+
         }
     }
 }

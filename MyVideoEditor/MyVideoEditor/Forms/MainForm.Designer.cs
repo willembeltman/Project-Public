@@ -1,4 +1,4 @@
-﻿namespace MyVideoEditor
+﻿namespace MyVideoEditor.Forms
 {
     partial class MainForm
     {
@@ -45,6 +45,7 @@
             timelinesToolStripMenuItem = new ToolStripMenuItem();
             timelineToolStripMenuItem = new ToolStripMenuItem();
             insertAFileToolStripMenuItem = new ToolStripMenuItem();
+            findVisualStudioToolStripMenuItem = new ToolStripMenuItem();
             menuStrip1.SuspendLayout();
             SuspendLayout();
             // 
@@ -114,7 +115,7 @@
             // 
             // toolsToolStripMenuItem
             // 
-            toolsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { distinctFramesToolToolStripMenuItem });
+            toolsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { distinctFramesToolToolStripMenuItem, findVisualStudioToolStripMenuItem });
             toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             toolsToolStripMenuItem.Size = new Size(69, 29);
             toolsToolStripMenuItem.Text = "Tools";
@@ -168,6 +169,13 @@
             insertAFileToolStripMenuItem.Text = "Insert video in timeline";
             insertAFileToolStripMenuItem.Click += insertFileToolStripMenuItem_Click;
             // 
+            // findVisualStudioToolStripMenuItem
+            // 
+            findVisualStudioToolStripMenuItem.Name = "findVisualStudioToolStripMenuItem";
+            findVisualStudioToolStripMenuItem.Size = new Size(273, 34);
+            findVisualStudioToolStripMenuItem.Text = "FindVisualStudio";
+            findVisualStudioToolStripMenuItem.Click += findVisualStudioToolStripMenuItem_Click;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
@@ -205,5 +213,6 @@
         private ToolStripMenuItem toolStripMenuItem1;
         private ToolStripMenuItem mediaToolStripMenuItem;
         private ToolStripMenuItem timelinesToolStripMenuItem;
+        private ToolStripMenuItem findVisualStudioToolStripMenuItem;
     }
 }

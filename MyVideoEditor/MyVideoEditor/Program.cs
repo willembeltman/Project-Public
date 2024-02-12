@@ -1,3 +1,5 @@
+using MyVideoEditor.Forms;
+
 namespace MyVideoEditor
 {
     internal static class Program

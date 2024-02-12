@@ -82,13 +82,15 @@ namespace MyVideoEditor.VideoObjects
             }
 
             string ss = TimeStampService.GetTimeStamp(startframeindex, FramerateBase, FramerateDivider);
+            var path1 = FfmpegExecuteblesPaths.FFMpeg.FullName;
+            var path2 = FfmpegExecuteblesPaths.FFMpeg.Directory.FullName;
 
             Process = new Process()
             {
                 StartInfo = new ProcessStartInfo()
                 {
-                    FileName = Path.Combine(FfmpegExecuteblesPaths.FFMpeg.FullName, "ffmpeg.exe"),
-                    WorkingDirectory = FfmpegExecuteblesPaths.FFMpeg.FullName,
+                    FileName = path1,
+                    WorkingDirectory = path2,
                     Arguments = $"-i \"{FullName}\" -ss {ss} -f rawvideo -pix_fmt rgb24 -",
                     RedirectStandardOutput = true,
                     UseShellExecute = false,
