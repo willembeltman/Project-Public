@@ -1,0 +1,29 @@
+<h2>My companies</h2>
+
+<p>
+  <a routerLink="/createcompany">create a new company</a>
+</p>
+
+<p *ngIf="!companies">
+  <em>
+    Loading... Please refresh once the ASP.NET backend has started.
+    See <a href="https://aka.ms/jspsintegrationangular">https://aka.ms/jspsintegrationangular</a> for more details.
+  </em>
+</p>
+
+<table *ngIf="companies">
+  <tbody>
+    <tr *ngFor="let company of companies">
+      <td>{{ company.name }}</td>
+      <td>
+        <a [routerLink]="['/editcompany', company.id]">edit</a>
+      </td>
+      <td>
+        <a *ngIf="company.id != getCurrentCompanyId()" (click)="setCurrentCompany(company.id)" style="text-decoration:underline; cursor: pointer;">set as current</a>
+      </td>
+      <td>
+        <a [routerLink]="['/deletecompany', company.id]">delete</a>
+      </td>
+    </tr>
+  </tbody>
+</table>

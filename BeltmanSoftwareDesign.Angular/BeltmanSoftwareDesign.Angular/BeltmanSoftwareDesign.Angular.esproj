@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.VisualStudio.JavaScript.Sdk/0.5.128-alpha">
+  <PropertyGroup Label="Globals">
+    <SccProjectName>SAK</SccProjectName>
+    <SccProvider>SAK</SccProvider>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccLocalPath>SAK</SccLocalPath>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupCommand>npm start</StartupCommand>
+    <JavaScriptTestFramework>Jasmine</JavaScriptTestFramework>
+    <!-- Allows the build (or compile) script located on package.json to run on Build -->
+    <ShouldRunBuildScript>false</ShouldRunBuildScript>
+    <!-- Folder where production build objects will be placed -->
+    <PublishAssetsDirectory>$(MSBuildProjectDirectory)\dist\BeltmanSoftwareDesign.Angular\</PublishAssetsDirectory>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Remove="aspnetcore-https.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="src\app\interfaces\response\" />
+    <Folder Include="src\app\interfaces\request\" />
+    <Folder Include="src\app\interceptors\" />
+  </ItemGroup>
+</Project>

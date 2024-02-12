@@ -1,0 +1,14 @@
+<div *ngIf="noCompanyError">
+  <h2>No company created</h2>
+  <p>
+    Ready to take charge of your admin tasks? It all starts with creating a company account on our website. Just dive into the form below, and you'll be all set up to manage your affairs hassle-free. Say goodbye to paperwork chaos and hello to smooth sailing with your personalized company profile. Let's get cracking!
+  </p>
+</div>
+<div *ngIf="!noCompanyError">
+  <h2>No company selected</h2>
+  <p>
+    You need to select a company as your 'current company'.
+  </p>
+</div>
+
+<app-companies (updateEvent)="handleUpdate()" />

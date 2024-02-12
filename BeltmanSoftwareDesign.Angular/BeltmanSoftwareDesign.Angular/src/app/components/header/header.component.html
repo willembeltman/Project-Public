@@ -1,0 +1,17 @@
+<nav>
+  <div>
+    <a routerLink="/">Home</a>
+  </div>
+  <div *ngIf="!isLoggedIn()">
+    <a routerLink="/login">Login</a>
+    <a routerLink="/register">Register</a>
+  </div>
+  <div *ngIf="isLoggedIn()">
+    <a routerLink="/portal-company">{{getCurrentCompanyName()}}</a>
+    <a routerLink="/portal-analytics">Analytics</a>
+    <a routerLink="/portal-settings">Settings</a>
+  </div>
+  <div *ngIf="isLoggedIn()">
+    <a routerLink="/portal-account">{{getUserName()}}</a>
+  </div>
+</nav>

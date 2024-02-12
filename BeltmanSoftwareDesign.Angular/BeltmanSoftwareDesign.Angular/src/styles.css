@@ -1,0 +1,29 @@
+html, body {
+    margin: 0;
+    padding: 0;
+}
+
+nav {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  background-color: #4b004b;
+}
+
+main {
+    padding: 8px;
+}
+
+input.error {
+  border: solid 1px red;
+}
+
+small.error {
+  color: red;
+  display: block;
+}
+
+label {
+    width: 100px;
+    display: inline-block;
+}
