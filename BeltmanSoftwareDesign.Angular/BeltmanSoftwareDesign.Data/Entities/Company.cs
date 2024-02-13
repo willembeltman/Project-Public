@@ -49,6 +49,7 @@ namespace BeltmanSoftwareDesign.Data.Entities
         public virtual ICollection<TaxRate>? TaxRates { get; set; }
         public virtual ICollection<Rate>? Rates { get; set; }
         public virtual ICollection<Transaction>? Transactions { get; set; }
+        public virtual ICollection<BankStatement>? BankStatements { get; set; }
 
         //public virtual ICollection<Product> Products { get; set; }
 
@@ -56,7 +57,7 @@ namespace BeltmanSoftwareDesign.Data.Entities
         //public virtual ICollection<ExpenseType> ExpenseTypes { get; set; }
         //public virtual ICollection<Expense> Expenses { get; set; }
         //public virtual ICollection<WorkRate> WerkTarieven { get; set; }
-        //public virtual ICollection<BankStatement> BankStatements { get; set; }
+
         //public virtual ICollection<Residence> Huisvestingen { get; set; }
         //public virtual ICollection<Setting> Instellingen { get; set; }
         //public virtual ICollection<TrafficRegistration> RitRegistraties { get; set; }

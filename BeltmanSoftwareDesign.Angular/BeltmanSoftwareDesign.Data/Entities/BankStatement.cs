@@ -12,7 +12,7 @@ namespace BeltmanSoftwareDesign.Data.Entities
         public long Id { get; set; }
 
         public long CompanyId { get; set; }
-        //public virtual Company Company { get; set; }
+        public virtual Company? Company { get; set; }
 
         public string VolgNr { get; set; } = string.Empty;
         public CreditTypeEnum CreditType { get; set; }

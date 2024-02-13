@@ -6,6 +6,13 @@ import { StateService } from './services/state.service';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { CustomInterceptor } from './interceptors/custom.interceptor';
 
+enum TestEnum {
+  Type1 = 0,
+  Type2 = 1,
+  Type3 = 3,
+}
+
+
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -21,7 +28,9 @@ import { CustomInterceptor } from './interceptors/custom.interceptor';
 export class AppComponent implements OnInit {
   title = 'Beltman Software Design';
 
-  constructor(private stateService : StateService, private renderer: Renderer2) {
+  constructor(private stateService: StateService, private renderer: Renderer2) {
+
+
   }
 
   ngOnInit(): void {

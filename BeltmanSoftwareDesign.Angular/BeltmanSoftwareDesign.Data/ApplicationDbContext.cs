@@ -282,6 +282,11 @@ namespace BeltmanSoftwareDesign.Data
                 .HasForeignKey(p => p.CompanyId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            modelBuilder.Entity<BankStatement>()
+                .HasOne(u => u.Company)
+                .WithMany(c => c.BankStatements)
+                .HasForeignKey(p => p.CompanyId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             base.OnModelCreating(modelBuilder);
         }
