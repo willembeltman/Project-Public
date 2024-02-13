@@ -1,5 +1,4 @@
-﻿using CodeGenerator.Entities.Extended;
-using Swashbuckle.AspNetCore.SwaggerGen;
+﻿using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Xml.Linq;
 
 namespace CodeGenerator.Entities.Models
@@ -8,23 +7,26 @@ namespace CodeGenerator.Entities.Models
     {
         public EntityInfo(DbSetInfo dbSet, Type entityType)
         {
-            _DbSetInfo = dbSet;
-            Type = entityType.GenericTypeArguments.First();
+            DbSet = dbSet;
+            var Type = entityType.GenericTypeArguments.First();
             Name = Type.Name;
+            FullName = Type.FullName;
             Namespace = Type.Namespace;
-            var properties = Type
-                .GetProperties();
-            EntityPropertyInfos = properties
+
+            Properties = Type
+                .GetProperties()
                 .Where(a => a.IsPubliclyReadable())
                 .Select(a => new EntityPropertyInfo(this, a))
                 .ToArray();
         }
 
-        public DbSetInfo _DbSetInfo { get; }
+        public DbSetInfo DbSet { get; }
         public string Name { get; }
-        public string? Namespace { get; }
-        public Type Type { get; }
-        public EntityPropertyInfo[] EntityPropertyInfos { get; }
+        public string FullName { get; }
+        public string Namespace { get; }
+
+        public EntityPropertyInfo[] Properties { get; }
+
 
         public override string ToString()
         {

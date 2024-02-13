@@ -1,14 +1,14 @@
-﻿using CodeGenerator.Entities.Extended;
+﻿using CodeGenerator.Entities.Models;
 
 namespace CodeGenerator.Templates
 {
     internal class DtoTemplate
     {
-        private ExDbSet DbSet { get; }
-        public ExEntity Entity { get; }
+        private DbSetInfo DbSet { get; }
+        public EntityInfo Entity { get; }
         public string NamespaceName { get; }
 
-        public DtoTemplate(ExDbSet dbSet, string namespaceName = "BeltmanSoftwareDesign.Shared.Jsons")
+        public DtoTemplate(DbSetInfo dbSet, string namespaceName = "BeltmanSoftwareDesign.Shared.Jsons")
         {
             DbSet = dbSet;
             Entity = dbSet.Entity;
@@ -36,7 +36,24 @@ namespace CodeGenerator.Templates
             //        public string? Iban { get; set; }
             //
 
+            var namespaces = Entity.Properties
+                .Where(a => a.Type.Entity == null)
+                .GroupBy(a => a.Type.CsNamespace)
+                .Select(a => a.Key)
+                .Where(a => a != null && a != NamespaceName)
+                .ToArray();
+
             var rtn = "";
+
+            foreach (var ns in namespaces)
+            {
+                rtn += $"using {ns};" + Environment.NewLine;
+            }
+
+            if (namespaces.Any())
+            {
+                rtn += Environment.NewLine;
+            }
 
             rtn += $"namespace {NamespaceName};" + Environment.NewLine;
             rtn += $"{{" + Environment.NewLine;
@@ -44,7 +61,27 @@ namespace CodeGenerator.Templates
             rtn += $"    {{" + Environment.NewLine;
             foreach (var item in Entity.Properties)
             {
-                rtn += $"        public {item.TypeCsSimpleName} {item.Name} {{ get; set; }}" + Environment.NewLine;
+                if (item.Type.Entity == null)
+                {
+                    rtn += $"        public {item.Type.CsSimpleName} {item.Name} {{ get; set; }}" + Environment.NewLine;
+                    if (item.Type.IsEnum)
+                    {
+
+                    }
+                    else
+                    {
+                        //rtn += $"        public {item.Type.CsSimpleName} {item.Name} {{ get; set; }}" + Environment.NewLine;
+                    }
+                }
+                else
+                {
+                    var nameproperty = item.Type.Entity.Properties.FirstOrDefault(a => a.IsName);
+                    if (nameproperty != null)
+                    {
+                        rtn += $"        public {nameproperty.Type.CsSimpleName} {item.Name}Name {{ get; set; }}" + Environment.NewLine;
+                    }
+
+                }
             }
             rtn += $"    }}" + Environment.NewLine;
             rtn += $"}}" + Environment.NewLine;

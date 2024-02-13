@@ -16,7 +16,7 @@ namespace BeltmanSoftwareDesign.Data.Entities
 
         public string VolgNr { get; set; } = string.Empty;
         public CreditTypeEnum CreditType { get; set; }
-        public BankEnum Bank { get; set; }
+        public BankEnum? Bank { get; set; }
         public string EigenRekeningNumber { get; set; } = string.Empty;
         public string Currency { get; set; } = string.Empty;
         public DateTime Date { get; set; }

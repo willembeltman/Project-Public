@@ -31,56 +31,79 @@ namespace CodeGenerator.Entities.Extended
 
             Name = entityProperty.Name;
             TypeCsFullName = entityProperty.Type.FullName;
-            TypeCsName = entityProperty.Type.FullName;
 
-            if (TypeCsName.StartsWith(nulleblestring))
+            if (entityProperty.Type.IsEnum || entityProperty.Type.GenericTypeArguments.Any(a => a.IsEnum))
             {
-                IsNulleble = true;
-                var end = TypeCsName.IndexOf(nulleblestringend);
-                var csv = TypeCsName.Substring(nulleblestring.Length, end - nulleblestring.Length);
-                var csvlines = csv.Split(new string[] { "," }, StringSplitOptions.None);
-                TypeCsName = csvlines.First();
-            }
+                IsEnum = true;
 
-            if (TypeCsName.StartsWith(isliststring))
-            {
-                IsList = true;
-                var end = TypeCsName.IndexOf(isliststringend);
-                var csv = TypeCsName.Substring(isliststring.Length, end - isliststring.Length);
-                var csvlines = csv.Split(new string[] { "," }, StringSplitOptions.None);
-                TypeCsName = csvlines.First();
-            }
-
-            if (TypeCsName.StartsWith(isliststring2))
-            {
-                IsList = true;
-                var end = TypeCsName.IndexOf(isliststringend2);
-                var csv = TypeCsName.Substring(isliststring2.Length, end - isliststring2.Length);
-                var csvlines = csv.Split(new string[] { "," }, StringSplitOptions.None);
-                TypeCsName = csvlines.First();
-            }
-
-            DbSet = dbcontext.DbSetInfos
-                .FirstOrDefault(b => b.Entity.Type.FullName == TypeCsName);
-            Entity = DbSet?.Entity;
-
-
-            if (Entity == null)
-            {
-                TypeTsName = NameHelper.GetTsType(TypeCsName);
-                TypeCsSimpleName = NameHelper.GetSimpleCsType(TypeCsName);
-                if (TypeCsSimpleName == null || TypeTsName == null)
+                TypeCsName = entityProperty.Type.FullName;
+                if (TypeCsName.StartsWith(nulleblestring))
                 {
-                    // Is een enum?
+                    IsNulleble = true;
+                    var end = TypeCsName.IndexOf(nulleblestringend);
+                    var csv = TypeCsName.Substring(nulleblestring.Length, end - nulleblestring.Length);
+                    var csvlines = csv.Split(new string[] { "," }, StringSplitOptions.None);
+                    TypeCsName = csvlines.First();
                 }
+
+                var full = TypeCsName;
+                var split = full.Split(new char[] { '.' });
+                TypeCsName = split.Last();
+                TypeCsSimpleName = TypeCsName;
+                TypeTsName = TypeCsName;
+                TypeCsNamespace = full.Substring(0, full.Length - TypeCsName.Length - 1);
             }
             else
             {
-                TypeCsName = TypeCsFullName.Substring(
-                    Entity.Namespace.Length + 1,
-                    TypeCsFullName.Length - Entity.Namespace.Length - 1);
-                TypeCsSimpleName = TypeCsName;
-                TypeTsName = TypeCsName;
+                TypeCsName = entityProperty.Type.FullName;
+                if (TypeCsName.StartsWith(isliststring))
+                {
+                    IsList = true;
+                    var end = TypeCsName.IndexOf(isliststringend);
+                    var csv = TypeCsName.Substring(isliststring.Length, end - isliststring.Length);
+                    var csvlines = csv.Split(new string[] { "," }, StringSplitOptions.None);
+                    TypeCsName = csvlines.First();
+                }
+                if (TypeCsName.StartsWith(isliststring2))
+                {
+                    IsList = true;
+                    var end = TypeCsName.IndexOf(isliststringend2);
+                    var csv = TypeCsName.Substring(isliststring2.Length, end - isliststring2.Length);
+                    var csvlines = csv.Split(new string[] { "," }, StringSplitOptions.None);
+                    TypeCsName = csvlines.First();
+                }
+                if (TypeCsName.StartsWith(nulleblestring))
+                {
+                    IsNulleble = true;
+                    var end = TypeCsName.IndexOf(nulleblestringend);
+                    var csv = TypeCsName.Substring(nulleblestring.Length, end - nulleblestring.Length);
+                    var csvlines = csv.Split(new string[] { "," }, StringSplitOptions.None);
+                    TypeCsName = csvlines.First();
+                }
+
+                DbSet = dbcontext.DbSetInfos
+                    .FirstOrDefault(b => b.Entity.Type.FullName == TypeCsName);
+                Entity = DbSet?.Entity;
+
+                // Ken ik het type al?
+                if (Entity == null)
+                {
+                    TypeTsName = NameHelper.GetTsType(TypeCsName);
+                    TypeCsSimpleName = NameHelper.GetSimpleCsType(TypeCsName);
+                    if (TypeCsSimpleName == null || TypeTsName == null)
+                    {
+                        throw new Exception("Gaat niet goed...");
+                    }
+                }
+                else
+                {
+                    TypeCsNamespace = Entity.Namespace;
+                    TypeCsName = TypeCsFullName.Substring(
+                        TypeCsNamespace.Length + 1,
+                        TypeCsFullName.Length - Entity.Namespace.Length - 1);
+                    TypeCsSimpleName = TypeCsName;
+                    TypeTsName = TypeCsName;
+                }
             }
         }
 
@@ -88,12 +111,14 @@ namespace CodeGenerator.Entities.Extended
         public string TypeCsName { get; }
         public string TypeCsFullName { get; }
         public string TypeCsSimpleName { get; }
+        public string TypeCsNamespace { get; }
         public string TypeTsName { get; }
 
-        public bool IsKey {  get; }
-        public bool IsName { get; }
-        public bool IsNulleble { get; }
-        public bool IsList { get; }
+        public bool IsKey { get; } = false;
+        public bool IsName { get; } = false;
+        public bool IsNulleble { get; } = false;
+        public bool IsList { get; } = false;
+        public bool IsEnum { get; } = false;
 
         public DbSetInfo? DbSet { get; }
         public EntityInfo? Entity { get; }

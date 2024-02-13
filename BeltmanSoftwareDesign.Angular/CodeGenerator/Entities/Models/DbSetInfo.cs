@@ -6,13 +6,13 @@ namespace CodeGenerator.Entities.Models
     {
         public DbSetInfo(DbContextInfo dbContextInfo, PropertyInfo propertyInfo)
         {
-            _DbContextInfo = dbContextInfo;
+            DbContext = dbContextInfo;
 
             Name = propertyInfo.Name;
             Entity = new EntityInfo(this, propertyInfo.PropertyType);
         }
 
-        public DbContextInfo _DbContextInfo { get; }
+        public DbContextInfo DbContext { get; }
         public string Name { get; }
         public EntityInfo Entity { get; }
 

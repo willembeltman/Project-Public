@@ -9,6 +9,7 @@
                 case "System.Int64":
                 case "System.Int32":
                 case "System.Double":
+                case "System.Byte":
                     return "number";
                 case "System.String":
                 case "System.DateTime":
