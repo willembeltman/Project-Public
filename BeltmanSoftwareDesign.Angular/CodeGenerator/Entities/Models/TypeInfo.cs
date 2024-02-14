@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace CodeGenerator.Entities.Models
 {
-    public class EntityPropertyTypeInfo
+    public class TypeInfo
     {
         static string nulleblestring = "System.Nullable`1[[";
         static string nulleblestringend = "]]";
@@ -16,8 +16,12 @@ namespace CodeGenerator.Entities.Models
 
         static string isarraystringend = "[]";
 
-        public EntityPropertyTypeInfo(DbContextInfo dbContext, Type type)
+        public TypeInfo(PropertyInfo entityProperty, Type type)
         {
+            Parent = entityProperty;
+
+            var dbContext = entityProperty.Parent.Parent.Parent;
+
             if (type.FullName == null) throw new Exception();
 
             CsFullName = type.FullName;
@@ -85,19 +89,25 @@ namespace CodeGenerator.Entities.Models
                     if (Entity.Namespace == null) throw new Exception();
 
                     CsNamespace = Entity.Namespace;
-                    CsName = CsFullName.Substring(
+                    CsName = CsName.Substring(
                         CsNamespace.Length + 1,
-                        CsFullName.Length - Entity.Namespace.Length - 1);
+                        CsName.Length - Entity.Namespace.Length - 1);
                     CsSimpleName = CsName;
                     TsName = CsName;
+
+                    if (!IsList)
+                        Key = entityProperty.Parent.Properties.First(a => a.Name == entityProperty.Name + "Id");
                 }
             }
         }
+
+        public PropertyInfo Parent { get; }
 
         public string? CsNamespace { get; }
         public string CsName { get; }
         public string CsFullName { get; }
         public string CsSimpleName { get; }
+        public PropertyInfo? Key { get; }
         public string TsName { get; }
 
         public bool IsNulleble { get; } = false;
@@ -110,6 +120,34 @@ namespace CodeGenerator.Entities.Models
         public override string ToString()
         {
             return CsName;
+        }
+
+        internal bool HasProperty(EntityInfo[] constrainedEntities)
+        {
+            return Entity.Properties
+                .Any(a => constrainedEntities.Any(b => a.Type.Entity == b));
+        }
+
+        internal bool HasPropertyInParents(EntityInfo[] constrainedEntities)
+        {
+            return FindInParents(Entity, constrainedEntities);
+        }
+        private bool FindInParents(EntityInfo entity, EntityInfo[] entitiesToFind)
+        {
+            var constrainedProperties2 = entity.Properties
+                .Where(a => entitiesToFind.Any(b => a.Type.Entity == b))
+                .ToArray();
+            if (constrainedProperties2.Any()) return true;
+
+            var parents = entity.Properties
+                .Where(a => a.Type.Entity != null && !a.Type.IsList)
+                .ToArray();
+            foreach (var parent in parents)
+            {
+                var found = FindInParents(parent.Type.Entity, entitiesToFind);
+                if (found) return true;
+            }
+            return false;
         }
     }
 }

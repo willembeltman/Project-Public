@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using BeltmanSoftwareDesign.Data.Attributes;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BeltmanSoftwareDesign.Data.Entities
@@ -9,6 +10,7 @@ namespace BeltmanSoftwareDesign.Data.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long id { get; set; }
 
+        [Name]
         public string Name { get; set; } = string.Empty;
         public string Code { get; set; } = string.Empty;
 

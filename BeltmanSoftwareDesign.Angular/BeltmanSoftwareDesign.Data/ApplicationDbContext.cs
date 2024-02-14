@@ -31,7 +31,7 @@ namespace BeltmanSoftwareDesign.Data
         public DbSet<InvoiceProduct> InvoiceProducts { get; set; }
         public DbSet<InvoiceRow> InvoiceRows { get; set; }
         public DbSet<InvoiceType> InvoiceTypes { get; set; }
-        public DbSet<InvoiceWorkorderRate> InvoiceWorkorders { get; set; }
+        public DbSet<InvoiceWorkorderRate> InvoiceWorkorderRates { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<Project> Projects { get; set; }
         public DbSet<Rate> WorkRates { get; set; }

@@ -38,6 +38,29 @@ namespace CodeGenerator
 
                 foreach (var model in namespaceItem.Models)
                 {
+                    //import { InvoiceWorkorder } from "./invoiceworkorder";
+
+                    //export interface Invoice {
+                    //    id: number;
+                    //    invoiceTypeId: number | null;
+                    //    invoiceTypeName: string | null;
+                    //    projectId: number | null;
+                    //    projectName: string | null;
+                    //    customerId: number | null;
+                    //    customerName: string | null;
+                    //    taxRateId: number | null;
+                    //    taxRateName: string | null;
+                    //    taxRatePercentage: number | null;
+                    //    date: string;
+                    //    invoiceNumber: string | null;
+                    //    description: string | null;
+                    //    isPayedInCash: boolean;
+                    //    isPayed: boolean;
+                    //    datePayed: string | null;
+                    //    paymentCode: string | null;
+                    //    invoiceWorkorders: InvoiceWorkorder[];
+                    //}
+
                     var text = "";
                     var imports = model.Properties
                         .Select(a => a.Type)
@@ -45,30 +68,6 @@ namespace CodeGenerator
                         .GroupBy(a => a.TsName)
                         .Select(a => a.First())
                         .ToArray();
-
-                    //import { Injectable } from '@angular/core';
-                    //import { Observable } from 'rxjs';
-                    //import { ConstantsService } from '../services/constants.service';
-                    //import { HttpClient } from '@angular/common/http';
-                    //import { LoginResponse } from '../interfaces/response/loginresponse';
-                    //import { RegisterResponse } from '../interfaces/response/registerresponse';
-                    //import { LoginRequest } from '../interfaces/request/loginrequest';
-                    //import { RegisterRequest } from '../interfaces/request/registerrequest';
-
-                    //@Injectable({
-                    //  providedIn: 'root'
-                    //})
-                    //export class AuthService
-                    //{
-                    //  constructor(private constants:ConstantsService, private http:HttpClient) { }
-
-                    //  login(request: LoginRequest): Observable<LoginResponse> {
-                    //    return this.http.post<LoginResponse>(this.constants.apiUrl + '/auth/login', request);
-                    //  }
-                    //  register(request: RegisterRequest): Observable<RegisterResponse> {
-                    //    return this.http.post<RegisterResponse>(this.constants.apiUrl + '/auth/register', request);
-                    //  }
-                    //}
 
                     foreach (var type in imports)
                     {

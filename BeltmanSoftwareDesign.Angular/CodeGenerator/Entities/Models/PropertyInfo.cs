@@ -3,11 +3,11 @@ using System.Xml.Linq;
 
 namespace CodeGenerator.Entities.Models
 {
-    public class EntityPropertyInfo
+    public class PropertyInfo
     {
-        public EntityPropertyInfo(EntityInfo entityInfo, PropertyInfo propertyInfo)
+        public PropertyInfo(EntityInfo entityInfo, System.Reflection.PropertyInfo propertyInfo)
         {
-            Entity = entityInfo;
+            Parent = entityInfo;
             Name = propertyInfo.Name;
             IsKey = propertyInfo.CustomAttributes
                 .Any(a => a.AttributeType.Name == "KeyAttribute");
@@ -17,20 +17,20 @@ namespace CodeGenerator.Entities.Models
         }
 
 
-        public EntityInfo Entity { get; }
+        public EntityInfo Parent { get; }
         public string Name { get; }
         public bool IsKey { get; }
         public bool IsName { get; }
 
 
         private Type _TypeToLoad { get; }
-        private EntityPropertyTypeInfo _Type { get; set; }
-        public EntityPropertyTypeInfo Type
+        private TypeInfo _Type { get; set; }
+        public TypeInfo Type
         {
             get
             {
                 if (_Type == null)
-                    _Type = new EntityPropertyTypeInfo(Entity.DbSet.DbContext, _TypeToLoad);
+                    _Type = new TypeInfo(this, _TypeToLoad);
                 return _Type;
             }
         }

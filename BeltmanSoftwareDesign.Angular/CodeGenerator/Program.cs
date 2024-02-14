@@ -1,5 +1,4 @@
-﻿
-using CodeGenerator;
+﻿using CodeGenerator.Entities;
 
 //ApplicationContext app = new ApplicationContext();
 //app.Run(args);

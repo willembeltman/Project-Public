@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { PortalAccountComponent } from './manage.component';
+import { PortalAccountComponent } from './portalaccount.component';
 
 describe('ManageComponent', () => {
   let component: PortalAccountComponent;
