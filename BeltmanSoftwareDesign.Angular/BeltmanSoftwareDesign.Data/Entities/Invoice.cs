@@ -25,9 +25,10 @@ namespace BeltmanSoftwareDesign.Data.Entities
         public DateTime Date { get; set; }
         public bool IsPayedInCash { get; set; }
 
-        public virtual ICollection<InvoiceWorkorderRate> InvoiceWorkorders { get; set; } = new List<InvoiceWorkorderRate>();
         public virtual ICollection<InvoiceRow>? InvoiceRows { get; set; } = new List<InvoiceRow>();
+        public virtual ICollection<InvoiceWorkorder> InvoiceWorkorders { get; set; } = new List<InvoiceWorkorder>();
         public virtual ICollection<InvoiceProduct>? InvoiceProducts { get; set; } = new List<InvoiceProduct>();
+        public virtual ICollection<InvoicePrice>? InvoicePrices { get; set; } = new List<InvoicePrice>();
         public virtual ICollection<InvoiceAttachment>? InvoiceAttachments { get; set; } = new List<InvoiceAttachment>();
         public virtual ICollection<InvoiceEmail>? InvoiceEmails { get; set; } = new List<InvoiceEmail>();
         public virtual ICollection<InvoiceTransaction>? InvoiceTransactions { get; set; } = new List<InvoiceTransaction>();

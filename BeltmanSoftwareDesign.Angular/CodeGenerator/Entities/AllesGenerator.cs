@@ -1,6 +1,7 @@
 ﻿using BeltmanSoftwareDesign.Data;
 using CodeGenerator.Entities.Models;
 using CodeGenerator.Entities.Templates;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace CodeGenerator.Entities
 {
@@ -36,7 +37,9 @@ namespace CodeGenerator.Entities
                 "ClientDevice",
                 "ClientDeviceProperty",
                 "ClientIpAdress",
-                "CompanyUser"
+                "CompanyUser",
+                "Transaction",
+                "InvoiceTransaction"
             };
 
             // Properties available from the state, these will also not be generated
@@ -46,18 +49,103 @@ namespace CodeGenerator.Entities
             };
 
             // Alle entities die wij kunnen opvragen met een van de id's
-            var crudList = dbcontext.DbSetInfos
+            var mainEntitiesList = dbcontext.DbSetInfos
+                .Select(a => a.Entity)
                 .Where(a =>
                 {
-                    var a1 = a.Entity.Properties.Any(a => stateList.Any(b => b.Entity == a.Type.Entity));
-                    var b1 = stateList.Any(b => b.Entity == a.Entity);
-                    var c1 = excluded.Any(b => b == a.Entity.Name);
-                    return a1 && !b1 && !c1;
+                    var hasStateProperty = a.Properties.Any(a => !a.Type.IsList && stateList.Any(b => b.Entity == a.Type.Entity));
+                    var isNotStateProperty = !stateList.Any(b => b.Entity == a);
+                    var isNotExcluded = !excluded.Any(b => b == a.Name);
+                    return 
+                        hasStateProperty && 
+                        isNotStateProperty &&
+                        isNotExcluded;
                 })
                 .ToArray();
 
+            var propertiesEntitiesList =
+                mainEntitiesList
+                    .SelectMany(a => a.Properties)
+                    .Where(a => a.Type.Entity != null)
+                    .Select(a => a.Type.Entity)
+                    .OrderBy(a => a.Name)
+                    .Where(a =>
+                    {
+                        var notInCrudList = !mainEntitiesList.Contains(a);
+                        var noCrudListUnknownProperties = !a.Properties.Any(a => a.Type.Entity != null && !mainEntitiesList.Any(b => b == a.Type.Entity));
+                        var isNotStateProperty = !stateList.Any(b => b.Entity == a);
+                        var isNotExcluded = !excluded.Any(b => b == a.Name);
+                        return 
+                            notInCrudList && 
+                            noCrudListUnknownProperties && 
+                            isNotStateProperty && 
+                            isNotExcluded;
+                    })
+                    .GroupBy(a => a)
+                    .Select(a => a.Key)
+                    .ToArray();
+
+            var readonlyEntitiesList =
+                mainEntitiesList
+                    .SelectMany(a => a.Properties)
+                    .Where(a => a.Type.Entity != null)
+                    .Select(a => a.Type.Entity)
+                    .OrderBy(a => a.Name)
+                    .Where(a =>
+                    {
+                        var notInCrudList = !mainEntitiesList.Contains(a);
+                        var noCrudListUnknownProperties = a.Properties.Any(a => a.Type.Entity != null && !mainEntitiesList.Any(b => b == a.Type.Entity));
+                        var isNotStateProperty = !stateList.Any(b => b.Entity == a);
+                        var isNotExcluded = !excluded.Any(b => b == a.Name);
+                        return
+                            notInCrudList &&
+                            noCrudListUnknownProperties &&
+                            isNotStateProperty &&
+                            isNotExcluded;
+                    })
+                    .GroupBy(a => a)
+                    .Select(a => a.Key)
+                    .ToArray();
+
+            var attachmentEntitiesList = propertiesEntitiesList
+                .Where(a => a.IsStorageFile)
+                .ToArray();
+
+            var extendedAttachmentEntitiesList = attachmentEntitiesList
+                .Where(a => a.Properties.Where(a => a.Type.Entity != null).Count() > 1)
+                .ToArray();
+            if (extendedAttachmentEntitiesList.Any())
+                throw new NotImplementedException("Dat ondersteun ik niet!");
+
+            var uitgebreideKoppelList = propertiesEntitiesList
+                .Where(a => !attachmentEntitiesList.Contains(a))
+                .Where(a =>
+                    a.Properties.Where(a => a.Type.Entity != null).Count() > 2 ||
+                    a.Properties.Where(a => a.Type.Entity == null).Count() > 3)
+                .ToArray();
+
+            var simpeleKoppelList = propertiesEntitiesList
+                .Where(a => !attachmentEntitiesList.Contains(a))
+                .Where(a => !uitgebreideKoppelList.Contains(a))
+                .Where(a => a.Properties.Where(a => a.Type.Entity != null).Count() == 2)
+                .ToArray();
+
+            var overgeblevenKoppelList = propertiesEntitiesList
+                .Where(a => !attachmentEntitiesList.Contains(a))
+                .Where(a => !uitgebreideKoppelList.Contains(a))
+                .Where(a => !simpeleKoppelList.Contains(a))
+                .ToArray();
+            if (overgeblevenKoppelList.Any())
+                throw new NotImplementedException("Dat ondersteun ik niet!");
+
+            var dtos = mainEntitiesList
+                .Concat(propertiesEntitiesList)
+                .Concat(readonlyEntitiesList)
+                .OrderBy(a => a.Name)
+                .ToArray();
+
             // C# Jsons voor alles
-            foreach (var entity in dbcontext.DbSetInfos)
+            foreach (var entity in dtos)
             {
                 var template = new CsJsonTemplate(entity, csharp_shared_directory, csharp_shared_namespace, stateList);
                 var content = template.GetContent();
@@ -66,22 +154,117 @@ namespace CodeGenerator.Entities
             }
 
             // C# RequestJsons
-            foreach (var entity in crudList)
+            foreach (var entity in dtos)
             {
+                var isReadonly = readonlyEntitiesList.Contains(entity);
+
                 // C# List
+                {
+                    var template = new CsListRequestJsonTemplate(entity, csharp_shared_directory, csharp_shared_namespace, stateList, uitgebreideKoppelList, simpeleKoppelList, attachmentEntitiesList);
+                    var content = template.GetContent();
+                    var filename = template.GetFullName();
+                    WriteToFile(filename, content);
+                }
 
                 // C# Create
+                if (!isReadonly)
+                {
+                    var template = new CsCreateRequestJsonTemplate(entity, csharp_shared_directory, csharp_shared_namespace, stateList, uitgebreideKoppelList, simpeleKoppelList, attachmentEntitiesList);
+                    var content = template.GetContent();
+                    var filename = template.GetFullName();
+                    WriteToFile(filename, content);
+                }
 
                 // C# Read
+                {
+                    var template = new CsReadRequestJsonTemplate(entity, csharp_shared_directory, csharp_shared_namespace, stateList, uitgebreideKoppelList, simpeleKoppelList, attachmentEntitiesList);
+                    var content = template.GetContent();
+                    var filename = template.GetFullName();
+                    WriteToFile(filename, content);
+                }
 
                 // C# Update
+                if (!isReadonly)
+                {
+                    var template = new CsUpdateRequestJsonTemplate(entity, csharp_shared_directory, csharp_shared_namespace, stateList, uitgebreideKoppelList, simpeleKoppelList, attachmentEntitiesList);
+                    var content = template.GetContent();
+                    var filename = template.GetFullName();
+                    WriteToFile(filename, content);
+                }
 
                 // C# Delete
+                if (!isReadonly)
+                {
+                    var template = new CsDeleteRequestJsonTemplate(entity, csharp_shared_directory, csharp_shared_namespace, stateList, uitgebreideKoppelList, simpeleKoppelList, attachmentEntitiesList);
+                    var content = template.GetContent();
+                    var filename = template.GetFullName();
+                    WriteToFile(filename, content);
+                }
             }
 
             // C# ResponseJsons
-            foreach (var entity in crudList)
+            foreach (var entity in dtos)
             {
+                var isReadonly = readonlyEntitiesList.Contains(entity);
+
+                // C# List
+                {
+                    var template = new CsListResponseJsonTemplate(entity, csharp_shared_directory, csharp_shared_namespace, stateList, uitgebreideKoppelList, simpeleKoppelList, attachmentEntitiesList);
+                    var content = template.GetContent();
+                    var filename = template.GetFullName();
+                    WriteToFile(filename, content);
+                }
+
+                // C# Create
+                if (!isReadonly)
+                {
+                    var template = new CsCreateResponseJsonTemplate(entity, csharp_shared_directory, csharp_shared_namespace, stateList, uitgebreideKoppelList, simpeleKoppelList, attachmentEntitiesList);
+                    var content = template.GetContent();
+                    var filename = template.GetFullName();
+                    WriteToFile(filename, content);
+                }
+
+                // C# Read
+                {
+                    var template = new CsReadResponseJsonTemplate(entity, csharp_shared_directory, csharp_shared_namespace, stateList, uitgebreideKoppelList, simpeleKoppelList, attachmentEntitiesList);
+                    var content = template.GetContent();
+                    var filename = template.GetFullName();
+                    WriteToFile(filename, content);
+                }
+
+                // C# Update
+                if (!isReadonly)
+                {
+                    var template = new CsUpdateResponseJsonTemplate(entity, csharp_shared_directory, csharp_shared_namespace, stateList, uitgebreideKoppelList, simpeleKoppelList, attachmentEntitiesList);
+                    var content = template.GetContent();
+                    var filename = template.GetFullName();
+                    WriteToFile(filename, content);
+                }
+
+                // C# Delete
+                if (!isReadonly)
+                {
+                    var template = new CsDeleteResponseJsonTemplate(entity, csharp_shared_directory, csharp_shared_namespace, stateList, uitgebreideKoppelList, simpeleKoppelList, attachmentEntitiesList);
+                    var content = template.GetContent();
+                    var filename = template.GetFullName();
+                    WriteToFile(filename, content);
+                }
+            }
+
+            // TS Json Interfaces
+            foreach (var entity in dtos)
+            {
+                var template = new TsInterfaceTemplate(entity, angular_app_directory);
+                var content = template.GetContent();
+                var filename = template.GetFullName();
+                WriteToFile(filename, content);
+            }
+
+            // TS RequestJsons Interfaces
+            foreach (var entity in dtos)
+            {
+                var isReadonly = readonlyEntitiesList.Contains(entity);
+
                 // C# List
 
                 // C# Create
@@ -93,18 +276,21 @@ namespace CodeGenerator.Entities
                 // C# Delete
             }
 
-            // TS Interfaces voor alles
-            //foreach (var entity in dbcontext.DbSetInfos)
-            //{
-            //    var template = new TsInterfaceTemplate(entity);
-            //    var content = template.GetContent();
-            //    var filename = template.GetFullName(angular_app_directory, TsFolder, entity.Name);
-            //    WriteToFile(filename, content);
-            //}
+            // TS ResponseJsons Interfaces
+            foreach (var entity in dtos)
+            {
+                var isReadonly = readonlyEntitiesList.Contains(entity);
 
-            // TS RequestJsons
+                // C# List
 
-            // TS ResponseJsons
+                // C# Create
+
+                // C# Read
+
+                // C# Update
+
+                // C# Delete
+            }
 
             // C# Services
 
@@ -112,10 +298,6 @@ namespace CodeGenerator.Entities
 
             // TS Services
 
-            // List for components
-            var list2 = dbcontext.DbSetInfos
-                .Where(a => a.Entity.Properties.Any(a => stateList.Any(b => b.Entity ==  a.Type.Entity)))
-                .ToArray();
 
             // List TS components
 

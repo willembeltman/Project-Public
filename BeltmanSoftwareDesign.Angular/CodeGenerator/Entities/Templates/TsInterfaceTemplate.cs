@@ -2,17 +2,15 @@
 
 namespace CodeGenerator.Entities.Templates
 {
-    internal class TsInterfaceTemplate
+    internal class TsInterfaceTemplate : ITemplate
     {
-        private DbSetInfo DbSet { get; }
         public EntityInfo Entity { get; }
-        public string NamespaceName { get; }
+        public string Angular_app_directory { get; }
 
-        public TsInterfaceTemplate(DbSetInfo dbSet, string namespaceName = "BeltmanSoftwareDesign.Shared.Jsons")
+        public TsInterfaceTemplate(EntityInfo entity, string angular_app_directory) // = "BeltmanSoftwareDesign.Shared.Jsons")
         {
-            DbSet = dbSet;
-            Entity = dbSet.Entity;
-            NamespaceName = namespaceName;
+            Entity = entity;
+            Angular_app_directory = angular_app_directory;
         }
 
         public string GetContent()
@@ -61,9 +59,9 @@ namespace CodeGenerator.Entities.Templates
             return text;
         }
 
-        public string GetFullName(string angular_app_directory, string TsFolder, string entityName)
+        public string GetFullName()
         {
-            return angular_app_directory + "\\" + TsFolder.Replace("/", "\\") + "\\" + entityName.ToLower() + ".ts";
+            return Angular_app_directory + "\\Interfaces\\" + Entity.Name.ToLower() + ".ts";
         }
     }
 }

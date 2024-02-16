@@ -57,8 +57,8 @@ namespace BeltmanSoftwareDesign.Data.Entities
         public virtual ICollection<Setting>? Settings { get; set; }
         public virtual ICollection<Residence>? Residences { get; set; }
         public virtual ICollection<TrafficRegistration>? TrafficRegistrations { get; set; }
-
-        //public virtual ICollection<Document>? Documents { get; set; }
+        public virtual ICollection<Document>? Documents { get; set; }
+        public virtual ICollection<DocumentType>? DocumentTypes { get; set; }
         //public virtual ICollection<Email>? Emails { get; set; }
     }
 }

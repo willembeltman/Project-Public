@@ -5,7 +5,7 @@ namespace BeltmanSoftwareDesign.Data.Factories
 {
     public class InvoiceWorkorderFactory 
     {
-        public Shared.Jsons.InvoiceWorkorder Convert(Entities.InvoiceWorkorderRate a)
+        public Shared.Jsons.InvoiceWorkorder Convert(Entities.InvoiceWorkorder a)
         {
             return new Shared.Jsons.InvoiceWorkorder()
             {

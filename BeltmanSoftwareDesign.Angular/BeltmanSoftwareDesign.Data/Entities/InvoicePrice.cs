@@ -1,10 +1,9 @@
-﻿using Newtonsoft.Json;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BeltmanSoftwareDesign.Data.Entities
 {
-    public class InvoiceWorkorderRate
+    public class InvoicePrice
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -12,10 +11,10 @@ namespace BeltmanSoftwareDesign.Data.Entities
 
         public long? InvoiceId { get; set; }
         public virtual Invoice? Invoice { get; set; }
-        public long? WorkorderId { get; set; }
-        public virtual Workorder? Workorder { get; set; }
-        public long? RateId { get; set; }
-        public virtual Rate? Rate { get; set; }
 
+        public long? TaxRateId { get; set; }
+        public virtual TaxRate? TaxRate { get; set; }
+
+        public double Price { get; set; }
     }
 }

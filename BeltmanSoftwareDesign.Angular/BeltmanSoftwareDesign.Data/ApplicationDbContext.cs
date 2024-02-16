@@ -24,7 +24,7 @@ namespace BeltmanSoftwareDesign.Data
         public DbSet<Expense> Expenses { get; set; }
         public DbSet<ExpenseAttachment> ExpenseAttachments { get; set; }
         public DbSet<ExpenseProduct> ExpenseProducts { get; set; }
-        public DbSet<ExpenseTaxRatePrice> ExpenseTaxRatePrices { get; set; }
+        public DbSet<ExpensePrice> ExpensePrices { get; set; }
         public DbSet<ExpenseType> ExpenseTypes { get; set; }
         public DbSet<Invoice> Invoices { get; set; }
         public DbSet<InvoiceAttachment> InvoiceAttachments { get; set; }
@@ -33,9 +33,10 @@ namespace BeltmanSoftwareDesign.Data
         public DbSet<InvoiceRow> InvoiceRows { get; set; }
         public DbSet<InvoiceType> InvoiceTypes { get; set; }
         public DbSet<InvoiceTransaction> InvoiceTransactions { get; set; }
-        public DbSet<InvoiceWorkorderRate> InvoiceWorkorderRates { get; set; }
+        public DbSet<InvoiceWorkorder> InvoiceWorkorders { get; set; }
+        public DbSet<InvoicePrice> InvoicePrices { get; set; }
         public DbSet<Product> Products { get; set; }
-        public DbSet<ProductTaxRatePrice> ProductTaxRatePrices { get; set; }
+        public DbSet<ProductPrice> ProductPrices { get; set; }
         public DbSet<Project> Projects { get; set; }
         public DbSet<Rate> Rates { get; set; }
         public DbSet<Residence> Residences { get; set; }
@@ -135,19 +136,19 @@ namespace BeltmanSoftwareDesign.Data
                 .HasForeignKey(p => p.CompanyId)
                 .OnDelete(DeleteBehavior.NoAction);
 
-            modelBuilder.Entity<InvoiceWorkorderRate>()
+            modelBuilder.Entity<InvoiceWorkorder>()
                 .HasOne(u => u.Workorder)
                 .WithMany(c => c.InvoiceWorkorders)
                 .HasForeignKey(p => p.WorkorderId)
                 .OnDelete(DeleteBehavior.NoAction);
 
-            modelBuilder.Entity<InvoiceWorkorderRate>()
+            modelBuilder.Entity<InvoiceWorkorder>()
                 .HasOne(u => u.Invoice)
                 .WithMany(c => c.InvoiceWorkorders)
                 .HasForeignKey(p => p.InvoiceId)
                 .OnDelete(DeleteBehavior.NoAction);
 
-            modelBuilder.Entity<InvoiceWorkorderRate>()
+            modelBuilder.Entity<InvoiceWorkorder>()
                 .HasOne(u => u.Rate)
                 .WithMany(c => c.InvoiceWorkorders)
                 .HasForeignKey(p => p.RateId)
@@ -382,15 +383,15 @@ namespace BeltmanSoftwareDesign.Data
                 .HasForeignKey(p => p.InvoiceId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<ExpenseTaxRatePrice>()
+            modelBuilder.Entity<ExpensePrice>()
                 .HasOne(u => u.Expense)
-                .WithMany(c => c.ExpenseTaxRatePrices)
+                .WithMany(c => c.ExpensePrices)
                 .HasForeignKey(p => p.ExpenseId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<ExpenseTaxRatePrice>()
+            modelBuilder.Entity<ExpensePrice>()
                 .HasOne(u => u.TaxRate)
-                .WithMany(c => c.ExpenseTaxRatePrices)
+                .WithMany(c => c.ExpensePrices)
                 .HasForeignKey(p => p.TaxRateId)
                 .OnDelete(DeleteBehavior.Cascade);
 
@@ -401,25 +402,25 @@ namespace BeltmanSoftwareDesign.Data
                 .HasForeignKey(p => p.TaxRateId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<ProductTaxRatePrice>()
+            modelBuilder.Entity<ProductPrice>()
                 .HasOne(u => u.Product)
-                .WithMany(c => c.ProductTaxRatePrices)
+                .WithMany(c => c.ProductPrices)
                 .HasForeignKey(p => p.ProductId)
                 .OnDelete(DeleteBehavior.Cascade);
-            modelBuilder.Entity<ProductTaxRatePrice>()
+            modelBuilder.Entity<ProductPrice>()
                 .HasOne(u => u.TaxRate)
-                .WithMany(c => c.ProductTaxRatePrices)
+                .WithMany(c => c.ProductPrices)
                 .HasForeignKey(p => p.TaxRateId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<ExpenseTaxRatePrice>()
+            modelBuilder.Entity<ExpensePrice>()
                 .HasOne(u => u.Expense)
-                .WithMany(c => c.ExpenseTaxRatePrices)
+                .WithMany(c => c.ExpensePrices)
                 .HasForeignKey(p => p.ExpenseId)
                 .OnDelete(DeleteBehavior.Cascade);
-            modelBuilder.Entity<ExpenseTaxRatePrice>()
+            modelBuilder.Entity<ExpensePrice>()
                 .HasOne(u => u.TaxRate)
-                .WithMany(c => c.ExpenseTaxRatePrices)
+                .WithMany(c => c.ExpensePrices)
                 .HasForeignKey(p => p.TaxRateId)
                 .OnDelete(DeleteBehavior.Cascade);
 
@@ -479,6 +480,19 @@ namespace BeltmanSoftwareDesign.Data
                 .HasForeignKey(p => p.InvoiceId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+
+            modelBuilder.Entity<InvoicePrice>()
+                .HasOne(u => u.TaxRate)
+                .WithMany(c => c.InvoicePrices)
+                .HasForeignKey(p => p.TaxRateId)
+                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<InvoicePrice>()
+                .HasOne(u => u.Invoice)
+                .WithMany(c => c.InvoicePrices)
+                .HasForeignKey(p => p.InvoiceId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+
             modelBuilder.Entity<Residence>()
                 .HasOne(u => u.Company)
                 .WithMany(c => c.Residences)
@@ -489,6 +503,43 @@ namespace BeltmanSoftwareDesign.Data
                 .HasOne(u => u.Company)
                 .WithMany(c => c.TrafficRegistrations)
                 .HasForeignKey(p => p.CompanyId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Document>()
+                .HasOne(u => u.Company)
+                .WithMany(c => c.Documents)
+                .HasForeignKey(p => p.CompanyId)
+                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Document>()
+                .HasOne(u => u.DocumentType)
+                .WithMany(c => c.Documents)
+                .HasForeignKey(p => p.DocumentTypeId)
+                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<DocumentType>()
+                .HasOne(u => u.Company)
+                .WithMany(c => c.DocumentTypes)
+                .HasForeignKey(p => p.CompanyId)
+                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Document>()
+                .HasOne(u => u.Project)
+                .WithMany(c => c.Documents)
+                .HasForeignKey(p => p.ProjectId)
+                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Document>()
+                .HasOne(u => u.Supplier)
+                .WithMany(c => c.Documents)
+                .HasForeignKey(p => p.SupplierId)
+                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Document>()
+                .HasOne(u => u.Customer)
+                .WithMany(c => c.Documents)
+                .HasForeignKey(p => p.CustomerId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<DocumentAttachment>()
+                .HasOne(u => u.Document)
+                .WithMany(c => c.DocumentAttachments)
+                .HasForeignKey(p => p.DocumentId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             base.OnModelCreating(modelBuilder);

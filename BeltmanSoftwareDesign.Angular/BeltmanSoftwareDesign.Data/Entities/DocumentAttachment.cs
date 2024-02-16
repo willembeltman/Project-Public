@@ -11,7 +11,7 @@ namespace BeltmanSoftwareDesign.Data.Entities
         public long id { get; set; }
 
         public long? DocumentId { get; set; }
-        //public virtual Document Document { get; set; }
+        public virtual Document? Document { get; set; }
 
         public string Description { get; set; }
 

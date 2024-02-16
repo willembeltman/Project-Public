@@ -23,7 +23,7 @@ namespace BeltmanSoftwareDesign.Data.Entities
         public string? Description { get; set; }
         public double? AmountUur { get; set; }
 
-        public virtual ICollection<InvoiceWorkorderRate>? InvoiceWorkorders { get; set; }
+        public virtual ICollection<InvoiceWorkorder>? InvoiceWorkorders { get; set; }
         public virtual ICollection<WorkorderAttachment>? WorkorderAttachments { get; set; }
 
     }

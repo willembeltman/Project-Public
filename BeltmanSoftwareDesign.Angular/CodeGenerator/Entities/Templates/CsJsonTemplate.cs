@@ -2,18 +2,16 @@
 
 namespace CodeGenerator.Entities.Templates
 {
-    internal class CsJsonTemplate
+    internal class CsJsonTemplate : ITemplate
     {
-        private DbSetInfo DbSet { get; }
         public EntityInfo Entity { get; }
         public string NamespaceName { get; }
         public string Directory { get; }
         public ConstrainedProperty[] ConstrainedProperties { get; }
 
-        public CsJsonTemplate(DbSetInfo dbSet, string directory, string @namespace, ConstrainedProperty[] constrainedProperties)
+        public CsJsonTemplate(EntityInfo entity, string directory, string @namespace, ConstrainedProperty[] constrainedProperties)
         {
-            DbSet = dbSet;
-            Entity = dbSet.Entity;
+            Entity = entity;
             NamespaceName = $"{@namespace}.Jsons";
             Directory = directory + @"\Jsons";
             ConstrainedProperties = constrainedProperties;

@@ -19,8 +19,9 @@ namespace BeltmanSoftwareDesign.Data.Entities
         public double Percentage { get; set; }
 
         public virtual ICollection<Rate>? Rates { get; set; }
-        public virtual ICollection<ExpenseTaxRatePrice>? ExpenseTaxRatePrices { get; set; }
-        public virtual ICollection<ProductTaxRatePrice>? ProductTaxRatePrices { get; set; }
+        public virtual ICollection<ExpensePrice>? ExpensePrices { get; set; }
+        public virtual ICollection<ProductPrice>? ProductPrices { get; set; }
+        public virtual ICollection<InvoicePrice>? InvoicePrices { get; set; }
         public virtual ICollection<InvoiceRow>? InvoiceRows { get; set; }
     }
 }

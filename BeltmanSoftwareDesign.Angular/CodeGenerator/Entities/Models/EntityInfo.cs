@@ -13,6 +13,10 @@ namespace CodeGenerator.Entities.Models
             FullName = Type.FullName;
             Namespace = Type.Namespace;
 
+            var interfaces = Type.GetInterfaces();
+            IsStorageFile = interfaces
+                .Any(a => a.Name == "IStorageFile");
+
             Properties = Type
                 .GetProperties()
                 .Where(a => a.IsPubliclyReadable())
@@ -25,7 +29,7 @@ namespace CodeGenerator.Entities.Models
         public string Name { get; }
         public string FullName { get; }
         public string Namespace { get; }
-
+        public bool IsStorageFile { get; }
         public PropertyInfo[] Properties { get; }
 
 

@@ -10,20 +10,21 @@ namespace BeltmanSoftwareDesign.Data.Entities
         public long id { get; set; }
 
         public long CompanyId { get; set; }
-        //public virtual Company? Company { get; set; }
+        public virtual Company? Company { get; set; }
 
         public long? DocumentTypeId { get; set; }
-        //public virtual DocumentType DocumentType { get; set; }
+        public virtual DocumentType? DocumentType { get; set; }
         public long? ProjectId { get; set; }
-        //public virtual Project Project { get; set; }
+        public virtual Project? Project { get; set; }
         public long? SupplierId { get; set; }
-        //public virtual Supplier Supplier { get; set; }
+        public virtual Supplier? Supplier { get; set; }
         public long? CustomerId { get; set; }
-        //public virtual Customer Customer { get; set; }
+        public virtual Customer? Customer { get; set; }
 
         public DateTime Date { get; set; }
-        public string Description { get; set; }
-        //public virtual ICollection<DocumentAttachment> DocumentAttachments { get; set; } = new List<DocumentAttachment>();
+        public string Name { get; set; }
+
+        public virtual ICollection<DocumentAttachment>? DocumentAttachments { get; set; } = new List<DocumentAttachment>();
 
         public byte GetQuarter()
         {

@@ -14,5 +14,6 @@ namespace BeltmanSoftwareDesign.Data.Entities
         public long ProductId { get; set; }
         public virtual Invoice? Invoice { get; set; }
         
+        public int Amount { get; set; }
     }
 }

@@ -27,7 +27,7 @@ namespace BeltmanSoftwareDesign.Data.Entities
         public double Restwaarde { get; set; }
 
         public virtual ICollection<ExpenseAttachment>? ExpenseAttachments { get; set; } = new List<ExpenseAttachment>();
-        public virtual ICollection<ExpenseTaxRatePrice>? ExpenseTaxRatePrices { get; set; } = new List<ExpenseTaxRatePrice>();
+        public virtual ICollection<ExpensePrice>? ExpensePrices { get; set; } = new List<ExpensePrice>();
         public virtual ICollection<ExpenseProduct>? ExpenseProducts { get; set; } = new List<ExpenseProduct>();
         public virtual ICollection<BankStatementExpense>? BankStatementExpenses { get; set; } = new List<BankStatementExpense>();
 

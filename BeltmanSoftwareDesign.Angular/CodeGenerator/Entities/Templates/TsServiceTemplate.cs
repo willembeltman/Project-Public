@@ -2,21 +2,17 @@
 
 namespace CodeGenerator.Entities.Templates
 {
-    internal class TsServiceTemplate
+    internal class TsServiceTemplate : ITemplate
     {
         private DbSetInfo DbSet { get; }
         public EntityInfo Entity { get; }
         public string NamespaceName { get; }
-
-        private readonly string huidigeTsFolder;
 
         public TsServiceTemplate(DbSetInfo dbSet, string namespaceName = "BeltmanSoftwareDesign.Shared.Jsons")
         {
             DbSet = dbSet;
             Entity = dbSet.Entity;
             NamespaceName = namespaceName;
-
-            huidigeTsFolder = "";
         }
 
         public string GetContent()
@@ -75,6 +71,11 @@ namespace CodeGenerator.Entities.Templates
             //text += Environment.NewLine + "}";
 
             return text;
+        }
+
+        public string GetFullName()
+        {
+            throw new NotImplementedException();
         }
     }
 }

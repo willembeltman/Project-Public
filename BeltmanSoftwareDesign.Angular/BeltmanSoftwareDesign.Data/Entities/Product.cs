@@ -17,7 +17,7 @@ namespace BeltmanSoftwareDesign.Data.Entities
         public string Name { get; set; }
         public string Description { get; set; }
 
-        public virtual ICollection<ProductTaxRatePrice>? ProductTaxRatePrices { get; set; }
+        public virtual ICollection<ProductPrice>? ProductPrices { get; set; }
         public virtual ICollection<InvoiceProduct>? InvoiceProducts { get; set; }
         public virtual ICollection<ExpenseProduct>? ExpenseProducts { get; set; }
     }
