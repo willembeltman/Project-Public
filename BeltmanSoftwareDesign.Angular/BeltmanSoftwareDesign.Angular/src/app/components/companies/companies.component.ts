@@ -4,8 +4,8 @@ import { NgFor, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink, RouterOutlet } from '@angular/router';
 import { StateService } from '../../services/state.service';
-import { UsersService } from '../../apiservices/users.service';
-import { CompaniesService } from '../../apiservices/companies.service';
+import { CompanyService } from '../../apiservices/company.service';
+import { UserService } from '../../apiservices/user.service';
 
 @Component({
   selector: 'app-companies',
@@ -21,9 +21,9 @@ export class CompaniesComponent implements OnInit {
   @Output() updateEvent = new EventEmitter();
   
   constructor(
-    private companiesService: CompaniesService,
+    private companyService: CompanyService,
     public stateService: StateService,
-    private userService: UsersService) { }
+    private userService: UserService) { }
 
   getCurrentCompanyId() {
     const state = this.stateService.getState();
@@ -32,7 +32,7 @@ export class CompaniesComponent implements OnInit {
 
   ngOnInit(): void {
     const state = this.stateService.getState();
-    this.companiesService
+    this.companyService
       .list({
         bearerId: state?.bearerId ?? null,
         currentCompanyId: state?.currentCompany?.id ?? null,

@@ -6,33 +6,33 @@ namespace BeltmanSoftwareDesign.Api.Controllers
 {
     [ApiController]
     [Route("[controller]/[action]")]
-    public class CustomersController : BaseControllerBase
+    public class CustomerController : BaseControllerBase
     {
-        public CustomersController(ICustomersService customersService) 
+        public CustomerController(ICustomerService customerService) 
         {
-            CustomersService = customersService;
+            CustomerService = customerService;
         }
 
-        public ICustomersService CustomersService { get; }
+        public ICustomerService CustomerService { get; }
 
         [HttpPost]
         public CustomerCreateResponse Create(CustomerCreateRequest request) 
-            => CustomersService.Create(request, IpAddress, Headers);
+            => CustomerService.Create(request, IpAddress, Headers);
 
         [HttpPost]
         public CustomerReadResponse Read(CustomerReadRequest request) 
-            => CustomersService.Read(request, IpAddress, Headers);
+            => CustomerService.Read(request, IpAddress, Headers);
 
         [HttpPost]
         public CustomerUpdateResponse Update(CustomerUpdateRequest request) 
-            => CustomersService.Update(request, IpAddress, Headers);
+            => CustomerService.Update(request, IpAddress, Headers);
 
         [HttpPost]
         public CustomerDeleteResponse Delete(CustomerDeleteRequest request) 
-            => CustomersService.Delete(request, IpAddress, Headers);
+            => CustomerService.Delete(request, IpAddress, Headers);
 
         [HttpPost]
         public CustomerListResponse List(CustomerListRequest request) 
-            => CustomersService.List(request, IpAddress, Headers);
+            => CustomerService.List(request, IpAddress, Headers);
     }
 }

@@ -6,17 +6,17 @@ namespace BeltmanSoftwareDesign.Api.Controllers
 {
     [ApiController]
     [Route("[controller]/[action]")]
-    public class CountriesController : BaseControllerBase
+    public class CountryController : BaseControllerBase
     {
-        public CountriesController(ICountriesService countriesService) 
+        public CountryController(ICountryService countryService) 
         {
-            CountriesService = countriesService;
+            CountryService = countryService;
         }
 
-        public ICountriesService CountriesService { get; }
+        public ICountryService CountryService { get; }
 
         [HttpPost]
         public CountryListResponse List(CountryListRequest request) 
-            => CountriesService.List(request, IpAddress, Headers);
+            => CountryService.List(request, IpAddress, Headers);
     }
 }

@@ -6,17 +6,18 @@ using BeltmanSoftwareDesign.Shared.Attributes;
 using BeltmanSoftwareDesign.Shared.RequestJsons;
 using BeltmanSoftwareDesign.Shared.ResponseJsons;
 using BeltmanSoftwareDesign.StorageBlob.Business.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace BeltmanSoftwareDesign.Business.Services
 {
-    public class WorkordersService : IWorkordersService
+    public class WorkorderService : IWorkorderService
     {
         ApplicationDbContext db { get; }
         IStorageFileService StorageFileService { get; }
         IAuthenticationService AuthenticationService { get; }
         WorkorderFactory WorkorderFactory { get; }
 
-        public WorkordersService(
+        public WorkorderService(
             ApplicationDbContext db,
             IStorageFileService storageFileService,
             IAuthenticationService authenticationService)
@@ -27,15 +28,9 @@ namespace BeltmanSoftwareDesign.Business.Services
             WorkorderFactory = new WorkorderFactory(storageFileService);
         }
 
-        [TsServiceMethod("Workorders", "Create")]
+        [TsServiceMethod("Workorder", "Create")]
         public WorkorderCreateResponse Create(WorkorderCreateRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
         {
-            if (ipAddress == null)
-                return new WorkorderCreateResponse()
-                {
-                    ErrorAuthentication = true
-                };
-
             var authentication = AuthenticationService.GetState(
                 request.BearerId, request.CurrentCompanyId, ipAddress, headers);
             if (!authentication.Success)
@@ -47,16 +42,8 @@ namespace BeltmanSoftwareDesign.Business.Services
             if (authentication.DbCurrentCompany == null)
                 throw new Exception("Current company not chosen or doesn't exist, please create a company or select one.");
 
-            if (request.Workorder.CompanyId == 0)
-                request.Workorder.CompanyId = authentication.DbCurrentCompany.id;
-
-            if (request.Workorder.CompanyId != authentication.DbCurrentCompany.id)
-                return new WorkorderCreateResponse()
-                {
-                    ErrorWrongCompany = true
-                };
-
             var dbworkorder = WorkorderFactory.Convert(request.Workorder);
+            dbworkorder.CompanyId = authentication.DbCurrentCompany.id;
             db.Workorders.Add(dbworkorder);
             db.SaveChanges();
 
@@ -68,15 +55,9 @@ namespace BeltmanSoftwareDesign.Business.Services
             };
         }
 
-        [TsServiceMethod("Workorders", "Read")]
+        [TsServiceMethod("Workorder", "Read")]
         public WorkorderReadResponse Read(WorkorderReadRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
         {
-            if (ipAddress == null)
-                return new WorkorderReadResponse()
-                {
-                    ErrorAuthentication = true
-                };
-
             var authentication = AuthenticationService.GetState(
                 request.BearerId, request.CurrentCompanyId, ipAddress, headers);
             if (!authentication.Success)
@@ -88,17 +69,25 @@ namespace BeltmanSoftwareDesign.Business.Services
             if (authentication.DbCurrentCompany == null)
                 throw new Exception("Current company not chosen or doesn't exist, please create a company or select one.");
 
-            var dbworkorder = db.Workorders.FirstOrDefault(a => a.id == request.WorkorderId);
+            var dbworkorder = db.Workorders
+                .Include(a => a.Company)
+                .Include(a => a.Customer)
+                .Include(a => a.Project)
+                .Include(a => a.InvoiceWorkorders)
+                .Include(a => a.WorkorderAttachments)
+                .FirstOrDefault(a => a.id == request.WorkorderId);
             if (dbworkorder == null)
                 return new WorkorderReadResponse()
                 {
-                    ErrorItemNotFound = true
+                    ErrorItemNotFound = true,
+                    State = authentication
                 };
 
             if (dbworkorder.CompanyId != authentication.DbCurrentCompany.id)
                 return new WorkorderReadResponse()
                 {
-                    ErrorWrongCompany = true
+                    ErrorWrongCompany = true,
+                    State = authentication
                 };
 
             return new WorkorderReadResponse()
@@ -109,15 +98,9 @@ namespace BeltmanSoftwareDesign.Business.Services
             };
         }
 
-        [TsServiceMethod("Workorders", "Update")]
+        [TsServiceMethod("Workorder", "Update")]
         public WorkorderUpdateResponse Update(WorkorderUpdateRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
         {
-            if (ipAddress == null)
-                return new WorkorderUpdateResponse()
-                {
-                    ErrorAuthentication = true
-                };
-
             var authentication = AuthenticationService.GetState(
                 request.BearerId, request.CurrentCompanyId, ipAddress, headers);
             if (!authentication.Success)
@@ -129,17 +112,25 @@ namespace BeltmanSoftwareDesign.Business.Services
             if (authentication.DbCurrentCompany == null)
                 throw new Exception("Current company not chosen or doesn't exist, please create a company or select one.");
 
-            var dbworkorder = db.Workorders.FirstOrDefault(a => a.id == request.Workorder.id);
+            var dbworkorder = db.Workorders
+                .Include(a => a.Company)
+                .Include(a => a.Customer)
+                .Include(a => a.Project)
+                .Include(a => a.InvoiceWorkorders)
+                .Include(a => a.WorkorderAttachments)
+                .FirstOrDefault(a => a.id == request.Workorder.id);
             if (dbworkorder == null)
                 return new WorkorderUpdateResponse()
                 {
                     ErrorItemNotFound = true,
+                    State = authentication
                 };
 
             if (dbworkorder.CompanyId != authentication.DbCurrentCompany.id)
                 return new WorkorderUpdateResponse()
                 {
                     ErrorWrongCompany = true,
+                    State = authentication
                 };
 
             if (WorkorderFactory.Copy(request.Workorder, dbworkorder))
@@ -153,15 +144,9 @@ namespace BeltmanSoftwareDesign.Business.Services
             };
         }
 
-        [TsServiceMethod("Workorders", "Delete")]
+        [TsServiceMethod("Workorder", "Delete")]
         public WorkorderDeleteResponse Delete(WorkorderDeleteRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
         {
-            if (ipAddress == null)
-                return new WorkorderDeleteResponse()
-                {
-                    ErrorAuthentication = true
-                };
-
             var authentication = AuthenticationService.GetState(
                 request.BearerId, request.CurrentCompanyId, ipAddress, headers);
             if (!authentication.Success)
@@ -173,7 +158,13 @@ namespace BeltmanSoftwareDesign.Business.Services
             if (authentication.DbCurrentCompany == null)
                 throw new Exception("Current company not chosen or doesn't exist, please create a company or select one.");
 
-            var dbworkorder = db.Workorders.FirstOrDefault(a => a.id == request.WorkorderId);
+            var dbworkorder = db.Workorders
+                .Include(a => a.Company)
+                .Include(a => a.Customer)
+                .Include(a => a.Project)
+                .Include(a => a.InvoiceWorkorders)
+                .Include(a => a.WorkorderAttachments)
+                .FirstOrDefault(a => a.id == request.WorkorderId);
             if (dbworkorder == null)
                 return new WorkorderDeleteResponse()
                 {
@@ -198,15 +189,9 @@ namespace BeltmanSoftwareDesign.Business.Services
             };
         }
 
-        [TsServiceMethod("Workorders", "List")]
+        [TsServiceMethod("Workorder", "List")]
         public WorkorderListResponse List(WorkorderListRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
         {
-            if (ipAddress == null)
-                return new WorkorderListResponse()
-                {
-                    ErrorAuthentication = true
-                };
-
             var authentication = AuthenticationService.GetState(
                 request.BearerId, request.CurrentCompanyId, ipAddress, headers);
             if (!authentication.Success)
@@ -219,6 +204,11 @@ namespace BeltmanSoftwareDesign.Business.Services
                 throw new Exception("Current company not chosen or doesn't exist, please create a company or select one.");
 
             var list = db.Workorders
+                .Include(a => a.Company)
+                .Include(a => a.Customer)
+                .Include(a => a.Project)
+                .Include(a => a.InvoiceWorkorders)
+                .Include(a => a.WorkorderAttachments)
                 .Where(a => a.CompanyId == authentication.DbCurrentCompany.id)
                 .Select(a => WorkorderFactory.Convert(a))
                 .ToArray();

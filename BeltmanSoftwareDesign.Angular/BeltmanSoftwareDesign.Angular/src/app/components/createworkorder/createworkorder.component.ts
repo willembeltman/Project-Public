@@ -2,12 +2,14 @@ import { NgForOf, NgIf } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Workorder } from '../../interfaces/workorder';
-import { WorkordersService } from '../../apiservices/workorders.service';
 import { StateService } from '../../services/state.service';
-import { Country } from '../../interfaces/country';
 import { Router, RouterLink } from '@angular/router';
 import ValidateForm from '../register/validateform';
-import { CountriesService } from '../../apiservices/countries.service';
+import { Project } from '../../interfaces/project';
+import { Customer } from '../../interfaces/customer';
+import { WorkorderService } from '../../apiservices/workorder.service';
+import { ProjectService } from '../../apiservices/project.service';
+import { CustomerService } from '../../apiservices/customer.service';
 
 @Component({
   selector: 'app-createworkorder',
@@ -34,56 +36,79 @@ export class CreateWorkorderComponent implements OnInit {
 
   firstWorkorder: boolean = false;
 
-  countries: Country[] | null = null;
+  workorders: Workorder[] | null = null;
+  projects: Project[] | null = null;
+  customers: Customer[] | null = null;
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
     private stateService: StateService,
-    private countriesService: CountriesService,
-    private workordersService: WorkordersService) { }
+    private workorderService: WorkorderService,
+    private projectService: ProjectService,
+    private customerService: CustomerService) { }
 
   ngOnInit(): void {
-    let reqeust = this.stateService.createStandardRequest();
-    this.countriesService
-      .list(reqeust)
+    this.readWorkorders();
+  }
+
+  readWorkorders() {
+    let request = this.stateService.createStandardRequest();
+    this.workorderService
+      .list(request)
       .subscribe({
-        next: (countriesresponse) => {
-          this.stateService.setState(countriesresponse.state);
-          if (countriesresponse.success) {
-
-            this.workordersService
-              .list(reqeust)
-              .subscribe({
-                next: (workordersresponse) => {
-                  this.stateService.setState(workordersresponse.state);
-                  if (workordersresponse.success) {
-
-                    this.firstWorkorder = workordersresponse.workorders.length == 0;
-                    this.countries = countriesresponse.countries;
-
-                    const name = (this.stateService.getState()?.user?.userName ?? '') + "'s workorder";
-
-                    this.workorderForm = this.fb.group({
-                      countryId: [this.countries[0].id],
-                      name: [name, Validators.required],
-                      address: [''],
-                      postalcode: [''],
-                      place: [''],
-                      phoneNumber: [this.stateService.getState()?.user?.phoneNumber ?? ''],
-                      email: [this.stateService.getState()?.user?.email ?? '', Validators.email],
-                      website: [''],
-                      btwNumber: [''],
-                      kvkNumber: [''],
-                      iban: [''],
-                    });
-
-                  }
-                }
-              })
+        next: (workorderresponse) => {
+          this.stateService.setState(workorderresponse.state);
+          if (workorderresponse.success) {
+            this.workorders = workorderresponse.workorders;
+            this.readProjects();
           }
         }
       });
+  }
+  readProjects() {
+    let request = this.stateService.createStandardRequest();
+    this.projectService
+      .list(request)
+      .subscribe({
+        next: (projectsresponse) => {
+          this.stateService.setState(projectsresponse.state);
+          if (projectsresponse.success) {
+            this.projects = projectsresponse.projects;
+            this.readProjects();
+          }
+        }
+      });
+  }
+  readCustomers() {
+    let request = this.stateService.createStandardRequest();
+    this.customerService
+      .list(request)
+      .subscribe({
+        next: (customersResponse) => {
+          this.stateService.setState(customersResponse.state);
+          if (customersResponse.success) {
+            this.customers = customersResponse.customers;
+            this.setup();
+          }
+        }
+      });
+  }
+  setup() {   
+
+    this.workorderForm = this.fb.group({
+      //countryId: [this.countries[0].id],
+      name: [name, Validators.required],
+      address: [''],
+      postalcode: [''],
+      place: [''],
+      phoneNumber: [this.stateService.getState()?.user?.phoneNumber ?? ''],
+      email: [this.stateService.getState()?.user?.email ?? '', Validators.email],
+      website: [''],
+      btwNumber: [''],
+      kvkNumber: [''],
+      iban: [''],
+    });
   }
 
   onSubmit(): void {
@@ -97,7 +122,7 @@ export class CreateWorkorderComponent implements OnInit {
       Id: 0,
       ...formData
     };
-    this.workordersService
+    this.workorderService
       .create({
         bearerId: this.stateService.getState()?.bearerId ?? null,
         currentCompanyId: this.stateService.getState()?.currentCompany?.id ?? null,

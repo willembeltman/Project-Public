@@ -3,7 +3,7 @@ using BeltmanSoftwareDesign.Shared.ResponseJsons;
 
 namespace BeltmanSoftwareDesign.Business.Interfaces
 {
-    public interface ICustomersService
+    public interface ICustomerService
     {
         CustomerCreateResponse Create(CustomerCreateRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers);
         CustomerDeleteResponse Delete(CustomerDeleteRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers);

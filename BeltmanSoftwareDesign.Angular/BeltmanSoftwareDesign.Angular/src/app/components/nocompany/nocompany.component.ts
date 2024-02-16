@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { CompaniesComponent } from '../companies/companies.component';
-import { CompaniesService } from '../../apiservices/companies.service';
 import { StateService } from '../../services/state.service';
 import { NgIf } from '@angular/common';
+import { CompanyService } from '../../apiservices/company.service';
 
 @Component({
   selector: 'app-nocompany',
@@ -19,12 +19,12 @@ export class NoCompanyComponent implements OnInit {
   constructor(
     private router: Router,
     private stateService: StateService,
-    private companiesService: CompaniesService) {
+    private companyService: CompanyService) {
   }
 
   ngOnInit() {
     let request = this.stateService.createStandardRequest();
-    this.companiesService
+    this.companyService
       .list(request)
       .subscribe({
         next: (response) => {

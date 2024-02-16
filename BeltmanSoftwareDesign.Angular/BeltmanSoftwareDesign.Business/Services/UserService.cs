@@ -10,7 +10,7 @@ using BeltmanSoftwareDesign.StorageBlob.Business.Interfaces;
 
 namespace BeltmanSoftwareDesign.Business.Services
 {
-    public class UsersService : IUsersService
+    public class UserService : IUserService
     {
         ApplicationDbContext db { get; }
         IStorageFileService StorageFileService { get; }
@@ -18,7 +18,7 @@ namespace BeltmanSoftwareDesign.Business.Services
         UserFactory UserFactory { get; }
         CompanyFactory CompanyFactory { get; }
 
-        public UsersService(
+        public UserService(
             ApplicationDbContext db,
             IStorageFileService storageFileService,
             IAuthenticationService authenticationService)
@@ -32,7 +32,7 @@ namespace BeltmanSoftwareDesign.Business.Services
         }
 
 
-        [TsServiceMethod("Users", "SetCurrentCompany")]
+        [TsServiceMethod("User", "SetCurrentCompany")]
         public SetCurrentCompanyResponse SetCurrentCompany(SetCurrentCompanyRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
         {
             if (request == null)
@@ -78,7 +78,7 @@ namespace BeltmanSoftwareDesign.Business.Services
             };
         }
 
-        [TsServiceMethod("Users", "Read")]
+        [TsServiceMethod("User", "Read")]
         public UserReadResponse Read(UserReadRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
         {
             if (request == null)
@@ -127,7 +127,7 @@ namespace BeltmanSoftwareDesign.Business.Services
             };
         }
 
-        [TsServiceMethod("Users", "Update")]
+        [TsServiceMethod("User", "Update")]
         public UserUpdateResponse Update(UserUpdateRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
         {
             if (request == null)
@@ -168,7 +168,7 @@ namespace BeltmanSoftwareDesign.Business.Services
             };
         }
 
-        [TsServiceMethod("Users", "Delete")]
+        [TsServiceMethod("User", "Delete")]
         public UserDeleteResponse Delete(UserDeleteRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
         {
             if (request == null)
@@ -205,7 +205,7 @@ namespace BeltmanSoftwareDesign.Business.Services
             };
         }
 
-        [TsServiceMethod("Users", "List")]
+        [TsServiceMethod("User", "List")]
         public UserListResponse List(UserListRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
         {
             if (request == null)
@@ -255,7 +255,7 @@ namespace BeltmanSoftwareDesign.Business.Services
             return knownusers;
         }
 
-        //[TsServiceMethod("Users", "Create")]
+        //[TsServiceMethod("User", "Create")]
         //public UserCreateResponse Create(UserCreateRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
         //{
         //    if (request == null)

@@ -2,12 +2,12 @@ import { Component } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Country } from '../../interfaces/country';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { CompaniesService } from '../../apiservices/companies.service';
 import { StateService } from '../../services/state.service';
 import ValidateForm from '../register/validateform';
 import { Company } from '../../interfaces/company';
 import { NgForOf, NgIf } from '@angular/common';
-import { CountriesService } from '../../apiservices/countries.service';
+import { CountryService } from '../../apiservices/country.service';
+import { CompanyService } from '../../apiservices/company.service';
 
 @Component({
   selector: 'app-editcompany',
@@ -40,14 +40,14 @@ export class EditCompanyComponent {
     private fb: FormBuilder,
     private router: Router,
     private stateService: StateService,
-    private countriesService: CountriesService,
-    private companiesService: CompaniesService,
+    private countryService: CountryService,
+    private companyService: CompanyService,
     private route: ActivatedRoute) {
     this.companyId = parseInt(this.route.snapshot.paramMap.get('id') ?? "0");
   }
 
   ngOnInit(): void {
-    this.countriesService
+    this.countryService
       .list({
         bearerId: this.stateService.getState()?.bearerId ?? null,
         currentCompanyId: this.stateService.getState()?.currentCompany?.id ?? null,
@@ -57,7 +57,7 @@ export class EditCompanyComponent {
           if (response.success) {
             this.countries = response.countries;
 
-            this.companiesService
+            this.companyService
               .read({
                 bearerId: this.stateService.getState()?.bearerId ?? null,
                 currentCompanyId: this.stateService.getState()?.currentCompany?.id ?? null,
@@ -107,7 +107,7 @@ export class EditCompanyComponent {
     const company: Company = {
       ...formData
     };
-    this.companiesService
+    this.companyService
       .update({
         bearerId: this.stateService.getState()?.bearerId ?? null,
         currentCompanyId: this.stateService.getState()?.currentCompany?.id ?? null,

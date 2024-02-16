@@ -2,12 +2,12 @@ import { NgForOf, NgIf } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Company } from '../../interfaces/company';
-import { CompaniesService } from '../../apiservices/companies.service';
 import { StateService } from '../../services/state.service';
 import { Country } from '../../interfaces/country';
 import { Router, RouterLink } from '@angular/router';
 import ValidateForm from '../register/validateform';
-import { CountriesService } from '../../apiservices/countries.service';
+import { CountryService } from '../../apiservices/country.service';
+import { CompanyService } from '../../apiservices/company.service';
 
 @Component({
   selector: 'app-createcompany',
@@ -40,19 +40,19 @@ export class CreateCompanyComponent implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     private stateService: StateService,
-    private countriesService: CountriesService,
-    private companiesService: CompaniesService) { }
+    private countryService: CountryService,
+    private companyService: CompanyService) { }
 
   ngOnInit(): void {
     let reqeust = this.stateService.createStandardRequest();
-    this.countriesService
+    this.countryService
       .list(reqeust)
       .subscribe({
         next: (countriesresponse) => {
           this.stateService.setState(countriesresponse.state);
           if (countriesresponse.success) {
 
-            this.companiesService
+            this.companyService
               .list(reqeust)
               .subscribe({
                 next: (companiesresponse) => {
@@ -97,7 +97,7 @@ export class CreateCompanyComponent implements OnInit {
       Id: 0,
       ...formData
     };
-    this.companiesService
+    this.companyService
       .create({
         bearerId: this.stateService.getState()?.bearerId ?? null,
         currentCompanyId: this.stateService.getState()?.currentCompany?.id ?? null,

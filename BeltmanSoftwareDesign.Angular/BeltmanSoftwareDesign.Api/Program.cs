@@ -26,11 +26,11 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<IStorageFileService, StorageFileService>();
-builder.Services.AddScoped<IWorkordersService, WorkordersService>();
+builder.Services.AddScoped<IWorkorderService, WorkorderService>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
-builder.Services.AddScoped<ICompaniesService, CompaniesService>();
-builder.Services.AddScoped<ICountriesService, CountriesService>();
-builder.Services.AddScoped<IUsersService, UsersService>();
+builder.Services.AddScoped<ICompanyService, CompanyService>();
+builder.Services.AddScoped<ICountryService, CountryService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 var app = builder.Build();
 

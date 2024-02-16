@@ -6,17 +6,18 @@ using BeltmanSoftwareDesign.Shared.Attributes;
 using BeltmanSoftwareDesign.Shared.RequestJsons;
 using BeltmanSoftwareDesign.Shared.ResponseJsons;
 using BeltmanSoftwareDesign.StorageBlob.Business.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace BeltmanSoftwareDesign.Business.Services
 {
-    public class CustomersService : ICustomersService
+    public class CustomerService : ICustomerService
     {
         ApplicationDbContext db { get; }
         IStorageFileService StorageFileService { get; }
         IAuthenticationService AuthenticationService { get; }
         CustomerFactory CustomerFactory { get; }
 
-        public CustomersService(
+        public CustomerService(
             ApplicationDbContext db,
             IStorageFileService storageFileService,
             IAuthenticationService authenticationService)
@@ -27,15 +28,9 @@ namespace BeltmanSoftwareDesign.Business.Services
             CustomerFactory = new CustomerFactory();
         }
 
-        [TsServiceMethod("Customers", "Create")]
+        [TsServiceMethod("Customer", "Create")]
         public CustomerCreateResponse Create(CustomerCreateRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
         {
-            if (ipAddress == null)
-                return new CustomerCreateResponse()
-                {
-                    ErrorAuthentication = true
-                };
-
             var authentication = AuthenticationService.GetState(
                 request.BearerId, request.CurrentCompanyId, ipAddress, headers);
             if (!authentication.Success)
@@ -68,15 +63,9 @@ namespace BeltmanSoftwareDesign.Business.Services
             };
         }
 
-        [TsServiceMethod("Customers", "Read")]
+        [TsServiceMethod("Customer", "Read")]
         public CustomerReadResponse Read(CustomerReadRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
         {
-            if (ipAddress == null)
-                return new CustomerReadResponse()
-                {
-                    ErrorAuthentication = true
-                };
-
             var authentication = AuthenticationService.GetState(
                 request.BearerId, request.CurrentCompanyId, ipAddress, headers);
             if (!authentication.Success)
@@ -88,7 +77,14 @@ namespace BeltmanSoftwareDesign.Business.Services
             if (authentication.DbCurrentCompany == null)
                 throw new Exception("Current company not chosen or doesn't exist, please create a company or select one.");
 
-            var dbcustomer = db.Customers.FirstOrDefault(a => a.id == request.CustomerId);
+            var dbcustomer = db.Customers
+                .Include(a => a.Country)
+                .Include(a => a.Workorders)
+                .Include(a => a.Projects)
+                .Include(a => a.Invoices)
+                .Include(a => a.Expenses)
+                .Include(a => a.Documents)
+                .FirstOrDefault(a => a.id == request.CustomerId);
             if (dbcustomer == null)
                 return new CustomerReadResponse()
                 {
@@ -109,15 +105,9 @@ namespace BeltmanSoftwareDesign.Business.Services
             };
         }
 
-        [TsServiceMethod("Customers", "Update")]
+        [TsServiceMethod("Customer", "Update")]
         public CustomerUpdateResponse Update(CustomerUpdateRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
         {
-            if (ipAddress == null)
-                return new CustomerUpdateResponse()
-                {
-                    ErrorAuthentication = true
-                };
-
             var authentication = AuthenticationService.GetState(
                 request.BearerId, request.CurrentCompanyId, ipAddress, headers);
             if (!authentication.Success)
@@ -129,7 +119,14 @@ namespace BeltmanSoftwareDesign.Business.Services
             if (authentication.DbCurrentCompany == null)
                 throw new Exception("Current company not chosen or doesn't exist, please create a company or select one.");
 
-            var dbcustomer = db.Customers.FirstOrDefault(a => a.id == request.Customer.id);
+            var dbcustomer = db.Customers
+                .Include(a => a.Country)
+                .Include(a => a.Workorders)
+                .Include(a => a.Projects)
+                .Include(a => a.Invoices)
+                .Include(a => a.Expenses)
+                .Include(a => a.Documents)
+                .FirstOrDefault(a => a.id == request.Customer.id);
             if (dbcustomer == null)
                 return new CustomerUpdateResponse()
                 {
@@ -153,15 +150,9 @@ namespace BeltmanSoftwareDesign.Business.Services
             };
         }
 
-        [TsServiceMethod("Customers", "Delete")]
+        [TsServiceMethod("Customer", "Delete")]
         public CustomerDeleteResponse Delete(CustomerDeleteRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
         {
-            if (ipAddress == null)
-                return new CustomerDeleteResponse()
-                {
-                    ErrorAuthentication = true
-                };
-
             var authentication = AuthenticationService.GetState(
                 request.BearerId, request.CurrentCompanyId, ipAddress, headers);
             if (!authentication.Success)
@@ -173,7 +164,14 @@ namespace BeltmanSoftwareDesign.Business.Services
             if (authentication.DbCurrentCompany == null)
                 throw new Exception("Current company not chosen or doesn't exist, please create a company or select one.");
 
-            var dbcustomer = db.Customers.FirstOrDefault(a => a.id == request.CustomerId);
+            var dbcustomer = db.Customers
+                .Include(a => a.Country)
+                .Include(a => a.Workorders)
+                .Include(a => a.Projects)
+                .Include(a => a.Invoices)
+                .Include(a => a.Expenses)
+                .Include(a => a.Documents)
+                .FirstOrDefault(a => a.id == request.CustomerId);
             if (dbcustomer == null)
                 return new CustomerDeleteResponse()
                 {
@@ -198,15 +196,9 @@ namespace BeltmanSoftwareDesign.Business.Services
             };
         }
 
-        [TsServiceMethod("Customers", "List")]
+        [TsServiceMethod("Customer", "List")]
         public CustomerListResponse List(CustomerListRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
         {
-            if (ipAddress == null)
-                return new CustomerListResponse()
-                {
-                    ErrorAuthentication = true
-                };
-
             var authentication = AuthenticationService.GetState(
                 request.BearerId, request.CurrentCompanyId, ipAddress, headers);
             if (!authentication.Success)
@@ -219,6 +211,12 @@ namespace BeltmanSoftwareDesign.Business.Services
                 throw new Exception("Current company not chosen or doesn't exist, please create a company or select one.");
 
             var list = db.Customers
+                .Include(a => a.Country)
+                .Include(a => a.Workorders)
+                .Include(a => a.Projects)
+                .Include(a => a.Invoices)
+                .Include(a => a.Expenses)
+                .Include(a => a.Documents)
                 .Where(a => a.CompanyId == authentication.DbCurrentCompany.id)
                 .Select(a => CustomerFactory.Convert(a))
                 .ToArray();

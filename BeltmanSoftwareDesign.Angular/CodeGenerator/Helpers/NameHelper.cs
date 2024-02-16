@@ -12,8 +12,9 @@
                 case "System.Byte":
                     return "number";
                 case "System.String":
-                case "System.DateTime":
                     return "string";
+                case "System.DateTime":
+                    return "Date";
                 case "System.Boolean":
                     return "boolean";
             }
@@ -34,7 +35,7 @@
                 case "System.Boolean":
                     return "bool";
                 case "System.DateTime":
-                    return "bool";
+                    return "DateTime";
                 case "System.Byte":
                     return "byte";
                 default:

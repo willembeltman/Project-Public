@@ -2,11 +2,11 @@ import { Component } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Country } from '../../interfaces/country';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { UsersService } from '../../apiservices/users.service';
 import { StateService } from '../../services/state.service';
 import ValidateForm from '../register/validateform';
 import { User } from '../../interfaces/user';
 import { NgForOf, NgIf } from '@angular/common';
+import { UserService } from '../../apiservices/user.service';
 
 @Component({
   selector: 'app-edituser',
@@ -31,14 +31,14 @@ export class EditUserComponent {
     private fb: FormBuilder,
     private router: Router,
     private stateService: StateService,
-    private usersService: UsersService,
+    private userService: UserService,
     private route: ActivatedRoute) {
     this.userId = this.route.snapshot.paramMap.get('id');
   }
 
   ngOnInit(): void {
 
-    this.usersService
+    this.userService
       .read({
         bearerId: this.stateService.getState()?.bearerId ?? null,
         currentCompanyId: this.stateService.getState()?.currentCompany?.id ?? null,
@@ -77,7 +77,7 @@ export class EditUserComponent {
       email: this.email,
       ...formData
     };
-    this.usersService
+    this.userService
       .update({
         bearerId: this.stateService.getState()?.bearerId ?? null,
         currentCompanyId: this.stateService.getState()?.currentCompany?.id ?? null,

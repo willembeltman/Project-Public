@@ -6,33 +6,33 @@ namespace BeltmanSoftwareDesign.Api.Controllers
 {
     [ApiController]
     [Route("[controller]/[action]")]
-    public class CompaniesController : BaseControllerBase
+    public class CompanyController : BaseControllerBase
     {
-        public CompaniesController(ICompaniesService companiesService) 
+        public CompanyController(ICompanyService companyService) 
         {
-            CompaniesService = companiesService;
+            CompanyService = companyService;
         }
 
-        public ICompaniesService CompaniesService { get; }
+        public ICompanyService CompanyService { get; }
 
         [HttpPost]
         public CompanyCreateResponse Create(CompanyCreateRequest request) 
-            => CompaniesService.Create(request, IpAddress, Headers);
+            => CompanyService.Create(request, IpAddress, Headers);
 
         [HttpPost]
         public CompanyReadResponse Read(CompanyReadRequest request) 
-            => CompaniesService.Read(request, IpAddress, Headers);
+            => CompanyService.Read(request, IpAddress, Headers);
 
         [HttpPost]
         public CompanyUpdateResponse Update(CompanyUpdateRequest request) 
-            => CompaniesService.Update(request, IpAddress, Headers);
+            => CompanyService.Update(request, IpAddress, Headers);
 
         [HttpPost]
         public CompanyDeleteResponse Delete(CompanyDeleteRequest request) 
-            => CompaniesService.Delete(request, IpAddress, Headers);
+            => CompanyService.Delete(request, IpAddress, Headers);
 
         [HttpPost]
         public CompanyListResponse List(CompanyListRequest request) 
-            => CompaniesService.List(request, IpAddress, Headers);
+            => CompanyService.List(request, IpAddress, Headers);
     }
 }

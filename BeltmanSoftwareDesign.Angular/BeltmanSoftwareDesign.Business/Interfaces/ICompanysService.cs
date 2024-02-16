@@ -5,7 +5,7 @@ using BeltmanSoftwareDesign.Shared.ResponseJsons;
 
 namespace BeltmanSoftwareDesign.Business.Interfaces
 {
-    public interface ICompaniesService
+    public interface ICompanyService
     {
         CompanyCreateResponse Create(CompanyCreateRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers);
         CompanyDeleteResponse Delete(CompanyDeleteRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers);

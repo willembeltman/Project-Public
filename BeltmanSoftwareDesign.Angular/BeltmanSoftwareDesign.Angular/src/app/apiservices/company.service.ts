@@ -16,23 +16,23 @@ import { CompanyListRequest } from '../interfaces/request/companylistrequest';
 @Injectable({
   providedIn: 'root'
 })
-export class CompaniesService
+export class CompanyService
 {
   constructor(private constants:ConstantsService, private http:HttpClient) { }
   
   create(request: CompanyCreateRequest): Observable<CompanyCreateResponse> {
-    return this.http.post<CompanyCreateResponse>(this.constants.apiUrl + '/companies/create', request);
+    return this.http.post<CompanyCreateResponse>(this.constants.apiUrl + '/company/create', request);
   }
   read(request: CompanyReadRequest): Observable<CompanyReadResponse> {
-    return this.http.post<CompanyReadResponse>(this.constants.apiUrl + '/companies/read', request);
+    return this.http.post<CompanyReadResponse>(this.constants.apiUrl + '/company/read', request);
   }
   update(request: CompanyUpdateRequest): Observable<CompanyUpdateResponse> {
-    return this.http.post<CompanyUpdateResponse>(this.constants.apiUrl + '/companies/update', request);
+    return this.http.post<CompanyUpdateResponse>(this.constants.apiUrl + '/company/update', request);
   }
   delete(request: CompanyDeleteRequest): Observable<CompanyDeleteResponse> {
-    return this.http.post<CompanyDeleteResponse>(this.constants.apiUrl + '/companies/delete', request);
+    return this.http.post<CompanyDeleteResponse>(this.constants.apiUrl + '/company/delete', request);
   }
   list(request: CompanyListRequest): Observable<CompanyListResponse> {
-    return this.http.post<CompanyListResponse>(this.constants.apiUrl + '/companies/list', request);
+    return this.http.post<CompanyListResponse>(this.constants.apiUrl + '/company/list', request);
   }
 }

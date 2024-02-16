@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { WorkordersService } from '../../apiservices/workorders.service';
 import { StateService } from '../../services/state.service';
 import { Workorder } from '../../interfaces/workorder';
 import { NgFor, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { WorkorderService } from '../../apiservices/workorder.service';
 
 @Component({
   selector: 'app-workorders',
@@ -16,7 +16,9 @@ export class WorkordersComponent implements OnInit {
 
   public workorders: Workorder[] = [];
 
-  constructor(private workordersService: WorkordersService, private state: StateService) {
+  constructor(
+    private workorderService: WorkorderService,
+    private state: StateService) {
     
   }
 
@@ -33,7 +35,7 @@ export class WorkordersComponent implements OnInit {
       bearerId = bearerIdFromState;
     }
 
-    this.workordersService
+    this.workorderService
       .list({
         bearerId: bearerId,        
         currentCompanyId: companyid

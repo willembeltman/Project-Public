@@ -1,12 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
-namespace BeltmanSoftwareDesign.Shared.Jsons
+﻿namespace BeltmanSoftwareDesign.Shared.Jsons
 {
     public class Workorder
     {
         public long id { get; set; }
-
-        public long CompanyId { get; set; }
 
         public DateTime Start { get; set; }
         public DateTime Stop { get; set; }

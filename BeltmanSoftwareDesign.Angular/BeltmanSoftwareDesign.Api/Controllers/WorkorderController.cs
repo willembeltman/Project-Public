@@ -6,33 +6,33 @@ namespace BeltmanSoftwareDesign.Api.Controllers
 {
     [ApiController]
     [Route("[controller]/[action]")]
-    public class WorkordersController : BaseControllerBase
+    public class WorkorderController : BaseControllerBase
     {
-        public WorkordersController(IWorkordersService workordersService) 
+        public WorkorderController(IWorkorderService workorderService) 
         {
-            WorkordersService = workordersService;
+            WorkorderService = workorderService;
         }
 
-        public IWorkordersService WorkordersService { get; }
+        public IWorkorderService WorkorderService { get; }
 
         [HttpPost]
         public WorkorderCreateResponse Create(WorkorderCreateRequest request) 
-            => WorkordersService.Create(request, IpAddress, Headers);
+            => WorkorderService.Create(request, IpAddress, Headers);
 
         [HttpPost]
         public WorkorderReadResponse Read(WorkorderReadRequest request) 
-            => WorkordersService.Read(request, IpAddress, Headers);
+            => WorkorderService.Read(request, IpAddress, Headers);
 
         [HttpPost]
         public WorkorderUpdateResponse Update(WorkorderUpdateRequest request) 
-            => WorkordersService.Update(request, IpAddress, Headers);
+            => WorkorderService.Update(request, IpAddress, Headers);
 
         [HttpPost]
         public WorkorderDeleteResponse Delete(WorkorderDeleteRequest request) 
-            => WorkordersService.Delete(request, IpAddress, Headers);
+            => WorkorderService.Delete(request, IpAddress, Headers);
 
         [HttpPost]
         public WorkorderListResponse List(WorkorderListRequest request) 
-            => WorkordersService.List(request, IpAddress, Headers);
+            => WorkorderService.List(request, IpAddress, Headers);
     }
 }

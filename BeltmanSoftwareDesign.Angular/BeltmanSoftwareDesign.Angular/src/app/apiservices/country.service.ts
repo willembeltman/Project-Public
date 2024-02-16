@@ -8,11 +8,11 @@ import { CountryListRequest } from '../interfaces/request/countrylistrequest';
 @Injectable({
   providedIn: 'root'
 })
-export class CountriesService
+export class CountryService
 {
   constructor(private constants:ConstantsService, private http:HttpClient) { }
   
   list(request: CountryListRequest): Observable<CountryListResponse> {
-    return this.http.post<CountryListResponse>(this.constants.apiUrl + '/countries/list', request);
+    return this.http.post<CountryListResponse>(this.constants.apiUrl + '/country/list', request);
   }
 }

@@ -16,23 +16,23 @@ import { CustomerListRequest } from '../interfaces/request/customerlistrequest';
 @Injectable({
   providedIn: 'root'
 })
-export class CustomersService
+export class CustomerService
 {
   constructor(private constants:ConstantsService, private http:HttpClient) { }
   
   create(request: CustomerCreateRequest): Observable<CustomerCreateResponse> {
-    return this.http.post<CustomerCreateResponse>(this.constants.apiUrl + '/customers/create', request);
+    return this.http.post<CustomerCreateResponse>(this.constants.apiUrl + '/customer/create', request);
   }
   read(request: CustomerReadRequest): Observable<CustomerReadResponse> {
-    return this.http.post<CustomerReadResponse>(this.constants.apiUrl + '/customers/read', request);
+    return this.http.post<CustomerReadResponse>(this.constants.apiUrl + '/customer/read', request);
   }
   update(request: CustomerUpdateRequest): Observable<CustomerUpdateResponse> {
-    return this.http.post<CustomerUpdateResponse>(this.constants.apiUrl + '/customers/update', request);
+    return this.http.post<CustomerUpdateResponse>(this.constants.apiUrl + '/customer/update', request);
   }
   delete(request: CustomerDeleteRequest): Observable<CustomerDeleteResponse> {
-    return this.http.post<CustomerDeleteResponse>(this.constants.apiUrl + '/customers/delete', request);
+    return this.http.post<CustomerDeleteResponse>(this.constants.apiUrl + '/customer/delete', request);
   }
   list(request: CustomerListRequest): Observable<CustomerListResponse> {
-    return this.http.post<CustomerListResponse>(this.constants.apiUrl + '/customers/list', request);
+    return this.http.post<CustomerListResponse>(this.constants.apiUrl + '/customer/list', request);
   }
 }

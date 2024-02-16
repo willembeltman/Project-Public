@@ -20,7 +20,6 @@ namespace BeltmanSoftwareDesign.Data.Factories
             return new Entities.Workorder()
             {
                 id = a.id,
-                CompanyId = a.CompanyId,
                 Start = a.Start,
                 Stop = a.Stop,
                 Description = a.Description,
@@ -34,7 +33,6 @@ namespace BeltmanSoftwareDesign.Data.Factories
             return new Shared.Jsons.Workorder
             {
                 id = a.id,
-                CompanyId = a.CompanyId,
                 Start = a.Start,
                 Stop = a.Stop,
                 Description = a.Description,

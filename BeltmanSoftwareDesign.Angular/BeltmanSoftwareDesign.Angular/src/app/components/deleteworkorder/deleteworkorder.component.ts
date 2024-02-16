@@ -2,10 +2,9 @@ import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { StateService } from '../../services/state.service';
-import { CountriesService } from '../../apiservices/countries.service';
-import { WorkordersService } from '../../apiservices/workorders.service';
 import { Workorder } from '../../interfaces/workorder';
 import { NgIf } from '@angular/common';
+import { WorkorderService } from '../../apiservices/workorder.service';
 
 @Component({
   selector: 'app-deleteworkorder',
@@ -23,14 +22,13 @@ export class DeleteWorkorderComponent {
     private fb: FormBuilder,
     private router: Router,
     private stateService: StateService,
-    private countriesService: CountriesService,
-    private workordersService: WorkordersService,
+    private workorderService: WorkorderService,
     private route: ActivatedRoute) {
     this.workorderId = parseInt(this.route.snapshot.paramMap.get('id') ?? "0");
   }
 
   ngOnInit(): void {
-    this.workordersService
+    this.workorderService
       .read({
         bearerId: this.stateService.getState()?.bearerId ?? null,
         currentCompanyId: this.stateService.getState()?.currentCompany?.id ?? null,
@@ -51,7 +49,7 @@ export class DeleteWorkorderComponent {
 
   onSubmit(): void {
     if (confirm("Are you sure?")) {
-      this.workordersService
+      this.workorderService
         .delete({
           bearerId: this.stateService.getState()?.bearerId ?? null,
           currentCompanyId: this.stateService.getState()?.currentCompany?.id ?? null,

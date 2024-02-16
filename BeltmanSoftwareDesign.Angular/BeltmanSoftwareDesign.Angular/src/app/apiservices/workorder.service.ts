@@ -16,23 +16,23 @@ import { WorkorderListRequest } from '../interfaces/request/workorderlistrequest
 @Injectable({
   providedIn: 'root'
 })
-export class WorkordersService
+export class WorkorderService
 {
   constructor(private constants:ConstantsService, private http:HttpClient) { }
   
   create(request: WorkorderCreateRequest): Observable<WorkorderCreateResponse> {
-    return this.http.post<WorkorderCreateResponse>(this.constants.apiUrl + '/workorders/create', request);
+    return this.http.post<WorkorderCreateResponse>(this.constants.apiUrl + '/workorder/create', request);
   }
   read(request: WorkorderReadRequest): Observable<WorkorderReadResponse> {
-    return this.http.post<WorkorderReadResponse>(this.constants.apiUrl + '/workorders/read', request);
+    return this.http.post<WorkorderReadResponse>(this.constants.apiUrl + '/workorder/read', request);
   }
   update(request: WorkorderUpdateRequest): Observable<WorkorderUpdateResponse> {
-    return this.http.post<WorkorderUpdateResponse>(this.constants.apiUrl + '/workorders/update', request);
+    return this.http.post<WorkorderUpdateResponse>(this.constants.apiUrl + '/workorder/update', request);
   }
   delete(request: WorkorderDeleteRequest): Observable<WorkorderDeleteResponse> {
-    return this.http.post<WorkorderDeleteResponse>(this.constants.apiUrl + '/workorders/delete', request);
+    return this.http.post<WorkorderDeleteResponse>(this.constants.apiUrl + '/workorder/delete', request);
   }
   list(request: WorkorderListRequest): Observable<WorkorderListResponse> {
-    return this.http.post<WorkorderListResponse>(this.constants.apiUrl + '/workorders/list', request);
+    return this.http.post<WorkorderListResponse>(this.constants.apiUrl + '/workorder/list', request);
   }
 }

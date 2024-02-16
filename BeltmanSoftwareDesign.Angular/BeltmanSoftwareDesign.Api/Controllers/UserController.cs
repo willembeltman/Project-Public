@@ -6,33 +6,33 @@ namespace BeltmanSoftwareDesign.Api.Controllers
 {
     [ApiController]
     [Route("[controller]/[action]")]
-    public class UsersController : BaseControllerBase
+    public class UserController : BaseControllerBase
     {
-        public UsersController(IUsersService usersService) 
+        public UserController(IUserService userService) 
         {
-            UsersService = usersService;
+            UserService = userService;
         }
 
-        public IUsersService UsersService { get; }
+        public IUserService UserService { get; }
 
         [HttpPost]
         public SetCurrentCompanyResponse SetCurrentCompany(SetCurrentCompanyRequest request) 
-            => UsersService.SetCurrentCompany(request, IpAddress, Headers);
+            => UserService.SetCurrentCompany(request, IpAddress, Headers);
 
         [HttpPost]
         public UserReadResponse Read(UserReadRequest request) 
-            => UsersService.Read(request, IpAddress, Headers);
+            => UserService.Read(request, IpAddress, Headers);
 
         [HttpPost]
         public UserUpdateResponse Update(UserUpdateRequest request) 
-            => UsersService.Update(request, IpAddress, Headers);
+            => UserService.Update(request, IpAddress, Headers);
 
         [HttpPost]
         public UserDeleteResponse Delete(UserDeleteRequest request) 
-            => UsersService.Delete(request, IpAddress, Headers);
+            => UserService.Delete(request, IpAddress, Headers);
 
         [HttpPost]
         public UserListResponse List(UserListRequest request) 
-            => UsersService.List(request, IpAddress, Headers);
+            => UserService.List(request, IpAddress, Headers);
     }
 }

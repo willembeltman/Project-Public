@@ -11,12 +11,12 @@ export interface Invoice {
     taxRateId: number | null;
     taxRateName: string | null;
     taxRatePercentage: number | null;
-    date: string;
+    date: Date;
     invoiceNumber: string | null;
     description: string | null;
     isPayedInCash: boolean;
     isPayed: boolean;
-    datePayed: string | null;
+    datePayed: Date | null;
     paymentCode: string | null;
     invoiceWorkorders: InvoiceWorkorder[];
 }

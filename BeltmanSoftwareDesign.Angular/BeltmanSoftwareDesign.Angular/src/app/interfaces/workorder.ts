@@ -3,9 +3,8 @@ import { WorkorderAttachment } from "./workorderattachment";
 
 export interface Workorder {
     id: number;
-    companyId: number;
-    start: string;
-    stop: string | null;
+    start: Date;
+    stop: Date;
     description: string | null;
     projectId: number | null;
     projectName: string | null;
@@ -13,5 +12,5 @@ export interface Workorder {
     customerName: string | null;
     invoiceWorkorders: InvoiceWorkorder[];
     workorderAttachments: WorkorderAttachment[];
-    amountUur: number | null;
+    amountUur: number;
 }

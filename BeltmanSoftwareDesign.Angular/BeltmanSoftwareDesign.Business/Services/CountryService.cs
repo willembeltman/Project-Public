@@ -7,13 +7,13 @@ using BeltmanSoftwareDesign.Shared.ResponseJsons;
 
 namespace BeltmanSoftwareDesign.Business.Services
 {
-    public class CountriesService : ICountriesService
+    public class CountryService : ICountryService
     {
         ApplicationDbContext db { get; }
         IAuthenticationService AuthenticationService { get; }
         CountryFactory CountryFactory { get; }
 
-        public CountriesService(
+        public CountryService(
             ApplicationDbContext db,
             IAuthenticationService authenticationService)
         {
@@ -22,7 +22,7 @@ namespace BeltmanSoftwareDesign.Business.Services
             CountryFactory = new CountryFactory();
         }
 
-        [TsServiceMethod("Countries", "List")]
+        [TsServiceMethod("Country", "List")]
         public CountryListResponse List(CountryListRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
         {
             if (ipAddress == null)

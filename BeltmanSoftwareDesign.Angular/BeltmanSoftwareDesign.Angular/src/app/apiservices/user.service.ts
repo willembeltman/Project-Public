@@ -16,23 +16,23 @@ import { UserListRequest } from '../interfaces/request/userlistrequest';
 @Injectable({
   providedIn: 'root'
 })
-export class UsersService
+export class UserService
 {
   constructor(private constants:ConstantsService, private http:HttpClient) { }
   
   setcurrentcompany(request: SetCurrentCompanyRequest): Observable<SetCurrentCompanyResponse> {
-    return this.http.post<SetCurrentCompanyResponse>(this.constants.apiUrl + '/users/setcurrentcompany', request);
+    return this.http.post<SetCurrentCompanyResponse>(this.constants.apiUrl + '/user/setcurrentcompany', request);
   }
   read(request: UserReadRequest): Observable<UserReadResponse> {
-    return this.http.post<UserReadResponse>(this.constants.apiUrl + '/users/read', request);
+    return this.http.post<UserReadResponse>(this.constants.apiUrl + '/user/read', request);
   }
   update(request: UserUpdateRequest): Observable<UserUpdateResponse> {
-    return this.http.post<UserUpdateResponse>(this.constants.apiUrl + '/users/update', request);
+    return this.http.post<UserUpdateResponse>(this.constants.apiUrl + '/user/update', request);
   }
   delete(request: UserDeleteRequest): Observable<UserDeleteResponse> {
-    return this.http.post<UserDeleteResponse>(this.constants.apiUrl + '/users/delete', request);
+    return this.http.post<UserDeleteResponse>(this.constants.apiUrl + '/user/delete', request);
   }
   list(request: UserListRequest): Observable<UserListResponse> {
-    return this.http.post<UserListResponse>(this.constants.apiUrl + '/users/list', request);
+    return this.http.post<UserListResponse>(this.constants.apiUrl + '/user/list', request);
   }
 }

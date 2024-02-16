@@ -2,10 +2,10 @@ import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { StateService } from '../../services/state.service';
-import { CountriesService } from '../../apiservices/countries.service';
-import { CompaniesService } from '../../apiservices/companies.service';
 import { Company } from '../../interfaces/company';
 import { NgIf } from '@angular/common';
+import { CountryService } from '../../apiservices/country.service';
+import { CompanyService } from '../../apiservices/company.service';
 
 @Component({
   selector: 'app-deletecompany',
@@ -23,14 +23,13 @@ export class DeleteCompanyComponent {
     private fb: FormBuilder,
     private router: Router,
     private stateService: StateService,
-    private countriesService: CountriesService,
-    private companiesService: CompaniesService,
+    private companyService: CompanyService,
     private route: ActivatedRoute) {
     this.companyId = parseInt(this.route.snapshot.paramMap.get('id') ?? "0");
   }
 
   ngOnInit(): void {
-    this.companiesService
+    this.companyService
       .read({
         bearerId: this.stateService.getState()?.bearerId ?? null,
         currentCompanyId: this.stateService.getState()?.currentCompany?.id ?? null,
@@ -51,7 +50,7 @@ export class DeleteCompanyComponent {
 
   onSubmit(): void {
     if (confirm("Are you sure?")) {
-      this.companiesService
+      this.companyService
         .delete({
           bearerId: this.stateService.getState()?.bearerId ?? null,
           currentCompanyId: this.stateService.getState()?.currentCompany?.id ?? null,

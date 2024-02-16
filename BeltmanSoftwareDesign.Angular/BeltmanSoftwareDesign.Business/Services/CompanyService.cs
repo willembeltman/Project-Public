@@ -9,14 +9,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BeltmanSoftwareDesign.Business.Services
 {
-    public class CompaniesService : ICompaniesService
+    public class CompanyService : ICompanyService
     {
         ApplicationDbContext db { get; }
         IStorageFileService StorageFileService { get; }
         IAuthenticationService AuthenticationService { get; }
         CompanyFactory CompanyFactory { get; }
 
-        public CompaniesService(
+        public CompanyService(
             ApplicationDbContext db,
             IStorageFileService storageFileService,
             IAuthenticationService authenticationService)
@@ -28,7 +28,7 @@ namespace BeltmanSoftwareDesign.Business.Services
             CompanyFactory = new CompanyFactory(storageFileService);
         }
 
-        [TsServiceMethod("Companies", "Create")]
+        [TsServiceMethod("Company", "Create")]
         public CompanyCreateResponse Create(CompanyCreateRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
         {
             if (request == null)
@@ -92,7 +92,7 @@ namespace BeltmanSoftwareDesign.Business.Services
             };
         }
 
-        [TsServiceMethod("Companies", "Read")]
+        [TsServiceMethod("Company", "Read")]
         public CompanyReadResponse Read(CompanyReadRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
         {
             if (request == null)
@@ -150,7 +150,7 @@ namespace BeltmanSoftwareDesign.Business.Services
             };
         }
 
-        [TsServiceMethod("Companies", "Update")]
+        [TsServiceMethod("Company", "Update")]
         public CompanyUpdateResponse Update(CompanyUpdateRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
         {
             if (request == null)
@@ -200,7 +200,7 @@ namespace BeltmanSoftwareDesign.Business.Services
             };
         }
 
-        [TsServiceMethod("Companies", "Delete")]
+        [TsServiceMethod("Company", "Delete")]
         public CompanyDeleteResponse Delete(CompanyDeleteRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
         {
             if (request == null)
@@ -250,7 +250,7 @@ namespace BeltmanSoftwareDesign.Business.Services
             };
         }
 
-        [TsServiceMethod("Companies", "List")]
+        [TsServiceMethod("Company", "List")]
         public CompanyListResponse List(CompanyListRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
         {
             if (request == null)

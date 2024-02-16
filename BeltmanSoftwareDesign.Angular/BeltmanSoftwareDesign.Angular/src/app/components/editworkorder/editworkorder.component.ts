@@ -2,12 +2,12 @@ import { Component } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Country } from '../../interfaces/country';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { WorkordersService } from '../../apiservices/workorders.service';
 import { StateService } from '../../services/state.service';
 import ValidateForm from '../register/validateform';
 import { Workorder } from '../../interfaces/workorder';
 import { NgForOf, NgIf } from '@angular/common';
-import { CountriesService } from '../../apiservices/countries.service';
+import { CountryService } from '../../apiservices/country.service';
+import { WorkorderService } from '../../apiservices/workorder.service';
 
 @Component({
   selector: 'app-editworkorder',
@@ -40,15 +40,15 @@ export class EditWorkorderComponent {
     private fb: FormBuilder,
     private router: Router,
     private stateService: StateService,
-    private countriesService: CountriesService,
-    private workordersService: WorkordersService,
+    private countryService: CountryService,
+    private workorderService: WorkorderService,
     private route: ActivatedRoute) {
     this.workorderId = parseInt(this.route.snapshot.paramMap.get('id') ?? "0");
   }
 
   ngOnInit(): void {
     let request = this.stateService.createStandardRequest();
-    this.countriesService
+    this.countryService
       .list(request)
       .subscribe({
         next: (response) => {
@@ -56,7 +56,7 @@ export class EditWorkorderComponent {
           if (response.success) {
             this.countries = response.countries;
 
-            this.workordersService
+            this.workorderService
               .read({
                 ...request,
                 workorderId: this.workorderId ?? 0
@@ -99,7 +99,7 @@ export class EditWorkorderComponent {
     const workorder: Workorder = {
       ...formData
     };
-    this.workordersService
+    this.workorderService
       .update({
         bearerId: this.stateService.getState()?.bearerId ?? null,
         currentCompanyId: this.stateService.getState()?.currentCompany?.id ?? null,

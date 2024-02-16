@@ -3,7 +3,7 @@ using BeltmanSoftwareDesign.Shared.ResponseJsons;
 
 namespace BeltmanSoftwareDesign.Business.Interfaces
 {
-    public interface IWorkordersService
+    public interface IWorkorderService
     {
         WorkorderCreateResponse Create(WorkorderCreateRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers);
         WorkorderDeleteResponse Delete(WorkorderDeleteRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers);
