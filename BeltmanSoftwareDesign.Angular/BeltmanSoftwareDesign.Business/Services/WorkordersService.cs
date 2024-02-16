@@ -142,13 +142,8 @@ namespace BeltmanSoftwareDesign.Business.Services
                     ErrorWrongCompany = true,
                 };
 
-            dbworkorder.AmountUur = request.Workorder.AmountUur;
-            dbworkorder.CustomerId = request.Workorder.CustomerId;
-            dbworkorder.Description = request.Workorder.Description;
-            dbworkorder.ProjectId = request.Workorder.ProjectId;
-            dbworkorder.Start = request.Workorder.Start;
-            dbworkorder.Stop = request.Workorder.Stop;
-            db.SaveChanges();
+            if (WorkorderFactory.Copy(request.Workorder, dbworkorder))
+                db.SaveChanges();
 
             return new WorkorderUpdateResponse()
             {

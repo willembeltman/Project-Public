@@ -51,5 +51,40 @@ namespace BeltmanSoftwareDesign.Data.Factories
                     .ToList(),
             };
         }
+
+        public bool Copy(Shared.Jsons.Workorder? source, Entities.Workorder dest)
+        {
+            var changed = false;
+            if (dest.CustomerId != source.CustomerId)
+            {
+                dest.CustomerId = source.CustomerId;
+                changed = true;
+            }
+
+            if (dest.Description != source.Description)
+            {
+                dest.Description = source.Description;
+                changed = true;
+            }
+
+            if (dest.ProjectId != source.ProjectId)
+            {
+                dest.ProjectId = source.ProjectId;
+                changed = true;
+            }
+
+            if (dest.Start != source.Start)
+            {
+                dest.Start = source.Start;
+                changed = true;
+            }
+
+            if (dest.Stop != source.Stop)
+            {
+                dest.Stop = source.Stop;
+                changed = true;
+            }
+            return changed;
+        }
     }
 }

@@ -19,9 +19,8 @@ namespace BeltmanSoftwareDesign.Data.Entities
         public virtual Rate? Rate { get; set; }
 
         public DateTime Start { get; set; }
-        public DateTime? Stop { get; set; }
+        public DateTime Stop { get; set; }
         public string? Description { get; set; }
-        public double? AmountUur { get; set; }
 
         public virtual ICollection<InvoiceWorkorder>? InvoiceWorkorders { get; set; }
         public virtual ICollection<WorkorderAttachment>? WorkorderAttachments { get; set; }

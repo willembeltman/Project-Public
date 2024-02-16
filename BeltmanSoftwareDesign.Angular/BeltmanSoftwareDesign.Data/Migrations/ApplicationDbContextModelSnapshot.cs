@@ -24,13 +24,13 @@ namespace BeltmanSoftwareDesign.Data.Migrations
 
             modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.BankStatement", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<long>("id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("id"));
 
-                    b.Property<int>("Bank")
+                    b.Property<int?>("Bank")
                         .HasColumnType("int");
 
                     b.Property<long>("CompanyId")
@@ -92,7 +92,9 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                    b.HasKey("id");
+
+                    b.HasIndex("CompanyId");
 
                     b.ToTable("BankStatements");
                 });
@@ -113,6 +115,10 @@ namespace BeltmanSoftwareDesign.Data.Migrations
 
                     b.HasKey("id");
 
+                    b.HasIndex("BankStatementId");
+
+                    b.HasIndex("ExpenseId");
+
                     b.ToTable("BankStatementExpenses");
                 });
 
@@ -131,6 +137,10 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                         .HasColumnType("bigint");
 
                     b.HasKey("id");
+
+                    b.HasIndex("BankStatementId");
+
+                    b.HasIndex("InvoiceId");
 
                     b.ToTable("BankStatementInvoices");
                 });
@@ -186,11 +196,11 @@ namespace BeltmanSoftwareDesign.Data.Migrations
 
             modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.ClientDeviceProperty", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<long>("id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("id"));
 
                     b.Property<long>("ClientDeviceId")
                         .HasColumnType("bigint");
@@ -205,7 +215,7 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                         .HasMaxLength(128)
                         .HasColumnType("nvarchar(128)");
 
-                    b.HasKey("Id");
+                    b.HasKey("id");
 
                     b.HasIndex("ClientDeviceId");
 
@@ -232,11 +242,11 @@ namespace BeltmanSoftwareDesign.Data.Migrations
 
             modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.Company", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<long>("id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("id"));
 
                     b.Property<string>("Address")
                         .HasMaxLength(256)
@@ -291,7 +301,7 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
-                    b.HasKey("Id");
+                    b.HasKey("id");
 
                     b.HasIndex("CountryId");
 
@@ -300,11 +310,11 @@ namespace BeltmanSoftwareDesign.Data.Migrations
 
             modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.CompanyUser", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<long>("id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("id"));
 
                     b.Property<bool>("Actief")
                         .HasColumnType("bit");
@@ -322,7 +332,7 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                         .HasMaxLength(64)
                         .HasColumnType("nvarchar(64)");
 
-                    b.HasKey("Id");
+                    b.HasKey("id");
 
                     b.HasIndex("CompanyId");
 
@@ -423,12 +433,12 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<long?>("DocumentTypeId")
                         .HasColumnType("bigint");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<long?>("ProjectId")
                         .HasColumnType("bigint");
@@ -437,6 +447,16 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                         .HasColumnType("bigint");
 
                     b.HasKey("id");
+
+                    b.HasIndex("CompanyId");
+
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("DocumentTypeId");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("SupplierId");
 
                     b.ToTable("Documents");
                 });
@@ -476,27 +496,80 @@ namespace BeltmanSoftwareDesign.Data.Migrations
 
                     b.HasKey("id");
 
+                    b.HasIndex("DocumentId");
+
                     b.ToTable("DocumentAttachments");
                 });
 
             modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.DocumentType", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<long>("id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("id"));
 
                     b.Property<long>("CompanyId")
                         .HasColumnType("bigint");
 
                     b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("CompanyId");
+
+                    b.ToTable("DocumentTypes");
+                });
+
+            modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.Email", b =>
+                {
+                    b.Property<long>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("id"));
+
+                    b.Property<long>("CompanyId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("EmailDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("EmailFrom")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                    b.Property<string>("EmailHtmlBody")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.ToTable("DocumentTypes");
+                    b.Property<int>("EmailIndex")
+                        .HasColumnType("int");
+
+                    b.Property<string>("EmailSubject")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EmailTextBody")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EmailTo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Hidden")
+                        .HasColumnType("bit");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("CompanyId");
+
+                    b.ToTable("Emails");
                 });
 
             modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.Expense", b =>
@@ -540,6 +613,16 @@ namespace BeltmanSoftwareDesign.Data.Migrations
 
                     b.HasKey("id");
 
+                    b.HasIndex("CompanyId");
+
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("ExpenseTypeId");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("SupplierId");
+
                     b.ToTable("Expenses");
                 });
 
@@ -552,32 +635,6 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("id"));
 
                     b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("EmailDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("EmailFrom")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EmailHtmlBody")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("EmailIndex")
-                        .HasColumnType("int");
-
-                    b.Property<string>("EmailSubject")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EmailTextBody")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EmailTo")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -606,34 +663,14 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                     b.Property<long>("FileSize")
                         .HasColumnType("bigint");
 
-                    b.Property<bool>("Hidden")
-                        .HasColumnType("bit");
-
                     b.HasKey("id");
+
+                    b.HasIndex("ExpenseId");
 
                     b.ToTable("ExpenseAttachments");
                 });
 
-            modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.ExpenseProduct", b =>
-                {
-                    b.Property<long>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("id"));
-
-                    b.Property<long?>("ExpenseId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long?>("ProductId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("id");
-
-                    b.ToTable("ExpenseProducts");
-                });
-
-            modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.ExpenseTaxRatePrice", b =>
+            modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.ExpensePrice", b =>
                 {
                     b.Property<long>("id")
                         .ValueGeneratedOnAdd()
@@ -652,7 +689,37 @@ namespace BeltmanSoftwareDesign.Data.Migrations
 
                     b.HasKey("id");
 
-                    b.ToTable("ExpenseTaxRatePrices");
+                    b.HasIndex("ExpenseId");
+
+                    b.HasIndex("TaxRateId");
+
+                    b.ToTable("ExpensePrices");
+                });
+
+            modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.ExpenseProduct", b =>
+                {
+                    b.Property<long>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("id"));
+
+                    b.Property<int>("Amount")
+                        .HasColumnType("int");
+
+                    b.Property<long?>("ExpenseId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("ProductId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("ExpenseId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("ExpenseProducts");
                 });
 
             modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.ExpenseType", b =>
@@ -686,6 +753,8 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                         .HasColumnType("bit");
 
                     b.HasKey("id");
+
+                    b.HasIndex("CompanyId");
 
                     b.ToTable("ExpenseTypes");
                 });
@@ -804,9 +873,6 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("DatePayed")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -818,26 +884,13 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                     b.Property<long?>("InvoiceTypeId")
                         .HasColumnType("bigint");
 
-                    b.Property<bool>("IsPayed")
-                        .HasColumnType("bit");
-
                     b.Property<bool>("IsPayedInCash")
                         .HasColumnType("bit");
 
-                    b.Property<string>("PaymentCode")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<long?>("IsPayedInCash_By_CompanyUserId")
+                        .HasColumnType("bigint");
 
                     b.Property<long?>("ProjectId")
-                        .HasColumnType("bigint");
-
-                    b.Property<double?>("RatePrice")
-                        .HasColumnType("float");
-
-                    b.Property<long?>("SetToPayed_By_CompanyUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long?>("TaxRateId")
                         .HasColumnType("bigint");
 
                     b.HasKey("id");
@@ -848,11 +901,9 @@ namespace BeltmanSoftwareDesign.Data.Migrations
 
                     b.HasIndex("InvoiceTypeId");
 
+                    b.HasIndex("IsPayedInCash_By_CompanyUserId");
+
                     b.HasIndex("ProjectId");
-
-                    b.HasIndex("SetToPayed_By_CompanyUserId");
-
-                    b.HasIndex("TaxRateId");
 
                     b.ToTable("Invoices");
                 });
@@ -896,6 +947,8 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                         .HasColumnType("bit");
 
                     b.HasKey("id");
+
+                    b.HasIndex("InvoiceId");
 
                     b.ToTable("InvoiceAttachments");
                 });
@@ -944,10 +997,12 @@ namespace BeltmanSoftwareDesign.Data.Migrations
 
                     b.HasKey("id");
 
+                    b.HasIndex("InvoiceId");
+
                     b.ToTable("InvoiceEmails");
                 });
 
-            modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.InvoiceProduct", b =>
+            modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.InvoicePrice", b =>
                 {
                     b.Property<long>("id")
                         .ValueGeneratedOnAdd()
@@ -958,10 +1013,43 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                     b.Property<long?>("InvoiceId")
                         .HasColumnType("bigint");
 
-                    b.Property<long?>("ProductId")
+                    b.Property<double>("Price")
+                        .HasColumnType("float");
+
+                    b.Property<long?>("TaxRateId")
                         .HasColumnType("bigint");
 
                     b.HasKey("id");
+
+                    b.HasIndex("InvoiceId");
+
+                    b.HasIndex("TaxRateId");
+
+                    b.ToTable("InvoicePrices");
+                });
+
+            modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.InvoiceProduct", b =>
+                {
+                    b.Property<long>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("id"));
+
+                    b.Property<int>("Amount")
+                        .HasColumnType("int");
+
+                    b.Property<long>("InvoiceId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("ProductId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("InvoiceId");
+
+                    b.HasIndex("ProductId");
 
                     b.ToTable("InvoiceProducts");
                 });
@@ -993,11 +1081,39 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                     b.Property<double>("PricePerPiece")
                         .HasColumnType("float");
 
+                    b.Property<long>("TaxRateId")
+                        .HasColumnType("bigint");
+
                     b.HasKey("id");
 
                     b.HasIndex("InvoiceId");
 
+                    b.HasIndex("TaxRateId");
+
                     b.ToTable("InvoiceRows");
+                });
+
+            modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.InvoiceTransaction", b =>
+                {
+                    b.Property<long>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("id"));
+
+                    b.Property<long>("InvoiceId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("TransactionId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("InvoiceId");
+
+                    b.HasIndex("TransactionId");
+
+                    b.ToTable("InvoiceTransactions");
                 });
 
             modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.InvoiceType", b =>
@@ -1015,6 +1131,10 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("id");
 
                     b.HasIndex("CompanyId");
@@ -1022,7 +1142,7 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                     b.ToTable("InvoiceTypes");
                 });
 
-            modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.InvoiceWorkorderRate", b =>
+            modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.InvoiceWorkorder", b =>
                 {
                     b.Property<long>("id")
                         .ValueGeneratedOnAdd()
@@ -1065,10 +1185,34 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long?>("SupplierId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("CompanyId");
+
+                    b.HasIndex("SupplierId");
+
+                    b.ToTable("Products");
+                });
+
+            modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.ProductPrice", b =>
+                {
+                    b.Property<long>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("id"));
+
                     b.Property<double>("Price")
                         .HasColumnType("float");
 
-                    b.Property<long?>("SupplierId")
+                    b.Property<long?>("ProductId")
                         .HasColumnType("bigint");
 
                     b.Property<long?>("TaxRateId")
@@ -1076,7 +1220,11 @@ namespace BeltmanSoftwareDesign.Data.Migrations
 
                     b.HasKey("id");
 
-                    b.ToTable("Products");
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("TaxRateId");
+
+                    b.ToTable("ProductPrices");
                 });
 
             modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.Project", b =>
@@ -1139,16 +1287,16 @@ namespace BeltmanSoftwareDesign.Data.Migrations
 
                     b.HasIndex("TaxRateId");
 
-                    b.ToTable("WorkRates");
+                    b.ToTable("Rates");
                 });
 
             modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.Residence", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<long>("id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("id"));
 
                     b.Property<long>("CompanyId")
                         .HasColumnType("bigint");
@@ -1162,7 +1310,9 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                     b.Property<double>("WOZWaarde")
                         .HasColumnType("float");
 
-                    b.HasKey("Id");
+                    b.HasKey("id");
+
+                    b.HasIndex("CompanyId");
 
                     b.ToTable("Residences");
                 });
@@ -1190,6 +1340,8 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("id");
+
+                    b.HasIndex("CompanyId");
 
                     b.ToTable("Settings");
                 });
@@ -1237,6 +1389,10 @@ namespace BeltmanSoftwareDesign.Data.Migrations
 
                     b.HasKey("id");
 
+                    b.HasIndex("CompanyId");
+
+                    b.HasIndex("CountryId");
+
                     b.ToTable("Suppliers");
                 });
 
@@ -1255,6 +1411,10 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -1358,6 +1518,8 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                         .HasColumnType("float");
 
                     b.HasKey("id");
+
+                    b.HasIndex("CompanyId");
 
                     b.ToTable("TrafficRegistrations");
                 });
@@ -1521,9 +1683,6 @@ namespace BeltmanSoftwareDesign.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("id"));
 
-                    b.Property<double?>("AmountUur")
-                        .HasColumnType("float");
-
                     b.Property<long>("CompanyId")
                         .HasColumnType("bigint");
 
@@ -1542,7 +1701,7 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                     b.Property<DateTime>("Start")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("Stop")
+                    b.Property<DateTime>("Stop")
                         .HasColumnType("datetime2");
 
                     b.HasKey("id");
@@ -1590,22 +1749,67 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                     b.ToTable("WorkorderAttachments");
                 });
 
+            modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.BankStatement", b =>
+                {
+                    b.HasOne("BeltmanSoftwareDesign.Data.Entities.Company", "Company")
+                        .WithMany("BankStatements")
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Company");
+                });
+
+            modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.BankStatementExpense", b =>
+                {
+                    b.HasOne("BeltmanSoftwareDesign.Data.Entities.BankStatement", "BankStatement")
+                        .WithMany("BankStatementExpenses")
+                        .HasForeignKey("BankStatementId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("BeltmanSoftwareDesign.Data.Entities.Expense", "Expense")
+                        .WithMany("BankStatementExpenses")
+                        .HasForeignKey("ExpenseId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("BankStatement");
+
+                    b.Navigation("Expense");
+                });
+
+            modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.BankStatementInvoice", b =>
+                {
+                    b.HasOne("BeltmanSoftwareDesign.Data.Entities.BankStatement", "BankStatement")
+                        .WithMany("BankStatementInvoices")
+                        .HasForeignKey("BankStatementId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("BeltmanSoftwareDesign.Data.Entities.Invoice", "Invoice")
+                        .WithMany("BankStatementInvoices")
+                        .HasForeignKey("InvoiceId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("BankStatement");
+
+                    b.Navigation("Invoice");
+                });
+
             modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.ClientBearer", b =>
                 {
                     b.HasOne("BeltmanSoftwareDesign.Data.Entities.ClientDevice", "ClientDevice")
                         .WithMany("ClientBearers")
                         .HasForeignKey("ClientDeviceId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("BeltmanSoftwareDesign.Data.Entities.ClientIpAddress", "ClientIpAddress")
                         .WithMany("ClientBearers")
                         .HasForeignKey("ClientIpAddressId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("BeltmanSoftwareDesign.Data.Entities.User", "User")
                         .WithMany("ClientBearers")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("ClientDevice");
@@ -1631,7 +1835,7 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                     b.HasOne("BeltmanSoftwareDesign.Data.Entities.Country", "Country")
                         .WithMany("Companies")
                         .HasForeignKey("CountryId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("Country");
                 });
@@ -1641,13 +1845,13 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                     b.HasOne("BeltmanSoftwareDesign.Data.Entities.Company", "Company")
                         .WithMany("CompanyUsers")
                         .HasForeignKey("CompanyId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("BeltmanSoftwareDesign.Data.Entities.User", "User")
                         .WithMany("CompanyUsers")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("Company");
 
@@ -1672,6 +1876,171 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                     b.Navigation("Country");
                 });
 
+            modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.Document", b =>
+                {
+                    b.HasOne("BeltmanSoftwareDesign.Data.Entities.Company", "Company")
+                        .WithMany("Documents")
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BeltmanSoftwareDesign.Data.Entities.Customer", "Customer")
+                        .WithMany("Documents")
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("BeltmanSoftwareDesign.Data.Entities.DocumentType", "DocumentType")
+                        .WithMany("Documents")
+                        .HasForeignKey("DocumentTypeId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("BeltmanSoftwareDesign.Data.Entities.Project", "Project")
+                        .WithMany("Documents")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("BeltmanSoftwareDesign.Data.Entities.Supplier", "Supplier")
+                        .WithMany("Documents")
+                        .HasForeignKey("SupplierId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("Company");
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("DocumentType");
+
+                    b.Navigation("Project");
+
+                    b.Navigation("Supplier");
+                });
+
+            modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.DocumentAttachment", b =>
+                {
+                    b.HasOne("BeltmanSoftwareDesign.Data.Entities.Document", "Document")
+                        .WithMany("DocumentAttachments")
+                        .HasForeignKey("DocumentId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("Document");
+                });
+
+            modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.DocumentType", b =>
+                {
+                    b.HasOne("BeltmanSoftwareDesign.Data.Entities.Company", "Company")
+                        .WithMany("DocumentTypes")
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Company");
+                });
+
+            modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.Email", b =>
+                {
+                    b.HasOne("BeltmanSoftwareDesign.Data.Entities.Company", "Company")
+                        .WithMany()
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Company");
+                });
+
+            modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.Expense", b =>
+                {
+                    b.HasOne("BeltmanSoftwareDesign.Data.Entities.Company", "Company")
+                        .WithMany("Expenses")
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BeltmanSoftwareDesign.Data.Entities.Customer", "Customer")
+                        .WithMany("Expenses")
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("BeltmanSoftwareDesign.Data.Entities.ExpenseType", "ExpenseType")
+                        .WithMany("Expenses")
+                        .HasForeignKey("ExpenseTypeId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("BeltmanSoftwareDesign.Data.Entities.Project", "Project")
+                        .WithMany("Expenses")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("BeltmanSoftwareDesign.Data.Entities.Supplier", "Supplier")
+                        .WithMany("Expenses")
+                        .HasForeignKey("SupplierId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("Company");
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("ExpenseType");
+
+                    b.Navigation("Project");
+
+                    b.Navigation("Supplier");
+                });
+
+            modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.ExpenseAttachment", b =>
+                {
+                    b.HasOne("BeltmanSoftwareDesign.Data.Entities.Expense", "Expense")
+                        .WithMany("ExpenseAttachments")
+                        .HasForeignKey("ExpenseId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("Expense");
+                });
+
+            modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.ExpensePrice", b =>
+                {
+                    b.HasOne("BeltmanSoftwareDesign.Data.Entities.Expense", "Expense")
+                        .WithMany("ExpensePrices")
+                        .HasForeignKey("ExpenseId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("BeltmanSoftwareDesign.Data.Entities.TaxRate", "TaxRate")
+                        .WithMany("ExpensePrices")
+                        .HasForeignKey("TaxRateId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("Expense");
+
+                    b.Navigation("TaxRate");
+                });
+
+            modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.ExpenseProduct", b =>
+                {
+                    b.HasOne("BeltmanSoftwareDesign.Data.Entities.Expense", "Expense")
+                        .WithMany("ExpenseProducts")
+                        .HasForeignKey("ExpenseId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("BeltmanSoftwareDesign.Data.Entities.Product", "Product")
+                        .WithMany("ExpenseProducts")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("Expense");
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.ExpenseType", b =>
+                {
+                    b.HasOne("BeltmanSoftwareDesign.Data.Entities.Company", "Company")
+                        .WithMany("ExpenseTypes")
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Company");
+                });
+
             modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.Invoice", b =>
                 {
                     b.HasOne("BeltmanSoftwareDesign.Data.Entities.Company", "Company")
@@ -1690,19 +2059,14 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                         .HasForeignKey("InvoiceTypeId")
                         .OnDelete(DeleteBehavior.NoAction);
 
+                    b.HasOne("BeltmanSoftwareDesign.Data.Entities.CompanyUser", "IsPayedInCash_By_CompanyUser")
+                        .WithMany("Invoices_SetToPayed")
+                        .HasForeignKey("IsPayedInCash_By_CompanyUserId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
                     b.HasOne("BeltmanSoftwareDesign.Data.Entities.Project", "Project")
                         .WithMany("Invoices")
                         .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
-                    b.HasOne("BeltmanSoftwareDesign.Data.Entities.CompanyUser", "SetToPayed_By_CompanyUser")
-                        .WithMany("Invoices_SetToPayed")
-                        .HasForeignKey("SetToPayed_By_CompanyUserId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
-                    b.HasOne("BeltmanSoftwareDesign.Data.Entities.TaxRate", "TaxRate")
-                        .WithMany("Invoices")
-                        .HasForeignKey("TaxRateId")
                         .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("Company");
@@ -1711,11 +2075,67 @@ namespace BeltmanSoftwareDesign.Data.Migrations
 
                     b.Navigation("InvoiceType");
 
-                    b.Navigation("Project");
+                    b.Navigation("IsPayedInCash_By_CompanyUser");
 
-                    b.Navigation("SetToPayed_By_CompanyUser");
+                    b.Navigation("Project");
+                });
+
+            modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.InvoiceAttachment", b =>
+                {
+                    b.HasOne("BeltmanSoftwareDesign.Data.Entities.Invoice", "Invoice")
+                        .WithMany("InvoiceAttachments")
+                        .HasForeignKey("InvoiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Invoice");
+                });
+
+            modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.InvoiceEmail", b =>
+                {
+                    b.HasOne("BeltmanSoftwareDesign.Data.Entities.Invoice", "Invoice")
+                        .WithMany("InvoiceEmails")
+                        .HasForeignKey("InvoiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Invoice");
+                });
+
+            modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.InvoicePrice", b =>
+                {
+                    b.HasOne("BeltmanSoftwareDesign.Data.Entities.Invoice", "Invoice")
+                        .WithMany("InvoicePrices")
+                        .HasForeignKey("InvoiceId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("BeltmanSoftwareDesign.Data.Entities.TaxRate", "TaxRate")
+                        .WithMany("InvoicePrices")
+                        .HasForeignKey("TaxRateId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("Invoice");
 
                     b.Navigation("TaxRate");
+                });
+
+            modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.InvoiceProduct", b =>
+                {
+                    b.HasOne("BeltmanSoftwareDesign.Data.Entities.Invoice", "Invoice")
+                        .WithMany("InvoiceProducts")
+                        .HasForeignKey("InvoiceId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("BeltmanSoftwareDesign.Data.Entities.Product", "Product")
+                        .WithMany("InvoiceProducts")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Invoice");
+
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.InvoiceRow", b =>
@@ -1723,9 +2143,36 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                     b.HasOne("BeltmanSoftwareDesign.Data.Entities.Invoice", "Invoice")
                         .WithMany("InvoiceRows")
                         .HasForeignKey("InvoiceId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("BeltmanSoftwareDesign.Data.Entities.TaxRate", "TaxRate")
+                        .WithMany("InvoiceRows")
+                        .HasForeignKey("TaxRateId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.Navigation("Invoice");
+
+                    b.Navigation("TaxRate");
+                });
+
+            modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.InvoiceTransaction", b =>
+                {
+                    b.HasOne("BeltmanSoftwareDesign.Data.Entities.Invoice", "Invoice")
+                        .WithMany("InvoiceTransactions")
+                        .HasForeignKey("InvoiceId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("BeltmanSoftwareDesign.Data.Entities.Transaction", "Transaction")
+                        .WithMany("InvoiceTransactions")
+                        .HasForeignKey("TransactionId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Invoice");
+
+                    b.Navigation("Transaction");
                 });
 
             modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.InvoiceType", b =>
@@ -1739,7 +2186,7 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                     b.Navigation("Company");
                 });
 
-            modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.InvoiceWorkorderRate", b =>
+            modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.InvoiceWorkorder", b =>
                 {
                     b.HasOne("BeltmanSoftwareDesign.Data.Entities.Invoice", "Invoice")
                         .WithMany("InvoiceWorkorders")
@@ -1763,12 +2210,47 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                     b.Navigation("Workorder");
                 });
 
+            modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.Product", b =>
+                {
+                    b.HasOne("BeltmanSoftwareDesign.Data.Entities.Company", "Company")
+                        .WithMany("Products")
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BeltmanSoftwareDesign.Data.Entities.Supplier", "Supplier")
+                        .WithMany("Products")
+                        .HasForeignKey("SupplierId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("Company");
+
+                    b.Navigation("Supplier");
+                });
+
+            modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.ProductPrice", b =>
+                {
+                    b.HasOne("BeltmanSoftwareDesign.Data.Entities.Product", "Product")
+                        .WithMany("ProductPrices")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("BeltmanSoftwareDesign.Data.Entities.TaxRate", "TaxRate")
+                        .WithMany("ProductPrices")
+                        .HasForeignKey("TaxRateId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("Product");
+
+                    b.Navigation("TaxRate");
+                });
+
             modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.Project", b =>
                 {
                     b.HasOne("BeltmanSoftwareDesign.Data.Entities.Company", "Company")
                         .WithMany("Projects")
                         .HasForeignKey("CompanyId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("BeltmanSoftwareDesign.Data.Entities.Customer", "Customer")
@@ -1799,6 +2281,46 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                     b.Navigation("TaxRate");
                 });
 
+            modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.Residence", b =>
+                {
+                    b.HasOne("BeltmanSoftwareDesign.Data.Entities.Company", "Company")
+                        .WithMany("Residences")
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Company");
+                });
+
+            modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.Setting", b =>
+                {
+                    b.HasOne("BeltmanSoftwareDesign.Data.Entities.Company", "Company")
+                        .WithMany("Settings")
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Company");
+                });
+
+            modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.Supplier", b =>
+                {
+                    b.HasOne("BeltmanSoftwareDesign.Data.Entities.Company", "Company")
+                        .WithMany("Suppliers")
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("BeltmanSoftwareDesign.Data.Entities.Country", "Country")
+                        .WithMany("Suppliers")
+                        .HasForeignKey("CountryId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("Company");
+
+                    b.Navigation("Country");
+                });
+
             modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.TaxRate", b =>
                 {
                     b.HasOne("BeltmanSoftwareDesign.Data.Entities.Company", "Company")
@@ -1817,6 +2339,17 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                     b.Navigation("Country");
                 });
 
+            modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.TrafficRegistration", b =>
+                {
+                    b.HasOne("BeltmanSoftwareDesign.Data.Entities.Company", "Company")
+                        .WithMany("TrafficRegistrations")
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Company");
+                });
+
             modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.Transaction", b =>
                 {
                     b.HasOne("BeltmanSoftwareDesign.Data.Entities.Company", "Company")
@@ -1833,7 +2366,7 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                     b.HasOne("BeltmanSoftwareDesign.Data.Entities.Transaction", "Transaction")
                         .WithMany("TransactionLogs")
                         .HasForeignKey("TransactionId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Transaction");
                 });
@@ -1843,7 +2376,7 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                     b.HasOne("BeltmanSoftwareDesign.Data.Entities.TransactionLog", "TransactionLog")
                         .WithMany("TransactionLogParameters")
                         .HasForeignKey("TransactionLogId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("TransactionLog");
@@ -1854,7 +2387,7 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                     b.HasOne("BeltmanSoftwareDesign.Data.Entities.Transaction", "Transaction")
                         .WithMany("TransactionParameters")
                         .HasForeignKey("TransactionId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Transaction");
@@ -1915,6 +2448,13 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                     b.Navigation("Workorder");
                 });
 
+            modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.BankStatement", b =>
+                {
+                    b.Navigation("BankStatementExpenses");
+
+                    b.Navigation("BankStatementInvoices");
+                });
+
             modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.ClientDevice", b =>
                 {
                     b.Navigation("ClientBearers");
@@ -1929,21 +2469,41 @@ namespace BeltmanSoftwareDesign.Data.Migrations
 
             modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.Company", b =>
                 {
+                    b.Navigation("BankStatements");
+
                     b.Navigation("CompanyUsers");
 
                     b.Navigation("CurrentUsers");
 
                     b.Navigation("Customers");
 
+                    b.Navigation("DocumentTypes");
+
+                    b.Navigation("Documents");
+
+                    b.Navigation("ExpenseTypes");
+
+                    b.Navigation("Expenses");
+
                     b.Navigation("InvoiceTypes");
 
                     b.Navigation("Invoices");
+
+                    b.Navigation("Products");
 
                     b.Navigation("Projects");
 
                     b.Navigation("Rates");
 
+                    b.Navigation("Residences");
+
+                    b.Navigation("Settings");
+
+                    b.Navigation("Suppliers");
+
                     b.Navigation("TaxRates");
+
+                    b.Navigation("TrafficRegistrations");
 
                     b.Navigation("Transactions");
 
@@ -1961,11 +2521,17 @@ namespace BeltmanSoftwareDesign.Data.Migrations
 
                     b.Navigation("Customers");
 
+                    b.Navigation("Suppliers");
+
                     b.Navigation("TaxRates");
                 });
 
             modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.Customer", b =>
                 {
+                    b.Navigation("Documents");
+
+                    b.Navigation("Expenses");
+
                     b.Navigation("Invoices");
 
                     b.Navigation("Projects");
@@ -1973,9 +2539,47 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                     b.Navigation("Workorders");
                 });
 
+            modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.Document", b =>
+                {
+                    b.Navigation("DocumentAttachments");
+                });
+
+            modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.DocumentType", b =>
+                {
+                    b.Navigation("Documents");
+                });
+
+            modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.Expense", b =>
+                {
+                    b.Navigation("BankStatementExpenses");
+
+                    b.Navigation("ExpenseAttachments");
+
+                    b.Navigation("ExpensePrices");
+
+                    b.Navigation("ExpenseProducts");
+                });
+
+            modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.ExpenseType", b =>
+                {
+                    b.Navigation("Expenses");
+                });
+
             modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.Invoice", b =>
                 {
+                    b.Navigation("BankStatementInvoices");
+
+                    b.Navigation("InvoiceAttachments");
+
+                    b.Navigation("InvoiceEmails");
+
+                    b.Navigation("InvoicePrices");
+
+                    b.Navigation("InvoiceProducts");
+
                     b.Navigation("InvoiceRows");
+
+                    b.Navigation("InvoiceTransactions");
 
                     b.Navigation("InvoiceWorkorders");
                 });
@@ -1985,8 +2589,21 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                     b.Navigation("Invoices");
                 });
 
+            modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.Product", b =>
+                {
+                    b.Navigation("ExpenseProducts");
+
+                    b.Navigation("InvoiceProducts");
+
+                    b.Navigation("ProductPrices");
+                });
+
             modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.Project", b =>
                 {
+                    b.Navigation("Documents");
+
+                    b.Navigation("Expenses");
+
                     b.Navigation("Invoices");
 
                     b.Navigation("Workorders");
@@ -1999,15 +2616,32 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                     b.Navigation("Workorders");
                 });
 
+            modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.Supplier", b =>
+                {
+                    b.Navigation("Documents");
+
+                    b.Navigation("Expenses");
+
+                    b.Navigation("Products");
+                });
+
             modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.TaxRate", b =>
                 {
-                    b.Navigation("Invoices");
+                    b.Navigation("ExpensePrices");
+
+                    b.Navigation("InvoicePrices");
+
+                    b.Navigation("InvoiceRows");
+
+                    b.Navigation("ProductPrices");
 
                     b.Navigation("Rates");
                 });
 
             modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.Transaction", b =>
                 {
+                    b.Navigation("InvoiceTransactions");
+
                     b.Navigation("TransactionLogs");
 
                     b.Navigation("TransactionParameters");
