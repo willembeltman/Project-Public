@@ -218,9 +218,11 @@ namespace BeltmanSoftwareDesign.Business.Services
 
             // ===========================
 
-            var dbcompany = db.Companies.FirstOrDefault(a =>
-                a.id == request.CompanyId &&
-                a.CompanyUsers.Any(b => b.UserId == state.User.id && (b.Admin || b.Eigenaar)));
+            var dbcompany = db.Companies
+                .Include(a => a.CompanyUsers)
+                .FirstOrDefault(a =>
+                    a.id == request.CompanyId &&
+                    a.CompanyUsers.Any(b => b.UserId == state.User.id && (b.Admin || b.Eigenaar)));
             if (dbcompany == null)
                 return new CompanyDeleteResponse()
                 {
@@ -240,6 +242,7 @@ namespace BeltmanSoftwareDesign.Business.Services
                 state.DbUser.CurrentCompanyId = null;
             }
 
+            db.CompanyUsers.RemoveRange(dbcompany.CompanyUsers);
             db.Companies.Remove(dbcompany);
             db.SaveChanges();
 

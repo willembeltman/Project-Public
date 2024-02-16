@@ -34,7 +34,7 @@ export const routes: Routes = [
   { path: 'portal-account', component: PortalAccountComponent,      canActivate: [UserGaurd] },
   { path: 'notloggedin', component: NotLoggedInComponent,           canActivate: [NotLoggedInGaurd] },
 
-  { path: 'nocompany', component: NoCompanyComponent,           canActivate: [UserGaurd] },
+  { path: 'nocompany', component: NoCompanyComponent,               canActivate: [UserGaurd] },
   { path: 'portal-company', component: PortalCompanyComponent,      canActivate: [CompanyGaurd] },
   { path: 'portal-analytics', component: PortalAnalyticsComponent,  canActivate: [CompanyGaurd] },
 
