@@ -21,28 +21,36 @@ import { PortalSettingsComponent } from './components/portalsettings/portalsetti
 import { PortalAccountComponent } from './components/portalaccount/portalaccount.component';
 import { PortalCompanyComponent } from './components/portalcompany/portalcompany.component';
 import { PortalAnalyticsComponent } from './components/portalanalytics/portalanalytics.component';
+import { EditWorkorderComponent } from './components/editworkorder/editworkorder.component';
+import { CreateWorkorderComponent } from './components/createworkorder/createworkorder.component';
+import { DeleteWorkorderComponent } from './components/deleteworkorder/deleteworkorder.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
-  { path: 'login', component: LoginComponent,                       canActivate: [NotLoggedInGaurd] },
-  { path: 'loginsucces', component: LoginSuccesComponent,           canActivate: [UserGaurd] },
-  { path: 'register', component: RegisterComponent,                 canActivate: [NotLoggedInGaurd] },
-  { path: 'registersucces', component: RegisterSuccesComponent,     canActivate: [UserGaurd] },
-  { path: 'logout', component: LogoutComponent,                     canActivate: [UserGaurd] },
-  { path: 'logoutsucces', component: LogoutsuccessComponent,        canActivate: [NotLoggedInGaurd] },
-  { path: 'portal-settings', component: PortalSettingsComponent,    canActivate: [CompanyGaurd] },
-  { path: 'portal-account', component: PortalAccountComponent,      canActivate: [UserGaurd] },
-  { path: 'notloggedin', component: NotLoggedInComponent,           canActivate: [NotLoggedInGaurd] },
+  { path: 'login', component: LoginComponent,                         canActivate: [NotLoggedInGaurd] },
+  { path: 'loginsucces', component: LoginSuccesComponent,             canActivate: [UserGaurd] },
+  { path: 'register', component: RegisterComponent,                   canActivate: [NotLoggedInGaurd] },
+  { path: 'registersucces', component: RegisterSuccesComponent,       canActivate: [UserGaurd] },
+  { path: 'logout', component: LogoutComponent,                       canActivate: [UserGaurd] },
+  { path: 'logoutsucces', component: LogoutsuccessComponent,          canActivate: [NotLoggedInGaurd] },
+  { path: 'portal-settings', component: PortalSettingsComponent,      canActivate: [CompanyGaurd] },
+  { path: 'portal-account', component: PortalAccountComponent,        canActivate: [UserGaurd] },
+  { path: 'notloggedin', component: NotLoggedInComponent,             canActivate: [NotLoggedInGaurd] },
 
-  { path: 'nocompany', component: NoCompanyComponent,               canActivate: [UserGaurd] },
-  { path: 'portal-company', component: PortalCompanyComponent,      canActivate: [CompanyGaurd] },
-  { path: 'portal-analytics', component: PortalAnalyticsComponent,  canActivate: [CompanyGaurd] },
+  { path: 'nocompany', component: NoCompanyComponent,                 canActivate: [UserGaurd] },
+  { path: 'portal-company', component: PortalCompanyComponent,        canActivate: [CompanyGaurd] },
+  { path: 'portal-analytics', component: PortalAnalyticsComponent,    canActivate: [CompanyGaurd] },
 
-  { path: 'companies', component: CompaniesComponent,               canActivate: [UserGaurd] },
-  { path: 'createcompany', component: CreateCompanyComponent,       canActivate: [UserGaurd] },
-  { path: 'editcompany/:id', component: EditCompanyComponent,       canActivate: [UserGaurd] },
-  { path: 'deletecompany/:id', component: DeleteCompanyComponent,   canActivate: [UserGaurd] },
+  { path: 'companies', component: CompaniesComponent,                 canActivate: [UserGaurd] },
+  { path: 'createcompany', component: CreateCompanyComponent,         canActivate: [UserGaurd] },
+  { path: 'editcompany/:id', component: EditCompanyComponent,         canActivate: [UserGaurd] },
+  { path: 'deletecompany/:id', component: DeleteCompanyComponent,     canActivate: [UserGaurd] },
 
-  { path: 'workorders', component: WorkordersComponent,             canActivate: [CompanyGaurd] },
-  { path: 'edituser/:id', component: EditUserComponent,             canActivate: [UserGaurd] },
+  { path: 'workorders', component: WorkordersComponent, canActivate: [CompanyGaurd] },
+  { path: 'createworkorder', component: CreateWorkorderComponent, canActivate: [CompanyGaurd] },
+  { path: 'editworkorder/:id', component: EditWorkorderComponent, canActivate: [CompanyGaurd] },
+  { path: 'deleteworkorder/:id', component: DeleteWorkorderComponent, canActivate: [CompanyGaurd] },
+
+
+  { path: 'edituser/:id', component: EditUserComponent,               canActivate: [UserGaurd] },
 ];

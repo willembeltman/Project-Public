@@ -4,11 +4,12 @@ import { Workorder } from '../../interfaces/workorder';
 import { NgFor, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { WorkorderService } from '../../apiservices/workorder.service';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-workorders',
   standalone: true,
-  imports: [FormsModule, NgIf, NgFor],
+  imports: [FormsModule, NgIf, NgFor, RouterLink],
   templateUrl: './workorders.component.html',
   styleUrl: './workorders.component.css'
 })

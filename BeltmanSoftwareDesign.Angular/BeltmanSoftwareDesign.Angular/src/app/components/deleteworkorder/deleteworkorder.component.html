@@ -12,30 +12,46 @@
   <table>
     <tr>
       <td>
-        name
+        start
       </td>
       <td>
-        {{this.workorder?.name}}
+        {{this.workorder?.start}}
       </td>
     </tr>
     <tr>
       <td>
-        countryname
+        stop
       </td>
       <td>
-        {{this.workorder?.countryName}}
+        {{this.workorder?.stop}}
       </td>
     </tr>
 
     <tr>
       <td>
-        email
+        description
       </td>
       <td>
-        {{this.workorder?.email}}
+        {{this.workorder?.description}}
       </td>
     </tr>
-
-    <button class="btn btn-primary" (click)="onSubmit()">Delete it now!</button>
+    <tr>
+      <td>
+        projectName
+      </td>
+      <td>
+        {{this.workorder?.projectName}}
+      </td>
+    </tr>
+    <tr>
+      <td>
+        customerName
+      </td>
+      <td>
+        {{this.workorder?.customerName}}
+      </td>
+    </tr>
   </table>
+
+  <button class="btn btn-primary" (click)="onSubmit()">Delete it now!</button>
 </div>

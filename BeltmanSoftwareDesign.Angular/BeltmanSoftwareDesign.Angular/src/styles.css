@@ -1,6 +1,6 @@
 html, body {
-    margin: 0;
-    padding: 0;
+  margin: 0;
+  padding: 0;
 }
 
 nav {
@@ -11,7 +11,7 @@ nav {
 }
 
 main {
-    padding: 8px;
+  padding: 8px;
 }
 
 input.error {
@@ -23,7 +23,28 @@ small.error {
   display: block;
 }
 
-label {
-    width: 100px;
-    display: inline-block;
+.form-group label {
+  width: 100px;
+  display: inline-block;
+}
+
+.form-group input[type=text],
+.form-group input[type=number]
+.form-group input[type=date],
+.form-group input[type=time] {
+  height: 17px;
+  margin: 2px;
+}
+
+.form-group input[type=text],
+.form-group input[type=number] {
+  width: 182px;
+}
+
+.form-group input[type=date] {
+  width: 110px;
+}
+
+.form-group input[type=time] {
+  width: 70px;
 }

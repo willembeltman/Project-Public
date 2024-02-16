@@ -37,16 +37,17 @@ namespace BeltmanSoftwareDesign.Data.Factories
                 Stop = a.Stop,
                 Description = a.Description,
                 CustomerId = a.CustomerId,
-                CustomerName = a.Customer.Name,
+                CustomerName = a.Customer?.Name,
                 ProjectId = a.ProjectId,
-                ProjectName = a.Project.Name,
-                InvoiceWorkorders = a.InvoiceWorkorders
-                    .Select(b => InvoiceWorkorderFactory.Convert(b))
-                    .ToList(),
+                ProjectName = a.Project?.Name,
+                InvoiceWorkorders = 
+                    a.InvoiceWorkorders?
+                        .Select(b => InvoiceWorkorderFactory.Convert(b))
+                        .ToList(),
                 WorkorderAttachments =
-                    a.WorkorderAttachments
-                    .Select(b => WorkorderAttachmentFactory.Convert(b))
-                    .ToList(),
+                    a.WorkorderAttachments?
+                        .Select(b => WorkorderAttachmentFactory.Convert(b))
+                        .ToList(),
             };
         }
 

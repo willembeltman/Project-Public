@@ -34,7 +34,7 @@ export class CreateCompanyComponent implements OnInit {
 
   firstCompany: boolean = false;
 
-  countries: Country[] | null = null;
+  countries: Country[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -77,7 +77,6 @@ export class CreateCompanyComponent implements OnInit {
                       kvkNumber: [''],
                       iban: [''],
                     });
-
                   }
                 }
               })
@@ -107,8 +106,7 @@ export class CreateCompanyComponent implements OnInit {
         next: (response) => {
           this.stateService.setState(response.state);
           if (response.success) {
-            //this.cacheService.resetCompanies();
-            this.router.navigate(['/companies']);
+            this.router.navigate(['/editcompany/', response.company?.id]);
           }
         }
       });

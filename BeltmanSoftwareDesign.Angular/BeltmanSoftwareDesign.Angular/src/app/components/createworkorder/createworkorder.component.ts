@@ -21,24 +21,20 @@ import { CustomerService } from '../../apiservices/customer.service';
 export class CreateWorkorderComponent implements OnInit {
 
   workorderForm: FormGroup = this.fb.group({
-    countryId: [''],
-    name: ['', Validators.required],
-    address: [''],
-    postalcode: [''],
-    place: [''],
-    phoneNumber: [''],
-    email: ['', Validators.email],
-    website: [''],
-    btwNumber: [''],
-    kvkNumber: [''],
-    iban: [''],
+    startDate: ['', Validators.required],
+    startTime: ['', Validators.required],
+    stopDate: ['', Validators.required],
+    stopTime: ['', Validators.required],
+    description: ['', Validators.required],
+    projectName: ['', Validators.required],
+    customerName: ['', Validators.required],
   });
 
   firstWorkorder: boolean = false;
 
-  workorders: Workorder[] | null = null;
-  projects: Project[] | null = null;
-  customers: Customer[] | null = null;
+  workorders: Workorder[] = [];
+  projects: Project[] = [];
+  customers: Customer[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -75,7 +71,7 @@ export class CreateWorkorderComponent implements OnInit {
           this.stateService.setState(projectsresponse.state);
           if (projectsresponse.success) {
             this.projects = projectsresponse.projects;
-            this.readProjects();
+            this.readCustomers();
           }
         }
       });
@@ -94,20 +90,21 @@ export class CreateWorkorderComponent implements OnInit {
         }
       });
   }
-  setup() {   
+  setup() {
+    this.firstWorkorder = this.workorders.length == 0;
+    
+    let date = new Date();
+    let datestring = date.toISOString().split('T')[0];
+    let timestring = date.toISOString().split('T')[1].split('Z')[0];
 
     this.workorderForm = this.fb.group({
-      //countryId: [this.countries[0].id],
-      name: [name, Validators.required],
-      address: [''],
-      postalcode: [''],
-      place: [''],
-      phoneNumber: [this.stateService.getState()?.user?.phoneNumber ?? ''],
-      email: [this.stateService.getState()?.user?.email ?? '', Validators.email],
-      website: [''],
-      btwNumber: [''],
-      kvkNumber: [''],
-      iban: [''],
+      startDate: [datestring, Validators.required],
+      startTime: [timestring, Validators.required],
+      stopDate: [datestring, Validators.required],
+      stopTime: [timestring, Validators.required],
+      description: ['', Validators.required],
+      projectName: ['', Validators.required],
+      customerName: ['', Validators.required],
     });
   }
 
@@ -116,10 +113,16 @@ export class CreateWorkorderComponent implements OnInit {
       ValidateForm.validateAllFormFields(this.workorderForm);
       return;
     }
-
+    
     const formData = this.workorderForm.value;
+    let start = formData.startDate + ' ' + formData.startTime;
+    let stop = formData.stopDate + ' ' + formData.stopTime;
     const workorder: Workorder = {
-      Id: 0,
+      id: 0,
+      start: new Date(start),
+      stop: new Date(stop),
+      invoiceWorkorders: [],
+      workorderAttachments: [],
       ...formData
     };
     this.workorderService
@@ -132,8 +135,7 @@ export class CreateWorkorderComponent implements OnInit {
         next: (response) => {
           this.stateService.setState(response.state);
           if (response.success) {
-            //this.cacheService.resetWorkorders();
-            this.router.navigate(['/workorders']);
+            this.router.navigate(['/editworkorder/' + response.workorder?.id]);
           }
         }
       });
