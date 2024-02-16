@@ -48,9 +48,9 @@ namespace BeltmanSoftwareDesign.Business.Services
                 throw new Exception("Current company not chosen or doesn't exist, please create a company or select one.");
 
             if (request.Workorder.CompanyId == 0)
-                request.Workorder.CompanyId = authentication.DbCurrentCompany.Id;
+                request.Workorder.CompanyId = authentication.DbCurrentCompany.id;
 
-            if (request.Workorder.CompanyId != authentication.DbCurrentCompany.Id)
+            if (request.Workorder.CompanyId != authentication.DbCurrentCompany.id)
                 return new WorkorderCreateResponse()
                 {
                     ErrorWrongCompany = true
@@ -95,7 +95,7 @@ namespace BeltmanSoftwareDesign.Business.Services
                     ErrorItemNotFound = true
                 };
 
-            if (dbworkorder.CompanyId != authentication.DbCurrentCompany.Id)
+            if (dbworkorder.CompanyId != authentication.DbCurrentCompany.id)
                 return new WorkorderReadResponse()
                 {
                     ErrorWrongCompany = true
@@ -136,7 +136,7 @@ namespace BeltmanSoftwareDesign.Business.Services
                     ErrorItemNotFound = true,
                 };
 
-            if (dbworkorder.CompanyId != authentication.DbCurrentCompany.Id)
+            if (dbworkorder.CompanyId != authentication.DbCurrentCompany.id)
                 return new WorkorderUpdateResponse()
                 {
                     ErrorWrongCompany = true,
@@ -186,7 +186,7 @@ namespace BeltmanSoftwareDesign.Business.Services
                     State = authentication
                 };
 
-            if (dbworkorder.CompanyId != authentication.DbCurrentCompany.Id)
+            if (dbworkorder.CompanyId != authentication.DbCurrentCompany.id)
                 return new WorkorderDeleteResponse()
                 {
                     ErrorWrongCompany = true,
@@ -224,7 +224,7 @@ namespace BeltmanSoftwareDesign.Business.Services
                 throw new Exception("Current company not chosen or doesn't exist, please create a company or select one.");
 
             var list = db.Workorders
-                .Where(a => a.CompanyId == authentication.DbCurrentCompany.Id)
+                .Where(a => a.CompanyId == authentication.DbCurrentCompany.id)
                 .Select(a => WorkorderFactory.Convert(a))
                 .ToArray();
 

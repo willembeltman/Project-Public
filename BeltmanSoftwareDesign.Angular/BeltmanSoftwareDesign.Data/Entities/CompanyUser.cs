@@ -9,10 +9,11 @@ namespace BeltmanSoftwareDesign.Data.Entities
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public long Id { get; set; }
+        public long id { get; set; }
 
         public long CompanyId { get; set; }
         public virtual Company? Company { get; set; }
+
         [StringLength(64)]
         public string? UserId { get; set; }
         public virtual User? User { get; set; }

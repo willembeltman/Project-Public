@@ -14,14 +14,13 @@ namespace BeltmanSoftwareDesign.Data.Entities
         public long? CountryId { get; set; }
         public virtual Country? Country { get; set; }
 
+        public string Name { get; set; }
         public string Description { get; set; }
         public double Percentage { get; set; }
 
-        public virtual ICollection<Invoice>? Invoices { get; set; }
         public virtual ICollection<Rate>? Rates { get; set; }
-
-        //public virtual ICollection<ExpenseRatePrice> ExpenseRatePriceen { get; set; }
-        //public virtual ICollection<WorkRate> WerkTarieven { get; set; }
-        //public virtual ICollection<Product> Products { get; set; }
+        public virtual ICollection<ExpenseTaxRatePrice>? ExpenseTaxRatePrices { get; set; }
+        public virtual ICollection<ProductTaxRatePrice>? ProductTaxRatePrices { get; set; }
+        public virtual ICollection<InvoiceRow>? InvoiceRows { get; set; }
     }
 }

@@ -13,7 +13,7 @@ namespace BeltmanSoftwareDesign.Data.Factories
             if (a == null) return null;
             return new Shared.Jsons.Company
             {
-                Id = a.Id,
+                id = a.id,
                 Name = a.Name,
              
                 Address = a.Address,
@@ -37,7 +37,7 @@ namespace BeltmanSoftwareDesign.Data.Factories
             if (a == null) return null;
             return new Entities.Company
             {
-                Id = a.Id,
+                id = a.id,
                 Name = a.Name,
                 Address = a.Address,
                 BtwNumber = a.BtwNumber,
@@ -63,7 +63,7 @@ namespace BeltmanSoftwareDesign.Data.Factories
             }
 
             var dirty = false;
-            if (dest.Id != source.Id) { dest.Id = source.Id; dirty = true; }
+            if (dest.id != source.id) { dest.id = source.id; dirty = true; }
             if (dest.Name != source.Name) { dest.Name = source.Name; dirty = true; }
             if (dest.Address != source.Address) { dest.Address = source.Address; dirty = true; }
             if (dest.BtwNumber != source.BtwNumber) { dest.BtwNumber = source.BtwNumber; dirty = true; }

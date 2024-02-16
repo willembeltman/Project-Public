@@ -5,7 +5,7 @@ namespace BeltmanSoftwareDesign.Data.Entities
     public class ClientDeviceProperty
     {
         [Key]
-        public long Id { get; set; }
+        public long id { get; set; }
 
         public long ClientDeviceId { get; set; }
         public virtual ClientDevice? ClientDevice { get; set; }

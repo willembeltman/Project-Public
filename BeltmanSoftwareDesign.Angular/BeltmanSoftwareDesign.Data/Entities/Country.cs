@@ -17,7 +17,7 @@ namespace BeltmanSoftwareDesign.Data.Entities
         public virtual ICollection<Customer>? Customers { get; set; }
         public virtual ICollection<Company>? Companies { get; set; }
         public virtual ICollection<TaxRate>? TaxRates { get; set; }
-        //public virtual ICollection<Supplier> Suppliers { get; set; }
+        public virtual ICollection<Supplier>? Suppliers { get; set; }
 
 
     }

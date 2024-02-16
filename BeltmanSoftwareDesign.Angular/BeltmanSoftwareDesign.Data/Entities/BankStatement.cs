@@ -9,7 +9,7 @@ namespace BeltmanSoftwareDesign.Data.Entities
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public long Id { get; set; }
+        public long id { get; set; }
 
         public long CompanyId { get; set; }
         public virtual Company? Company { get; set; }
@@ -32,8 +32,8 @@ namespace BeltmanSoftwareDesign.Data.Entities
         public bool IsBelastingBTW { get; set; }
         public bool IsBelasting { get; set; }
 
-        //public virtual ICollection<BankStatementInvoice> BankStatementInvoices { get; set; }
-        //public virtual ICollection<BankStatementExpense> BankStatementExpenses { get; set; }
+        public virtual ICollection<BankStatementInvoice>? BankStatementInvoices { get; set; }
+        public virtual ICollection<BankStatementExpense>? BankStatementExpenses { get; set; }
 
         [Name]
         [NotMapped]

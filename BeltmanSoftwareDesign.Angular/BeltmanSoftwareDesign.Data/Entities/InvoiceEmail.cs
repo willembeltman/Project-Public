@@ -1,12 +1,5 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web;
 
 namespace BeltmanSoftwareDesign.Data.Entities
 {
@@ -16,7 +9,8 @@ namespace BeltmanSoftwareDesign.Data.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long id { get; set; }
 
-        public long InvoiceId { get; set; }        
+        public long InvoiceId { get; set; }
+        public virtual Invoice? Invoice { get; set; }      
 
         public string EmailFrom { get; set; }
         public string EmailTo { get; set; }
@@ -27,9 +21,6 @@ namespace BeltmanSoftwareDesign.Data.Entities
         public DateTime? DateInvoiceGezien { get; set; }
         public bool EmailGezien { get; set; }
         public DateTime? DateEmailGezien { get; set; }
-        //public virtual Invoice Invoice { get; set; }
-
-
 
     }
 }

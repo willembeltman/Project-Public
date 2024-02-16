@@ -10,9 +10,9 @@ namespace BeltmanSoftwareDesign.Data.Entities
         public long id { get; set; }
 
         public long CompanyId { get; set; }
-        //public virtual Company? Company { get; set; }
+        public virtual Company? Company { get; set; }
         public long? CountryId { get; set; }
-        //public virtual Country? Country { get; set; }
+        public virtual Country? Country { get; set; }
 
         public string Name { get; set; }
         public string Address { get; set; }
@@ -23,8 +23,8 @@ namespace BeltmanSoftwareDesign.Data.Entities
 
         public bool Publiekelijk { get; set; }
 
-        //public virtual ICollection<Expense> Expenses { get; set; }
-        //public virtual ICollection<Product> Products { get; set; }
+        public virtual ICollection<Expense>? Expenses { get; set; }
+        public virtual ICollection<Product>? Products { get; set; }
         //public virtual ICollection<Document> Documents { get; set; }
 
         public override string ToString()

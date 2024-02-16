@@ -1,15 +1,6 @@
 ﻿using BeltmanSoftwareDesign.StorageBlob.Business.Interfaces;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Configuration;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web;
 
 namespace BeltmanSoftwareDesign.Data.Entities
 {
@@ -20,6 +11,7 @@ namespace BeltmanSoftwareDesign.Data.Entities
         public long id { get; set; }
 
         public long InvoiceId { get; set; }
+        public virtual Invoice? Invoice { get; set; }
 
         public DateTime? Date { get; set; }
         public bool IsInvoicePDF { get; set; }
@@ -33,7 +25,7 @@ namespace BeltmanSoftwareDesign.Data.Entities
         public long FileSize { get; set; }
         [StringLength(128)]
         public string FileMD5 { get; set; }
-        //public virtual Invoice Invoice { get; set; }
+
         [NotMapped]
         public string StorageFolder { get => "InvoiceAttachment"; }
 

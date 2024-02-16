@@ -51,7 +51,7 @@ namespace BeltmanSoftwareDesign.Business.Services
             // ===========================
 
             var dbcompany = db.Companies.FirstOrDefault(a =>
-                a.Id == request.CurrentCompanyId &&
+                a.id == request.CurrentCompanyId &&
                 a.CompanyUsers.Any(a => a.UserId == state.User.id));
             if (dbcompany == null)
                 return new SetCurrentCompanyResponse()
@@ -64,8 +64,8 @@ namespace BeltmanSoftwareDesign.Business.Services
             var company = CompanyFactory.Convert(dbcompany);
 
             // Set current company to 
-            state.User.currentCompanyId = company.Id;
-            state.DbUser.CurrentCompanyId = dbcompany.Id;
+            state.User.currentCompanyId = company.id;
+            state.DbUser.CurrentCompanyId = dbcompany.id;
             state.DbUser.CurrentCompany = dbcompany;
             state.CurrentCompany = company;
             state.DbCurrentCompany = dbcompany;

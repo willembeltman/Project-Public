@@ -29,31 +29,71 @@ namespace CodeGenerator.Entities
             var company = dbcontext.DbSetInfos.First(a => a.Entity.Name == "Company");
             var companyconstrain = new ConstrainedProperty(company, "CompanyId", "this.stateService.getState().currentcompany.id");
 
-            var constrainedProperties = new []
+            // Excluded entities, these will not be generated
+            var excluded = new[]
+            {
+                "ClientBearer",
+                "ClientDevice",
+                "ClientDeviceProperty",
+                "ClientIpAdress",
+                "CompanyUser"
+            };
+
+            // Properties available from the state, these will also not be generated
+            var stateList = new[]
             {
                 userconstrain, companyconstrain
             };
 
-            var list = dbcontext.DbSetInfos
-                .Where(a => a.Entity.Properties.Any(a => constrainedProperties.Any(b => a.Name == b.ForeignKeyName)))
+            // Alle entities die wij kunnen opvragen met een van de id's
+            var crudList = dbcontext.DbSetInfos
+                .Where(a =>
+                {
+                    var a1 = a.Entity.Properties.Any(a => stateList.Any(b => b.Entity == a.Type.Entity));
+                    var b1 = stateList.Any(b => b.Entity == a.Entity);
+                    var c1 = excluded.Any(b => b == a.Entity.Name);
+                    return a1 && !b1 && !c1;
+                })
                 .ToArray();
 
-
-
-            // C# Jsons
+            // C# Jsons voor alles
             foreach (var entity in dbcontext.DbSetInfos)
             {
-                var template = new CsJsonTemplate(entity, csharp_shared_directory, csharp_shared_namespace, constrainedProperties);
+                var template = new CsJsonTemplate(entity, csharp_shared_directory, csharp_shared_namespace, stateList);
                 var content = template.GetContent();
                 var filename = template.GetFullName();
                 WriteToFile(filename, content);
             }
 
             // C# RequestJsons
+            foreach (var entity in crudList)
+            {
+                // C# List
+
+                // C# Create
+
+                // C# Read
+
+                // C# Update
+
+                // C# Delete
+            }
 
             // C# ResponseJsons
+            foreach (var entity in crudList)
+            {
+                // C# List
 
-            // TS Interfaces
+                // C# Create
+
+                // C# Read
+
+                // C# Update
+
+                // C# Delete
+            }
+
+            // TS Interfaces voor alles
             //foreach (var entity in dbcontext.DbSetInfos)
             //{
             //    var template = new TsInterfaceTemplate(entity);
@@ -74,7 +114,7 @@ namespace CodeGenerator.Entities
 
             // List for components
             var list2 = dbcontext.DbSetInfos
-                .Where(a => a.Entity.Properties.Any(a => a.Name == "CompanyId"))
+                .Where(a => a.Entity.Properties.Any(a => stateList.Any(b => b.Entity ==  a.Type.Entity)))
                 .ToArray();
 
             // List TS components

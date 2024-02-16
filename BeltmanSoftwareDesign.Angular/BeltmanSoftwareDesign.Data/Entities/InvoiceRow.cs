@@ -12,6 +12,9 @@ namespace BeltmanSoftwareDesign.Data.Entities
         public long? InvoiceId { get; set; }
         public virtual Invoice? Invoice { get; set; }
 
+        public long TaxRateId { get; set; }
+        public virtual TaxRate? TaxRate { get; set; }
+
         public double Amount { get; set; }
         public string Description { get; set; }
         public double PricePerPiece { get; set; }

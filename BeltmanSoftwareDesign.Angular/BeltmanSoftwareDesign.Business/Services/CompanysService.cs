@@ -64,7 +64,7 @@ namespace BeltmanSoftwareDesign.Business.Services
             var dbcompanyuser = new Data.Entities.CompanyUser()
             {
                 Company = dbcompany,
-                CompanyId = dbcompany.Id,
+                CompanyId = dbcompany.id,
                 User = state.DbUser,
                 UserId = state.DbUser.Id,
                 Eigenaar = true,
@@ -78,8 +78,8 @@ namespace BeltmanSoftwareDesign.Business.Services
             var company = CompanyFactory.Convert(dbcompany);
 
             state.DbUser.CurrentCompany = dbcompany;
-            state.DbUser.CurrentCompanyId = dbcompany.Id;
-            state.User.currentCompanyId = dbcompany.Id;
+            state.DbUser.CurrentCompanyId = dbcompany.id;
+            state.User.currentCompanyId = dbcompany.id;
             state.DbCurrentCompany = dbcompany;
             state.CurrentCompany = company; 
             db.SaveChanges();
@@ -123,7 +123,7 @@ namespace BeltmanSoftwareDesign.Business.Services
             var dbcompany = db.Companies
                 .Include(a => a.Country)
                 .FirstOrDefault(a =>
-                    a.Id == request.CompanyId &&
+                    a.id == request.CompanyId &&
                     a.CompanyUsers.Any(a => a.UserId == state.User.id));
             if (dbcompany == null)
                 return new CompanyReadResponse()
@@ -169,7 +169,7 @@ namespace BeltmanSoftwareDesign.Business.Services
             // ===========================
 
             var dbcompany = db.Companies.FirstOrDefault(a =>
-                a.Id == request.Company.Id &&
+                a.id == request.Company.id &&
                 a.CompanyUsers.Any(a => a.UserId == state.User.id));
             if (dbcompany == null)
                 return new CompanyUpdateResponse()
@@ -185,8 +185,8 @@ namespace BeltmanSoftwareDesign.Business.Services
             var company = CompanyFactory.Convert(dbcompany);
 
             // Set current company to 
-            state.User.currentCompanyId = company.Id;
-            state.DbUser.CurrentCompanyId = dbcompany.Id;
+            state.User.currentCompanyId = company.id;
+            state.DbUser.CurrentCompanyId = dbcompany.id;
             state.DbUser.CurrentCompany = dbcompany;
             state.CurrentCompany = company;
             state.DbCurrentCompany = dbcompany;
@@ -219,7 +219,7 @@ namespace BeltmanSoftwareDesign.Business.Services
             // ===========================
 
             var dbcompany = db.Companies.FirstOrDefault(a =>
-                a.Id == request.CompanyId &&
+                a.id == request.CompanyId &&
                 a.CompanyUsers.Any(b => b.UserId == state.User.id && (b.Admin || b.Eigenaar)));
             if (dbcompany == null)
                 return new CompanyDeleteResponse()
@@ -229,7 +229,7 @@ namespace BeltmanSoftwareDesign.Business.Services
 
 
             var userscurrentcompanywillbedeleted = 
-                state.DbUser.CurrentCompanyId == dbcompany.Id;
+                state.DbUser.CurrentCompanyId == dbcompany.id;
 
             if (userscurrentcompanywillbedeleted)
             {

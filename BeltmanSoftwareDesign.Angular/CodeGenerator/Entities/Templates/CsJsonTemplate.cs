@@ -77,23 +77,6 @@ namespace CodeGenerator.Entities.Templates
             return rtn;
         }
 
-        private bool FindInParents(EntityInfo ent, EntityInfo[] entitiesToFind)
-        {
-            var constrainedProperties2 = ent.Properties
-                .Where(a => ConstrainedProperties.Any(b => a.Type.Entity == b.Entity))
-                .ToArray();
-            if (constrainedProperties2.Any()) return true;
-
-            var parents = ent.Properties
-                .Where(a => a.Type.Entity != null && !a.Type.IsList)
-                .ToArray();
-            foreach (var parent in parents)
-            {
-                var found = FindInParents(parent.Type.Entity, entitiesToFind);
-                if (found) return true;
-            }
-            return false;
-        }
 
         public string GetFullName()
         {

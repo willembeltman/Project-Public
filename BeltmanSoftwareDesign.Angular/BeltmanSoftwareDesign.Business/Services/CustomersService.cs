@@ -48,9 +48,9 @@ namespace BeltmanSoftwareDesign.Business.Services
                 throw new Exception("Current company not chosen or doesn't exist, please create a company or select one.");
 
             if (request.Customer.CompanyId == 0)
-                request.Customer.CompanyId = authentication.DbCurrentCompany.Id;
+                request.Customer.CompanyId = authentication.DbCurrentCompany.id;
 
-            if (request.Customer.CompanyId != authentication.DbCurrentCompany.Id)
+            if (request.Customer.CompanyId != authentication.DbCurrentCompany.id)
                 return new CustomerCreateResponse()
                 {
                     ErrorWrongCompany = true
@@ -95,7 +95,7 @@ namespace BeltmanSoftwareDesign.Business.Services
                     ErrorItemNotFound = true
                 };
 
-            if (dbcustomer.CompanyId != authentication.DbCurrentCompany.Id)
+            if (dbcustomer.CompanyId != authentication.DbCurrentCompany.id)
                 return new CustomerReadResponse()
                 {
                     ErrorWrongCompany = true
@@ -136,7 +136,7 @@ namespace BeltmanSoftwareDesign.Business.Services
                     ErrorItemNotFound = true,
                 };
 
-            if (dbcustomer.CompanyId != authentication.DbCurrentCompany.Id)
+            if (dbcustomer.CompanyId != authentication.DbCurrentCompany.id)
                 return new CustomerUpdateResponse()
                 {
                     ErrorWrongCompany = true,
@@ -181,7 +181,7 @@ namespace BeltmanSoftwareDesign.Business.Services
                     State = authentication
                 };
 
-            if (dbcustomer.CompanyId != authentication.DbCurrentCompany.Id)
+            if (dbcustomer.CompanyId != authentication.DbCurrentCompany.id)
                 return new CustomerDeleteResponse()
                 {
                     ErrorWrongCompany = true,
@@ -219,7 +219,7 @@ namespace BeltmanSoftwareDesign.Business.Services
                 throw new Exception("Current company not chosen or doesn't exist, please create a company or select one.");
 
             var list = db.Customers
-                .Where(a => a.CompanyId == authentication.DbCurrentCompany.Id)
+                .Where(a => a.CompanyId == authentication.DbCurrentCompany.id)
                 .Select(a => CustomerFactory.Convert(a))
                 .ToArray();
 

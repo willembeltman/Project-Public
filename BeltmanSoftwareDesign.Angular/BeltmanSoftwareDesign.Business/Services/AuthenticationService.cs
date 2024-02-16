@@ -104,7 +104,7 @@ namespace BeltmanSoftwareDesign.Business.Services
 
             var user = UserFactory.Convert(dbuser);
 
-            var dbcurrentcompany = db.Companies.FirstOrDefault(a => a.Id == user.currentCompanyId);
+            var dbcurrentcompany = db.Companies.FirstOrDefault(a => a.id == user.currentCompanyId);
             if (dbcurrentcompany == null)
             {
                 dbcurrentcompany = db.Companies.FirstOrDefault(a => a.CompanyUsers.Any(a => a.UserId == user.id));
@@ -285,7 +285,7 @@ namespace BeltmanSoftwareDesign.Business.Services
             var currentcompany = db.Companies
                 .FirstOrDefault(a => 
                     a.CompanyUsers.Any(a => a.UserId == user.Id) &&
-                    a.Id == currentCompanyId);
+                    a.id == currentCompanyId);
        
             var userJson = UserFactory.Convert(user);
             var companyJson = CompanyFactory.Convert(currentcompany);

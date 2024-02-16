@@ -2,7 +2,7 @@
 {
     public class Company
     {
-        public long Id { get; set; }
+        public long id { get; set; }
 
         public long? CountryId { get; set; }
         public string? CountryName { get; set; }

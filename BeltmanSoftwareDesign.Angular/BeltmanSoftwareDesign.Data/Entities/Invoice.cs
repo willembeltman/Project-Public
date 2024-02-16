@@ -9,44 +9,32 @@ namespace BeltmanSoftwareDesign.Data.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long id { get; set; }
 
-        public virtual Company? Company { get; set; }
         public long CompanyId { get; set; }
-
-        public virtual InvoiceType? InvoiceType { get; set; }
+        public virtual Company? Company { get; set; }
         public long? InvoiceTypeId { get; set; }
-        public virtual Project? Project { get; set; }
+        public virtual InvoiceType? InvoiceType { get; set; }
         public long? ProjectId { get; set; }
-        public virtual Customer? Customer { get; set; }
+        public virtual Project? Project { get; set; }
         public long? CustomerId { get; set; }
-        public virtual TaxRate? TaxRate { get; set; }
-        public long? TaxRateId { get; set; }
-
-        public long? SetToPayed_By_CompanyUserId { get; set; }
-        public virtual CompanyUser? SetToPayed_By_CompanyUser { get; set; }
+        public virtual Customer? Customer { get; set; }
+        public long? IsPayedInCash_By_CompanyUserId { get; set; }
+        public virtual CompanyUser? IsPayedInCash_By_CompanyUser { get; set; }
 
         public string InvoiceNumber { get; set; }
-
-        public double? RatePrice { get; set; }
-
-
         public string Description { get; set; }
         public DateTime Date { get; set; }
         public bool IsPayedInCash { get; set; }
 
+        public virtual ICollection<InvoiceWorkorderRate> InvoiceWorkorders { get; set; } = new List<InvoiceWorkorderRate>();
+        public virtual ICollection<InvoiceRow>? InvoiceRows { get; set; } = new List<InvoiceRow>();
+        public virtual ICollection<InvoiceProduct>? InvoiceProducts { get; set; } = new List<InvoiceProduct>();
+        public virtual ICollection<InvoiceAttachment>? InvoiceAttachments { get; set; } = new List<InvoiceAttachment>();
+        public virtual ICollection<InvoiceEmail>? InvoiceEmails { get; set; } = new List<InvoiceEmail>();
+        public virtual ICollection<InvoiceTransaction>? InvoiceTransactions { get; set; } = new List<InvoiceTransaction>();
+        public virtual ICollection<BankStatementInvoice>? BankStatementInvoices { get; set; } = new List<BankStatementInvoice>();
 
-        public bool IsPayed { get; set; }
-        public DateTime? DatePayed { get; set; }
-        public string PaymentCode { get; set; }
 
-        public virtual ICollection<InvoiceWorkorderRate> InvoiceWorkorders { get; set; }
-        public virtual ICollection<InvoiceRow>? InvoiceRows { get; set; }
 
-        //public virtual ICollection<InvoiceProduct> InvoiceProducts { get; set; }
-        //public virtual ICollection<InvoiceAttachment> InvoiceAttachments { get; set; }
-        //public virtual ICollection<InvoiceEmail> InvoiceEmails { get; set; }
-        //public virtual ICollection<Transaction> Transactions { get; set; }
-        //public virtual ICollection<TransactionLog> TransactionLogs { get; set; }
-        //public virtual ICollection<BankStatementInvoice> BankStatementInvoices { get; set; }
         //[NotMapped]
         //public double Tax => (RatePrice ?? 0) / 100 * (TaxRate == null ? 0 : TaxRate.Percentage);
         //[NotMapped]

@@ -1,11 +1,5 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BeltmanSoftwareDesign.Data.Entities
 {
@@ -32,10 +26,8 @@ namespace BeltmanSoftwareDesign.Data.Entities
         
         public virtual ICollection<Workorder>? Workorders { get; set; }
         public virtual ICollection<Project>? Projects { get; set; }
-
-        public virtual ICollection<Invoice> Invoices { get; set; }
-
-        //public virtual ICollection<Expense> Expenses { get; set; }
+        public virtual ICollection<Invoice>? Invoices { get; set; }
+        public virtual ICollection<Expense>? Expenses { get; set; }
         //public virtual ICollection<Document> Documents { get; set; }
 
         public override string ToString()

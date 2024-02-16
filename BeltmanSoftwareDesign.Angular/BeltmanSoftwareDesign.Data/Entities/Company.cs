@@ -8,7 +8,7 @@ namespace BeltmanSoftwareDesign.Data.Entities
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public long Id { get; set; }
+        public long id { get; set; }
 
         public long? CountryId { get; set; }
         public virtual Country? Country { get; set; }
@@ -50,19 +50,15 @@ namespace BeltmanSoftwareDesign.Data.Entities
         public virtual ICollection<Rate>? Rates { get; set; }
         public virtual ICollection<Transaction>? Transactions { get; set; }
         public virtual ICollection<BankStatement>? BankStatements { get; set; }
+        public virtual ICollection<ExpenseType>? ExpenseTypes { get; set; }
+        public virtual ICollection<Expense>? Expenses { get; set; }
+        public virtual ICollection<Supplier>? Suppliers { get; set; }
+        public virtual ICollection<Product>? Products { get; set; }
+        public virtual ICollection<Setting>? Settings { get; set; }
+        public virtual ICollection<Residence>? Residences { get; set; }
+        public virtual ICollection<TrafficRegistration>? TrafficRegistrations { get; set; }
 
-        //public virtual ICollection<Product> Products { get; set; }
-
-        //public virtual ICollection<Supplier> Suppliers { get; set; }
-        //public virtual ICollection<ExpenseType> ExpenseTypes { get; set; }
-        //public virtual ICollection<Expense> Expenses { get; set; }
-        //public virtual ICollection<WorkRate> WerkTarieven { get; set; }
-
-        //public virtual ICollection<Residence> Huisvestingen { get; set; }
-        //public virtual ICollection<Setting> Instellingen { get; set; }
-        //public virtual ICollection<TrafficRegistration> RitRegistraties { get; set; }
-        //public virtual ICollection<ExpenseAttachment> ExpenseAttachments { get; set; }
-        //public virtual ICollection<Document> Documents { get; set; }
-        //public virtual ICollection<DocumentAttachment> DocumentAttachments { get; set; }
+        //public virtual ICollection<Document>? Documents { get; set; }
+        //public virtual ICollection<Email>? Emails { get; set; }
     }
 }

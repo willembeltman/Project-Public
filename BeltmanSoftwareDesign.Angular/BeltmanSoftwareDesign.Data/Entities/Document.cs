@@ -1,7 +1,4 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BeltmanSoftwareDesign.Data.Entities
@@ -13,7 +10,8 @@ namespace BeltmanSoftwareDesign.Data.Entities
         public long id { get; set; }
 
         public long CompanyId { get; set; }
-        //public virtual Company Company { get; set; }
+        //public virtual Company? Company { get; set; }
+
         public long? DocumentTypeId { get; set; }
         //public virtual DocumentType DocumentType { get; set; }
         public long? ProjectId { get; set; }

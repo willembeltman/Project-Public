@@ -10,24 +10,28 @@ namespace BeltmanSoftwareDesign.Data.Entities
         public long id { get; set; }
 
         public long CompanyId { get; set; }
+        public virtual Company? Company { get; set; }
         public long? ExpenseTypeId { get; set; }
+        public virtual ExpenseType? ExpenseType { get; set; }
         public long? ProjectId { get; set; }
+        public virtual Project? Project { get; set; }
         public long? SupplierId { get; set; }
+        public virtual Supplier? Supplier { get; set; }
         public long? CustomerId { get; set; }
+        public virtual Customer? Customer { get; set; }
 
         public string Description { get; set; }
         public DateTime Date { get; set; }
         public DateTime? DateKapot { get; set; }
         public bool IsPayedInCash { get; set; }
         public double Restwaarde { get; set; }
-        //public virtual Company Company { get; set; }
-        //public virtual ExpenseType ExpenseType { get; set; }
-        //public virtual Project Project { get; set; }
-        //public virtual Supplier Supplier { get; set; }
-        //public virtual Customer Customer { get; set; }
-        //public virtual ICollection<ExpenseAttachment> ExpenseAttachments { get; set; } = new List<ExpenseAttachment>();
-        //public virtual ICollection<ExpenseRatePrice> ExpenseRatePriceen { get; set; } = new List<ExpenseRatePrice>();
-        //public virtual ICollection<BankStatementExpense> BankStatementExpenses { get; set; } = new List<BankStatementExpense>();
+
+        public virtual ICollection<ExpenseAttachment>? ExpenseAttachments { get; set; } = new List<ExpenseAttachment>();
+        public virtual ICollection<ExpenseTaxRatePrice>? ExpenseTaxRatePrices { get; set; } = new List<ExpenseTaxRatePrice>();
+        public virtual ICollection<ExpenseProduct>? ExpenseProducts { get; set; } = new List<ExpenseProduct>();
+        public virtual ICollection<BankStatementExpense>? BankStatementExpenses { get; set; } = new List<BankStatementExpense>();
+
+
         //[NotMapped]
         //public byte Quarter => Convert.ToByte(Math.Ceiling(Convert.ToDouble(Date.Month) / 3));
         //[NotMapped]

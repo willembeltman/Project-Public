@@ -19,8 +19,7 @@ namespace BeltmanSoftwareDesign.Data.Entities
 
         public virtual ICollection<Workorder>? Workorders { get; set; }
         public virtual ICollection<Invoice>? Invoices { get; set; }
-
-        //public virtual ICollection<Expense> Expenses { get; set; }
+        public virtual ICollection<Expense>? Expenses { get; set; }
         //public virtual ICollection<Document> Documents { get; set; }
 
         public override string ToString()
