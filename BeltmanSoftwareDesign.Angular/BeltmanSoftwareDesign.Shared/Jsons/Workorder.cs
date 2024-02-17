@@ -6,16 +6,16 @@
 
         public DateTime Start { get; set; }
         public DateTime Stop { get; set; }
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         public long? ProjectId { get; set; }
-        public string ProjectName { get; set; }
+        public string? ProjectName { get; set; }
 
         public long? CustomerId { get; set; }
-        public string CustomerName { get; set; }
+        public string? CustomerName { get; set; }
 
-        public List<InvoiceWorkorder> InvoiceWorkorders { get; set; }
-        public List<WorkorderAttachment> WorkorderAttachments { get; set; }
+        public List<InvoiceWorkorder>? InvoiceWorkorders { get; set; }
+        public List<WorkorderAttachment>? WorkorderAttachments { get; set; }
 
         public double AmountUur
         {

@@ -8,6 +8,7 @@ using BeltmanSoftwareDesign.Shared.Attributes;
 using BeltmanSoftwareDesign.Shared.RequestJsons;
 using BeltmanSoftwareDesign.Shared.ResponseJsons;
 using BeltmanSoftwareDesign.StorageBlob.Business.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace BeltmanSoftwareDesign.Business.Services
 {
@@ -104,11 +105,11 @@ namespace BeltmanSoftwareDesign.Business.Services
 
             var user = UserFactory.Convert(dbuser);
 
-            var dbcurrentcompany = db.Companies.FirstOrDefault(a => a.id == user.currentCompanyId);
-            if (dbcurrentcompany == null)
-            {
-                dbcurrentcompany = db.Companies.FirstOrDefault(a => a.CompanyUsers.Any(a => a.UserId == user.id));
-            }
+            var dbcurrentcompany = db.Companies
+                .Include(a => a.Country)
+                .FirstOrDefault(a => 
+                    a.id == user.currentCompanyId &&
+                    a.CompanyUsers.Any(a => a.UserId == user.id));
 
             var currentcompany = CompanyFactory.Convert(dbcurrentcompany);
 
@@ -283,6 +284,7 @@ namespace BeltmanSoftwareDesign.Business.Services
 
             // Get current company from database
             var currentcompany = db.Companies
+                .Include(a => a.Country)
                 .FirstOrDefault(a => 
                     a.CompanyUsers.Any(a => a.UserId == user.Id) &&
                     a.id == currentCompanyId);

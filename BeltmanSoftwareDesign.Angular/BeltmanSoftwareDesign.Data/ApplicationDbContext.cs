@@ -126,13 +126,13 @@ namespace BeltmanSoftwareDesign.Data
             modelBuilder.Entity<Workorder>()
                 .HasOne(u => u.Project)
                 .WithMany(c => c.Workorders)
-                .HasForeignKey(p => p.CompanyId)
+                .HasForeignKey(p => p.ProjectId)
                 .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<Workorder>()
                 .HasOne(u => u.Customer)
                 .WithMany(c => c.Workorders)
-                .HasForeignKey(p => p.CompanyId)
+                .HasForeignKey(p => p.CustomerId)
                 .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<InvoiceWorkorder>()
