@@ -23,6 +23,12 @@
       <td>{{ workorder.description }}</td>
       <td>{{ workorder.projectName }}</td>
       <td>{{ workorder.customerName }}</td>
+      <td>
+        <a [routerLink]="['/editworkorder', workorder.id]">edit</a>
+      </td>
+      <td>
+        <a [routerLink]="['/deleteworkorder', workorder.id]">delete</a>
+      </td>
     </tr>
   </tbody>
 </table>
