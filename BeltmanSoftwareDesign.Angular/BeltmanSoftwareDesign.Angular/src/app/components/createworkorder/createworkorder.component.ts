@@ -10,6 +10,8 @@ import { Customer } from '../../interfaces/customer';
 import { WorkorderService } from '../../apiservices/workorder.service';
 import { ProjectService } from '../../apiservices/project.service';
 import { CustomerService } from '../../apiservices/customer.service';
+import { Invoice } from '../../interfaces/invoice';
+import { InvoiceService } from '../../apiservices/invoice.service';
 
 @Component({
   selector: 'app-createworkorder',
@@ -33,6 +35,7 @@ export class CreateWorkorderComponent implements OnInit {
   firstWorkorder: boolean = false;
 
   workorders: Workorder[] = [];
+  invoices: Invoice[] = [];
   projects: Project[] = [];
   customers: Customer[] = [];
 
@@ -41,6 +44,7 @@ export class CreateWorkorderComponent implements OnInit {
     private router: Router,
     private stateService: StateService,
     private workorderService: WorkorderService,
+    private invoiceService: InvoiceService,
     private projectService: ProjectService,
     private customerService: CustomerService) { }
 
@@ -57,6 +61,20 @@ export class CreateWorkorderComponent implements OnInit {
           this.stateService.setState(workorderresponse.state);
           if (workorderresponse.success) {
             this.workorders = workorderresponse.workorders;
+            this.readInvoices();
+          }
+        }
+      });
+  }
+  readInvoices() {
+    let request = this.stateService.createStandardRequest();
+    this.invoiceService
+      .list(request)
+      .subscribe({
+        next: (invoiceresponse) => {
+          this.stateService.setState(invoiceresponse.state);
+          if (invoiceresponse.success) {
+            this.invoices = invoiceresponse.invoices;
             this.readProjects();
           }
         }
