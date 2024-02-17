@@ -312,7 +312,7 @@ namespace BeltmanSoftwareDesign.Business.Services
         private ClientBearer CreateBearer(User user, ClientDevice clientDevice, ClientIpAddress clientIpAddress)
         {
             // Te oud, vernieuwen
-            var bearerid = CodeGeneratorHelper.GenerateCode(64);
+            var bearerid = HashGeneratorHelper.GenerateCode(64);
             var bearer = new ClientBearer()
             {
                 id = bearerid,
@@ -331,7 +331,7 @@ namespace BeltmanSoftwareDesign.Business.Services
         {
             // Create user
             var passwordHash = StringHelper.HashString(password);
-            var userid = CodeGeneratorHelper.GenerateCode(64);
+            var userid = HashGeneratorHelper.GenerateCode(64);
             var dbuser = new User()
             {
                 Id = userid,

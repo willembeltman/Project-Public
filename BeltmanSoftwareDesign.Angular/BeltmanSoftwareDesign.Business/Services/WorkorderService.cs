@@ -47,44 +47,44 @@ namespace BeltmanSoftwareDesign.Business.Services
             dbworkorder.CompanyId = authentication.DbCurrentCompany.id;
             dbworkorder.Company = authentication.DbCurrentCompany;
 
-            //dbworkorder.Customer = null;
-            //if (!string.IsNullOrEmpty(request.Workorder.ProjectName))
-            //{
-            //    dbworkorder.Customer = db.Customers.FirstOrDefault(a =>
-            //        a.CompanyId == authentication.DbCurrentCompany.id &&
-            //        a.Name.ToLower() == request.Workorder.CustomerName.ToLower());
-            //    if (dbworkorder.Customer == null)
-            //    {
-            //        dbworkorder.Customer = new Data.Entities.Customer()
-            //        {
-            //            Name = request.Workorder.CustomerName,
-            //            CompanyId = authentication.DbCurrentCompany.id
-            //        };
-            //        db.Customers.Add(dbworkorder.Customer);
-            //        db.SaveChanges();
-            //    }
-            //}
-            //dbworkorder.CustomerId = dbworkorder.Customer?.id;
+            dbworkorder.Customer = null;
+            if (!string.IsNullOrEmpty(request.Workorder.ProjectName))
+            {
+                dbworkorder.Customer = db.Customers.FirstOrDefault(a =>
+                    a.CompanyId == authentication.DbCurrentCompany.id &&
+                    a.Name.ToLower() == request.Workorder.CustomerName.ToLower());
+                if (dbworkorder.Customer == null)
+                {
+                    dbworkorder.Customer = new Data.Entities.Customer()
+                    {
+                        Name = request.Workorder.CustomerName,
+                        CompanyId = authentication.DbCurrentCompany.id
+                    };
+                    db.Customers.Add(dbworkorder.Customer);
+                    db.SaveChanges();
+                }
+            }
+            dbworkorder.CustomerId = dbworkorder.Customer?.id;
 
-            //dbworkorder.Project = null;
-            //if (!string.IsNullOrEmpty(request.Workorder.ProjectName))
-            //{
-            //    dbworkorder.Project = db.Projects.FirstOrDefault(a => 
-            //        a.CompanyId == authentication.DbCurrentCompany.id &&
-            //        a.Name.ToLower() == request.Workorder.ProjectName.ToLower());
-            //    if (dbworkorder.Project == null)
-            //    {
-            //        dbworkorder.Project = new Data.Entities.Project()
-            //        {
-            //            Name = request.Workorder.ProjectName,
-            //            CompanyId = authentication.DbCurrentCompany.id,
-            //            Customer = dbworkorder.Customer,
-            //        };
-            //        db.Projects.Add(dbworkorder.Project);
-            //        db.SaveChanges();
-            //    }
-            //}
-            //dbworkorder.ProjectId = dbworkorder.Project?.id;
+            dbworkorder.Project = null;
+            if (!string.IsNullOrEmpty(request.Workorder.ProjectName))
+            {
+                dbworkorder.Project = db.Projects.FirstOrDefault(a =>
+                    a.CompanyId == authentication.DbCurrentCompany.id &&
+                    a.Name.ToLower() == request.Workorder.ProjectName.ToLower());
+                if (dbworkorder.Project == null)
+                {
+                    dbworkorder.Project = new Data.Entities.Project()
+                    {
+                        Name = request.Workorder.ProjectName,
+                        CompanyId = authentication.DbCurrentCompany.id,
+                        Customer = dbworkorder.Customer,
+                    };
+                    db.Projects.Add(dbworkorder.Project);
+                    db.SaveChanges();
+                }
+            }
+            dbworkorder.ProjectId = dbworkorder.Project?.id;
 
             db.Workorders.Add(dbworkorder);
             db.SaveChanges();

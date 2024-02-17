@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace BeltmanSoftwareDesign.Business.Helpers
+﻿namespace BeltmanSoftwareDesign.Business.Helpers
 {
-    public static class CodeGeneratorHelper
+    public static class HashGeneratorHelper
     {
         static Random random = new Random();
         static string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
