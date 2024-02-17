@@ -28,6 +28,7 @@
         public string PaymentCode { get; set; }
 
         public InvoiceWorkorder[] InvoiceWorkorders { get; set; }
+        public byte Quarter { get; set; }
         //public Transaction[] Transactions { get; set; }
 
         //public virtual ICollection<InvoiceProduct> InvoiceProducts { get; set; }

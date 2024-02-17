@@ -9,27 +9,19 @@
 <table *ngIf="workorders">
   <thead>
     <tr>
-      <th>id</th>
       <th>start</th>
       <th>stop</th>
-      <th>amountUur</th>
       <th>description</th>
-      <th>projectId</th>
-      <th>projectName</th>
-      <th>customerId</th>
-      <th>customerName</th>
+      <th>project</th>
+      <th>customer</th>
     </tr>
   </thead>
   <tbody>
     <tr *ngFor="let workorder of workorders">
-      <td>{{ workorder.id }}</td>
-      <td>{{ workorder.start }}</td>
-      <td>{{ workorder.stop }}</td>
-      <td>{{ workorder.amountUur }}</td>
+      <td>{{ workorder.start | date:'yyyy-MM-dd HH:mm' }}</td>
+      <td>{{ workorder.stop | date:'yyyy-MM-dd HH:mm' }}</td>
       <td>{{ workorder.description }}</td>
-      <td>{{ workorder.projectId }}</td>
       <td>{{ workorder.projectName }}</td>
-      <td>{{ workorder.customerId }}</td>
       <td>{{ workorder.customerName }}</td>
     </tr>
   </tbody>

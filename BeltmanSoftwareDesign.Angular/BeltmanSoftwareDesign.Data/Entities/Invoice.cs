@@ -35,13 +35,12 @@ namespace BeltmanSoftwareDesign.Data.Entities
         public virtual ICollection<BankStatementInvoice>? BankStatementInvoices { get; set; } = new List<BankStatementInvoice>();
 
 
-
         //[NotMapped]
         //public double Tax => (RatePrice ?? 0) / 100 * (TaxRate == null ? 0 : TaxRate.Percentage);
         //[NotMapped]
         //public double ConsumentenRatePrice => (RatePrice ?? 0) + Tax;
-        [NotMapped]
-        public byte Quarter => Convert.ToByte(Math.Ceiling(Convert.ToDouble(Date.Month) / 3));
+        //[NotMapped]
+        //public byte Quarter => Convert.ToByte(Math.Ceiling(Convert.ToDouble(Date.Month) / 3));
 
 
         //public override string ToString()

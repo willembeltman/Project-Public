@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { StateService } from '../../services/state.service';
 import { Workorder } from '../../interfaces/workorder';
-import { NgFor, NgIf } from '@angular/common';
+import { DatePipe, NgFor, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { WorkorderService } from '../../apiservices/workorder.service';
 import { RouterLink } from '@angular/router';
@@ -9,13 +9,13 @@ import { RouterLink } from '@angular/router';
 @Component({
   selector: 'app-workorders',
   standalone: true,
-  imports: [FormsModule, NgIf, NgFor, RouterLink],
+  imports: [FormsModule, NgIf, NgFor, RouterLink, DatePipe],
   templateUrl: './workorders.component.html',
   styleUrl: './workorders.component.css'
 })
 export class WorkordersComponent implements OnInit {
 
-  public workorders: Workorder[] = [];
+  public workorders: Workorder[] | null = null;
 
   constructor(
     private workorderService: WorkorderService,
@@ -24,7 +24,6 @@ export class WorkordersComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
     let companyid: number | null = null;
     const companyidfromstate = this.state.getState()?.user?.currentCompanyId;
     if (companyidfromstate != null && companyidfromstate != undefined) {

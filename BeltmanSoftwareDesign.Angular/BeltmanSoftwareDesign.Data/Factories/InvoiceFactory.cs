@@ -1,6 +1,8 @@
 ﻿using BeltmanSoftwareDesign.Data.Entities;
 using BeltmanSoftwareDesign.Shared.Jsons;
 using BeltmanSoftwareDesign.StorageBlob.Business.Interfaces;
+using System;
+
 
 namespace BeltmanSoftwareDesign.Data.Factories
 {
@@ -12,7 +14,7 @@ namespace BeltmanSoftwareDesign.Data.Factories
 
         public Entities.Invoice Convert(Shared.Jsons.Invoice a)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
             return new Entities.Invoice()
             {
                 id = a.id,
@@ -26,10 +28,15 @@ namespace BeltmanSoftwareDesign.Data.Factories
 
         public Shared.Jsons.Invoice Convert(Entities.Invoice a)
         {
-            throw new NotImplementedException();
+            //var test = Convert.ToInt32(1);
+            //throw new NotImplementedException();
             return new Shared.Jsons.Invoice
             {
                 id = a.id,
+                Date = a.Date,
+                IsPayed = a.IsPayedInCash,
+                IsPayedInCash = a.IsPayedInCash,
+                //Quarter = Convert.ToByte(Math.Ceiling(Convert.ToDouble(a.Date.Month) / 3)),
                 Description = a.Description,
                 CustomerId = a.CustomerId,
                 CustomerName = a.Customer?.Name,
@@ -40,7 +47,7 @@ namespace BeltmanSoftwareDesign.Data.Factories
 
         public bool Copy(Shared.Jsons.Invoice? source, Entities.Invoice dest)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
             var changed = false;
             if (dest.CustomerId != source.CustomerId)
             {
