@@ -873,7 +873,8 @@ namespace BeltmanSoftwareDesign.Data.Migrations
 
                     b.Property<string>("InvoiceNumber")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<long?>("InvoiceTypeId")
                         .HasColumnType("bigint");
@@ -1147,17 +1148,12 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                     b.Property<long?>("InvoiceId")
                         .HasColumnType("bigint");
 
-                    b.Property<long?>("RateId")
-                        .HasColumnType("bigint");
-
                     b.Property<long?>("WorkorderId")
                         .HasColumnType("bigint");
 
                     b.HasKey("id");
 
                     b.HasIndex("InvoiceId");
-
-                    b.HasIndex("RateId");
 
                     b.HasIndex("WorkorderId");
 
@@ -1181,7 +1177,8 @@ namespace BeltmanSoftwareDesign.Data.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<long?>("SupplierId")
                         .HasColumnType("bigint");
@@ -1237,7 +1234,8 @@ namespace BeltmanSoftwareDesign.Data.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<bool>("Publiekelijk")
                         .HasColumnType("bit");
@@ -1266,13 +1264,18 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
                     b.Property<double>("Price")
                         .HasColumnType("float");
 
                     b.Property<double?>("Tax")
                         .HasColumnType("float");
 
-                    b.Property<long?>("TaxRateId")
+                    b.Property<long>("TaxRateId")
                         .HasColumnType("bigint");
 
                     b.HasKey("id");
@@ -1401,7 +1404,7 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                     b.Property<long>("CompanyId")
                         .HasColumnType("bigint");
 
-                    b.Property<long?>("CountryId")
+                    b.Property<long>("CountryId")
                         .HasColumnType("bigint");
 
                     b.Property<string>("Description")
@@ -1410,7 +1413,8 @@ namespace BeltmanSoftwareDesign.Data.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<double>("Percentage")
                         .HasColumnType("float");
@@ -1685,6 +1689,10 @@ namespace BeltmanSoftwareDesign.Data.Migrations
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<long?>("ProjectId")
                         .HasColumnType("bigint");
@@ -2191,19 +2199,12 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                         .HasForeignKey("InvoiceId")
                         .OnDelete(DeleteBehavior.NoAction);
 
-                    b.HasOne("BeltmanSoftwareDesign.Data.Entities.Rate", "Rate")
-                        .WithMany("InvoiceWorkorders")
-                        .HasForeignKey("RateId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
                     b.HasOne("BeltmanSoftwareDesign.Data.Entities.Workorder", "Workorder")
                         .WithMany("InvoiceWorkorders")
                         .HasForeignKey("WorkorderId")
                         .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("Invoice");
-
-                    b.Navigation("Rate");
 
                     b.Navigation("Workorder");
                 });
@@ -2272,7 +2273,8 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                     b.HasOne("BeltmanSoftwareDesign.Data.Entities.TaxRate", "TaxRate")
                         .WithMany("Rates")
                         .HasForeignKey("TaxRateId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.Navigation("Company");
 
@@ -2330,7 +2332,8 @@ namespace BeltmanSoftwareDesign.Data.Migrations
                     b.HasOne("BeltmanSoftwareDesign.Data.Entities.Country", "Country")
                         .WithMany("TaxRates")
                         .HasForeignKey("CountryId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.Navigation("Company");
 
@@ -2607,8 +2610,6 @@ namespace BeltmanSoftwareDesign.Data.Migrations
 
             modelBuilder.Entity("BeltmanSoftwareDesign.Data.Entities.Rate", b =>
                 {
-                    b.Navigation("InvoiceWorkorders");
-
                     b.Navigation("Workorders");
                 });
 

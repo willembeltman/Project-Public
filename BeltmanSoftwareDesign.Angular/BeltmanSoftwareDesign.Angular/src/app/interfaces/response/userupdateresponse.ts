@@ -7,6 +7,5 @@ export interface UserUpdateResponse {
     success: boolean;
     errorAuthentication: boolean;
     errorItemNotFound: boolean;
-    errorWrongCompany: boolean;
     state: State | null;
 }

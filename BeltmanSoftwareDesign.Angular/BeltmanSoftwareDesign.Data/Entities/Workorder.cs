@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using BeltmanSoftwareDesign.Data.Attributes;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BeltmanSoftwareDesign.Data.Entities
@@ -20,6 +21,9 @@ namespace BeltmanSoftwareDesign.Data.Entities
 
         public DateTime Start { get; set; }
         public DateTime Stop { get; set; }
+        [Name]
+        [StringLength(255)]
+        public string? Name { get; set; }
         public string? Description { get; set; }
 
         public virtual ICollection<InvoiceWorkorder>? InvoiceWorkorders { get; set; }

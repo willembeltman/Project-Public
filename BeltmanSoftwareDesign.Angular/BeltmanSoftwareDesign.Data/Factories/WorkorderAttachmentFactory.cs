@@ -18,10 +18,7 @@ namespace BeltmanSoftwareDesign.Data.Factories
             return new Shared.Jsons.WorkorderAttachment()
             {
                 id = b.id,
-                FileMD5 = b.FileMD5,
-                FileMimeType = b.FileMimeType,
-                FileName = b.FileName,
-                FileSize = b.FileSize,
+                WorkorderId = b.WorkorderId,
                 FileUrl = StorageFileService.GetUrl(b)
             };
         }

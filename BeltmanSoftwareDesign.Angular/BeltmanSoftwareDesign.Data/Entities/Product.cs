@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using BeltmanSoftwareDesign.Data.Attributes;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BeltmanSoftwareDesign.Data.Entities
@@ -14,6 +15,8 @@ namespace BeltmanSoftwareDesign.Data.Entities
         public long? SupplierId { get; set; }
         public virtual Supplier? Supplier { get; set; }
 
+        [Name]
+        [StringLength(255)]
         public string Name { get; set; }
         public string Description { get; set; }
 

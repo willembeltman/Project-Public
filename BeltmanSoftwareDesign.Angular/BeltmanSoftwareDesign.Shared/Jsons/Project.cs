@@ -6,6 +6,7 @@
 
         public long? CustomerId { get; set; }
         public string? CustomerName { get; set; }
+
         public string? Name { get; set; }
         public bool Publiekelijk { get; set; }
     }

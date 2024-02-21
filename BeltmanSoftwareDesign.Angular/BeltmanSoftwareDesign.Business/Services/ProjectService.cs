@@ -75,17 +75,13 @@ namespace BeltmanSoftwareDesign.Business.Services
                 .Include(a => a.Expenses)
                 .Include(a => a.Invoices)
                 .Include(a => a.Workorders)
-                .FirstOrDefault(a => a.id == request.ProjectId);
+                .FirstOrDefault(a =>
+                    a.CompanyId == authentication.DbCurrentCompany.id && 
+                    a.id == request.ProjectId);
             if (dbproject == null)
                 return new ProjectReadResponse()
                 {
                     ErrorItemNotFound = true
-                };
-
-            if (dbproject.CompanyId != authentication.DbCurrentCompany.id)
-                return new ProjectReadResponse()
-                {
-                    ErrorWrongCompany = true
                 };
 
             return new ProjectReadResponse()
@@ -116,17 +112,13 @@ namespace BeltmanSoftwareDesign.Business.Services
                 .Include(a => a.Expenses)
                 .Include(a => a.Invoices)
                 .Include(a => a.Workorders)
-                .FirstOrDefault(a => a.id == request.Project.id);
+                .FirstOrDefault(a =>
+                    a.CompanyId == authentication.DbCurrentCompany.id && 
+                    a.id == request.Project.id);
             if (dbproject == null)
                 return new ProjectUpdateResponse()
                 {
                     ErrorItemNotFound = true,
-                };
-
-            if (dbproject.CompanyId != authentication.DbCurrentCompany.id)
-                return new ProjectUpdateResponse()
-                {
-                    ErrorWrongCompany = true,
                 };
 
             if (ProjectFactory.Copy(request.Project, dbproject))
@@ -160,18 +152,13 @@ namespace BeltmanSoftwareDesign.Business.Services
                 .Include(a => a.Expenses)
                 .Include(a => a.Invoices)
                 .Include(a => a.Workorders)
-                .FirstOrDefault(a => a.id == request.ProjectId);
+                .FirstOrDefault(a =>
+                    a.CompanyId == authentication.DbCurrentCompany.id && 
+                    a.id == request.ProjectId);
             if (dbproject == null)
                 return new ProjectDeleteResponse()
                 {
                     ErrorItemNotFound = true,
-                    State = authentication
-                };
-
-            if (dbproject.CompanyId != authentication.DbCurrentCompany.id)
-                return new ProjectDeleteResponse()
-                {
-                    ErrorWrongCompany = true,
                     State = authentication
                 };
 

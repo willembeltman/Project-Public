@@ -42,50 +42,7 @@ namespace BeltmanSoftwareDesign.Business.Services
             if (authentication.DbCurrentCompany == null)
                 throw new Exception("Current company not chosen or doesn't exist, please create a company or select one.");
 
-            var dbworkorder = WorkorderFactory.Convert(request.Workorder);
-
-            dbworkorder.CompanyId = authentication.DbCurrentCompany.id;
-            dbworkorder.Company = authentication.DbCurrentCompany;
-
-            dbworkorder.Customer = null;
-            if (!string.IsNullOrEmpty(request.Workorder.ProjectName))
-            {
-                dbworkorder.Customer = db.Customers.FirstOrDefault(a =>
-                    a.CompanyId == authentication.DbCurrentCompany.id &&
-                    a.Name.ToLower() == request.Workorder.CustomerName.ToLower());
-                if (dbworkorder.Customer == null)
-                {
-                    dbworkorder.Customer = new Data.Entities.Customer()
-                    {
-                        Name = request.Workorder.CustomerName,
-                        CompanyId = authentication.DbCurrentCompany.id
-                    };
-                    db.Customers.Add(dbworkorder.Customer);
-                    db.SaveChanges();
-                }
-            }
-            dbworkorder.CustomerId = dbworkorder.Customer?.id;
-
-            dbworkorder.Project = null;
-            if (!string.IsNullOrEmpty(request.Workorder.ProjectName))
-            {
-                dbworkorder.Project = db.Projects.FirstOrDefault(a =>
-                    a.CompanyId == authentication.DbCurrentCompany.id &&
-                    a.Name.ToLower() == request.Workorder.ProjectName.ToLower());
-                if (dbworkorder.Project == null)
-                {
-                    dbworkorder.Project = new Data.Entities.Project()
-                    {
-                        Name = request.Workorder.ProjectName,
-                        CompanyId = authentication.DbCurrentCompany.id,
-                        Customer = dbworkorder.Customer,
-                    };
-                    db.Projects.Add(dbworkorder.Project);
-                    db.SaveChanges();
-                }
-            }
-            dbworkorder.ProjectId = dbworkorder.Project?.id;
-
+            var dbworkorder = WorkorderFactory.Create(request.Workorder, authentication.DbCurrentCompany, db);
             db.Workorders.Add(dbworkorder);
             db.SaveChanges();
 
@@ -93,7 +50,7 @@ namespace BeltmanSoftwareDesign.Business.Services
             {
                 Success = true,
                 State = authentication,
-                Workorder = WorkorderFactory.Convert(dbworkorder)
+                Workorder = WorkorderFactory.Create(dbworkorder)
             };
         }
 
@@ -117,7 +74,9 @@ namespace BeltmanSoftwareDesign.Business.Services
                 .Include(a => a.Project)
                 .Include(a => a.InvoiceWorkorders)
                 .Include(a => a.WorkorderAttachments)
-                .FirstOrDefault(a => a.id == request.WorkorderId);
+                .FirstOrDefault(a =>
+                    a.CompanyId == authentication.DbCurrentCompany.id && 
+                    a.id == request.WorkorderId);
             if (dbworkorder == null)
                 return new WorkorderReadResponse()
                 {
@@ -125,18 +84,11 @@ namespace BeltmanSoftwareDesign.Business.Services
                     State = authentication
                 };
 
-            if (dbworkorder.CompanyId != authentication.DbCurrentCompany.id)
-                return new WorkorderReadResponse()
-                {
-                    ErrorWrongCompany = true,
-                    State = authentication
-                };
-
             return new WorkorderReadResponse()
             {
                 Success = true,
                 State = authentication,
-                Workorder = WorkorderFactory.Convert(dbworkorder)
+                Workorder = WorkorderFactory.Create(dbworkorder)
             };
         }
 
@@ -160,7 +112,9 @@ namespace BeltmanSoftwareDesign.Business.Services
                 .Include(a => a.Project)
                 .Include(a => a.InvoiceWorkorders)
                 .Include(a => a.WorkorderAttachments)
-                .FirstOrDefault(a => a.id == request.Workorder.id);
+                .FirstOrDefault(a =>
+                    a.CompanyId == authentication.DbCurrentCompany.id &&
+                    a.id == request.Workorder.id);
             if (dbworkorder == null)
                 return new WorkorderUpdateResponse()
                 {
@@ -168,61 +122,14 @@ namespace BeltmanSoftwareDesign.Business.Services
                     State = authentication
                 };
 
-            if (dbworkorder.CompanyId != authentication.DbCurrentCompany.id)
-                return new WorkorderUpdateResponse()
-                {
-                    ErrorWrongCompany = true,
-                    State = authentication
-                };
-
-            WorkorderFactory.Copy(request.Workorder, dbworkorder);
-
-            dbworkorder.Customer = null;
-            if (!string.IsNullOrEmpty(request.Workorder.ProjectName))
-            {
-                dbworkorder.Customer = db.Customers.FirstOrDefault(a =>
-                    a.CompanyId == authentication.DbCurrentCompany.id &&
-                    a.Name.ToLower() == request.Workorder.CustomerName.ToLower());
-                if (dbworkorder.Customer == null)
-                {
-                    dbworkorder.Customer = new Data.Entities.Customer()
-                    {
-                        Name = request.Workorder.CustomerName,
-                        CompanyId = authentication.DbCurrentCompany.id
-                    };
-                    db.Customers.Add(dbworkorder.Customer);
-                    db.SaveChanges();
-                }
-            }
-            dbworkorder.CustomerId = dbworkorder.Customer?.id;
-
-            dbworkorder.Project = null;
-            if (!string.IsNullOrEmpty(request.Workorder.ProjectName))
-            {
-                dbworkorder.Project = db.Projects.FirstOrDefault(a =>
-                    a.CompanyId == authentication.DbCurrentCompany.id &&
-                    a.Name.ToLower() == request.Workorder.ProjectName.ToLower());
-                if (dbworkorder.Project == null)
-                {
-                    dbworkorder.Project = new Data.Entities.Project()
-                    {
-                        Name = request.Workorder.ProjectName,
-                        CompanyId = authentication.DbCurrentCompany.id,
-                        Customer = dbworkorder.Customer,
-                    };
-                    db.Projects.Add(dbworkorder.Project);
-                    db.SaveChanges();
-                }
-            }
-            dbworkorder.ProjectId = dbworkorder.Project?.id;
-
-            db.SaveChanges();
+            if (WorkorderFactory.Copy(request.Workorder, dbworkorder, authentication.DbCurrentCompany, db))
+                db.SaveChanges();
 
             return new WorkorderUpdateResponse()
             {
                 Success = true,
                 State = authentication,
-                Workorder = WorkorderFactory.Convert(dbworkorder)
+                Workorder = WorkorderFactory.Create(dbworkorder)
             };
         }
 
@@ -246,18 +153,13 @@ namespace BeltmanSoftwareDesign.Business.Services
                 .Include(a => a.Project)
                 .Include(a => a.InvoiceWorkorders)
                 .Include(a => a.WorkorderAttachments)
-                .FirstOrDefault(a => a.id == request.WorkorderId);
+                .FirstOrDefault(a =>
+                    a.CompanyId == authentication.DbCurrentCompany.id && 
+                    a.id == request.WorkorderId);
             if (dbworkorder == null)
                 return new WorkorderDeleteResponse()
                 {
                     ErrorItemNotFound = true,
-                    State = authentication
-                };
-
-            if (dbworkorder.CompanyId != authentication.DbCurrentCompany.id)
-                return new WorkorderDeleteResponse()
-                {
-                    ErrorWrongCompany = true,
                     State = authentication
                 };
 
@@ -292,7 +194,7 @@ namespace BeltmanSoftwareDesign.Business.Services
                 .Include(a => a.InvoiceWorkorders)
                 .Include(a => a.WorkorderAttachments)
                 .Where(a => a.CompanyId == authentication.DbCurrentCompany.id)
-                .Select(a => WorkorderFactory.Convert(a))
+                .Select(a => WorkorderFactory.Create(a))
                 .ToArray();
 
             return new WorkorderListResponse()

@@ -6,6 +6,5 @@ export interface CompanyUpdateResponse {
     success: boolean;
     errorAuthentication: boolean;
     errorItemNotFound: boolean;
-    errorWrongCompany: boolean;
     state: State | null;
 }

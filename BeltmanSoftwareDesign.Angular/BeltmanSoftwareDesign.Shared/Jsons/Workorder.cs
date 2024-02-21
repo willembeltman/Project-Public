@@ -4,9 +4,10 @@
     {
         public long id { get; set; }
 
+        public string? Name { get; set; }
+        public string? Description { get; set; }
         public DateTime Start { get; set; }
         public DateTime Stop { get; set; }
-        public string? Description { get; set; }
 
         public long? ProjectId { get; set; }
         public string? ProjectName { get; set; }

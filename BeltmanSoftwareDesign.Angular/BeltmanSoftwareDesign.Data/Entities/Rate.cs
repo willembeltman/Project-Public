@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using BeltmanSoftwareDesign.Data.Attributes;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BeltmanSoftwareDesign.Data.Entities
@@ -12,13 +13,14 @@ namespace BeltmanSoftwareDesign.Data.Entities
 
         public long CompanyId { get; set; }
         public virtual Company? Company { get; set; }
-        public long? TaxRateId { get; set; }
+        public long TaxRateId { get; set; }
         public virtual TaxRate? TaxRate { get; set; }
 
-        public string Description { get; set; } = string.Empty;
+        [Name]
+        [StringLength(255)]
+        public string? Name { get; set; }
+        public string? Description { get; set; }
         public double Price { get; set; }
-        public double? Tax { get; set; }
-        public virtual ICollection<InvoiceWorkorder>? InvoiceWorkorders { get; set; }
         public virtual ICollection<Workorder>? Workorders { get; set; }
 
         //public double GetTax()

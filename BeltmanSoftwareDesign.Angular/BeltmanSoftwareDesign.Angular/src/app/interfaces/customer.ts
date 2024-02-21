@@ -1,6 +1,5 @@
 export interface Customer {
     id: number;
-    companyId: number;
     countryId: number | null;
     countryName: string | null;
     name: string | null;

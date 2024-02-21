@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using BeltmanSoftwareDesign.Data.Attributes;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BeltmanSoftwareDesign.Data.Entities
@@ -20,6 +21,8 @@ namespace BeltmanSoftwareDesign.Data.Entities
         public long? IsPayedInCash_By_CompanyUserId { get; set; }
         public virtual CompanyUser? IsPayedInCash_By_CompanyUser { get; set; }
 
+        [Name]
+        [StringLength(255)]
         public string InvoiceNumber { get; set; }
         public string Description { get; set; }
         public DateTime Date { get; set; }

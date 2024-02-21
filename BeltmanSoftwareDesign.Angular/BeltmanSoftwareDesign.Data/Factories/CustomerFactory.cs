@@ -5,8 +5,9 @@ namespace BeltmanSoftwareDesign.Data.Factories
 {
     public class CustomerFactory
     {
-        public Shared.Jsons.Customer Convert(Customer a)
+        public Shared.Jsons.Customer Convert(Customer? a)
         {
+            if (a == null) return null;
             return new Shared.Jsons.Customer()
             {
                 id = a.id,
@@ -22,8 +23,9 @@ namespace BeltmanSoftwareDesign.Data.Factories
                 Publiekelijk = a.Publiekelijk,
             };
         }
-        public Customer Convert(Shared.Jsons.Customer a)
+        public Customer Convert(Shared.Jsons.Customer? a)
         {
+            if (a == null) return null;
             return new Customer()
             {
                 id = a.id,

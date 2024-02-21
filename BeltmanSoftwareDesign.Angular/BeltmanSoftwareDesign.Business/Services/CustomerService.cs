@@ -42,16 +42,11 @@ namespace BeltmanSoftwareDesign.Business.Services
             if (authentication.DbCurrentCompany == null)
                 throw new Exception("Current company not chosen or doesn't exist, please create a company or select one.");
 
-            if (request.Customer.CompanyId == 0)
-                request.Customer.CompanyId = authentication.DbCurrentCompany.id;
-
-            if (request.Customer.CompanyId != authentication.DbCurrentCompany.id)
-                return new CustomerCreateResponse()
-                {
-                    ErrorWrongCompany = true
-                };
-
             var dbcustomer = CustomerFactory.Convert(request.Customer);
+
+            dbcustomer.Company = authentication.DbCurrentCompany;
+            dbcustomer.CompanyId = authentication.DbCurrentCompany.id;
+
             db.Customers.Add(dbcustomer);
             db.SaveChanges();
 
@@ -84,17 +79,14 @@ namespace BeltmanSoftwareDesign.Business.Services
                 .Include(a => a.Invoices)
                 .Include(a => a.Expenses)
                 .Include(a => a.Documents)
-                .FirstOrDefault(a => a.id == request.CustomerId);
+                .FirstOrDefault(a => 
+                    a.CompanyId == authentication.DbCurrentCompany.id &&
+                    a.id == request.CustomerId);
+
             if (dbcustomer == null)
                 return new CustomerReadResponse()
                 {
                     ErrorItemNotFound = true
-                };
-
-            if (dbcustomer.CompanyId != authentication.DbCurrentCompany.id)
-                return new CustomerReadResponse()
-                {
-                    ErrorWrongCompany = true
                 };
 
             return new CustomerReadResponse()
@@ -126,17 +118,13 @@ namespace BeltmanSoftwareDesign.Business.Services
                 .Include(a => a.Invoices)
                 .Include(a => a.Expenses)
                 .Include(a => a.Documents)
-                .FirstOrDefault(a => a.id == request.Customer.id);
+                .FirstOrDefault(a =>
+                    a.CompanyId == authentication.DbCurrentCompany.id &&
+                    a.id == request.Customer.id);
             if (dbcustomer == null)
                 return new CustomerUpdateResponse()
                 {
                     ErrorItemNotFound = true,
-                };
-
-            if (dbcustomer.CompanyId != authentication.DbCurrentCompany.id)
-                return new CustomerUpdateResponse()
-                {
-                    ErrorWrongCompany = true,
                 };
 
             if (CustomerFactory.Copy(request.Customer, dbcustomer))
@@ -171,18 +159,14 @@ namespace BeltmanSoftwareDesign.Business.Services
                 .Include(a => a.Invoices)
                 .Include(a => a.Expenses)
                 .Include(a => a.Documents)
-                .FirstOrDefault(a => a.id == request.CustomerId);
+                .FirstOrDefault(a =>
+                    a.CompanyId == authentication.DbCurrentCompany.id &&
+                    a.id == request.CustomerId);
+
             if (dbcustomer == null)
                 return new CustomerDeleteResponse()
                 {
                     ErrorItemNotFound = true,
-                    State = authentication
-                };
-
-            if (dbcustomer.CompanyId != authentication.DbCurrentCompany.id)
-                return new CustomerDeleteResponse()
-                {
-                    ErrorWrongCompany = true,
                     State = authentication
                 };
 
@@ -217,7 +201,8 @@ namespace BeltmanSoftwareDesign.Business.Services
                 .Include(a => a.Invoices)
                 .Include(a => a.Expenses)
                 .Include(a => a.Documents)
-                .Where(a => a.CompanyId == authentication.DbCurrentCompany.id)
+                .Where(a => 
+                    a.CompanyId == authentication.DbCurrentCompany.id)
                 .Select(a => CustomerFactory.Convert(a))
                 .ToArray();
 

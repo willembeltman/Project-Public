@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using BeltmanSoftwareDesign.Data.Attributes;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BeltmanSoftwareDesign.Data.Entities
@@ -11,9 +12,11 @@ namespace BeltmanSoftwareDesign.Data.Entities
 
         public long CompanyId { get; set; }
         public virtual Company? Company { get; set; }
-        public long? CountryId { get; set; }
+        public long CountryId { get; set; }
         public virtual Country? Country { get; set; }
 
+        [Name]
+        [StringLength(255)]
         public string Name { get; set; }
         public string Description { get; set; }
         public double Percentage { get; set; }

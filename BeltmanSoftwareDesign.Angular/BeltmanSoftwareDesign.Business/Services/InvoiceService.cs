@@ -117,18 +117,13 @@ namespace BeltmanSoftwareDesign.Business.Services
                 .Include(a => a.Project)
                 .Include(a => a.InvoiceWorkorders)
                 .Include(a => a.InvoiceAttachments)
-                .FirstOrDefault(a => a.id == request.InvoiceId);
+                .FirstOrDefault(a =>
+                    a.CompanyId == authentication.DbCurrentCompany.id && 
+                    a.id == request.InvoiceId);
             if (dbinvoice == null)
                 return new InvoiceReadResponse()
                 {
                     ErrorItemNotFound = true,
-                    State = authentication
-                };
-
-            if (dbinvoice.CompanyId != authentication.DbCurrentCompany.id)
-                return new InvoiceReadResponse()
-                {
-                    ErrorWrongCompany = true,
                     State = authentication
                 };
 
@@ -160,18 +155,13 @@ namespace BeltmanSoftwareDesign.Business.Services
                 .Include(a => a.Project)
                 .Include(a => a.InvoiceWorkorders)
                 .Include(a => a.InvoiceAttachments)
-                .FirstOrDefault(a => a.id == request.Invoice.id);
+                .FirstOrDefault(a =>
+                    a.CompanyId == authentication.DbCurrentCompany.id && 
+                    a.id == request.Invoice.id);
             if (dbinvoice == null)
                 return new InvoiceUpdateResponse()
                 {
                     ErrorItemNotFound = true,
-                    State = authentication
-                };
-
-            if (dbinvoice.CompanyId != authentication.DbCurrentCompany.id)
-                return new InvoiceUpdateResponse()
-                {
-                    ErrorWrongCompany = true,
                     State = authentication
                 };
 
@@ -206,18 +196,14 @@ namespace BeltmanSoftwareDesign.Business.Services
                 .Include(a => a.Project)
                 .Include(a => a.InvoiceWorkorders)
                 .Include(a => a.InvoiceAttachments)
-                .FirstOrDefault(a => a.id == request.InvoiceId);
+                .FirstOrDefault(a =>
+                    a.CompanyId == authentication.DbCurrentCompany.id && 
+                    a.id == request.InvoiceId);
+
             if (dbinvoice == null)
                 return new InvoiceDeleteResponse()
                 {
                     ErrorItemNotFound = true,
-                    State = authentication
-                };
-
-            if (dbinvoice.CompanyId != authentication.DbCurrentCompany.id)
-                return new InvoiceDeleteResponse()
-                {
-                    ErrorWrongCompany = true,
                     State = authentication
                 };
 

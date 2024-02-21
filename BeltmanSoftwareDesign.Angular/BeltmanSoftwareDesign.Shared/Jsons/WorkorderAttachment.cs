@@ -4,10 +4,7 @@
     {
         public long id { get; set; }
 
-        public string FileMimeType { get; set; }
-        public string FileName { get; set; }
-        public long FileSize { get; set; }
-        public string FileMD5 { get; set; }
+        public long WorkorderId { get; set; }
 
         public string FileUrl { get; set; }
     }
