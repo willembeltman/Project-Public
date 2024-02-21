@@ -6,6 +6,5 @@
 
         public long? InvoiceId { get; set; }
         public long? WorkorderId { get; set; }
-        public long? RateId { get; set; }
     }
 }

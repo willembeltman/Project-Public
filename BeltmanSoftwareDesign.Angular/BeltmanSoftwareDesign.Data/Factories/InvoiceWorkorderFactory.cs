@@ -1,7 +1,4 @@
-﻿using BeltmanSoftwareDesign.Data.Entities;
-using BeltmanSoftwareDesign.Shared.Jsons;
-
-namespace BeltmanSoftwareDesign.Data.Factories
+﻿namespace BeltmanSoftwareDesign.Data.Factories
 {
     public class InvoiceWorkorderFactory 
     {
@@ -11,7 +8,6 @@ namespace BeltmanSoftwareDesign.Data.Factories
             {
                 id = a.id,
                 InvoiceId = a.InvoiceId,
-                RateId = a.RateId,
                 WorkorderId = a.WorkorderId,
             };
         }

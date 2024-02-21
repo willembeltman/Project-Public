@@ -54,11 +54,11 @@ namespace BeltmanSoftwareDesign.Data.Factories
         public bool Copy(Shared.Jsons.Workorder? source, Entities.Workorder dest)
         {
             var changed = false;
-            if (dest.CustomerId != source.CustomerId)
-            {
-                dest.CustomerId = source.CustomerId;
-                changed = true;
-            }
+            //if (dest.CustomerId != source.CustomerId)
+            //{
+            //    dest.CustomerId = source.CustomerId;
+            //    changed = true;
+            //}
 
             if (dest.Description != source.Description)
             {
@@ -66,11 +66,11 @@ namespace BeltmanSoftwareDesign.Data.Factories
                 changed = true;
             }
 
-            if (dest.ProjectId != source.ProjectId)
-            {
-                dest.ProjectId = source.ProjectId;
-                changed = true;
-            }
+            //if (dest.ProjectId != source.ProjectId)
+            //{
+            //    dest.ProjectId = source.ProjectId;
+            //    changed = true;
+            //}
 
             if (dest.Start != source.Start)
             {

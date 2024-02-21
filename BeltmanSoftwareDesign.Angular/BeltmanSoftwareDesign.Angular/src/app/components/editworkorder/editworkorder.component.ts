@@ -8,6 +8,13 @@ import { Workorder } from '../../interfaces/workorder';
 import { NgForOf, NgIf } from '@angular/common';
 import { CountryService } from '../../apiservices/country.service';
 import { WorkorderService } from '../../apiservices/workorder.service';
+import { Invoice } from '../../interfaces/invoice';
+import { Project } from '../../interfaces/project';
+import { Customer } from '../../interfaces/customer';
+import { InvoiceService } from '../../apiservices/invoice.service';
+import { WorkorderReadResponse } from '../../interfaces/response/workorderreadresponse';
+import { ProjectService } from '../../apiservices/project.service';
+import { CustomerService } from '../../apiservices/customer.service';
 
 @Component({
   selector: 'app-editworkorder',
@@ -17,75 +24,121 @@ import { WorkorderService } from '../../apiservices/workorder.service';
   styleUrl: './editworkorder.component.css'
 })
 export class EditWorkorderComponent {
-  workorderId: number | null = 0;
-  countries: Country[] | null = null;
-  workorderForm: FormGroup = this.fb.group({
-    address: [''],
-    btwNumber: [''],
-    countryId: [''],
-    email: ['', Validators.email],
-    iban: [''],
-    id: [''],
-    kvkNumber: [''],
-    name: ['', Validators.required],
-    phoneNumber: [''],
-    place: [''],
-    postalcode: [''],
-    website: [''],
-  });
+  urlWorkorderId: number | null = null;
+
+  workorder: Workorder | null = null;
+  invoices: Invoice[] = [];
+  projects: Project[] = [];
+  customers: Customer[] = [];
+
+  standardRequest: any;
 
   loaded: boolean = false;
+
+  workorderForm: FormGroup = this.fb.group({
+    startDate: ['', Validators.required],
+    startTime: ['', Validators.required],
+    stopDate: ['', Validators.required],
+    stopTime: ['', Validators.required],
+    description: ['', Validators.required],
+    projectName: [''],
+    customerName: [''],
+  });
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
     private stateService: StateService,
-    private countryService: CountryService,
+    private invoiceService: InvoiceService,
     private workorderService: WorkorderService,
+    private projectService: ProjectService,
+    private customerService: CustomerService,
     private route: ActivatedRoute) {
-    this.workorderId = parseInt(this.route.snapshot.paramMap.get('id') ?? "0");
+    this.standardRequest = this.stateService.createStandardRequest();
+    this.urlWorkorderId = parseInt(this.route.snapshot.paramMap.get('id') ?? "0");
   }
 
   ngOnInit(): void {
-    let request = this.stateService.createStandardRequest();
-    this.countryService
-      .list(request)
-      .subscribe({
-        next: (response) => {
-          this.stateService.setState(response.state);
-          if (response.success) {
-            this.countries = response.countries;
+    this.readInvoices();
+  }
 
-            this.workorderService
-              .read({
-                ...request,
-                workorderId: this.workorderId ?? 0
-              })
-              .subscribe({
-                next: (response) => {
-                  if (response.success) {
-                    let workorder = response.workorder;
-                    if (workorder != null) {                      
-                      this.workorderForm = this.fb.group({
-                        id: [workorder.id, Validators.required],
-                        customerId: [workorder.customerId, Validators.required],
-                        projectId: [workorder.projectId, Validators.required],
-                        description: [workorder.description, Validators.required],
-                        start: [workorder.start, Validators.required],
-                        stop: [workorder.stop, Validators.required],
-                      });
-                      this.loaded = true;
-                    }
-                  }
-                }
-              });
+  readInvoices() {
+    this.invoiceService
+      .list(this.standardRequest)
+      .subscribe({
+        next: (invoiceresponse) => {
+          this.stateService.setState(invoiceresponse.state);
+          if (invoiceresponse.success) {
+            this.invoices = invoiceresponse.invoices;
+            this.readProjects();
           }
         }
       });
   }
-  
-  getCountries() {
-    return this.countries;
+  readProjects() {
+    this.projectService
+      .list(this.standardRequest)
+      .subscribe({
+        next: (projectsresponse) => {
+          this.stateService.setState(projectsresponse.state);
+          if (projectsresponse.success) {
+            this.projects = projectsresponse.projects;
+            this.readCustomers();
+          }
+        }
+      });
+  }
+  readCustomers() {
+    this.customerService
+      .list(this.standardRequest)
+      .subscribe({
+        next: (customersResponse) => {
+          this.stateService.setState(customersResponse.state);
+          if (customersResponse.success) {
+            this.customers = customersResponse.customers;
+            this.readWorkorder();
+          }
+        }
+      });
+  }
+  readWorkorder() {
+    this.workorderService
+      .read({
+        workorderId: this.urlWorkorderId ?? 0,
+        ...this.standardRequest
+      })
+      .subscribe({
+        next: (response) => {
+          this.stateService.setState(response.state);
+          if (response.success) {
+            if (response.workorder == null) return;
+            this.workorder = response.workorder;
+
+            if (this.workorder?.start == null) return;
+            const startdate = new Date(this.workorder?.start);
+            const startdatestring = startdate.toISOString().split('T')[0];
+            const starttimestring = startdate.toISOString().split('T')[1].split('.')[0];
+
+            if (this.workorder?.stop == null) return;
+            const stopdate = new Date(this.workorder?.stop);
+            const stopdatestring = stopdate.toISOString().split('T')[0];
+            const stoptimestring = stopdate.toISOString().split('T')[1].split('.')[0];
+
+            this.workorderForm = this.fb.group({
+              id: [this.workorder?.id, Validators.required],
+              startDate: [startdatestring, Validators.required],
+              startTime: [starttimestring, Validators.required],
+              stopDate: [stopdatestring, Validators.required],
+              stopTime: [stoptimestring, Validators.required],
+              description: [this.workorder?.description, Validators.required],
+              projectName: [this.workorder?.projectName],
+              customerName: [this.workorder?.customerName],
+            });
+
+            this.loaded = true;
+          }
+        }
+      });
   }
 
   onSubmit(): void {
@@ -96,20 +149,24 @@ export class EditWorkorderComponent {
     //return;
 
     const formData = this.workorderForm.value;
+    const start = formData.startDate + ' ' + formData.startTime;
+    const stop = formData.stopDate + ' ' + formData.stopTime;
     const workorder: Workorder = {
+      start: new Date(start),
+      stop: new Date(stop),
+      invoiceWorkorders: [],
+      workorderAttachments: [],
       ...formData
     };
     this.workorderService
       .update({
-        bearerId: this.stateService.getState()?.bearerId ?? null,
-        currentCompanyId: this.stateService.getState()?.currentCompany?.id ?? null,
-        workorder: workorder
+        workorder: workorder,
+        ...this.standardRequest
       })
       .subscribe({
         next: (response) => {
           this.stateService.setState(response.state);
           if (response.success) {
-            //this.cacheService.resetWorkorders();
             this.router.navigate(['/workorders']);
           }
         }

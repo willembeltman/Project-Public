@@ -19,4 +19,5 @@ export interface Invoice {
     datePayed: Date | null;
     paymentCode: string | null;
     invoiceWorkorders: InvoiceWorkorder[];
+    quarter: number;
 }

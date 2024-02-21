@@ -15,8 +15,5 @@ namespace BeltmanSoftwareDesign.Data.Entities
 
         public long? WorkorderId { get; set; }
         public virtual Workorder? Workorder { get; set; }
-
-        public long? RateId { get; set; }
-        public virtual Rate? Rate { get; set; }
     }
 }

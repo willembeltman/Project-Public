@@ -145,11 +145,6 @@ namespace BeltmanSoftwareDesign.Data
                 .WithMany(c => c.InvoiceWorkorders)
                 .HasForeignKey(p => p.InvoiceId)
                 .OnDelete(DeleteBehavior.NoAction);
-            modelBuilder.Entity<InvoiceWorkorder>()
-                .HasOne(u => u.Rate)
-                .WithMany(c => c.InvoiceWorkorders)
-                .HasForeignKey(p => p.RateId)
-                .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<WorkorderAttachment>()
                 .HasOne(u => u.Workorder)
