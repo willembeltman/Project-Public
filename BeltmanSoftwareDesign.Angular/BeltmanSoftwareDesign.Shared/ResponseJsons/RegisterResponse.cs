@@ -1,6 +1,4 @@
-﻿using BeltmanSoftwareDesign.Shared.Jsons;
-
-namespace BeltmanSoftwareDesign.Shared.ResponseJsons
+﻿namespace BeltmanSoftwareDesign.Shared.ResponseJsons
 {
     public class RegisterResponse : Response
     {

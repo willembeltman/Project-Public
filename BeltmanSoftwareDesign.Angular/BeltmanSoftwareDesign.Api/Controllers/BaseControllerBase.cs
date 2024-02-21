@@ -1,5 +1,4 @@
-﻿using BeltmanSoftwareDesign.Business.Interfaces;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace BeltmanSoftwareDesign.Api.Controllers
 {

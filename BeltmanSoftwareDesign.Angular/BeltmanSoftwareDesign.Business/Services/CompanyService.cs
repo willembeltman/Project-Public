@@ -134,14 +134,6 @@ namespace BeltmanSoftwareDesign.Business.Services
             // Convert it back
             var company = CompanyFactory.Convert(dbcompany);
 
-            //// Set current company to 
-            //state.User.currentCompanyId = company.Id;
-            //state.DbUser.CurrentCompanyId = dbcompany.Id;
-            //state.DbUser.CurrentCompany = dbcompany;
-            //state.CurrentCompany = company;
-            //state.DbCurrentCompany = dbcompany;
-            //db.SaveChanges();
-
             return new CompanyReadResponse()
             {
                 Success = true,

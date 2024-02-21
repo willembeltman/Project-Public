@@ -39,7 +39,7 @@ export class EditUserComponent {
   ngOnInit(): void {
 
     this.userService
-      .read({
+      .readknownuser({
         bearerId: this.stateService.getState()?.bearerId ?? null,
         currentCompanyId: this.stateService.getState()?.currentCompany?.id ?? null,
         userId: this.userId
@@ -78,7 +78,7 @@ export class EditUserComponent {
       ...formData
     };
     this.userService
-      .update({
+      .updatemyself({
         bearerId: this.stateService.getState()?.bearerId ?? null,
         currentCompanyId: this.stateService.getState()?.currentCompany?.id ?? null,
         user: user

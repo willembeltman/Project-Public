@@ -23,16 +23,16 @@ export class UserService
   setcurrentcompany(request: SetCurrentCompanyRequest): Observable<SetCurrentCompanyResponse> {
     return this.http.post<SetCurrentCompanyResponse>(this.constants.apiUrl + '/user/setcurrentcompany', request);
   }
-  read(request: UserReadRequest): Observable<UserReadResponse> {
-    return this.http.post<UserReadResponse>(this.constants.apiUrl + '/user/read', request);
+  readknownuser(request: UserReadRequest): Observable<UserReadResponse> {
+    return this.http.post<UserReadResponse>(this.constants.apiUrl + '/user/readknownuser', request);
   }
-  update(request: UserUpdateRequest): Observable<UserUpdateResponse> {
-    return this.http.post<UserUpdateResponse>(this.constants.apiUrl + '/user/update', request);
+  updatemyself(request: UserUpdateRequest): Observable<UserUpdateResponse> {
+    return this.http.post<UserUpdateResponse>(this.constants.apiUrl + '/user/updatemyself', request);
   }
-  delete(request: UserDeleteRequest): Observable<UserDeleteResponse> {
-    return this.http.post<UserDeleteResponse>(this.constants.apiUrl + '/user/delete', request);
+  deletemyself(request: UserDeleteRequest): Observable<UserDeleteResponse> {
+    return this.http.post<UserDeleteResponse>(this.constants.apiUrl + '/user/deletemyself', request);
   }
-  list(request: UserListRequest): Observable<UserListResponse> {
-    return this.http.post<UserListResponse>(this.constants.apiUrl + '/user/list', request);
+  listknownusers(request: UserListRequest): Observable<UserListResponse> {
+    return this.http.post<UserListResponse>(this.constants.apiUrl + '/user/listknownusers', request);
   }
 }

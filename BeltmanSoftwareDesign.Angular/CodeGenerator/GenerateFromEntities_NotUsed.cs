@@ -3,9 +3,9 @@ using CodeGenerator.Entities.Models;
 using CodeGenerator.Entities.Templates;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
-namespace CodeGenerator.Entities
+namespace CodeGenerator
 {
-    public class AllesGenerator
+    public class GenerateFromEntities_NotUsed
     {
         static string angular_app_directory = @"D:\Project-Public\BeltmanSoftwareDesign.Angular\BeltmanSoftwareDesign.Angular\src\app";
 
@@ -56,8 +56,8 @@ namespace CodeGenerator.Entities
                     var hasStateProperty = a.Properties.Any(a => !a.Type.IsList && stateList.Any(b => b.Entity == a.Type.Entity));
                     var isNotStateProperty = !stateList.Any(b => b.Entity == a);
                     var isNotExcluded = !excluded.Any(b => b == a.Name);
-                    return 
-                        hasStateProperty && 
+                    return
+                        hasStateProperty &&
                         isNotStateProperty &&
                         isNotExcluded;
                 })
@@ -75,10 +75,10 @@ namespace CodeGenerator.Entities
                         var noCrudListUnknownProperties = !a.Properties.Any(a => a.Type.Entity != null && !mainEntitiesList.Any(b => b == a.Type.Entity));
                         var isNotStateProperty = !stateList.Any(b => b.Entity == a);
                         var isNotExcluded = !excluded.Any(b => b == a.Name);
-                        return 
-                            notInCrudList && 
-                            noCrudListUnknownProperties && 
-                            isNotStateProperty && 
+                        return
+                            notInCrudList &&
+                            noCrudListUnknownProperties &&
+                            isNotStateProperty &&
                             isNotExcluded;
                     })
                     .GroupBy(a => a)

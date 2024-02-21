@@ -9,7 +9,7 @@ namespace CodeGenerator
 {
 
 
-    public class ApplicationContext
+    public class GenerateFromServices
     {
         static string angular_app_directory = @"D:\Project-Public\BeltmanSoftwareDesign.Angular\BeltmanSoftwareDesign.Angular\src\app";
 

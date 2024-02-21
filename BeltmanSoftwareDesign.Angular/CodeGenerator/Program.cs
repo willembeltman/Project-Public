@@ -1,7 +1,7 @@
 ﻿using CodeGenerator;
 using CodeGenerator.Entities;
 
-ApplicationContext app = new ApplicationContext();
+GenerateFromServices app = new GenerateFromServices();
 app.Run(args);
 //AllesGenerator app = new AllesGenerator();
 //app.Run(args);

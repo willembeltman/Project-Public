@@ -78,8 +78,8 @@ namespace BeltmanSoftwareDesign.Business.Services
             };
         }
 
-        [TsServiceMethod("User", "Read")]
-        public UserReadResponse Read(UserReadRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
+        [TsServiceMethod("User", "ReadKnownUser")]
+        public UserReadResponse ReadKnownUser(UserReadRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
         {
             if (request == null)
                 return new UserReadResponse()
@@ -127,8 +127,8 @@ namespace BeltmanSoftwareDesign.Business.Services
             };
         }
 
-        [TsServiceMethod("User", "Update")]
-        public UserUpdateResponse Update(UserUpdateRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
+        [TsServiceMethod("User", "UpdateMyself")]
+        public UserUpdateResponse UpdateMyself(UserUpdateRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
         {
             if (request == null)
                 return new UserUpdateResponse()
@@ -168,8 +168,8 @@ namespace BeltmanSoftwareDesign.Business.Services
             };
         }
 
-        [TsServiceMethod("User", "Delete")]
-        public UserDeleteResponse Delete(UserDeleteRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
+        [TsServiceMethod("User", "DeleteMyself")]
+        public UserDeleteResponse DeleteMyself(UserDeleteRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
         {
             if (request == null)
                 return new UserDeleteResponse()
@@ -205,8 +205,8 @@ namespace BeltmanSoftwareDesign.Business.Services
             };
         }
 
-        [TsServiceMethod("User", "List")]
-        public UserListResponse List(UserListRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
+        [TsServiceMethod("User", "ListKnownUsers")]
+        public UserListResponse ListKnownUsers(UserListRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
         {
             if (request == null)
                 return new UserListResponse()
