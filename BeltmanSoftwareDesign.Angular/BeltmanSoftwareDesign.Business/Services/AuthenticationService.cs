@@ -3,7 +3,7 @@ using BeltmanSoftwareDesign.Business.Interfaces;
 using BeltmanSoftwareDesign.Business.Models;
 using BeltmanSoftwareDesign.Data;
 using BeltmanSoftwareDesign.Data.Entities;
-using BeltmanSoftwareDesign.Data.Factories;
+using BeltmanSoftwareDesign.Data.Converters;
 using BeltmanSoftwareDesign.Shared.Attributes;
 using BeltmanSoftwareDesign.Shared.RequestJsons;
 using BeltmanSoftwareDesign.Shared.ResponseJsons;
@@ -20,8 +20,8 @@ namespace BeltmanSoftwareDesign.Business.Services
         ApplicationDbContext db { get; }
         IStorageFileService StorageFileService { get; }
         DateTime now { get; }
-        UserFactory UserFactory { get; }
-        CompanyFactory CompanyFactory { get; }
+        UserConverter UserFactory { get; }
+        CompanyConverter CompanyFactory { get; }
 
         public AuthenticationService(
             ApplicationDbContext db, 
@@ -31,8 +31,8 @@ namespace BeltmanSoftwareDesign.Business.Services
             this.db = db;
             StorageFileService = storageFileService;
             this.now = now ?? DateTime.Now;
-            UserFactory = new UserFactory(storageFileService);
-            CompanyFactory = new CompanyFactory(storageFileService);
+            UserFactory = new UserConverter(storageFileService);
+            CompanyFactory = new CompanyConverter(storageFileService);
         }
 
         [TsServiceMethod("Auth", "Login")]
@@ -103,7 +103,7 @@ namespace BeltmanSoftwareDesign.Business.Services
                 clientBearer = CreateBearer(dbuser, clientDevice, clientIpAddress);
             }
 
-            var user = UserFactory.Convert(dbuser);
+            var user = UserFactory.Create(dbuser);
 
             var dbcurrentcompany = db.Companies
                 .Include(a => a.Country)
@@ -111,7 +111,7 @@ namespace BeltmanSoftwareDesign.Business.Services
                     a.id == user.currentCompanyId &&
                     a.CompanyUsers.Any(a => a.UserId == user.id));
 
-            var currentcompany = CompanyFactory.Convert(dbcurrentcompany);
+            var currentcompany = CompanyFactory.Create(dbcurrentcompany);
 
             return new LoginResponse()
             {
@@ -203,7 +203,7 @@ namespace BeltmanSoftwareDesign.Business.Services
                     ErrorCouldNotCreateBearer = true
                 };
 
-            var user = UserFactory.Convert(dbuser);
+            var user = UserFactory.Create(dbuser);
             return new RegisterResponse()
             {
                 Success = true,
@@ -289,8 +289,8 @@ namespace BeltmanSoftwareDesign.Business.Services
                     a.CompanyUsers.Any(a => a.UserId == user.Id) &&
                     a.id == currentCompanyId);
        
-            var userJson = UserFactory.Convert(user);
-            var companyJson = CompanyFactory.Convert(currentcompany);
+            var userJson = UserFactory.Create(user);
+            var companyJson = CompanyFactory.Create(currentcompany);
 
             return new AuthenticationState()
             {

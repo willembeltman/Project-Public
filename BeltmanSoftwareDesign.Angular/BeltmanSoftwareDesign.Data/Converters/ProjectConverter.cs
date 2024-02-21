@@ -1,10 +1,8 @@
-﻿using BeltmanSoftwareDesign.Data.Entities;
-
-namespace BeltmanSoftwareDesign.Data.Factories
+﻿namespace BeltmanSoftwareDesign.Data.Converters
 {
-    public class ProjectFactory
+    public class ProjectConverter
     {
-        public Shared.Jsons.Project Convert(Project a)
+        public Shared.Jsons.Project Create(Entities.Project a)
         {
             return new Shared.Jsons.Project()
             {
@@ -15,9 +13,9 @@ namespace BeltmanSoftwareDesign.Data.Factories
                 Publiekelijk = a.Publiekelijk,
             };
         }
-        public Project Convert(Shared.Jsons.Project a)
+        public Entities.Project Create(Shared.Jsons.Project a)
         {
-            return new Project()
+            return new Entities.Project()
             {
                 id = a.id,
                 CustomerId = a.CustomerId,
@@ -26,7 +24,7 @@ namespace BeltmanSoftwareDesign.Data.Factories
             };
         }
 
-        public bool Copy(Shared.Jsons.Project? source, Project dest)
+        public bool Copy(Shared.Jsons.Project? source, Entities.Project dest)
         {
             var changed = false;
             if (dest.CustomerId != source.CustomerId) { dest.CustomerId = source.CustomerId; changed = true; }

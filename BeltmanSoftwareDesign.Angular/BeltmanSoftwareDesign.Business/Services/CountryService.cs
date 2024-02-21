@@ -1,6 +1,6 @@
 ﻿using BeltmanSoftwareDesign.Business.Interfaces;
 using BeltmanSoftwareDesign.Data;
-using BeltmanSoftwareDesign.Data.Factories;
+using BeltmanSoftwareDesign.Data.Converters;
 using BeltmanSoftwareDesign.Shared.Attributes;
 using BeltmanSoftwareDesign.Shared.RequestJsons;
 using BeltmanSoftwareDesign.Shared.ResponseJsons;
@@ -11,7 +11,7 @@ namespace BeltmanSoftwareDesign.Business.Services
     {
         ApplicationDbContext db { get; }
         IAuthenticationService AuthenticationService { get; }
-        CountryFactory CountryFactory { get; }
+        CountryConverter CountryFactory { get; }
 
         public CountryService(
             ApplicationDbContext db,
@@ -19,7 +19,7 @@ namespace BeltmanSoftwareDesign.Business.Services
         {
             this.db = db;
             AuthenticationService = authenticationService;
-            CountryFactory = new CountryFactory();
+            CountryFactory = new CountryConverter();
         }
 
         [TsServiceMethod("Country", "List")]
@@ -40,7 +40,7 @@ namespace BeltmanSoftwareDesign.Business.Services
                 };
 
             var list = db.Countries
-                .Select(a => CountryFactory.Convert(a))
+                .Select(a => CountryFactory.Create(a))
                 .ToArray();
 
             return new CountryListResponse()

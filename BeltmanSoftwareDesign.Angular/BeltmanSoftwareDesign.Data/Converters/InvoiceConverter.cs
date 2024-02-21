@@ -1,18 +1,15 @@
-﻿using BeltmanSoftwareDesign.Data.Entities;
-using BeltmanSoftwareDesign.Shared.Jsons;
-using BeltmanSoftwareDesign.StorageBlob.Business.Interfaces;
-using System;
+﻿using BeltmanSoftwareDesign.StorageBlob.Business.Interfaces;
 
 
-namespace BeltmanSoftwareDesign.Data.Factories
+namespace BeltmanSoftwareDesign.Data.Converters
 {
-    public class InvoiceFactory 
+    public class InvoiceConverter 
     {
-        public InvoiceFactory(IStorageFileService storageFileService)
+        public InvoiceConverter(IStorageFileService storageFileService)
         {
         }
 
-        public Entities.Invoice Convert(Shared.Jsons.Invoice a)
+        public Entities.Invoice Create(Shared.Jsons.Invoice a)
         {
             //throw new NotImplementedException();
             return new Entities.Invoice()
@@ -26,7 +23,7 @@ namespace BeltmanSoftwareDesign.Data.Factories
             };
         }
 
-        public Shared.Jsons.Invoice Convert(Entities.Invoice a)
+        public Shared.Jsons.Invoice Create(Entities.Invoice a)
         {
             //var test = Convert.ToInt32(1);
             //throw new NotImplementedException();

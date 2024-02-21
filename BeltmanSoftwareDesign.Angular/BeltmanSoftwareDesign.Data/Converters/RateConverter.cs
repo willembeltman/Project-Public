@@ -1,13 +1,10 @@
-﻿using BeltmanSoftwareDesign.Data.Entities;
-using BeltmanSoftwareDesign.Shared.Jsons;
-using BeltmanSoftwareDesign.StorageBlob.Business.Interfaces;
-using System.Threading.Channels;
+﻿using BeltmanSoftwareDesign.StorageBlob.Business.Interfaces;
 
-namespace BeltmanSoftwareDesign.Data.Factories
+namespace BeltmanSoftwareDesign.Data.Converters
 {
-    public class RateFactory 
+    public class RateConverter 
     {
-        public RateFactory(IStorageFileService storageFileService)
+        public RateConverter(IStorageFileService storageFileService)
         {
         }
 

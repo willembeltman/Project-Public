@@ -1,7 +1,7 @@
 ﻿using BeltmanSoftwareDesign.Business.Interfaces;
 using BeltmanSoftwareDesign.Business.Models;
 using BeltmanSoftwareDesign.Data;
-using BeltmanSoftwareDesign.Data.Factories;
+using BeltmanSoftwareDesign.Data.Converters;
 using BeltmanSoftwareDesign.Shared.Attributes;
 using BeltmanSoftwareDesign.Shared.RequestJsons;
 using BeltmanSoftwareDesign.Shared.ResponseJsons;
@@ -15,7 +15,7 @@ namespace BeltmanSoftwareDesign.Business.Services
         ApplicationDbContext db { get; }
         IStorageFileService StorageFileService { get; }
         IAuthenticationService AuthenticationService { get; }
-        CustomerFactory CustomerFactory { get; }
+        CustomerConverter CustomerFactory { get; }
 
         public CustomerService(
             ApplicationDbContext db,
@@ -25,7 +25,7 @@ namespace BeltmanSoftwareDesign.Business.Services
             this.db = db;
             StorageFileService = storageFileService;
             AuthenticationService = authenticationService;
-            CustomerFactory = new CustomerFactory();
+            CustomerFactory = new CustomerConverter();
         }
 
         [TsServiceMethod("Customer", "Create")]
@@ -42,7 +42,7 @@ namespace BeltmanSoftwareDesign.Business.Services
             if (authentication.DbCurrentCompany == null)
                 throw new Exception("Current company not chosen or doesn't exist, please create a company or select one.");
 
-            var dbcustomer = CustomerFactory.Convert(request.Customer);
+            var dbcustomer = CustomerFactory.Create(request.Customer);
 
             dbcustomer.Company = authentication.DbCurrentCompany;
             dbcustomer.CompanyId = authentication.DbCurrentCompany.id;
@@ -54,7 +54,7 @@ namespace BeltmanSoftwareDesign.Business.Services
             {
                 Success = true,
                 State = authentication,
-                Customer = CustomerFactory.Convert(dbcustomer)
+                Customer = CustomerFactory.Create(dbcustomer)
             };
         }
 
@@ -93,7 +93,7 @@ namespace BeltmanSoftwareDesign.Business.Services
             {
                 Success = true,
                 State = authentication,
-                Customer = CustomerFactory.Convert(dbcustomer)
+                Customer = CustomerFactory.Create(dbcustomer)
             };
         }
 
@@ -134,7 +134,7 @@ namespace BeltmanSoftwareDesign.Business.Services
             {
                 Success = true,
                 State = authentication,
-                Customer = CustomerFactory.Convert(dbcustomer)
+                Customer = CustomerFactory.Create(dbcustomer)
             };
         }
 
@@ -203,7 +203,7 @@ namespace BeltmanSoftwareDesign.Business.Services
                 .Include(a => a.Documents)
                 .Where(a => 
                     a.CompanyId == authentication.DbCurrentCompany.id)
-                .Select(a => CustomerFactory.Convert(a))
+                .Select(a => CustomerFactory.Create(a))
                 .ToArray();
 
             return new CustomerListResponse()

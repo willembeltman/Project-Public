@@ -1,7 +1,7 @@
 ﻿using BeltmanSoftwareDesign.Business.Interfaces;
 using BeltmanSoftwareDesign.Business.Models;
 using BeltmanSoftwareDesign.Data;
-using BeltmanSoftwareDesign.Data.Factories;
+using BeltmanSoftwareDesign.Data.Converters;
 using BeltmanSoftwareDesign.Shared.Attributes;
 using BeltmanSoftwareDesign.Shared.RequestJsons;
 using BeltmanSoftwareDesign.Shared.ResponseJsons;
@@ -15,7 +15,7 @@ namespace BeltmanSoftwareDesign.Business.Services
         ApplicationDbContext db { get; }
         IStorageFileService StorageFileService { get; }
         IAuthenticationService AuthenticationService { get; }
-        ProjectFactory ProjectFactory { get; }
+        ProjectConverter ProjectFactory { get; }
 
         public ProjectService(
             ApplicationDbContext db,
@@ -25,7 +25,7 @@ namespace BeltmanSoftwareDesign.Business.Services
             this.db = db;
             StorageFileService = storageFileService;
             AuthenticationService = authenticationService;
-            ProjectFactory = new ProjectFactory();
+            ProjectFactory = new ProjectConverter();
         }
 
         [TsServiceMethod("Project", "Create")]
@@ -42,7 +42,7 @@ namespace BeltmanSoftwareDesign.Business.Services
             if (authentication.DbCurrentCompany == null)
                 throw new Exception("Current company not chosen or doesn't exist, please create a company or select one.");
 
-            var dbproject = ProjectFactory.Convert(request.Project);
+            var dbproject = ProjectFactory.Create(request.Project);
             dbproject.CompanyId = authentication.DbCurrentCompany.id;
             db.Projects.Add(dbproject);
             db.SaveChanges();
@@ -51,7 +51,7 @@ namespace BeltmanSoftwareDesign.Business.Services
             {
                 Success = true,
                 State = authentication,
-                Project = ProjectFactory.Convert(dbproject)
+                Project = ProjectFactory.Create(dbproject)
             };
         }
 
@@ -88,7 +88,7 @@ namespace BeltmanSoftwareDesign.Business.Services
             {
                 Success = true,
                 State = authentication,
-                Project = ProjectFactory.Convert(dbproject)
+                Project = ProjectFactory.Create(dbproject)
             };
         }
 
@@ -128,7 +128,7 @@ namespace BeltmanSoftwareDesign.Business.Services
             {
                 Success = true,
                 State = authentication,
-                Project = ProjectFactory.Convert(dbproject)
+                Project = ProjectFactory.Create(dbproject)
             };
         }
 
@@ -193,7 +193,7 @@ namespace BeltmanSoftwareDesign.Business.Services
                 .Include(a => a.Invoices)
                 .Include(a => a.Workorders)
                 .Where(a => a.CompanyId == authentication.DbCurrentCompany.id)
-                .Select(a => ProjectFactory.Convert(a))
+                .Select(a => ProjectFactory.Create(a))
                 .ToArray();
 
             return new ProjectListResponse()

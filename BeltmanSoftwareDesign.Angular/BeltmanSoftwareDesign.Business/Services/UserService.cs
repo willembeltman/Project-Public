@@ -1,7 +1,7 @@
 ﻿using BeltmanSoftwareDesign.Business.Interfaces;
 using BeltmanSoftwareDesign.Business.Models;
 using BeltmanSoftwareDesign.Data;
-using BeltmanSoftwareDesign.Data.Factories;
+using BeltmanSoftwareDesign.Data.Converters;
 using BeltmanSoftwareDesign.Shared.Attributes;
 using BeltmanSoftwareDesign.Shared.Jsons;
 using BeltmanSoftwareDesign.Shared.RequestJsons;
@@ -15,8 +15,8 @@ namespace BeltmanSoftwareDesign.Business.Services
         ApplicationDbContext db { get; }
         IStorageFileService StorageFileService { get; }
         IAuthenticationService AuthenticationService { get; }
-        UserFactory UserFactory { get; }
-        CompanyFactory CompanyFactory { get; }
+        UserConverter UserFactory { get; }
+        CompanyConverter CompanyFactory { get; }
 
         public UserService(
             ApplicationDbContext db,
@@ -27,8 +27,8 @@ namespace BeltmanSoftwareDesign.Business.Services
             StorageFileService = storageFileService;
             AuthenticationService = authenticationService;
 
-            UserFactory = new UserFactory(storageFileService);
-            CompanyFactory = new CompanyFactory(storageFileService);
+            UserFactory = new UserConverter(storageFileService);
+            CompanyFactory = new CompanyConverter(storageFileService);
         }
 
 
@@ -61,7 +61,7 @@ namespace BeltmanSoftwareDesign.Business.Services
 
 
             // Convert it back
-            var company = CompanyFactory.Convert(dbcompany);
+            var company = CompanyFactory.Create(dbcompany);
 
             // Set current company to 
             state.User.currentCompanyId = company.id;
@@ -117,7 +117,7 @@ namespace BeltmanSoftwareDesign.Business.Services
                     ErrorItemNotFound = true
                 };
 
-            var user = UserFactory.Convert(dbuser);
+            var user = UserFactory.Create(dbuser);
 
             return new UserReadResponse()
             {
@@ -156,7 +156,7 @@ namespace BeltmanSoftwareDesign.Business.Services
                 db.SaveChanges();
 
             // Convert it back
-            var user = UserFactory.Convert(state.DbUser);
+            var user = UserFactory.Create(state.DbUser);
 
             // Zichzelf ook update in de json
             state.User = user;
@@ -226,7 +226,7 @@ namespace BeltmanSoftwareDesign.Business.Services
 
             var list =
                 knownusers
-                    .Select(u => UserFactory.Convert(u))
+                    .Select(u => UserFactory.Create(u))
                     .ToArray();
 
             return new UserListResponse()

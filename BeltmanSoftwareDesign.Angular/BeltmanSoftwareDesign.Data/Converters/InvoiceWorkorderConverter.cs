@@ -1,8 +1,8 @@
-﻿namespace BeltmanSoftwareDesign.Data.Factories
+﻿namespace BeltmanSoftwareDesign.Data.Converters
 {
-    public class InvoiceWorkorderFactory 
+    public class InvoiceWorkorderConverter 
     {
-        public Shared.Jsons.InvoiceWorkorder Convert(Entities.InvoiceWorkorder a)
+        public Shared.Jsons.InvoiceWorkorder Create(Entities.InvoiceWorkorder a)
         {
             return new Shared.Jsons.InvoiceWorkorder()
             {

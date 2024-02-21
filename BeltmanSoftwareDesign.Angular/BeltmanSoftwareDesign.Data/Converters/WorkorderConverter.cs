@@ -1,19 +1,17 @@
-﻿using BeltmanSoftwareDesign.Data.Entities;
-using BeltmanSoftwareDesign.Shared.Jsons;
-using BeltmanSoftwareDesign.StorageBlob.Business.Interfaces;
+﻿using BeltmanSoftwareDesign.StorageBlob.Business.Interfaces;
 
-namespace BeltmanSoftwareDesign.Data.Factories
+namespace BeltmanSoftwareDesign.Data.Converters
 {
-    public class WorkorderFactory 
+    public class WorkorderConverter 
     {
-        public WorkorderFactory(IStorageFileService storageFileService)
+        public WorkorderConverter(IStorageFileService storageFileService)
         {
-            InvoiceWorkorderFactory = new InvoiceWorkorderFactory();
-            WorkorderAttachmentFactory = new WorkorderAttachmentFactory(storageFileService);
+            InvoiceWorkorderFactory = new InvoiceWorkorderConverter();
+            WorkorderAttachmentFactory = new WorkorderAttachmentConverter(storageFileService);
         }
 
-        InvoiceWorkorderFactory InvoiceWorkorderFactory { get; }
-        WorkorderAttachmentFactory WorkorderAttachmentFactory { get; }
+        InvoiceWorkorderConverter InvoiceWorkorderFactory { get; }
+        WorkorderAttachmentConverter WorkorderAttachmentFactory { get; }
 
         public Entities.Workorder Create(Shared.Jsons.Workorder source, Entities.Company currentCompany, ApplicationDbContext db)
         {
@@ -48,11 +46,11 @@ namespace BeltmanSoftwareDesign.Data.Factories
                 ProjectName = a.Project?.Name,
                 InvoiceWorkorders = 
                     a.InvoiceWorkorders?
-                        .Select(b => InvoiceWorkorderFactory.Convert(b))
+                        .Select(b => InvoiceWorkorderFactory.Create(b))
                         .ToList(),
                 WorkorderAttachments =
                     a.WorkorderAttachments?
-                        .Select(b => WorkorderAttachmentFactory.Convert(b))
+                        .Select(b => WorkorderAttachmentFactory.Create(b))
                         .ToList(),
             };
         }

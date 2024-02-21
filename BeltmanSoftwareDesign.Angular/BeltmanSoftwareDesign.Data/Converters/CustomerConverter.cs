@@ -1,11 +1,8 @@
-﻿using BeltmanSoftwareDesign.Data.Entities;
-using System.Net;
-
-namespace BeltmanSoftwareDesign.Data.Factories
+﻿namespace BeltmanSoftwareDesign.Data.Converters
 {
-    public class CustomerFactory
+    public class CustomerConverter
     {
-        public Shared.Jsons.Customer Convert(Customer? a)
+        public Shared.Jsons.Customer Create(Entities.Customer? a)
         {
             if (a == null) return null;
             return new Shared.Jsons.Customer()
@@ -23,10 +20,10 @@ namespace BeltmanSoftwareDesign.Data.Factories
                 Publiekelijk = a.Publiekelijk,
             };
         }
-        public Customer Convert(Shared.Jsons.Customer? a)
+        public Entities.Customer Create(Shared.Jsons.Customer? a)
         {
             if (a == null) return null;
-            return new Customer()
+            return new Entities.Customer()
             {
                 id = a.id,
                 Address = a.Address,
@@ -41,7 +38,7 @@ namespace BeltmanSoftwareDesign.Data.Factories
             };
         }
 
-        public bool Copy(Shared.Jsons.Customer? source, Customer dest)
+        public bool Copy(Shared.Jsons.Customer? source, Entities.Customer dest)
         {
             var changed = false;
             if (dest.Address != source.Address) { dest.Address = source.Address; changed = true; }

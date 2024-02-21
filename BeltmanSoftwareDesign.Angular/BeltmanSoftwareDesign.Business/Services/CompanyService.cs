@@ -1,6 +1,6 @@
 ﻿using BeltmanSoftwareDesign.Business.Interfaces;
 using BeltmanSoftwareDesign.Data;
-using BeltmanSoftwareDesign.Data.Factories;
+using BeltmanSoftwareDesign.Data.Converters;
 using BeltmanSoftwareDesign.Shared.Attributes;
 using BeltmanSoftwareDesign.Shared.RequestJsons;
 using BeltmanSoftwareDesign.Shared.ResponseJsons;
@@ -14,7 +14,7 @@ namespace BeltmanSoftwareDesign.Business.Services
         ApplicationDbContext db { get; }
         IStorageFileService StorageFileService { get; }
         IAuthenticationService AuthenticationService { get; }
-        CompanyFactory CompanyFactory { get; }
+        CompanyConverter CompanyFactory { get; }
 
         public CompanyService(
             ApplicationDbContext db,
@@ -25,7 +25,7 @@ namespace BeltmanSoftwareDesign.Business.Services
             StorageFileService = storageFileService;
             AuthenticationService = authenticationService;
 
-            CompanyFactory = new CompanyFactory(storageFileService);
+            CompanyFactory = new CompanyConverter(storageFileService);
         }
 
         [TsServiceMethod("Company", "Create")]
@@ -57,7 +57,7 @@ namespace BeltmanSoftwareDesign.Business.Services
                 };
 
             // Convert it to db item
-            dbcompany = CompanyFactory.Convert(request.Company);
+            dbcompany = CompanyFactory.Create(request.Company);
             db.Companies.Add(dbcompany);
             db.SaveChanges();
 
@@ -75,7 +75,7 @@ namespace BeltmanSoftwareDesign.Business.Services
             db.SaveChanges();
 
             // Convert it back
-            var company = CompanyFactory.Convert(dbcompany);
+            var company = CompanyFactory.Create(dbcompany);
 
             state.DbUser.CurrentCompany = dbcompany;
             state.DbUser.CurrentCompanyId = dbcompany.id;
@@ -132,7 +132,7 @@ namespace BeltmanSoftwareDesign.Business.Services
                 };
 
             // Convert it back
-            var company = CompanyFactory.Convert(dbcompany);
+            var company = CompanyFactory.Create(dbcompany);
 
             return new CompanyReadResponse()
             {
@@ -174,7 +174,7 @@ namespace BeltmanSoftwareDesign.Business.Services
                 db.SaveChanges();
 
             // Convert it back
-            var company = CompanyFactory.Convert(dbcompany);
+            var company = CompanyFactory.Create(dbcompany);
 
             // Set current company to 
             state.User.currentCompanyId = company.id;
@@ -264,7 +264,7 @@ namespace BeltmanSoftwareDesign.Business.Services
 
             var list = db.Companies
                 .Where(a => a.CompanyUsers.Any(a => a.UserId == state.User.id))
-                .Select(a => CompanyFactory.Convert(a))
+                .Select(a => CompanyFactory.Create(a))
                 .ToArray();
 
             return new CompanyListResponse()

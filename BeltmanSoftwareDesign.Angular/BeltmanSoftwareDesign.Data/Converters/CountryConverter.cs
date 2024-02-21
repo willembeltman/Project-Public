@@ -1,10 +1,8 @@
-﻿using BeltmanSoftwareDesign.Data.Entities;
-
-namespace BeltmanSoftwareDesign.Data.Factories
+﻿namespace BeltmanSoftwareDesign.Data.Converters
 {
-    public class CountryFactory
+    public class CountryConverter
     {
-        public Shared.Jsons.Country Convert(Country a)
+        public Shared.Jsons.Country Create(Entities.Country a)
         {
             return new Shared.Jsons.Country()
             {

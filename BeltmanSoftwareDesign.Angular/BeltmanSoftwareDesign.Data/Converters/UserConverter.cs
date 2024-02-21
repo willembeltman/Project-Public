@@ -1,27 +1,14 @@
-﻿
-using BeltmanSoftwareDesign.StorageBlob.Business.Interfaces;
+﻿using BeltmanSoftwareDesign.StorageBlob.Business.Interfaces;
 
-namespace BeltmanSoftwareDesign.Data.Factories
+namespace BeltmanSoftwareDesign.Data.Converters
 {
-    public class UserFactory
+    public class UserConverter
     {
-        //public Shared.Jsons.User Convert(Data.Entities.User a)
-        //{
-        //    return new Shared.Jsons.User()
-        //    {
-        //        id = a.Id,  
-        //        email = a.Email,
-        //        userName = a.UserName,
-        //        phoneNumber = a.PhoneNumber,
-        //        currentCompanyId = a.CurrentCompanyId,
-        //    };
-        //}
-
-        public UserFactory(IStorageFileService storageFileService)
+        public UserConverter(IStorageFileService storageFileService)
         {
         }
 
-        public Shared.Jsons.User? Convert(Entities.User? a)
+        public Shared.Jsons.User? Create(Entities.User? a)
         {
             if (a == null) return null;
             return new Shared.Jsons.User
@@ -33,7 +20,7 @@ namespace BeltmanSoftwareDesign.Data.Factories
                 email = a.Email
             };
         }
-        public Entities.User? Convert(Shared.Jsons.User? a)
+        public Entities.User? Create(Shared.Jsons.User? a)
         {
             if (a == null) return null;
             return new Entities.User

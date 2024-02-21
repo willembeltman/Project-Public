@@ -1,14 +1,14 @@
 ﻿using BeltmanSoftwareDesign.StorageBlob.Business.Interfaces;
 
-namespace BeltmanSoftwareDesign.Data.Factories
+namespace BeltmanSoftwareDesign.Data.Converters
 {
-    public class CompanyFactory 
+    public class CompanyConverter 
     {
-        public CompanyFactory(IStorageFileService storageFileService)
+        public CompanyConverter(IStorageFileService storageFileService)
         {
         }
 
-        public Shared.Jsons.Company? Convert(Entities.Company? a)
+        public Shared.Jsons.Company? Create(Entities.Company? a)
         {
             if (a == null) return null;
             return new Shared.Jsons.Company
@@ -32,7 +32,7 @@ namespace BeltmanSoftwareDesign.Data.Factories
                 Website = a.Website,
             };
         }
-        public Entities.Company? Convert(Shared.Jsons.Company? a)
+        public Entities.Company? Create(Shared.Jsons.Company? a)
         {
             if (a == null) return null;
             return new Entities.Company

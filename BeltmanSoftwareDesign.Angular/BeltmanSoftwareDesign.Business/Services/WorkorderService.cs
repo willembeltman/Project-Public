@@ -1,7 +1,7 @@
 ﻿using BeltmanSoftwareDesign.Business.Interfaces;
 using BeltmanSoftwareDesign.Business.Models;
 using BeltmanSoftwareDesign.Data;
-using BeltmanSoftwareDesign.Data.Factories;
+using BeltmanSoftwareDesign.Data.Converters;
 using BeltmanSoftwareDesign.Shared.Attributes;
 using BeltmanSoftwareDesign.Shared.RequestJsons;
 using BeltmanSoftwareDesign.Shared.ResponseJsons;
@@ -15,7 +15,7 @@ namespace BeltmanSoftwareDesign.Business.Services
         ApplicationDbContext db { get; }
         IStorageFileService StorageFileService { get; }
         IAuthenticationService AuthenticationService { get; }
-        WorkorderFactory WorkorderFactory { get; }
+        WorkorderConverter WorkorderFactory { get; }
 
         public WorkorderService(
             ApplicationDbContext db,
@@ -25,7 +25,7 @@ namespace BeltmanSoftwareDesign.Business.Services
             this.db = db;
             StorageFileService = storageFileService;
             AuthenticationService = authenticationService;
-            WorkorderFactory = new WorkorderFactory(storageFileService);
+            WorkorderFactory = new WorkorderConverter(storageFileService);
         }
 
         [TsServiceMethod("Workorder", "Create")]
