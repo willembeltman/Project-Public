@@ -38,38 +38,38 @@ namespace YoutubeMixer.Forms
             // DeckLeft
             // 
             DeckLeft.Controller = null;
-            DeckLeft.Location = new Point(7, 6);
-            DeckLeft.Margin = new Padding(1);
+            DeckLeft.Location = new Point(10, 10);
+            DeckLeft.Margin = new Padding(1, 2, 1, 2);
             DeckLeft.Name = "DeckLeft";
-            DeckLeft.Size = new Size(426, 276);
+            DeckLeft.Size = new Size(609, 460);
             DeckLeft.TabIndex = 0;
             // 
             // Mixer
             // 
-            Mixer.Location = new Point(435, 6);
-            Mixer.Margin = new Padding(1);
+            Mixer.Location = new Point(621, 10);
+            Mixer.Margin = new Padding(1, 2, 1, 2);
             Mixer.Name = "Mixer";
-            Mixer.Size = new Size(106, 276);
+            Mixer.Size = new Size(151, 460);
             Mixer.TabIndex = 1;
             // 
             // DeckRight
             // 
             DeckRight.Controller = null;
-            DeckRight.Location = new Point(562, 6);
-            DeckRight.Margin = new Padding(1);
+            DeckRight.Location = new Point(803, 10);
+            DeckRight.Margin = new Padding(1, 2, 1, 2);
             DeckRight.Name = "DeckRight";
-            DeckRight.Size = new Size(387, 276);
+            DeckRight.Size = new Size(553, 460);
             DeckRight.TabIndex = 0;
             // 
             // TwoDeckForm
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(962, 292);
+            ClientSize = new Size(1374, 487);
             Controls.Add(Mixer);
             Controls.Add(DeckRight);
             Controls.Add(DeckLeft);
-            Margin = new Padding(3, 2, 3, 2);
+            Margin = new Padding(4, 3, 4, 3);
             Name = "TwoDeckForm";
             Text = "Form1";
             FormClosing += TwoDeckForm_FormClosing;

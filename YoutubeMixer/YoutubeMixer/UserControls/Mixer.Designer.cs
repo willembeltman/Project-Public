@@ -36,44 +36,42 @@
             // 
             // FaderCross
             // 
-            FaderCross.Location = new Point(1, 252);
-            FaderCross.Margin = new Padding(2, 2, 2, 2);
+            FaderCross.Location = new Point(1, 420);
             FaderCross.Maximum = 100;
             FaderCross.Name = "FaderCross";
-            FaderCross.Size = new Size(102, 45);
+            FaderCross.Size = new Size(146, 69);
             FaderCross.TabIndex = 0;
             FaderCross.Value = 50;
             // 
             // LeftMixerChannel
             // 
             LeftMixerChannel.Controller = null;
-            LeftMixerChannel.Location = new Point(2, 2);
-            LeftMixerChannel.Margin = new Padding(1, 1, 1, 1);
+            LeftMixerChannel.Location = new Point(3, 3);
+            LeftMixerChannel.Margin = new Padding(1, 2, 1, 2);
             LeftMixerChannel.Mixer = null;
             LeftMixerChannel.Name = "LeftMixerChannel";
-            LeftMixerChannel.Size = new Size(50, 247);
+            LeftMixerChannel.Size = new Size(72, 412);
             LeftMixerChannel.TabIndex = 1;
             // 
             // RightMixerChannel
             // 
             RightMixerChannel.Controller = null;
-            RightMixerChannel.Location = new Point(54, 2);
-            RightMixerChannel.Margin = new Padding(1, 1, 1, 1);
+            RightMixerChannel.Location = new Point(77, 3);
+            RightMixerChannel.Margin = new Padding(1, 2, 1, 2);
             RightMixerChannel.Mixer = null;
             RightMixerChannel.Name = "RightMixerChannel";
-            RightMixerChannel.Size = new Size(50, 247);
+            RightMixerChannel.Size = new Size(71, 412);
             RightMixerChannel.TabIndex = 2;
             // 
             // Mixer
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             Controls.Add(RightMixerChannel);
             Controls.Add(LeftMixerChannel);
             Controls.Add(FaderCross);
-            Margin = new Padding(2, 2, 2, 2);
             Name = "Mixer";
-            Size = new Size(104, 276);
+            Size = new Size(149, 460);
             ((System.ComponentModel.ISupportInitialize)FaderCross).EndInit();
             ResumeLayout(false);
             PerformLayout();

@@ -48,11 +48,10 @@
             // 
             labelPitch.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             labelPitch.AutoSize = true;
-            labelPitch.Font = new Font("Arial", 8F, FontStyle.Regular, GraphicsUnit.Point);
-            labelPitch.Location = new Point(392, 312);
-            labelPitch.Margin = new Padding(2, 0, 2, 0);
+            labelPitch.Font = new Font("Arial", 8F);
+            labelPitch.Location = new Point(828, 624);
             labelPitch.Name = "labelPitch";
-            labelPitch.Size = new Size(23, 14);
+            labelPitch.Size = new Size(31, 18);
             labelPitch.TabIndex = 16;
             labelPitch.Text = "0%";
             // 
@@ -60,11 +59,10 @@
             // 
             buttonPitchControl.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             buttonPitchControl.BackColor = SystemColors.ButtonHighlight;
-            buttonPitchControl.Font = new Font("Arial", 5F, FontStyle.Regular, GraphicsUnit.Point);
-            buttonPitchControl.Location = new Point(389, 20);
-            buttonPitchControl.Margin = new Padding(2, 2, 2, 2);
+            buttonPitchControl.Font = new Font("Arial", 5F);
+            buttonPitchControl.Location = new Point(824, 33);
             buttonPitchControl.Name = "buttonPitchControl";
-            buttonPitchControl.Size = new Size(49, 16);
+            buttonPitchControl.Size = new Size(70, 27);
             buttonPitchControl.TabIndex = 13;
             buttonPitchControl.Text = "PitchControl";
             buttonPitchControl.UseVisualStyleBackColor = false;
@@ -73,11 +71,10 @@
             // buttonPitchRange
             // 
             buttonPitchRange.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            buttonPitchRange.Font = new Font("Arial", 8F, FontStyle.Bold, GraphicsUnit.Point);
-            buttonPitchRange.Location = new Point(389, 0);
-            buttonPitchRange.Margin = new Padding(2, 2, 2, 2);
+            buttonPitchRange.Font = new Font("Arial", 8F, FontStyle.Bold);
+            buttonPitchRange.Location = new Point(824, 0);
             buttonPitchRange.Name = "buttonPitchRange";
-            buttonPitchRange.Size = new Size(49, 16);
+            buttonPitchRange.Size = new Size(70, 27);
             buttonPitchRange.TabIndex = 14;
             buttonPitchRange.Text = "16%";
             buttonPitchRange.UseVisualStyleBackColor = true;
@@ -85,11 +82,10 @@
             // 
             // buttonSetHotcue
             // 
-            buttonSetHotcue.Font = new Font("Arial", 5F, FontStyle.Regular, GraphicsUnit.Point);
-            buttonSetHotcue.Location = new Point(0, 166);
-            buttonSetHotcue.Margin = new Padding(2, 2, 2, 2);
+            buttonSetHotcue.Font = new Font("Arial", 5F);
+            buttonSetHotcue.Location = new Point(0, 277);
             buttonSetHotcue.Name = "buttonSetHotcue";
-            buttonSetHotcue.Size = new Size(60, 16);
+            buttonSetHotcue.Size = new Size(86, 27);
             buttonSetHotcue.TabIndex = 15;
             buttonSetHotcue.Text = "Set Hotcue";
             buttonSetHotcue.UseVisualStyleBackColor = true;
@@ -98,11 +94,10 @@
             // buttonCue
             // 
             buttonCue.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            buttonCue.Font = new Font("Arial", 8F, FontStyle.Regular, GraphicsUnit.Point);
-            buttonCue.Location = new Point(0, 248);
-            buttonCue.Margin = new Padding(2, 2, 2, 2);
+            buttonCue.Font = new Font("Arial", 8F);
+            buttonCue.Location = new Point(0, 517);
             buttonCue.Name = "buttonCue";
-            buttonCue.Size = new Size(60, 38);
+            buttonCue.Size = new Size(86, 63);
             buttonCue.TabIndex = 7;
             buttonCue.Text = "Cue";
             buttonCue.UseVisualStyleBackColor = true;
@@ -111,11 +106,10 @@
             // buttonPlayPause
             // 
             buttonPlayPause.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            buttonPlayPause.Font = new Font("Arial", 8F, FontStyle.Regular, GraphicsUnit.Point);
-            buttonPlayPause.Location = new Point(0, 289);
-            buttonPlayPause.Margin = new Padding(2, 2, 2, 2);
+            buttonPlayPause.Font = new Font("Arial", 8F);
+            buttonPlayPause.Location = new Point(0, 586);
             buttonPlayPause.Name = "buttonPlayPause";
-            buttonPlayPause.Size = new Size(60, 38);
+            buttonPlayPause.Size = new Size(86, 63);
             buttonPlayPause.TabIndex = 8;
             buttonPlayPause.Text = "Play";
             buttonPlayPause.UseVisualStyleBackColor = true;
@@ -123,11 +117,10 @@
             // 
             // buttonHotcue4
             // 
-            buttonHotcue4.Font = new Font("Arial", 8F, FontStyle.Regular, GraphicsUnit.Point);
-            buttonHotcue4.Location = new Point(0, 124);
-            buttonHotcue4.Margin = new Padding(2, 2, 2, 2);
+            buttonHotcue4.Font = new Font("Arial", 8F);
+            buttonHotcue4.Location = new Point(0, 207);
             buttonHotcue4.Name = "buttonHotcue4";
-            buttonHotcue4.Size = new Size(60, 38);
+            buttonHotcue4.Size = new Size(86, 63);
             buttonHotcue4.TabIndex = 9;
             buttonHotcue4.Text = "Hotcue 4";
             buttonHotcue4.UseVisualStyleBackColor = true;
@@ -135,11 +128,10 @@
             // 
             // buttonHotcue3
             // 
-            buttonHotcue3.Font = new Font("Arial", 8F, FontStyle.Regular, GraphicsUnit.Point);
-            buttonHotcue3.Location = new Point(0, 83);
-            buttonHotcue3.Margin = new Padding(2, 2, 2, 2);
+            buttonHotcue3.Font = new Font("Arial", 8F);
+            buttonHotcue3.Location = new Point(0, 138);
             buttonHotcue3.Name = "buttonHotcue3";
-            buttonHotcue3.Size = new Size(60, 38);
+            buttonHotcue3.Size = new Size(86, 63);
             buttonHotcue3.TabIndex = 10;
             buttonHotcue3.Text = "Hotcue 3";
             buttonHotcue3.UseVisualStyleBackColor = true;
@@ -147,11 +139,10 @@
             // 
             // buttonHotcue2
             // 
-            buttonHotcue2.Font = new Font("Arial", 8F, FontStyle.Regular, GraphicsUnit.Point);
-            buttonHotcue2.Location = new Point(0, 41);
-            buttonHotcue2.Margin = new Padding(2, 2, 2, 2);
+            buttonHotcue2.Font = new Font("Arial", 8F);
+            buttonHotcue2.Location = new Point(0, 68);
             buttonHotcue2.Name = "buttonHotcue2";
-            buttonHotcue2.Size = new Size(60, 38);
+            buttonHotcue2.Size = new Size(86, 63);
             buttonHotcue2.TabIndex = 11;
             buttonHotcue2.Text = "Hotcue 2";
             buttonHotcue2.UseVisualStyleBackColor = true;
@@ -159,11 +150,10 @@
             // 
             // buttonHotcue1
             // 
-            buttonHotcue1.Font = new Font("Arial", 8F, FontStyle.Regular, GraphicsUnit.Point);
+            buttonHotcue1.Font = new Font("Arial", 8F);
             buttonHotcue1.Location = new Point(0, 0);
-            buttonHotcue1.Margin = new Padding(2, 2, 2, 2);
             buttonHotcue1.Name = "buttonHotcue1";
-            buttonHotcue1.Size = new Size(60, 38);
+            buttonHotcue1.Size = new Size(86, 63);
             buttonHotcue1.TabIndex = 12;
             buttonHotcue1.Text = "Hotcue 1";
             buttonHotcue1.UseVisualStyleBackColor = true;
@@ -172,12 +162,11 @@
             // trackBarPitch
             // 
             trackBarPitch.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Right;
-            trackBarPitch.Location = new Point(387, 41);
-            trackBarPitch.Margin = new Padding(2, 2, 2, 2);
+            trackBarPitch.Location = new Point(821, 68);
             trackBarPitch.Maximum = 10000;
             trackBarPitch.Name = "trackBarPitch";
             trackBarPitch.Orientation = Orientation.Vertical;
-            trackBarPitch.Size = new Size(45, 269);
+            trackBarPitch.Size = new Size(69, 552);
             trackBarPitch.TabIndex = 5;
             trackBarPitch.TickStyle = TickStyle.Both;
             trackBarPitch.Value = 5000;
@@ -187,10 +176,9 @@
             // 
             DisplayControl.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             DisplayControl.CurrentTime = TimeSpan.Parse("00:00:31.2000000");
-            DisplayControl.Location = new Point(65, 0);
-            DisplayControl.Margin = new Padding(2, 2, 2, 2);
+            DisplayControl.Location = new Point(93, 0);
             DisplayControl.Name = "DisplayControl";
-            DisplayControl.Size = new Size(322, 327);
+            DisplayControl.Size = new Size(728, 649);
             DisplayControl.TabIndex = 17;
             DisplayControl.Text = "displayControl1";
             DisplayControl.Title = null;
@@ -201,7 +189,7 @@
             // 
             // Deck
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             Controls.Add(DisplayControl);
             Controls.Add(labelPitch);
@@ -215,9 +203,8 @@
             Controls.Add(buttonHotcue2);
             Controls.Add(buttonHotcue1);
             Controls.Add(trackBarPitch);
-            Margin = new Padding(2, 2, 2, 2);
             Name = "Deck";
-            Size = new Size(438, 327);
+            Size = new Size(894, 649);
             ((System.ComponentModel.ISupportInitialize)trackBarPitch).EndInit();
             ResumeLayout(false);
             PerformLayout();
