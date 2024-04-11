@@ -13,9 +13,8 @@ namespace BeltmanSoftwareDesign.Business.Services
     public class WorkorderService : IWorkorderService
     {
         ApplicationDbContext db { get; }
-        IStorageFileService StorageFileService { get; }
         IAuthenticationService AuthenticationService { get; }
-        WorkorderConverter WorkorderFactory { get; }
+        WorkorderConverter WorkorderConverter { get; }
 
         public WorkorderService(
             ApplicationDbContext db,
@@ -23,16 +22,15 @@ namespace BeltmanSoftwareDesign.Business.Services
             IAuthenticationService authenticationService)
         {
             this.db = db;
-            StorageFileService = storageFileService;
             AuthenticationService = authenticationService;
-            WorkorderFactory = new WorkorderConverter(storageFileService);
+            WorkorderConverter = new WorkorderConverter(storageFileService);
         }
 
         [TsServiceMethod("Workorder", "Create")]
         public WorkorderCreateResponse Create(WorkorderCreateRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
         {
             var authentication = AuthenticationService.GetState(
-                request.BearerId, request.CurrentCompanyId, ipAddress, headers);
+                request, ipAddress, headers);
             if (!authentication.Success)
                 return new WorkorderCreateResponse()
                 {
@@ -42,7 +40,7 @@ namespace BeltmanSoftwareDesign.Business.Services
             if (authentication.DbCurrentCompany == null)
                 throw new Exception("Current company not chosen or doesn't exist, please create a company or select one.");
 
-            var dbworkorder = WorkorderFactory.Create(request.Workorder, authentication.DbCurrentCompany, db);
+            var dbworkorder = WorkorderConverter.Create(request.Workorder, authentication.DbCurrentCompany, db);
             db.Workorders.Add(dbworkorder);
             db.SaveChanges();
 
@@ -50,7 +48,7 @@ namespace BeltmanSoftwareDesign.Business.Services
             {
                 Success = true,
                 State = authentication,
-                Workorder = WorkorderFactory.Create(dbworkorder)
+                Workorder = WorkorderConverter.Create(dbworkorder)
             };
         }
 
@@ -58,7 +56,7 @@ namespace BeltmanSoftwareDesign.Business.Services
         public WorkorderReadResponse Read(WorkorderReadRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
         {
             var authentication = AuthenticationService.GetState(
-                request.BearerId, request.CurrentCompanyId, ipAddress, headers);
+                request, ipAddress, headers);
             if (!authentication.Success)
                 return new WorkorderReadResponse()
                 {
@@ -88,7 +86,7 @@ namespace BeltmanSoftwareDesign.Business.Services
             {
                 Success = true,
                 State = authentication,
-                Workorder = WorkorderFactory.Create(dbworkorder)
+                Workorder = WorkorderConverter.Create(dbworkorder)
             };
         }
 
@@ -96,7 +94,7 @@ namespace BeltmanSoftwareDesign.Business.Services
         public WorkorderUpdateResponse Update(WorkorderUpdateRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
         {
             var authentication = AuthenticationService.GetState(
-                request.BearerId, request.CurrentCompanyId, ipAddress, headers);
+                request, ipAddress, headers);
             if (!authentication.Success)
                 return new WorkorderUpdateResponse()
                 {
@@ -122,14 +120,14 @@ namespace BeltmanSoftwareDesign.Business.Services
                     State = authentication
                 };
 
-            if (WorkorderFactory.Copy(request.Workorder, dbworkorder, authentication.DbCurrentCompany, db))
+            if (WorkorderConverter.Copy(request.Workorder, dbworkorder, authentication.DbCurrentCompany, db))
                 db.SaveChanges();
 
             return new WorkorderUpdateResponse()
             {
                 Success = true,
                 State = authentication,
-                Workorder = WorkorderFactory.Create(dbworkorder)
+                Workorder = WorkorderConverter.Create(dbworkorder)
             };
         }
 
@@ -137,7 +135,7 @@ namespace BeltmanSoftwareDesign.Business.Services
         public WorkorderDeleteResponse Delete(WorkorderDeleteRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
         {
             var authentication = AuthenticationService.GetState(
-                request.BearerId, request.CurrentCompanyId, ipAddress, headers);
+                request, ipAddress, headers);
             if (!authentication.Success)
                 return new WorkorderDeleteResponse()
                 {
@@ -177,7 +175,7 @@ namespace BeltmanSoftwareDesign.Business.Services
         public WorkorderListResponse List(WorkorderListRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
         {
             var authentication = AuthenticationService.GetState(
-                request.BearerId, request.CurrentCompanyId, ipAddress, headers);
+                request, ipAddress, headers);
             if (!authentication.Success)
                 return new WorkorderListResponse()
                 {
@@ -194,7 +192,7 @@ namespace BeltmanSoftwareDesign.Business.Services
                 .Include(a => a.InvoiceWorkorders)
                 .Include(a => a.WorkorderAttachments)
                 .Where(a => a.CompanyId == authentication.DbCurrentCompany.id)
-                .Select(a => WorkorderFactory.Create(a))
+                .Select(a => WorkorderConverter.Create(a))
                 .ToArray();
 
             return new WorkorderListResponse()

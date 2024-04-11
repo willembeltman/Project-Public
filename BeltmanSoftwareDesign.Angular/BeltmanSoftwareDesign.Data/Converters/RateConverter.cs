@@ -4,10 +4,6 @@ namespace BeltmanSoftwareDesign.Data.Converters
 {
     public class RateConverter 
     {
-        public RateConverter(IStorageFileService storageFileService)
-        {
-        }
-
         public Entities.Rate Create(Shared.Jsons.Rate source, Entities.Company currentCompany, ApplicationDbContext db)
         {
             if (source == null ||

@@ -19,6 +19,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BeltmanSoftwareDesign.Stora
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeGenerator", "CodeGenerator\CodeGenerator.csproj", "{81A6C010-B223-4247-B900-947C71D66D9D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeltmanSoftwareDesign.Blazor", "BeltmanSoftwareDesign.Blazor\BeltmanSoftwareDesign.Blazor.csproj", "{FF829094-F447-44F8-BD18-AF6D77C483C8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -59,6 +61,10 @@ Global
 		{81A6C010-B223-4247-B900-947C71D66D9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{81A6C010-B223-4247-B900-947C71D66D9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{81A6C010-B223-4247-B900-947C71D66D9D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FF829094-F447-44F8-BD18-AF6D77C483C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF829094-F447-44F8-BD18-AF6D77C483C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF829094-F447-44F8-BD18-AF6D77C483C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FF829094-F447-44F8-BD18-AF6D77C483C8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

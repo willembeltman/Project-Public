@@ -39,7 +39,7 @@ namespace BeltmanSoftwareDesign.Data.Entities
         [StringLength(256)]
         public string? PayNL_ServiceId { get; set; }
 
-        public virtual ICollection<CompanyUser>? CompanyUsers { get; set; } = new List<CompanyUser>();
+        public virtual ICollection<CompanyUser> CompanyUsers { get; set; } = new List<CompanyUser>();
         public virtual ICollection<User>? CurrentUsers { get; set; }
         public virtual ICollection<Workorder>? Workorders { get; set; }
         public virtual ICollection<Customer>? Customers { get; set; }

@@ -1,5 +1,4 @@
 ﻿using BeltmanSoftwareDesign.Business.Interfaces;
-using BeltmanSoftwareDesign.Business.Models;
 using BeltmanSoftwareDesign.Data;
 using BeltmanSoftwareDesign.Data.Converters;
 using BeltmanSoftwareDesign.Shared.Attributes;
@@ -13,26 +12,23 @@ namespace BeltmanSoftwareDesign.Business.Services
     public class ProjectService : IProjectService
     {
         ApplicationDbContext db { get; }
-        IStorageFileService StorageFileService { get; }
         IAuthenticationService AuthenticationService { get; }
-        ProjectConverter ProjectFactory { get; }
+        ProjectConverter ProjectConverter { get; }
 
         public ProjectService(
             ApplicationDbContext db,
-            IStorageFileService storageFileService,
             IAuthenticationService authenticationService)
         {
             this.db = db;
-            StorageFileService = storageFileService;
             AuthenticationService = authenticationService;
-            ProjectFactory = new ProjectConverter();
+            ProjectConverter = new ProjectConverter();
         }
 
         [TsServiceMethod("Project", "Create")]
         public ProjectCreateResponse Create(ProjectCreateRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
         {
             var authentication = AuthenticationService.GetState(
-                request.BearerId, request.CurrentCompanyId, ipAddress, headers);
+                request, ipAddress, headers);
             if (!authentication.Success)
                 return new ProjectCreateResponse()
                 {
@@ -42,7 +38,7 @@ namespace BeltmanSoftwareDesign.Business.Services
             if (authentication.DbCurrentCompany == null)
                 throw new Exception("Current company not chosen or doesn't exist, please create a company or select one.");
 
-            var dbproject = ProjectFactory.Create(request.Project);
+            var dbproject = ProjectConverter.Create(request.Project);
             dbproject.CompanyId = authentication.DbCurrentCompany.id;
             db.Projects.Add(dbproject);
             db.SaveChanges();
@@ -51,7 +47,7 @@ namespace BeltmanSoftwareDesign.Business.Services
             {
                 Success = true,
                 State = authentication,
-                Project = ProjectFactory.Create(dbproject)
+                Project = ProjectConverter.Create(dbproject)
             };
         }
 
@@ -59,7 +55,7 @@ namespace BeltmanSoftwareDesign.Business.Services
         public ProjectReadResponse Read(ProjectReadRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
         {
             var authentication = AuthenticationService.GetState(
-                request.BearerId, request.CurrentCompanyId, ipAddress, headers);
+                request, ipAddress, headers);
             if (!authentication.Success)
                 return new ProjectReadResponse()
                 {
@@ -88,7 +84,7 @@ namespace BeltmanSoftwareDesign.Business.Services
             {
                 Success = true,
                 State = authentication,
-                Project = ProjectFactory.Create(dbproject)
+                Project = ProjectConverter.Create(dbproject)
             };
         }
 
@@ -96,7 +92,7 @@ namespace BeltmanSoftwareDesign.Business.Services
         public ProjectUpdateResponse Update(ProjectUpdateRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
         {
             var authentication = AuthenticationService.GetState(
-                request.BearerId, request.CurrentCompanyId, ipAddress, headers);
+                request, ipAddress, headers);
             if (!authentication.Success)
                 return new ProjectUpdateResponse()
                 {
@@ -121,14 +117,14 @@ namespace BeltmanSoftwareDesign.Business.Services
                     ErrorItemNotFound = true,
                 };
 
-            if (ProjectFactory.Copy(request.Project, dbproject))
+            if (ProjectConverter.Copy(request.Project, dbproject))
                 db.SaveChanges();
 
             return new ProjectUpdateResponse()
             {
                 Success = true,
                 State = authentication,
-                Project = ProjectFactory.Create(dbproject)
+                Project = ProjectConverter.Create(dbproject)
             };
         }
 
@@ -136,7 +132,7 @@ namespace BeltmanSoftwareDesign.Business.Services
         public ProjectDeleteResponse Delete(ProjectDeleteRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
         {
             var authentication = AuthenticationService.GetState(
-                request.BearerId, request.CurrentCompanyId, ipAddress, headers);
+                request, ipAddress, headers);
             if (!authentication.Success)
                 return new ProjectDeleteResponse()
                 {
@@ -176,7 +172,7 @@ namespace BeltmanSoftwareDesign.Business.Services
         public ProjectListResponse List(ProjectListRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
         {
             var authentication = AuthenticationService.GetState(
-                request.BearerId, request.CurrentCompanyId, ipAddress, headers);
+                request, ipAddress, headers);
             if (!authentication.Success)
                 return new ProjectListResponse()
                 {
@@ -193,7 +189,7 @@ namespace BeltmanSoftwareDesign.Business.Services
                 .Include(a => a.Invoices)
                 .Include(a => a.Workorders)
                 .Where(a => a.CompanyId == authentication.DbCurrentCompany.id)
-                .Select(a => ProjectFactory.Create(a))
+                .Select(a => ProjectConverter.Create(a))
                 .ToArray();
 
             return new ProjectListResponse()

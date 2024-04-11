@@ -12,9 +12,8 @@ namespace BeltmanSoftwareDesign.Business.Services
     public class CompanyService : ICompanyService
     {
         ApplicationDbContext db { get; }
-        IStorageFileService StorageFileService { get; }
         IAuthenticationService AuthenticationService { get; }
-        CompanyConverter CompanyFactory { get; }
+        CompanyConverter CompanyConverter { get; }
 
         public CompanyService(
             ApplicationDbContext db,
@@ -22,10 +21,8 @@ namespace BeltmanSoftwareDesign.Business.Services
             IAuthenticationService authenticationService)
         {
             this.db = db;
-            StorageFileService = storageFileService;
             AuthenticationService = authenticationService;
-
-            CompanyFactory = new CompanyConverter(storageFileService);
+            CompanyConverter = new CompanyConverter(storageFileService);
         }
 
         [TsServiceMethod("Company", "Create")]
@@ -38,7 +35,7 @@ namespace BeltmanSoftwareDesign.Business.Services
                 };
 
             var state = AuthenticationService.GetState(
-                request.BearerId, request.CurrentCompanyId, ipAddress, headers);
+                request, ipAddress, headers);
             if (!state.Success)
                 return new CompanyCreateResponse()
                 {
@@ -46,6 +43,13 @@ namespace BeltmanSoftwareDesign.Business.Services
                 };
 
             // ===========================
+
+            if (request.Company == null)
+                return new CompanyCreateResponse();
+            if (state.User == null)
+                return new CompanyCreateResponse();
+            if (state.DbUser == null)
+                return new CompanyCreateResponse();
 
             var dbcompany = db.Companies.FirstOrDefault(a =>
                 a.Name == request.Company.Name &&
@@ -57,7 +61,9 @@ namespace BeltmanSoftwareDesign.Business.Services
                 };
 
             // Convert it to db item
-            dbcompany = CompanyFactory.Create(request.Company);
+            dbcompany = CompanyConverter.Create(request.Company);
+            if (dbcompany == null)
+                return new CompanyCreateResponse();
             db.Companies.Add(dbcompany);
             db.SaveChanges();
 
@@ -75,7 +81,7 @@ namespace BeltmanSoftwareDesign.Business.Services
             db.SaveChanges();
 
             // Convert it back
-            var company = CompanyFactory.Create(dbcompany);
+            var company = CompanyConverter.Create(dbcompany);
 
             state.DbUser.CurrentCompany = dbcompany;
             state.DbUser.CurrentCompanyId = dbcompany.id;
@@ -100,18 +106,9 @@ namespace BeltmanSoftwareDesign.Business.Services
                 {
                     ErrorAuthentication = true
                 };
-            if (ipAddress == null)
-                return new CompanyReadResponse()
-                {
-                    ErrorAuthentication = true
-                };
-            if (headers == null)
-                return new CompanyReadResponse()
-                {
-                    ErrorAuthentication = true
-                };
+
             var state = AuthenticationService.GetState(
-                request.BearerId, request.CurrentCompanyId, ipAddress, headers);
+                request, ipAddress, headers);
             if (!state.Success)
                 return new CompanyReadResponse()
                 {
@@ -119,6 +116,9 @@ namespace BeltmanSoftwareDesign.Business.Services
                 };
 
             // ===========================
+
+            if (state.User == null)
+                return new CompanyReadResponse();
 
             var dbcompany = db.Companies
                 .Include(a => a.Country)
@@ -132,7 +132,7 @@ namespace BeltmanSoftwareDesign.Business.Services
                 };
 
             // Convert it back
-            var company = CompanyFactory.Create(dbcompany);
+            var company = CompanyConverter.Create(dbcompany);
 
             return new CompanyReadResponse()
             {
@@ -151,7 +151,7 @@ namespace BeltmanSoftwareDesign.Business.Services
                     ErrorAuthentication = true
                 };
             var state = AuthenticationService.GetState(
-                request.BearerId, request.CurrentCompanyId, ipAddress, headers);
+                request, ipAddress, headers);
             if (!state.Success)
                 return new CompanyUpdateResponse()
                 {
@@ -170,11 +170,11 @@ namespace BeltmanSoftwareDesign.Business.Services
                 };
 
             // Convert it to db item
-            if (CompanyFactory.Copy(request.Company, dbcompany) == true)
+            if (CompanyConverter.Copy(request.Company, dbcompany) == true)
                 db.SaveChanges();
 
             // Convert it back
-            var company = CompanyFactory.Create(dbcompany);
+            var company = CompanyConverter.Create(dbcompany);
 
             // Set current company to 
             state.User.currentCompanyId = company.id;
@@ -201,7 +201,7 @@ namespace BeltmanSoftwareDesign.Business.Services
                     ErrorAuthentication = true
                 };
             var state = AuthenticationService.GetState(
-                request.BearerId, request.CurrentCompanyId, ipAddress, headers);
+                request, ipAddress, headers);
             if (!state.Success)
                 return new CompanyDeleteResponse()
                 {
@@ -255,7 +255,7 @@ namespace BeltmanSoftwareDesign.Business.Services
                 };
 
             var state = AuthenticationService.GetState(
-                request.BearerId, request.CurrentCompanyId, ipAddress, headers);
+                request, ipAddress, headers);
             if (!state.Success) 
                 return new CompanyListResponse()
                 {
@@ -264,7 +264,7 @@ namespace BeltmanSoftwareDesign.Business.Services
 
             var list = db.Companies
                 .Where(a => a.CompanyUsers.Any(a => a.UserId == state.User.id))
-                .Select(a => CompanyFactory.Create(a))
+                .Select(a => CompanyConverter.Create(a))
                 .ToArray();
 
             return new CompanyListResponse()

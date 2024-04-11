@@ -13,9 +13,8 @@ namespace BeltmanSoftwareDesign.Business.Services
     public class RateService : IRateService
     {
         ApplicationDbContext db { get; }
-        IStorageFileService StorageFileService { get; }
         IAuthenticationService AuthenticationService { get; }
-        RateConverter RateFactory { get; }
+        RateConverter RateConverter { get; }
 
         public RateService(
             ApplicationDbContext db,
@@ -23,16 +22,15 @@ namespace BeltmanSoftwareDesign.Business.Services
             IAuthenticationService authenticationService)
         {
             this.db = db;
-            StorageFileService = storageFileService;
             AuthenticationService = authenticationService;
-            RateFactory = new RateConverter(storageFileService);
+            RateConverter = new RateConverter();
         }
 
         [TsServiceMethod("Rate", "Create")]
         public RateCreateResponse Create(RateCreateRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
         {
             var authentication = AuthenticationService.GetState(
-                request.BearerId, request.CurrentCompanyId, ipAddress, headers);
+                request, ipAddress, headers);
             if (!authentication.Success)
                 return new RateCreateResponse()
                 {
@@ -42,7 +40,7 @@ namespace BeltmanSoftwareDesign.Business.Services
             if (authentication.DbCurrentCompany == null)
                 throw new Exception("Current company not chosen or doesn't exist, please create a company or select one.");
 
-            var dbrate = RateFactory.Create(request.Rate, authentication.DbCurrentCompany, db);
+            var dbrate = RateConverter.Create(request.Rate, authentication.DbCurrentCompany, db);
             db.Rates.Add(dbrate);
             db.SaveChanges();
 
@@ -50,7 +48,7 @@ namespace BeltmanSoftwareDesign.Business.Services
             {
                 Success = true,
                 State = authentication,
-                Rate = RateFactory.Create(dbrate)
+                Rate = RateConverter.Create(dbrate)
             };
         }
 
@@ -58,7 +56,7 @@ namespace BeltmanSoftwareDesign.Business.Services
         public RateReadResponse Read(RateReadRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
         {
             var authentication = AuthenticationService.GetState(
-                request.BearerId, request.CurrentCompanyId, ipAddress, headers);
+                request, ipAddress, headers);
             if (!authentication.Success)
                 return new RateReadResponse()
                 {
@@ -85,7 +83,7 @@ namespace BeltmanSoftwareDesign.Business.Services
             {
                 Success = true,
                 State = authentication,
-                Rate = RateFactory.Create(dbrate)
+                Rate = RateConverter.Create(dbrate)
             };
         }
 
@@ -93,7 +91,7 @@ namespace BeltmanSoftwareDesign.Business.Services
         public RateUpdateResponse Update(RateUpdateRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
         {
             var authentication = AuthenticationService.GetState(
-                request.BearerId, request.CurrentCompanyId, ipAddress, headers);
+                request, ipAddress, headers);
             if (!authentication.Success)
                 return new RateUpdateResponse()
                 {
@@ -116,14 +114,14 @@ namespace BeltmanSoftwareDesign.Business.Services
                     State = authentication
                 };
 
-            if (RateFactory.Copy(request.Rate, dbrate, authentication.DbCurrentCompany, db))
+            if (RateConverter.Copy(request.Rate, dbrate, authentication.DbCurrentCompany, db))
                 db.SaveChanges();
 
             return new RateUpdateResponse()
             {
                 Success = true,
                 State = authentication,
-                Rate = RateFactory.Create(dbrate)
+                Rate = RateConverter.Create(dbrate)
             };
         }
 
@@ -131,7 +129,7 @@ namespace BeltmanSoftwareDesign.Business.Services
         public RateDeleteResponse Delete(RateDeleteRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
         {
             var authentication = AuthenticationService.GetState(
-                request.BearerId, request.CurrentCompanyId, ipAddress, headers);
+                request, ipAddress, headers);
             if (!authentication.Success)
                 return new RateDeleteResponse()
                 {
@@ -168,7 +166,7 @@ namespace BeltmanSoftwareDesign.Business.Services
         public RateListResponse List(RateListRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
         {
             var authentication = AuthenticationService.GetState(
-                request.BearerId, request.CurrentCompanyId, ipAddress, headers);
+                request, ipAddress, headers);
             if (!authentication.Success)
                 return new RateListResponse()
                 {
@@ -182,7 +180,7 @@ namespace BeltmanSoftwareDesign.Business.Services
                 .Include(a => a.Company)
                 .Include(a => a.TaxRate)
                 .Where(a => a.CompanyId == authentication.DbCurrentCompany.id)
-                .Select(a => RateFactory.Create(a))
+                .Select(a => RateConverter.Create(a))
                 .ToArray();
 
             return new RateListResponse()

@@ -1,5 +1,4 @@
 ﻿using BeltmanSoftwareDesign.Business.Interfaces;
-using BeltmanSoftwareDesign.Business.Models;
 using BeltmanSoftwareDesign.Data;
 using BeltmanSoftwareDesign.Data.Converters;
 using BeltmanSoftwareDesign.Shared.Attributes;
@@ -13,9 +12,8 @@ namespace BeltmanSoftwareDesign.Business.Services
     public class InvoiceService : IInvoiceService
     {
         ApplicationDbContext db { get; }
-        IStorageFileService StorageFileService { get; }
         IAuthenticationService AuthenticationService { get; }
-        InvoiceConverter InvoiceFactory { get; }
+        InvoiceConverter InvoiceConverter { get; }
 
         public InvoiceService(
             ApplicationDbContext db,
@@ -23,16 +21,15 @@ namespace BeltmanSoftwareDesign.Business.Services
             IAuthenticationService authenticationService)
         {
             this.db = db;
-            StorageFileService = storageFileService;
             AuthenticationService = authenticationService;
-            InvoiceFactory = new InvoiceConverter(storageFileService);
+            InvoiceConverter = new InvoiceConverter(storageFileService);
         }
 
         [TsServiceMethod("Invoice", "Create")]
         public InvoiceCreateResponse Create(InvoiceCreateRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
         {
             var authentication = AuthenticationService.GetState(
-                request.BearerId, request.CurrentCompanyId, ipAddress, headers);
+                request, ipAddress, headers);
             if (!authentication.Success)
                 return new InvoiceCreateResponse()
                 {
@@ -42,7 +39,7 @@ namespace BeltmanSoftwareDesign.Business.Services
             if (authentication.DbCurrentCompany == null)
                 throw new Exception("Current company not chosen or doesn't exist, please create a company or select one.");
 
-            var dbinvoice = InvoiceFactory.Create(request.Invoice);
+            var dbinvoice = InvoiceConverter.Create(request.Invoice);
 
             dbinvoice.CompanyId = authentication.DbCurrentCompany.id;
             dbinvoice.Company = authentication.DbCurrentCompany;
@@ -93,7 +90,7 @@ namespace BeltmanSoftwareDesign.Business.Services
             {
                 Success = true,
                 State = authentication,
-                Invoice = InvoiceFactory.Create(dbinvoice)
+                Invoice = InvoiceConverter.Create(dbinvoice)
             };
         }
 
@@ -101,7 +98,7 @@ namespace BeltmanSoftwareDesign.Business.Services
         public InvoiceReadResponse Read(InvoiceReadRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
         {
             var authentication = AuthenticationService.GetState(
-                request.BearerId, request.CurrentCompanyId, ipAddress, headers);
+                request, ipAddress, headers);
             if (!authentication.Success)
                 return new InvoiceReadResponse()
                 {
@@ -131,7 +128,7 @@ namespace BeltmanSoftwareDesign.Business.Services
             {
                 Success = true,
                 State = authentication,
-                Invoice = InvoiceFactory.Create(dbinvoice)
+                Invoice = InvoiceConverter.Create(dbinvoice)
             };
         }
 
@@ -139,7 +136,7 @@ namespace BeltmanSoftwareDesign.Business.Services
         public InvoiceUpdateResponse Update(InvoiceUpdateRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
         {
             var authentication = AuthenticationService.GetState(
-                request.BearerId, request.CurrentCompanyId, ipAddress, headers);
+                request, ipAddress, headers);
             if (!authentication.Success)
                 return new InvoiceUpdateResponse()
                 {
@@ -165,14 +162,14 @@ namespace BeltmanSoftwareDesign.Business.Services
                     State = authentication
                 };
 
-            if (InvoiceFactory.Copy(request.Invoice, dbinvoice))
+            if (InvoiceConverter.Copy(request.Invoice, dbinvoice))
                 db.SaveChanges();
 
             return new InvoiceUpdateResponse()
             {
                 Success = true,
                 State = authentication,
-                Invoice = InvoiceFactory.Create(dbinvoice)
+                Invoice = InvoiceConverter.Create(dbinvoice)
             };
         }
 
@@ -180,7 +177,7 @@ namespace BeltmanSoftwareDesign.Business.Services
         public InvoiceDeleteResponse Delete(InvoiceDeleteRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
         {
             var authentication = AuthenticationService.GetState(
-                request.BearerId, request.CurrentCompanyId, ipAddress, headers);
+                request, ipAddress, headers);
             if (!authentication.Success)
                 return new InvoiceDeleteResponse()
                 {
@@ -221,7 +218,7 @@ namespace BeltmanSoftwareDesign.Business.Services
         public InvoiceListResponse List(InvoiceListRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
         {
             var authentication = AuthenticationService.GetState(
-                request.BearerId, request.CurrentCompanyId, ipAddress, headers);
+                request, ipAddress, headers);
             if (!authentication.Success)
                 return new InvoiceListResponse()
                 {
@@ -238,7 +235,7 @@ namespace BeltmanSoftwareDesign.Business.Services
                 .Include(a => a.InvoiceWorkorders)
                 .Include(a => a.InvoiceAttachments)
                 .Where(a => a.CompanyId == authentication.DbCurrentCompany.id)
-                .Select(a => InvoiceFactory.Create(a))
+                .Select(a => InvoiceConverter.Create(a))
                 .ToArray();
 
             return new InvoiceListResponse()

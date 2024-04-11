@@ -2,7 +2,7 @@
 
 namespace BeltmanSoftwareDesign.Shared.RequestJsons
 {
-    public class UserUpdateRequest : Request
+    public class UpdateMyselfRequest : Request
     {
         public User? User { get; set; }
     }

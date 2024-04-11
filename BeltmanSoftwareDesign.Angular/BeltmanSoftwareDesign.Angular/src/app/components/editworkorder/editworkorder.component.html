@@ -36,7 +36,7 @@
     <input type="text" class="form-control" id="projectName" name="projectName"
            formControlName="projectName" list="projects" />
     <datalist id="projects">
-      <option *ngFor="let project of projects">{{ project.name }}</option>
+      <option *ngFor="let project of allProjects">{{ project.name }}</option>
     </datalist>
   </div>
 
@@ -45,7 +45,7 @@
     <input type="text" class="form-control" id="customerName" name="customerName"
            formControlName="customerName" list="customers" />
     <datalist id="customers">
-      <option *ngFor="let customer of customers">{{ customer.name }}</option>
+      <option *ngFor="let customer of allCustomers">{{ customer.name }}</option>
     </datalist>
   </div>
 
@@ -54,7 +54,7 @@
     <input type="text" class="form-control" id="rateName" name="rateName"
            formControlName="rateName" list="rates" />
     <datalist id="rates">
-      <option *ngFor="let rate of rates">{{ rate.name }}</option>
+      <option *ngFor="let rate of allRates">{{ rate.name }}</option>
     </datalist>
   </div>
 

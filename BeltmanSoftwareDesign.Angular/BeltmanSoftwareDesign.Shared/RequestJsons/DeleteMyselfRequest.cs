@@ -1,6 +1,6 @@
 ﻿namespace BeltmanSoftwareDesign.Shared.RequestJsons
 {
-    public class UserReadRequest : Request
+    public class DeleteMyselfRequest : Request
     {
         public string UserId { get; set; }
     }

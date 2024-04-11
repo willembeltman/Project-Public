@@ -1,26 +1,17 @@
+using BeltmanSoftwareDesign.Blazor.Components;
 using BeltmanSoftwareDesign.Business.Interfaces;
 using BeltmanSoftwareDesign.Business.Services;
+using BeltmanSoftwareDesign.Data;
 using BeltmanSoftwareDesign.StorageBlob.Business.Interfaces;
 using BeltmanSoftwareDesign.StorageBlob.Business.Services;
-using BeltmanSoftwareDesign.Data;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowSpecificOrigin",
-        builder => builder
-            .AllowAnyOrigin()
-            .AllowAnyMethod()
-            .AllowAnyHeader());
-});
+// Add services to the container.
+builder.Services.AddRazorComponents()
+    .AddInteractiveServerComponents();
 
-//builder.Services.AddDbContext<ApplicationDbContext>(
-//    options => options.UseInMemoryDatabase("InMemoryDatabase"));
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -39,18 +30,20 @@ builder.Services.AddScoped<IDateTimeService, DateTimeService>();
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
+// Configure the HTTP request pipeline.
+if (!app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseExceptionHandler("/Error", createScopeForErrors: true);
+    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseHsts();
 }
 
 app.UseHttpsRedirection();
-app.UseCors("AllowSpecificOrigin");
 
-app.UseAuthentication();
-app.UseAuthorization();
+app.UseStaticFiles();
+app.UseAntiforgery();
 
-app.MapControllers();
+app.MapRazorComponents<App>()
+    .AddInteractiveServerRenderMode();
 
 app.Run();

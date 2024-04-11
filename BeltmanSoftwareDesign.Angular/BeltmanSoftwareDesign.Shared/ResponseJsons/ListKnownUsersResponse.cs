@@ -2,7 +2,7 @@
 
 namespace BeltmanSoftwareDesign.Shared.ResponseJsons
 {
-    public class UserListResponse : Response
+    public class ListKnownUsersResponse : Response
     {
         public User[]? Users {  get; set; }
     }

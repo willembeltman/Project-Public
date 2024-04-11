@@ -7,16 +7,16 @@ using BeltmanSoftwareDesign.Shared.Jsons;
 using BeltmanSoftwareDesign.Shared.RequestJsons;
 using BeltmanSoftwareDesign.Shared.ResponseJsons;
 using BeltmanSoftwareDesign.StorageBlob.Business.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace BeltmanSoftwareDesign.Business.Services
 {
     public class UserService : IUserService
     {
         ApplicationDbContext db { get; }
-        IStorageFileService StorageFileService { get; }
         IAuthenticationService AuthenticationService { get; }
-        UserConverter UserFactory { get; }
-        CompanyConverter CompanyFactory { get; }
+        UserConverter UserConverter { get; }
+        CompanyConverter CompanyConverter { get; }
 
         public UserService(
             ApplicationDbContext db,
@@ -24,11 +24,10 @@ namespace BeltmanSoftwareDesign.Business.Services
             IAuthenticationService authenticationService)
         {
             this.db = db;
-            StorageFileService = storageFileService;
             AuthenticationService = authenticationService;
 
-            UserFactory = new UserConverter(storageFileService);
-            CompanyFactory = new CompanyConverter(storageFileService);
+            UserConverter = new UserConverter(storageFileService);
+            CompanyConverter = new CompanyConverter(storageFileService);
         }
 
 
@@ -41,7 +40,7 @@ namespace BeltmanSoftwareDesign.Business.Services
                     ErrorAuthentication = true
                 };
             var state = AuthenticationService.GetState(
-                request.BearerId, request.CurrentCompanyId, ipAddress, headers);
+                request, ipAddress, headers);
             if (!state.Success)
                 return new SetCurrentCompanyResponse()
                 {
@@ -50,9 +49,10 @@ namespace BeltmanSoftwareDesign.Business.Services
 
             // ===========================
 
-            var dbcompany = db.Companies.FirstOrDefault(a =>
-                a.id == request.CurrentCompanyId &&
-                a.CompanyUsers.Any(a => a.UserId == state.User.id));
+            var dbcompany = db.Companies
+                .FirstOrDefault(a =>
+                    a.id == request.CurrentCompanyId &&
+                    a.CompanyUsers.Any(a => a.UserId == state.User.id));
             if (dbcompany == null)
                 return new SetCurrentCompanyResponse()
                 {
@@ -61,7 +61,7 @@ namespace BeltmanSoftwareDesign.Business.Services
 
 
             // Convert it back
-            var company = CompanyFactory.Create(dbcompany);
+            var company = CompanyConverter.Create(dbcompany);
 
             // Set current company to 
             state.User.currentCompanyId = company.id;
@@ -79,27 +79,27 @@ namespace BeltmanSoftwareDesign.Business.Services
         }
 
         [TsServiceMethod("User", "ReadKnownUser")]
-        public UserReadResponse ReadKnownUser(UserReadRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
+        public ReadKnownUserResponse ReadKnownUser(ReadKnownUserRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
         {
             if (request == null)
-                return new UserReadResponse()
+                return new ReadKnownUserResponse()
                 {
                     ErrorAuthentication = true
                 };
             if (ipAddress == null)
-                return new UserReadResponse()
+                return new ReadKnownUserResponse()
                 {
                     ErrorAuthentication = true
                 };
             if (headers == null)
-                return new UserReadResponse()
+                return new ReadKnownUserResponse()
                 {
                     ErrorAuthentication = true
                 };
             var state = AuthenticationService.GetState(
-                request.BearerId, request.CurrentCompanyId, ipAddress, headers);
+                request, ipAddress, headers);
             if (!state.Success)
-                return new UserReadResponse()
+                return new ReadKnownUserResponse()
                 {
                     ErrorAuthentication = true
                 };
@@ -112,14 +112,14 @@ namespace BeltmanSoftwareDesign.Business.Services
                 .FirstOrDefault(a =>
                     a.Id == request.UserId);
             if (dbuser == null)
-                return new UserReadResponse()
+                return new ReadKnownUserResponse()
                 {
                     ErrorItemNotFound = true
                 };
 
-            var user = UserFactory.Create(dbuser);
+            var user = UserConverter.Create(dbuser);
 
-            return new UserReadResponse()
+            return new ReadKnownUserResponse()
             {
                 Success = true,
                 User = user,
@@ -128,17 +128,17 @@ namespace BeltmanSoftwareDesign.Business.Services
         }
 
         [TsServiceMethod("User", "UpdateMyself")]
-        public UserUpdateResponse UpdateMyself(UserUpdateRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
+        public UpdateMyselfResponse UpdateMyself(UpdateMyselfRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
         {
             if (request == null)
-                return new UserUpdateResponse()
+                return new UpdateMyselfResponse()
                 {
                     ErrorAuthentication = true
                 };
             var state = AuthenticationService.GetState(
-                request.BearerId, request.CurrentCompanyId, ipAddress, headers);
+                request, ipAddress, headers);
             if (!state.Success)
-                return new UserUpdateResponse()
+                return new UpdateMyselfResponse()
                 {
                     ErrorAuthentication = true
                 };
@@ -146,21 +146,21 @@ namespace BeltmanSoftwareDesign.Business.Services
             // ===========================
 
             if (request.User.id != state.User.id)
-                return new UserUpdateResponse()
+                return new UpdateMyselfResponse()
                 {
                     ErrorOnlyUpdatesToYourselfAreAllowed = true
                 };
 
             // Convert it to db item
-            if (UserFactory.Copy(request.User, state.DbUser) == true)
+            if (UserConverter.Copy(request.User, state.DbUser) == true)
                 db.SaveChanges();
 
             // Convert it back
-            var user = UserFactory.Create(state.DbUser);
+            var user = UserConverter.Create(state.DbUser);
 
             // Zichzelf ook update in de json
             state.User = user;
-            return new UserUpdateResponse()
+            return new UpdateMyselfResponse()
             {
                 Success = true,
                 User = user,
@@ -169,17 +169,17 @@ namespace BeltmanSoftwareDesign.Business.Services
         }
 
         [TsServiceMethod("User", "DeleteMyself")]
-        public UserDeleteResponse DeleteMyself(UserDeleteRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
+        public DeleteMyselfResponse DeleteMyself(DeleteMyselfRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
         {
             if (request == null)
-                return new UserDeleteResponse()
+                return new DeleteMyselfResponse()
                 {
                     ErrorAuthentication = true
                 };
             var state = AuthenticationService.GetState(
-                request.BearerId, request.CurrentCompanyId, ipAddress, headers);
+                request, ipAddress, headers);
             if (!state.Success)
-                return new UserDeleteResponse()
+                return new DeleteMyselfResponse()
                 {
                     ErrorAuthentication = true
                 };
@@ -187,7 +187,7 @@ namespace BeltmanSoftwareDesign.Business.Services
             // ===========================
 
             if (request.UserId != state.User.id)
-                return new UserDeleteResponse()
+                return new DeleteMyselfResponse()
                 {
                     ErrorOnlyDeletesToYourselfAreAllowed = true
                 };
@@ -195,7 +195,7 @@ namespace BeltmanSoftwareDesign.Business.Services
             db.Users.Remove(state.DbUser);
             db.SaveChanges();
             
-            return new UserDeleteResponse()
+            return new DeleteMyselfResponse()
             {
                 Success = true,
                 State = new State()
@@ -206,18 +206,18 @@ namespace BeltmanSoftwareDesign.Business.Services
         }
 
         [TsServiceMethod("User", "ListKnownUsers")]
-        public UserListResponse ListKnownUsers(UserListRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
+        public ListKnownUsersResponse ListKnownUsers(ListKnownUsersRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
         {
             if (request == null)
-                return new UserListResponse()
+                return new ListKnownUsersResponse()
                 {
                     ErrorAuthentication = true
                 };
 
             var state = AuthenticationService.GetState(
-                request.BearerId, request.CurrentCompanyId, ipAddress, headers);
+                request, ipAddress, headers);
             if (!state.Success) 
-                return new UserListResponse()
+                return new ListKnownUsersResponse()
                 {
                     ErrorAuthentication = true
                 };
@@ -226,10 +226,10 @@ namespace BeltmanSoftwareDesign.Business.Services
 
             var list =
                 knownusers
-                    .Select(u => UserFactory.Create(u))
+                    .Select(u => UserConverter.Create(u))
                     .ToArray();
 
-            return new UserListResponse()
+            return new ListKnownUsersResponse()
             {
                 Success = true,
                 State = state,
@@ -254,51 +254,5 @@ namespace BeltmanSoftwareDesign.Business.Services
                 .ToList();
             return knownusers;
         }
-
-        //[TsServiceMethod("User", "Create")]
-        //public UserCreateResponse Create(UserCreateRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
-        //{
-        //    if (request == null)
-        //        return new UserCreateResponse()
-        //        {
-        //            ErrorAuthentication = true
-        //        };
-
-        //    var state = AuthenticationService.GetState(
-        //        request.BearerId, request.CurrentCompanyId, ipAddress, headers);
-        //    if (!state.Success)
-        //        return new UserCreateResponse()
-        //        {
-        //            ErrorAuthentication = true
-        //        };
-
-        //    // ===========================
-
-        //    var dbuser = db.Users.FirstOrDefault(a =>
-        //        a.UserName == request.User.userName);
-        //    if (dbuser != null)
-        //        return new UserCreateResponse()
-        //        {
-        //            ErrorUserNameAlreadyUsed = true
-        //        };
-
-        //    // Convert it to db item
-        //    dbuser = UserFactory.Convert(request.User);
-        //    db.Users.Add(dbuser);
-        //    db.SaveChanges();
-
-        //    // Convert it back
-        //    var user = UserFactory.Convert(dbuser);
-
-        //    state.DbUser = dbuser;
-        //    state.User = user;
-
-        //    return new UserCreateResponse()
-        //    {
-        //        Success = true,
-        //        User = user,
-        //        State = state
-        //    };
-        //}
     }
 }

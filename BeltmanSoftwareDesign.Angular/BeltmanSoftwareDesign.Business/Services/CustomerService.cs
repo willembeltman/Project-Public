@@ -13,26 +13,23 @@ namespace BeltmanSoftwareDesign.Business.Services
     public class CustomerService : ICustomerService
     {
         ApplicationDbContext db { get; }
-        IStorageFileService StorageFileService { get; }
         IAuthenticationService AuthenticationService { get; }
-        CustomerConverter CustomerFactory { get; }
+        CustomerConverter CustomerConverter { get; }
 
         public CustomerService(
             ApplicationDbContext db,
-            IStorageFileService storageFileService,
             IAuthenticationService authenticationService)
         {
             this.db = db;
-            StorageFileService = storageFileService;
             AuthenticationService = authenticationService;
-            CustomerFactory = new CustomerConverter();
+            CustomerConverter = new CustomerConverter();
         }
 
         [TsServiceMethod("Customer", "Create")]
         public CustomerCreateResponse Create(CustomerCreateRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
         {
             var authentication = AuthenticationService.GetState(
-                request.BearerId, request.CurrentCompanyId, ipAddress, headers);
+                request, ipAddress, headers);
             if (!authentication.Success)
                 return new CustomerCreateResponse()
                 {
@@ -42,7 +39,7 @@ namespace BeltmanSoftwareDesign.Business.Services
             if (authentication.DbCurrentCompany == null)
                 throw new Exception("Current company not chosen or doesn't exist, please create a company or select one.");
 
-            var dbcustomer = CustomerFactory.Create(request.Customer);
+            var dbcustomer = CustomerConverter.Create(request.Customer);
 
             dbcustomer.Company = authentication.DbCurrentCompany;
             dbcustomer.CompanyId = authentication.DbCurrentCompany.id;
@@ -54,7 +51,7 @@ namespace BeltmanSoftwareDesign.Business.Services
             {
                 Success = true,
                 State = authentication,
-                Customer = CustomerFactory.Create(dbcustomer)
+                Customer = CustomerConverter.Create(dbcustomer)
             };
         }
 
@@ -62,7 +59,7 @@ namespace BeltmanSoftwareDesign.Business.Services
         public CustomerReadResponse Read(CustomerReadRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
         {
             var authentication = AuthenticationService.GetState(
-                request.BearerId, request.CurrentCompanyId, ipAddress, headers);
+                request, ipAddress, headers);
             if (!authentication.Success)
                 return new CustomerReadResponse()
                 {
@@ -93,7 +90,7 @@ namespace BeltmanSoftwareDesign.Business.Services
             {
                 Success = true,
                 State = authentication,
-                Customer = CustomerFactory.Create(dbcustomer)
+                Customer = CustomerConverter.Create(dbcustomer)
             };
         }
 
@@ -101,7 +98,7 @@ namespace BeltmanSoftwareDesign.Business.Services
         public CustomerUpdateResponse Update(CustomerUpdateRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
         {
             var authentication = AuthenticationService.GetState(
-                request.BearerId, request.CurrentCompanyId, ipAddress, headers);
+                request, ipAddress, headers);
             if (!authentication.Success)
                 return new CustomerUpdateResponse()
                 {
@@ -127,14 +124,14 @@ namespace BeltmanSoftwareDesign.Business.Services
                     ErrorItemNotFound = true,
                 };
 
-            if (CustomerFactory.Copy(request.Customer, dbcustomer))
+            if (CustomerConverter.Copy(request.Customer, dbcustomer))
                 db.SaveChanges();
 
             return new CustomerUpdateResponse()
             {
                 Success = true,
                 State = authentication,
-                Customer = CustomerFactory.Create(dbcustomer)
+                Customer = CustomerConverter.Create(dbcustomer)
             };
         }
 
@@ -142,7 +139,7 @@ namespace BeltmanSoftwareDesign.Business.Services
         public CustomerDeleteResponse Delete(CustomerDeleteRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
         {
             var authentication = AuthenticationService.GetState(
-                request.BearerId, request.CurrentCompanyId, ipAddress, headers);
+                request, ipAddress, headers);
             if (!authentication.Success)
                 return new CustomerDeleteResponse()
                 {
@@ -184,7 +181,7 @@ namespace BeltmanSoftwareDesign.Business.Services
         public CustomerListResponse List(CustomerListRequest request, string? ipAddress, KeyValuePair<string, string?>[]? headers)
         {
             var authentication = AuthenticationService.GetState(
-                request.BearerId, request.CurrentCompanyId, ipAddress, headers);
+                request, ipAddress, headers);
             if (!authentication.Success)
                 return new CustomerListResponse()
                 {
@@ -203,7 +200,7 @@ namespace BeltmanSoftwareDesign.Business.Services
                 .Include(a => a.Documents)
                 .Where(a => 
                     a.CompanyId == authentication.DbCurrentCompany.id)
-                .Select(a => CustomerFactory.Create(a))
+                .Select(a => CustomerConverter.Create(a))
                 .ToArray();
 
             return new CustomerListResponse()

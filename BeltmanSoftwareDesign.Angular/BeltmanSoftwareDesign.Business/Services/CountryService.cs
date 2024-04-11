@@ -11,7 +11,7 @@ namespace BeltmanSoftwareDesign.Business.Services
     {
         ApplicationDbContext db { get; }
         IAuthenticationService AuthenticationService { get; }
-        CountryConverter CountryFactory { get; }
+        CountryConverter CountryConverter { get; }
 
         public CountryService(
             ApplicationDbContext db,
@@ -19,7 +19,7 @@ namespace BeltmanSoftwareDesign.Business.Services
         {
             this.db = db;
             AuthenticationService = authenticationService;
-            CountryFactory = new CountryConverter();
+            CountryConverter = new CountryConverter();
         }
 
         [TsServiceMethod("Country", "List")]
@@ -32,7 +32,7 @@ namespace BeltmanSoftwareDesign.Business.Services
                 };
 
             var authentication = AuthenticationService.GetState(
-                request.BearerId, request.CurrentCompanyId, ipAddress, headers);
+                request, ipAddress, headers);
             if (!authentication.Success)
                 return new CountryListResponse()
                 {
@@ -40,7 +40,7 @@ namespace BeltmanSoftwareDesign.Business.Services
                 };
 
             var list = db.Countries
-                .Select(a => CountryFactory.Create(a))
+                .Select(a => CountryConverter.Create(a))
                 .ToArray();
 
             return new CountryListResponse()

@@ -34,6 +34,7 @@ namespace CodeGenerator.Controllers
             {
                 // Controller name
                 var controllernamefullname = type.FullName;
+                if (controllernamefullname == null) continue;
                 var controllernamefull = controllernamefullname
                     .Substring(namespaceControllers.Length + 1, controllernamefullname.Length - namespaceControllers.Length - 1);
                 var controllername = controllernamefull

@@ -20,19 +20,19 @@ namespace BeltmanSoftwareDesign.Api.Controllers
             => UserService.SetCurrentCompany(request, IpAddress, Headers);
 
         [HttpPost]
-        public UserReadResponse ReadKnownUser(UserReadRequest request) 
+        public ReadKnownUserResponse ReadKnownUser(ReadKnownUserRequest request) 
             => UserService.ReadKnownUser(request, IpAddress, Headers);
 
         [HttpPost]
-        public UserUpdateResponse UpdateMyself(UserUpdateRequest request) 
+        public UpdateMyselfResponse UpdateMyself(UpdateMyselfRequest request) 
             => UserService.UpdateMyself(request, IpAddress, Headers);
 
         [HttpPost]
-        public UserDeleteResponse DeleteMyself(UserDeleteRequest request) 
+        public DeleteMyselfResponse DeleteMyself(DeleteMyselfRequest request) 
             => UserService.DeleteMyself(request, IpAddress, Headers);
 
         [HttpPost]
-        public UserListResponse ListKnownUsers(UserListRequest request) 
+        public ListKnownUsersResponse ListKnownUsers(ListKnownUsersRequest request) 
             => UserService.ListKnownUsers(request, IpAddress, Headers);
     }
 }

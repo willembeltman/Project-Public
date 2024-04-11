@@ -18,28 +18,26 @@ namespace BeltmanSoftwareDesign.Business.Services
         static int longhoursago = -72;
 
         ApplicationDbContext db { get; }
-        IStorageFileService StorageFileService { get; }
-        DateTime now { get; }
-        UserConverter UserFactory { get; }
-        CompanyConverter CompanyFactory { get; }
+        IDateTimeService DateTime { get; }
+        UserConverter UserConverter { get; }
+        CompanyConverter CompanyConverter { get; }
 
         public AuthenticationService(
             ApplicationDbContext db, 
             IStorageFileService storageFileService, 
-            DateTime? now = null)
+            IDateTimeService dateTimeService)
         {
             this.db = db;
-            StorageFileService = storageFileService;
-            this.now = now ?? DateTime.Now;
-            UserFactory = new UserConverter(storageFileService);
-            CompanyFactory = new CompanyConverter(storageFileService);
+            DateTime = dateTimeService;
+            UserConverter = new UserConverter(storageFileService);
+            CompanyConverter = new CompanyConverter(storageFileService);
         }
 
         [TsServiceMethod("Auth", "Login")]
         public LoginResponse Login(LoginRequest request, string? requestIpAddress, KeyValuePair<string, string?>[]? requestHeaders)
         {
-            var shortago = now.AddHours(shorthoursago);
-            var longago = now.AddHours(longhoursago);
+            var shortago = DateTime.Now.AddHours(shorthoursago);
+            var longago = DateTime.Now.AddHours(longhoursago);
 
             if (string.IsNullOrEmpty(requestIpAddress))
                 return new LoginResponse()
@@ -103,7 +101,12 @@ namespace BeltmanSoftwareDesign.Business.Services
                 clientBearer = CreateBearer(dbuser, clientDevice, clientIpAddress);
             }
 
-            var user = UserFactory.Create(dbuser);
+            var user = UserConverter.Create(dbuser);
+            if (user == null)
+                return new LoginResponse()
+                {
+                    AuthenticationError = true
+                };
 
             var dbcurrentcompany = db.Companies
                 .Include(a => a.Country)
@@ -111,7 +114,7 @@ namespace BeltmanSoftwareDesign.Business.Services
                     a.id == user.currentCompanyId &&
                     a.CompanyUsers.Any(a => a.UserId == user.id));
 
-            var currentcompany = CompanyFactory.Create(dbcurrentcompany);
+            var currentcompany = CompanyConverter.Create(dbcurrentcompany);
 
             return new LoginResponse()
             {
@@ -203,7 +206,7 @@ namespace BeltmanSoftwareDesign.Business.Services
                     ErrorCouldNotCreateBearer = true
                 };
 
-            var user = UserFactory.Create(dbuser);
+            var user = UserConverter.Create(dbuser);
             return new RegisterResponse()
             {
                 Success = true,
@@ -215,28 +218,28 @@ namespace BeltmanSoftwareDesign.Business.Services
             };
         }
 
-        public AuthenticationState GetState(string? requestBearerId, long? currentCompanyId, string? ipAddress, KeyValuePair<string, string?>[]? headers)
+        public AuthenticationState GetState(Request request, string? requestIpAddress, KeyValuePair<string, string?>[]? requestHeaders)
         {
-            if (ipAddress == null)
+            if (requestIpAddress == null)
                 return new AuthenticationState()
                 {
                 };
 
-            if (headers == null)
+            if (requestHeaders == null)
                 return new AuthenticationState()
                 {
                 };
 
-            var shortago = now.AddHours(shorthoursago);
-            var longago = now.AddHours(longhoursago);
+            var shortago = DateTime.Now.AddHours(shorthoursago);
+            var longago = DateTime.Now.AddHours(longhoursago);
 
-            var clientDevice = GetClientDevice(headers);
+            var clientDevice = GetClientDevice(requestHeaders);
             if (clientDevice == null)
                 return new AuthenticationState()
                 {
                 };
 
-            var clientIpAddress = GetIpAddress(ipAddress);
+            var clientIpAddress = GetIpAddress(requestIpAddress);
             if (clientIpAddress == null)
                 return new AuthenticationState()
                 {
@@ -245,7 +248,7 @@ namespace BeltmanSoftwareDesign.Business.Services
             var clientBearer = db.ClientBearers
                 .OrderByDescending(a => a.Date)
                 .FirstOrDefault(a => 
-                    a.id == requestBearerId &&
+                    a.id == request.BearerId &&
                     a.Date > longago);
             if (clientBearer == null || clientBearer.UserId == null) 
                 return new AuthenticationState()
@@ -287,10 +290,10 @@ namespace BeltmanSoftwareDesign.Business.Services
                 .Include(a => a.Country)
                 .FirstOrDefault(a => 
                     a.CompanyUsers.Any(a => a.UserId == user.Id) &&
-                    a.id == currentCompanyId);
+                    a.id == request.CurrentCompanyId);
        
-            var userJson = UserFactory.Create(user);
-            var companyJson = CompanyFactory.Create(currentcompany);
+            var userJson = UserConverter.Create(user);
+            var companyJson = CompanyConverter.Create(currentcompany);
 
             return new AuthenticationState()
             {

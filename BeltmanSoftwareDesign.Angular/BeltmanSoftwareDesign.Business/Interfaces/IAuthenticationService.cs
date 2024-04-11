@@ -6,7 +6,7 @@ namespace BeltmanSoftwareDesign.Business.Interfaces
 {
     public interface IAuthenticationService
     {
-        AuthenticationState GetState(string? requestBearerId, long? currentCompanyId, string? requestIpAddress, KeyValuePair<string, string?>[]? requestHeaders);
+        AuthenticationState GetState(Request request, string? requestIpAddress, KeyValuePair<string, string?>[]? requestHeaders);
         LoginResponse Login(LoginRequest request, string? requestIpAddress, KeyValuePair<string, string?>[]? requestHeaders);
         RegisterResponse Register(RegisterRequest request, string? requestIpAddress, KeyValuePair<string, string?>[]? requestHeaders);
     }

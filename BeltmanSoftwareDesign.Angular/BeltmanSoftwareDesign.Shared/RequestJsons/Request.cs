@@ -5,7 +5,7 @@ namespace BeltmanSoftwareDesign.Shared.RequestJsons
     [TsHidden]
     public class Request
     {
-        public string BearerId { get; set; }
+        public string? BearerId { get; set; }
         public long? CurrentCompanyId { get; set; }
     }
 }
