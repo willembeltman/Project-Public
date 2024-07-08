@@ -9,17 +9,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BeltmanSoftwareDesign.Api",
 EndProject
 Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "BeltmanSoftwareDesign.Angular", "BeltmanSoftwareDesign.Angular\BeltmanSoftwareDesign.Angular.esproj", "{2D901BD5-AC42-4953-92F8-4F017145CF18}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BeltmanSoftwareDesign.StorageBlob", "BeltmanSoftwareDesign.StorageBlob\BeltmanSoftwareDesign.StorageBlob.csproj", "{87822D9D-F915-4CFA-909B-37CF215ECB3D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StorageBlob", "BeltmanSoftwareDesign.StorageBlob\StorageBlob.csproj", "{87822D9D-F915-4CFA-909B-37CF215ECB3D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BeltmanSoftwareDesign.Shared", "BeltmanSoftwareDesign.Shared\BeltmanSoftwareDesign.Shared.csproj", "{98FEB601-38E8-4C31-BD11-FF6ADB7E8B8F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BeltmanSoftwareDesign.Business", "BeltmanSoftwareDesign.Business\BeltmanSoftwareDesign.Business.csproj", "{C37B56A4-2911-4545-93BA-1A8BF819183B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BeltmanSoftwareDesign.StorageBlob.Business", "BeltmanSoftwareDesign.StorageBlob.Business\BeltmanSoftwareDesign.StorageBlob.Business.csproj", "{4FB0E28F-9C5C-4E9D-AB14-10136B572FDA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StorageBlob.Proxy", "BeltmanSoftwareDesign.StorageBlob.Business\StorageBlob.Proxy.csproj", "{4FB0E28F-9C5C-4E9D-AB14-10136B572FDA}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeGenerator", "CodeGenerator\CodeGenerator.csproj", "{81A6C010-B223-4247-B900-947C71D66D9D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeltmanSoftwareDesign.Blazor", "BeltmanSoftwareDesign.Blazor\BeltmanSoftwareDesign.Blazor.csproj", "{FF829094-F447-44F8-BD18-AF6D77C483C8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BeltmanSoftwareDesign.Blazor", "BeltmanSoftwareDesign.Blazor\BeltmanSoftwareDesign.Blazor.csproj", "{FF829094-F447-44F8-BD18-AF6D77C483C8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

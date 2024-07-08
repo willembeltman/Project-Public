@@ -1,4 +1,4 @@
-﻿namespace BeltmanSoftwareDesign.StorageBlob.Business.Interfaces
+﻿namespace StorageBlob.Proxy.Interfaces
 {
     public interface IStorageFile
     {

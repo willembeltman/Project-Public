@@ -1,4 +1,4 @@
-namespace BeltmanSoftwareDesign.StorageBlob
+namespace StorageBlob
 {
     public class WeatherForecast
     {

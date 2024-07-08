@@ -2,8 +2,8 @@ using BeltmanSoftwareDesign.Blazor.Components;
 using BeltmanSoftwareDesign.Business.Interfaces;
 using BeltmanSoftwareDesign.Business.Services;
 using BeltmanSoftwareDesign.Data;
-using BeltmanSoftwareDesign.StorageBlob.Business.Interfaces;
-using BeltmanSoftwareDesign.StorageBlob.Business.Services;
+using StorageBlob.Proxy.Interfaces;
+using StorageBlob.Proxy.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);

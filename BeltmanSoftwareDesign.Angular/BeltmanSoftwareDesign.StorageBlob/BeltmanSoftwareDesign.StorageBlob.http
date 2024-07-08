@@ -1,6 +1,6 @@
-@BeltmanSoftwareDesign.StorageBlob_HostAddress = http://localhost:5252
+@StorageBlob_HostAddress = http://localhost:5252
 
-GET {{BeltmanSoftwareDesign.StorageBlob_HostAddress}}/weatherforecast/
+GET {{StorageBlob_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###

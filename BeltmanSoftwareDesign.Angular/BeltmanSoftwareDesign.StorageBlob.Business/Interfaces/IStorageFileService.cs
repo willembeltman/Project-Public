@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BeltmanSoftwareDesign.StorageBlob.Business.Interfaces
+namespace StorageBlob.Proxy.Interfaces
 {
     public interface IStorageFileService
     {

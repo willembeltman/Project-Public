@@ -1,5 +1,5 @@
 ﻿
-namespace LanCloud
+namespace LanCloud.Forms
 {
     partial class MainForm
     {

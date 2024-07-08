@@ -1,7 +1,7 @@
 using BeltmanSoftwareDesign.Business.Interfaces;
 using BeltmanSoftwareDesign.Business.Services;
-using BeltmanSoftwareDesign.StorageBlob.Business.Interfaces;
-using BeltmanSoftwareDesign.StorageBlob.Business.Services;
+using StorageBlob.Proxy.Interfaces;
+using StorageBlob.Proxy.Services;
 using BeltmanSoftwareDesign.Data;
 using Microsoft.EntityFrameworkCore;
 

@@ -1,4 +1,4 @@
-﻿using BeltmanSoftwareDesign.StorageBlob.Business.Interfaces;
+﻿using StorageBlob.Proxy.Interfaces;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 

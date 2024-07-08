@@ -33,6 +33,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DokanNet, Version=2.1.0.0, Culture=neutral, PublicKeyToken=cef3dedf553bda55, processorArchitecture=MSIL">
+      <HintPath>..\packages\DokanNet.2.1.0\lib\net462\DokanNet.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -46,25 +49,36 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.cs" />
-    <Compile Include="FileLoader.cs" />
-    <Compile Include="MainForm.cs">
+    <Compile Include="Client\Client.cs" />
+    <Compile Include="Client\ClientService.cs" />
+    <Compile Include="File\DokanOperations.cs" />
+    <Compile Include="File\FileSystemService.cs" />
+    <Compile Include="Forms\FormsService.cs" />
+    <Compile Include="Logger\LoggerService.cs" />
+    <Compile Include="Forms\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="MainForm.Designer.cs">
+    <Compile Include="Forms\MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Server.cs" />
-    <Compile Include="Settings.cs" />
+    <Compile Include="Server\ServerService.cs" />
+    <Compile Include="Interfaces\IInitializeble.cs" />
+    <Compile Include="Interfaces\IStarteble.cs" />
+    <Compile Include="Settings\SettingsChangedEventHandler.cs" />
+    <Compile Include="Settings\SettingsService.cs" />
+    <Compile Include="Settings\SettingsEntity.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="MainForm.resx">
+    <EmbeddedResource Include="Forms\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

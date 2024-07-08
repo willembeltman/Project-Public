@@ -1,57 +1,53 @@
-﻿using System;
-using System.Net.Sockets;
-using System.Threading;
+﻿using DokanNet;
+using LanCloud.Client;
+using LanCloud.File;
+using LanCloud.Forms;
+using LanCloud.Logger;
+using LanCloud.Server;
+using LanCloud.Settings;
+using System.Threading.Tasks;
 
 namespace LanCloud
 {
-    public class App 
+    public class App
     {
         public App()
         {
-            Settings = new Settings(this);
-            Server = new Server(this);
-            FileLoader = new FileLoader();
-            Form = new MainForm(this);
+            Settings = new SettingsService(this);
+            Servers = new ServerService(this);
+            Clients = new ClientService(this);
+            Logger = new LoggerService(this);
+            FileSystem = new FileSystemService(this);
+            Forms = new FormsService(this);
         }
 
-        public Settings Settings { get; }
-        public Server Server { get; }
-        public FileLoader FileLoader { get; }
-        public MainForm Form { get; }
+        public SettingsService Settings { get; }
+        public ServerService Servers { get; }
+        public ClientService Clients { get; }
+        public LoggerService Logger { get; }
+        public FileSystemService FileSystem { get; }
+        public FormsService Forms { get; }
 
         public bool KillSwitch { get; set; }
 
-        Thread ServerThread { get; set; }
-        Thread FileLoaderThread { get; set; }
-
         public void Start()
         {
-            // Start de server
-            ServerThread = new Thread(new ThreadStart(Server.Start));
-            ServerThread.Start();
+            Task.WaitAll(
+                Settings.InitializeAsync(),
+                FileSystem.InitializeAsync());
 
-            // Start de file loader
-            FileLoaderThread = new Thread(new ThreadStart(FileLoader.Start));
-            FileLoaderThread.Start();
-
-            // Gebruik main thread om de applicatie in te laden
-            Form.ShowDialog();
-
-            // Als het form wordt afgesloten, komt hij uit de showdialog dus kunnen we de rest ook afsluiten.
-            KillSwitch = true;
-            ServerThread.Join();
-            FileLoaderThread.Join();
-        }
-
-        public void SettingsChanged()
-        {
-            Form.SettingsChanged();
-            Server.SettingsChanged();
-        }
-
-        public void WriteLine(string msg)
-        {
-            Console.WriteLine($"{DateTime.Now} {msg}");
+            using (var dokan = new Dokan(Logger))
+            {
+                var dokanInstanceBuilder = new DokanInstanceBuilder(dokan);
+                using (var dokanInstance = dokanInstanceBuilder.Build(FileSystem.DokanOperations))
+                {
+                    Task.WaitAll(
+                        Settings.StartAsync(),
+                        Servers.StartAsync(),
+                        Clients.StartAsync(),
+                        Logger.StartAsync());
+                }
+            }
         }
     }
 }

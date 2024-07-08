@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace BeltmanSoftwareDesign.StorageBlob.Controllers
+namespace StorageBlob.Controllers
 {
     [ApiController]
     [Route("[controller]")]

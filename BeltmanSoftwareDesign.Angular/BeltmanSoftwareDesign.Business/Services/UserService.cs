@@ -6,7 +6,7 @@ using BeltmanSoftwareDesign.Shared.Attributes;
 using BeltmanSoftwareDesign.Shared.Jsons;
 using BeltmanSoftwareDesign.Shared.RequestJsons;
 using BeltmanSoftwareDesign.Shared.ResponseJsons;
-using BeltmanSoftwareDesign.StorageBlob.Business.Interfaces;
+using StorageBlob.Proxy.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace BeltmanSoftwareDesign.Business.Services

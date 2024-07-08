@@ -1,4 +1,4 @@
-﻿using BeltmanSoftwareDesign.StorageBlob.Business.Interfaces;
+﻿using StorageBlob.Proxy.Interfaces;
 
 
 namespace BeltmanSoftwareDesign.Data.Converters

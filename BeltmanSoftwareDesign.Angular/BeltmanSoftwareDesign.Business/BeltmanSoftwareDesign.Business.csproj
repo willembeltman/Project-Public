@@ -25,6 +25,7 @@
   <ItemGroup>
     <ProjectReference Include="..\BeltmanSoftwareDesign.Data\BeltmanSoftwareDesign.Data.csproj" />
     <ProjectReference Include="..\BeltmanSoftwareDesign.Shared\BeltmanSoftwareDesign.Shared.csproj" />
+    <ProjectReference Include="..\BeltmanSoftwareDesign.StorageBlob.Business\StorageBlob.Proxy.csproj" />
   </ItemGroup>
 
 </Project>
