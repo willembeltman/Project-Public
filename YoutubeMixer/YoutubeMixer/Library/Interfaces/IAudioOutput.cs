@@ -1,7 +1,6 @@
-﻿using YoutubeMixer.AudioSources;
-using YoutubeMixer.Models;
+﻿using YoutubeMixer.Library.Models;
 
-namespace YoutubeMixer.Interfaces
+namespace YoutubeMixer.Library.Interfaces
 {
     public interface IAudioOutput
     {

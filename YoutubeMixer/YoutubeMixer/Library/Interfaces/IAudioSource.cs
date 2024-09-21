@@ -1,4 +1,4 @@
-﻿namespace YoutubeMixer.Interfaces
+﻿namespace YoutubeMixer.Library.Interfaces
 {
     public interface IAudioSource
     {
@@ -8,7 +8,7 @@
         bool IsReady { get; }
         bool IsPlaying { get; }
         double CurrentTime { get; }
-        double TotalDuration {  get; }
+        double TotalDuration { get; }
         double VuMeter { get; }
 
         double Volume { get; set; }

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace YoutubeMixer.Controls
+namespace YoutubeMixer.Forms.Controls
 {
     public class EqualizerControl : Control
     {

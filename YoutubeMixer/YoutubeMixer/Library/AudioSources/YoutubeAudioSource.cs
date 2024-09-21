@@ -1,9 +1,9 @@
 ﻿using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium;
 using System.Diagnostics;
-using YoutubeMixer.Interfaces;
+using YoutubeMixer.Library.Interfaces;
 
-namespace YoutubeMixer.AudioSources
+namespace YoutubeMixer.Library.AudioSources
 {
     /// <summary>
     /// Todo:
@@ -158,82 +158,161 @@ namespace YoutubeMixer.AudioSources
             if (!hasAttribute)
             {
                 string filterCode = @"
-                    var context = new AudioContext();
-                    var source = context.createMediaElementSource(arguments[0]);
+var context = new AudioContext();
+var source = context.createMediaElementSource(arguments[0]);
 
-                    // create an equalizer using BiquadFilterNodes
-                    var filters = [];
-                    var frequencies = [60, 170, 350, 1000, 3500, 10000];
-                    var gains = [0, 0, 0, 0, 0, 0];
-                    for (var i = 0; i < frequencies.length; i++) {
-                        var filter = context.createBiquadFilter();
-                        filter.type = 'peaking';
-                        filter.frequency.value = frequencies[i];
-                        filter.gain.value = gains[i];
-                        filters.push(filter);
-                    }
+// create an equalizer using BiquadFilterNodes
+var filters = [];
+var frequencies = [60, 170, 350, 1000, 3500, 10000];
+var gains = [0, 0, 0, 0, 0, 0];
+for (var i = 0; i < frequencies.length; i++) {
+    var filter = context.createBiquadFilter();
+    filter.type = 'peaking';
+    filter.frequency.value = frequencies[i];
+    filter.gain.value = gains[i];
+    filters.push(filter);
+}
 
-                    // connect the filters in series
-                    source.connect(filters[0]);
-                    for (var i = 0; i < filters.length - 1; i++) {
-                        filters[i].connect(filters[i + 1]);
-                    }
-                    filters[filters.length - 1].connect(context.destination);
-
-
-                    // function to update filter parameters
-                    function updateFilterParams(newGains) {
-                        for (var i = 0; i < filters.length; i++) {
-                            filters[i].gain.value = newGains[i];
-                        }
-                    }
-
-                    // expose the updateFilterParams function to the global scope
-                    window.updateFilterParams = updateFilterParams;
+// connect the filters in series
+source.connect(filters[0]);
+for (var i = 0; i < filters.length - 1; i++) {
+    filters[i].connect(filters[i + 1]);
+}
+filters[filters.length - 1].connect(context.destination);
 
 
+// function to update filter parameters
+function updateFilterParams(newGains) {
+    for (var i = 0; i < filters.length; i++) {
+        filters[i].gain.value = newGains[i];
+    }
+}
+
+// expose the updateFilterParams function to the global scope
+window.updateFilterParams = updateFilterParams;
 
 
+var freqlow = 60;
+var tresshold = 255;
 
-                    // create a meter using a ScriptProcessorNode
-                    var bufferSize = 512;
-                    var meter = context.createScriptProcessor(bufferSize, 1, 1);
-                    var maxLevel = 0;
+// create a meter using a ScriptProcessorNode
+var bufferSize = 1024;
+var meter = context.createScriptProcessor(bufferSize, 1, 1);
+var maxLevel = 0;
+var kickDetected = false;
 
-                    meter.onaudioprocess = function(event) {
-                        try {
-                            var inputBuffer = event.inputBuffer;
-                            var inputData1 = inputBuffer.getChannelData(0);
-                            for (var i = 0; i < inputData1.length; i++) {
-                                let data = inputData1[i];
-                                if (data < 0) {
-                                    data = data * -1;           
-                                }
-                                if (maxLevel < data) {
-                                    maxLevel = data;           
-                                }
-                            }
-                        }
-                        catch (e) {
-                            console.log(e);
-                        }
-                    }
+var timestamps = [];
+var volumeTimestamps = [];
+var kickTimestamps = [];
+var lastKickTimestamp = 0;
 
-                    // connect the meter to the source
-                    source.connect(meter);
-                    meter.connect(context.destination);
+// Create an AnalyserNode to perform FFT
+var analyser = context.createAnalyser();
+analyser.fftSize = 1024;
 
-                    // function to get the current vu-meter reading
-                    function getVuMeter() {
-                        let res = maxLevel;
-                        maxLevel = 0;
-                        return res;
-                    }
+//var frequencyData = new Float32Array(analyser.frequencyBinCount);
+var frequencyData = new Uint8Array(analyser.frequencyBinCount);
 
-                    // expose the getVuMeter function to the global scope
-                    window.getVuMeter = getVuMeter;
 
-                    arguments[0].setAttribute('eq-injected', 'true');
+meter.onaudioprocess = function(event) {
+    try {
+        var inputBuffer = event.inputBuffer;
+        var inputData1 = inputBuffer.getChannelData(0);
+        //analyser.getFloatFrequencyData(frequencyData); // Get the frequency data
+        analyser.getByteFrequencyData(frequencyData);
+        
+        let volume = 0;
+        for (var i = 0; i < frequencyData.length; i++) {
+            var frequency = i * (context.sampleRate / analyser.fftSize); 
+            if (frequency > freqlow) { 
+                volume = frequencyData[i];
+                break;
+            }
+        }
+        if (volume >= tresshold && !kickDetected ) {
+
+            if (context.currentTime - lastKickTimestamp > 0.3) {
+                kickTimestamps.push(context.currentTime); // Store the timestamp of the detected kick
+                lastKickTimestamp = context.currentTime;
+                console.log(""Kick detected at "" + context.currentTime); 
+            }
+
+            kickDetected = true;                               
+        } 
+        else if (volume < tresshold) {
+            kickDetected = false;
+        }
+
+        // Visualize or store the maximum level for other purposes
+        for (var i = 0; i < inputData1.length; i++) {
+            let data = inputData1[i];
+            if (data < 0) {
+                data = data * -1;
+            }
+            if (maxLevel < data) {
+                maxLevel = data;
+            }
+        }
+    } catch (e) {
+        console.log(e);
+    }
+};
+
+// connect the meter and analyser to the source
+source.connect(analyser);
+analyser.connect(meter);
+meter.connect(context.destination);
+
+// function to get the current vu-meter reading
+function getKickDrumDetection() {
+    let res = kickTimestamps;
+    kickTimestamps = [];
+    return res;
+}
+
+// expose the getKickDrumDetection function to the global scope
+window.getKickDrumDetection = getKickDrumDetection;
+
+
+//// create a meter using a ScriptProcessorNode
+//var bufferSize = 512;
+//var meter = context.createScriptProcessor(bufferSize, 1, 1);
+//var maxLevel = 0;
+
+//meter.onaudioprocess = function(event) {
+//    try {
+//        var inputBuffer = event.inputBuffer;
+//        var inputData1 = inputBuffer.getChannelData(0);
+//        for (var i = 0; i < inputData1.length; i++) {
+//            let data = inputData1[i];
+//            if (data < 0) {
+//                data = data * -1;           
+//            }
+//            if (maxLevel < data) {
+//                maxLevel = data;           
+//            }
+//        }
+//    }
+//    catch (e) {
+//        console.log(e);
+//    }
+//}
+
+//// connect the meter to the source
+//source.connect(meter);
+//meter.connect(context.destination);
+
+// function to get the current vu-meter reading
+function getVuMeter() {
+    let res = maxLevel;
+    maxLevel = 0;
+    return res;
+}
+
+// expose the getVuMeter function to the global scope
+window.getVuMeter = getVuMeter;
+
+arguments[0].setAttribute('eq-injected', 'true');
                 ";
 
                 JsExecutor.ExecuteScript(filterCode, VideoElement);
@@ -292,12 +371,18 @@ namespace YoutubeMixer.AudioSources
             Title = Driver?.Title ?? "";
 
             var state = (Dictionary<string, object>)JsExecutor
-                .ExecuteScript(@"return { vuMeter: window.getVuMeter(), currentTime: arguments[0].currentTime, totalDuration: arguments[0].duration };", VideoElement);
+                .ExecuteScript(@"return { vuMeter: window.getVuMeter(), kickTimestamps: getKickDrumDetection(), currentTime: arguments[0].currentTime, totalDuration: arguments[0].duration };", VideoElement);
             VuMeter = Convert.ToDouble(state["vuMeter"]);
             CurrentTime = Convert.ToDouble(state["currentTime"]);
             TotalDuration = Convert.ToDouble(state["totalDuration"]);
 
-            var duration = CurrentTime - PreviousTime;
+            var kickTimestamps = ((IEnumerable<object>)state["kickTimestamps"])
+                .Select(t => Convert.ToDouble(t))
+                .ToList();
+            if (kickTimestamps.Count> 0)
+            {
+
+            }
             VuDataOutput.ReceivedVuChunk(CurrentTime, PreviousTime, VuMeter);
             PreviousTime = CurrentTime;
         }

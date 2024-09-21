@@ -10,12 +10,12 @@
 
   <ItemGroup>
     <Compile Remove="MixerChannel.cs" />
-    <Compile Remove="UserControls\MixerControl - Copy.cs" />
-    <Compile Remove="UserControls\MixerControl - Copy.Designer.cs" />
+    <Compile Remove="Forms\UserControls\MixerControl - Copy.cs" />
+    <Compile Remove="Forms\UserControls\MixerControl - Copy.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Remove="UserControls\MixerControl - Copy.resx" />
+    <EmbeddedResource Remove="Forms\UserControls\MixerControl - Copy.resx" />
   </ItemGroup>
 
   <ItemGroup>

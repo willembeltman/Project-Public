@@ -1,4 +1,6 @@
-﻿namespace YoutubeMixer.UserControls
+﻿using YoutubeMixer.Forms.Controls;
+
+namespace YoutubeMixer.UserControls
 {
     partial class MixerChannel
     {
@@ -28,10 +30,10 @@
         /// </summary>
         private void InitializeComponent()
         {
-            VuMeter = new Controls.VuMeter();
-            EqBassControl = new Controls.EqualizerControl();
-            EqMidControl = new Controls.EqualizerControl();
-            EqHighControl = new Controls.EqualizerControl();
+            VuMeter = new VuMeter();
+            EqBassControl = new EqualizerControl();
+            EqMidControl = new EqualizerControl();
+            EqHighControl = new EqualizerControl();
             Fader = new TrackBar();
             ((System.ComponentModel.ISupportInitialize)Fader).BeginInit();
             SuspendLayout();
@@ -127,10 +129,10 @@
 
         #endregion
 
-        private Controls.VuMeter VuMeter;
-        private Controls.EqualizerControl EqBassControl;
-        private Controls.EqualizerControl EqMidControl;
-        private Controls.EqualizerControl EqHighControl;
+        private VuMeter VuMeter;
+        private EqualizerControl EqBassControl;
+        private EqualizerControl EqMidControl;
+        private EqualizerControl EqHighControl;
         private TrackBar Fader;
     }
 }

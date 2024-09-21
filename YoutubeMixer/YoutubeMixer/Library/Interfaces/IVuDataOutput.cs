@@ -1,6 +1,4 @@
-﻿using YoutubeMixer.AudioSources;
-
-namespace YoutubeMixer.Interfaces
+﻿namespace YoutubeMixer.Library.Interfaces
 {
     public interface IVuDataOutput
     {

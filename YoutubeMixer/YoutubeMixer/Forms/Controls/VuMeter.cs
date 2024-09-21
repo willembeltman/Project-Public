@@ -1,6 +1,6 @@
-﻿using YoutubeMixer.Interfaces;
+﻿using YoutubeMixer.Library.Interfaces;
 
-namespace YoutubeMixer.Controls
+namespace YoutubeMixer.Forms.Controls
 {
     public partial class VuMeter : Control
     {
@@ -52,7 +52,7 @@ namespace YoutubeMixer.Controls
             for (int i = 0; i < NumLeds; i++)
             {
                 int x = 0;
-                int y = ((NumLeds - i - 1) * (LedSize + LedSpacing));
+                int y = (NumLeds - i - 1) * (LedSize + LedSpacing);
 
                 if (positiveValue >= MaxValue * (i + 1) / NumLeds)
                 {

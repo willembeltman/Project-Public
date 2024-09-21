@@ -1,4 +1,6 @@
-﻿namespace YoutubeMixer.UserControls
+﻿using YoutubeMixer.Forms.Controls;
+
+namespace YoutubeMixer.UserControls
 {
     partial class Deck
     {
@@ -40,7 +42,7 @@
             buttonHotcue2 = new Button();
             buttonHotcue1 = new Button();
             trackBarPitch = new TrackBar();
-            DisplayControl = new Controls.DisplayControl();
+            DisplayControl = new DisplayControl();
             ((System.ComponentModel.ISupportInitialize)trackBarPitch).BeginInit();
             SuspendLayout();
             // 
@@ -238,6 +240,6 @@
         private Button buttonHotcue2;
         private Button buttonHotcue1;
         private TrackBar trackBarPitch;
-        private Controls.DisplayControl DisplayControl;
+        private DisplayControl DisplayControl;
     }
 }

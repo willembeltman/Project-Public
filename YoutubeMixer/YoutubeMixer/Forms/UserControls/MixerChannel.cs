@@ -1,5 +1,4 @@
-﻿using YoutubeMixer.Controls;
-using YoutubeMixer.Interfaces;
+﻿using YoutubeMixer.Library.Interfaces;
 
 namespace YoutubeMixer.UserControls
 {

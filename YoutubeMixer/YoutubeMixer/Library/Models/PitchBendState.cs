@@ -1,4 +1,4 @@
-﻿namespace YoutubeMixer.Models
+﻿namespace YoutubeMixer.Library.Models
 {
     public class PitchBendState
     {

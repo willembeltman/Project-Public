@@ -1,7 +1,7 @@
-﻿using YoutubeMixer.Interfaces;
+﻿using YoutubeMixer.Library.Interfaces;
 using YoutubeMixer.Properties;
 
-namespace YoutubeMixer.Controls
+namespace YoutubeMixer.Forms.Controls
 {
     public class DisplayControl : Control, IVuDataOutput
     {
@@ -60,7 +60,7 @@ namespace YoutubeMixer.Controls
             // Calculate the rotation angle based on the current time position of the playback
             double revolutionsPerSecond = 45d / 60.0;
             double revolutionsPerDuration = revolutionsPerSecond * TotalDuration.TotalSeconds;
-            double rotationAngle = (progress * revolutionsPerDuration) * 360.0;
+            double rotationAngle = progress * revolutionsPerDuration * 360.0;
 
             // Clear screen
             g.Clear(Color.White);

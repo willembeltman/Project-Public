@@ -1,4 +1,4 @@
-using YoutubeMixer.AudioSources;
+using YoutubeMixer.Library.AudioSources;
 
 namespace YoutubeMixer.Forms
 {
@@ -27,9 +27,15 @@ namespace YoutubeMixer.Forms
 
         private void InitializeDraw(object? sender, EventArgs e)
         {
-            DeckLeft.InitializeDraw();
-            DeckRight.InitializeDraw();
-            Mixer.InitializeDraw();
+            try
+            {
+                DeckLeft.InitializeDraw();
+                DeckRight.InitializeDraw();
+                Mixer.InitializeDraw();
+            }
+            catch (Exception ex)
+            { 
+            }
         }
 
         System.Windows.Forms.Timer Timer { get; }
