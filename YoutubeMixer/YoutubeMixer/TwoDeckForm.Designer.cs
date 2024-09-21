@@ -37,7 +37,7 @@ namespace YoutubeMixer.Forms
             // 
             // DeckLeft
             // 
-            DeckLeft.Controller = null;
+            DeckLeft.AudioSource = null;
             DeckLeft.Location = new Point(10, 10);
             DeckLeft.Margin = new Padding(1, 2, 1, 2);
             DeckLeft.Name = "DeckLeft";
@@ -54,7 +54,7 @@ namespace YoutubeMixer.Forms
             // 
             // DeckRight
             // 
-            DeckRight.Controller = null;
+            DeckRight.AudioSource = null;
             DeckRight.Location = new Point(803, 10);
             DeckRight.Margin = new Padding(1, 2, 1, 2);
             DeckRight.Name = "DeckRight";

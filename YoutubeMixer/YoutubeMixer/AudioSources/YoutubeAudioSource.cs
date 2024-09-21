@@ -1,11 +1,9 @@
 ﻿using OpenQA.Selenium.Chrome;
-using OpenQA.Selenium.Support.UI;
 using OpenQA.Selenium;
 using System.Diagnostics;
-using YoutubeMixer.UserControls;
-using System.Windows.Forms;
+using YoutubeMixer.Interfaces;
 
-namespace YoutubeMixer
+namespace YoutubeMixer.AudioSources
 {
     /// <summary>
     /// Todo:
@@ -16,24 +14,29 @@ namespace YoutubeMixer
     /// - Hele cue systeem
     /// </summary>
 
-    public class YoutubeController : IController
+    public class YoutubeAudioSource : IAudioSource, IDisposable
     {
-        public YoutubeController(Deck deck, MixerChannel mixerChannel)
+        public YoutubeAudioSource(IAudioOutput audioOutput, IPitchBendController pitchBendController, IVuDataOutput vuDataOutput)
         {
-            Deck = deck;
-            Deck.Controller = this;
+            AudioOutput = audioOutput;
+            PitchBendController = pitchBendController;
+            VuDataOutput = vuDataOutput;
 
-            MixerChannel = mixerChannel;
-            MixerChannel.Controller = this;
 
             Driver = new ChromeDriver();
             JsExecutor = Driver;
+            Thread = new Thread(new ThreadStart(StartDriver));
+            Thread.Start();
         }
 
-        private Deck Deck { get; }
-        private MixerChannel MixerChannel { get; }
+        private IAudioOutput AudioOutput { get; }
+        private IPitchBendController PitchBendController { get; }
+        private IVuDataOutput VuDataOutput { get; }
         private ChromeDriver Driver { get; }
         private IJavaScriptExecutor JsExecutor { get; }
+        private Thread Thread { get; }
+        private IWebElement? VideoElement { get; set; }
+        private bool KillSwitch { get; set; }
 
         private bool _SetVolume { get; set; }
         private bool _SetEqualizer { get; set; }
@@ -45,32 +48,59 @@ namespace YoutubeMixer
         private double _HighVolume { get; set; }
         private double _PlaybackSpeed { get; set; } = 1;
 
-        private IWebElement? VideoElement { get; set; }
+        public double Volume { get => _Volume; set { _Volume = value; _SetVolume = true; } }
+        public double BassVolume { get => _BassVolume; set { _BassVolume = value; _SetEqualizer = true; } }
+        public double MidVolume { get => _MidVolume; set { _MidVolume = value; _SetEqualizer = true; } }
+        public double HighVolume { get => _HighVolume; set { _HighVolume = value; _SetEqualizer = true; } }
+        public double PlaybackSpeed { get => _PlaybackSpeed; set { _PlaybackSpeed = value; _SetPlaybackSpeed = true; } }
 
-        public void SetVolume(double volume)
+        public string? Title { get; private set; }
+        public double CurrentTime { get; private set; }
+        public double TotalDuration { get; private set; }
+        public double VuMeter { get; private set; }
+        public double PreviousTime { get; private set; }
+        public bool Disposed { get; private set; }
+
+        public bool IsPlaying { get; private set; }
+
+        public void Play()
         {
-            _Volume = volume;
-            _SetVolume = true;
-        }
-        public void SetEqualizer(double bassVolume, double midVolume, double highVolume)
-        {
-            _BassVolume = bassVolume;
-            _MidVolume = midVolume;
-            _HighVolume = highVolume;
-            _SetEqualizer = true;
-        }
-        public void SetPlaybackSpeed(double playbackSpeed)
-        {
-            _PlaybackSpeed = playbackSpeed;
-            _SetVolume = true;
+            throw new NotImplementedException();
         }
 
-        public void Start()
+        public void Pause()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Dispose()
+        {
+            Driver.Quit();
+            Driver.Dispose();
+            KillSwitch = true;
+            // Als ik het niet zelf ben
+            if (Thread.CurrentThread != Thread)
+            {
+                // Wachten op de thread
+                Thread.Join();
+            }
+            Disposed = true;
+        }
+
+        private void StartDriver()
         {
             // Navigate browser to YouTube
             Driver.Navigate().GoToUrl("https://www.youtube.com");
+            while (!KillSwitch)
+            {
+                var delay = ReadState();
+                if (delay)
+                    Thread.Sleep(10);
+                else
+                    Thread.Sleep(1);
+            }
         }
-        public bool Loop()
+        private bool ReadState()
         {
             try
             {
@@ -88,7 +118,8 @@ namespace YoutubeMixer
                 if (VideoElement != null)
                 {
                     // If video is playing
-                    if (VideoElement.GetAttribute("paused") != "true")
+                    IsPlaying = VideoElement.GetAttribute("paused") != "true";
+                    if (IsPlaying)
                     {
                         // Do playing operations
                         SyncVideoInformation();
@@ -115,11 +146,6 @@ namespace YoutubeMixer
                 VideoElement = null;
             }
             return false;
-        }
-        public void Stop()
-        {
-            // Quit the Chrome driver
-            Driver.Quit();
         }
 
         private void TryInjectEqualizerAndVuMeter()
@@ -203,8 +229,6 @@ namespace YoutubeMixer
                     // expose the getVuMeter function to the global scope
                     window.getVuMeter = getVuMeter;
 
-
-
                     arguments[0].setAttribute('eq-injected', 'true');
                 ";
 
@@ -232,7 +256,7 @@ namespace YoutubeMixer
         }
         private void SetPitchbendIfNeeded()
         {
-            var pitchbendState = Deck.GetPitchbendState();
+            var pitchbendState = PitchBendController.GetPitchbendState();
             if (pitchbendState.IsDragging)
             {
                 _SetPlaybackSpeed = true;
@@ -261,17 +285,17 @@ namespace YoutubeMixer
         }
         private void SyncVideoInformation()
         {
-            var title = Driver?.Title ?? "";
+            Title = Driver?.Title ?? "";
+
             var state = (Dictionary<string, object>)JsExecutor
                 .ExecuteScript(@"return { vuMeter: window.getVuMeter(), currentTime: arguments[0].currentTime, totalDuration: arguments[0].duration };", VideoElement);
-            var vuMeter = Convert.ToDouble(state["vuMeter"]);
-            var currentTime = Convert.ToDouble(state["currentTime"]);
-            var totalDuration = Convert.ToDouble(state["totalDuration"]);
+            VuMeter = Convert.ToDouble(state["vuMeter"]);
+            CurrentTime = Convert.ToDouble(state["currentTime"]);
+            TotalDuration = Convert.ToDouble(state["totalDuration"]);
 
-            MixerChannel.SetVuMeter(vuMeter);
-            Deck.SetVideoInformation(title, currentTime, totalDuration);
+            var duration = CurrentTime - PreviousTime;
+            VuDataOutput.ReceivedVuChunk(CurrentTime, PreviousTime, VuMeter);
+            PreviousTime = CurrentTime;
         }
-
-
     }
 }

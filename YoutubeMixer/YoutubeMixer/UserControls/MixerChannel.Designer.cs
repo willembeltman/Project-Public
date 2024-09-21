@@ -28,101 +28,101 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.VuMeter = new YoutubeMixer.Controls.VuMeter();
-            this.EqBassControl = new YoutubeMixer.Controls.EqualizerControl();
-            this.EqMidControl = new YoutubeMixer.Controls.EqualizerControl();
-            this.EqHighControl = new YoutubeMixer.Controls.EqualizerControl();
-            this.Fader = new System.Windows.Forms.TrackBar();
-            ((System.ComponentModel.ISupportInitialize)(this.Fader)).BeginInit();
-            this.SuspendLayout();
+            VuMeter = new Controls.VuMeter();
+            EqBassControl = new Controls.EqualizerControl();
+            EqMidControl = new Controls.EqualizerControl();
+            EqHighControl = new Controls.EqualizerControl();
+            Fader = new TrackBar();
+            ((System.ComponentModel.ISupportInitialize)Fader).BeginInit();
+            SuspendLayout();
             // 
             // VuMeter
             // 
-            this.VuMeter.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.VuMeter.Location = new System.Drawing.Point(8, 280);
-            this.VuMeter.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
-            this.VuMeter.Name = "VuMeter";
-            this.VuMeter.Size = new System.Drawing.Size(12, 203);
-            this.VuMeter.TabIndex = 7;
-            this.VuMeter.Text = "vuMeter1";
-            this.VuMeter.Value = 0D;
+            VuMeter.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
+            VuMeter.AudioSource = null;
+            VuMeter.Location = new Point(5, 140);
+            VuMeter.Margin = new Padding(3, 2, 3, 2);
+            VuMeter.Name = "VuMeter";
+            VuMeter.Size = new Size(7, 250);
+            VuMeter.TabIndex = 7;
+            VuMeter.Text = "vuMeter1";
             // 
             // EqBassControl
             // 
-            this.EqBassControl.BackColor = System.Drawing.Color.White;
-            this.EqBassControl.Location = new System.Drawing.Point(5, 174);
-            this.EqBassControl.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
-            this.EqBassControl.MaximumSize = new System.Drawing.Size(300, 300);
-            this.EqBassControl.MinimumSize = new System.Drawing.Size(75, 76);
-            this.EqBassControl.Name = "EqBassControl";
-            this.EqBassControl.Range = 24D;
-            this.EqBassControl.Size = new System.Drawing.Size(75, 76);
-            this.EqBassControl.TabIndex = 4;
-            this.EqBassControl.Text = "dialControl1";
-            this.EqBassControl.Value = 0D;
-            this.EqBassControl.ValueChanged += new System.EventHandler(this.EqControl_ValueChanged);
+            EqBassControl.BackColor = Color.White;
+            EqBassControl.Location = new Point(3, 87);
+            EqBassControl.Margin = new Padding(3, 2, 3, 2);
+            EqBassControl.MaximumSize = new Size(175, 150);
+            EqBassControl.MinimumSize = new Size(44, 38);
+            EqBassControl.Name = "EqBassControl";
+            EqBassControl.Range = 24D;
+            EqBassControl.Size = new Size(44, 38);
+            EqBassControl.TabIndex = 4;
+            EqBassControl.Text = "dialControl1";
+            EqBassControl.Value = 0D;
+            EqBassControl.ValueChanged += EqControl_ValueChanged;
             // 
             // EqMidControl
             // 
-            this.EqMidControl.BackColor = System.Drawing.Color.White;
-            this.EqMidControl.Location = new System.Drawing.Point(5, 89);
-            this.EqMidControl.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
-            this.EqMidControl.MaximumSize = new System.Drawing.Size(300, 300);
-            this.EqMidControl.MinimumSize = new System.Drawing.Size(75, 76);
-            this.EqMidControl.Name = "EqMidControl";
-            this.EqMidControl.Range = 24D;
-            this.EqMidControl.Size = new System.Drawing.Size(75, 76);
-            this.EqMidControl.TabIndex = 5;
-            this.EqMidControl.Text = "dialControl1";
-            this.EqMidControl.Value = 0D;
-            this.EqMidControl.ValueChanged += new System.EventHandler(this.EqControl_ValueChanged);
+            EqMidControl.BackColor = Color.White;
+            EqMidControl.Location = new Point(3, 44);
+            EqMidControl.Margin = new Padding(3, 2, 3, 2);
+            EqMidControl.MaximumSize = new Size(175, 150);
+            EqMidControl.MinimumSize = new Size(44, 38);
+            EqMidControl.Name = "EqMidControl";
+            EqMidControl.Range = 24D;
+            EqMidControl.Size = new Size(44, 38);
+            EqMidControl.TabIndex = 5;
+            EqMidControl.Text = "dialControl1";
+            EqMidControl.Value = 0D;
+            EqMidControl.ValueChanged += EqControl_ValueChanged;
             // 
             // EqHighControl
             // 
-            this.EqHighControl.BackColor = System.Drawing.Color.White;
-            this.EqHighControl.Location = new System.Drawing.Point(5, 4);
-            this.EqHighControl.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
-            this.EqHighControl.MaximumSize = new System.Drawing.Size(300, 300);
-            this.EqHighControl.MinimumSize = new System.Drawing.Size(75, 76);
-            this.EqHighControl.Name = "EqHighControl";
-            this.EqHighControl.Range = 24D;
-            this.EqHighControl.Size = new System.Drawing.Size(75, 76);
-            this.EqHighControl.TabIndex = 6;
-            this.EqHighControl.Text = "dialControl1";
-            this.EqHighControl.Value = 0D;
-            this.EqHighControl.ValueChanged += new System.EventHandler(this.EqControl_ValueChanged);
+            EqHighControl.BackColor = Color.White;
+            EqHighControl.Location = new Point(3, 2);
+            EqHighControl.Margin = new Padding(3, 2, 3, 2);
+            EqHighControl.MaximumSize = new Size(175, 150);
+            EqHighControl.MinimumSize = new Size(44, 38);
+            EqHighControl.Name = "EqHighControl";
+            EqHighControl.Range = 24D;
+            EqHighControl.Size = new Size(44, 38);
+            EqHighControl.TabIndex = 6;
+            EqHighControl.Text = "dialControl1";
+            EqHighControl.Value = 0D;
+            EqHighControl.ValueChanged += EqControl_ValueChanged;
             // 
             // Fader
             // 
-            this.Fader.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.Fader.Location = new System.Drawing.Point(21, 257);
-            this.Fader.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.Fader.Maximum = 100;
-            this.Fader.Name = "Fader";
-            this.Fader.Orientation = System.Windows.Forms.Orientation.Vertical;
-            this.Fader.Size = new System.Drawing.Size(80, 248);
-            this.Fader.TabIndex = 3;
-            this.Fader.TickStyle = System.Windows.Forms.TickStyle.Both;
-            this.Fader.Value = 100;
-            this.Fader.Scroll += new System.EventHandler(this.Fader_Scroll);
+            Fader.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
+            Fader.Location = new Point(12, 128);
+            Fader.Margin = new Padding(2);
+            Fader.Maximum = 100;
+            Fader.Name = "Fader";
+            Fader.Orientation = Orientation.Vertical;
+            Fader.Size = new Size(45, 270);
+            Fader.TabIndex = 3;
+            Fader.TickStyle = TickStyle.Both;
+            Fader.Value = 100;
+            Fader.Scroll += Fader_Scroll;
             // 
-            // MixerChannelControl
+            // MixerChannel
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 30F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.VuMeter);
-            this.Controls.Add(this.EqBassControl);
-            this.Controls.Add(this.EqMidControl);
-            this.Controls.Add(this.EqHighControl);
-            this.Controls.Add(this.Fader);
-            this.Name = "MixerChannelControl";
-            this.Size = new System.Drawing.Size(87, 500);
-            ((System.ComponentModel.ISupportInitialize)(this.Fader)).EndInit();
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
+            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleMode = AutoScaleMode.Font;
+            Controls.Add(VuMeter);
+            Controls.Add(EqBassControl);
+            Controls.Add(EqMidControl);
+            Controls.Add(EqHighControl);
+            Controls.Add(Fader);
+            Margin = new Padding(2);
+            Name = "MixerChannel";
+            Size = new Size(64, 398);
+            Load += MixerChannel_Load;
+            Resize += MixerChannel_Resize;
+            ((System.ComponentModel.ISupportInitialize)Fader).EndInit();
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion

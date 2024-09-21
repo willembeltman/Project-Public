@@ -1,4 +1,4 @@
-﻿using OpenQA.Selenium.DevTools.V117.Runtime;
+﻿using YoutubeMixer.Interfaces;
 using YoutubeMixer.Properties;
 
 namespace YoutubeMixer.Controls
@@ -8,10 +8,43 @@ namespace YoutubeMixer.Controls
         public DisplayControl()
         {
             DoubleBuffered = true;
+            Timer = new System.Windows.Forms.Timer();
+            Timer.Interval = 16;
+            Timer.Tick += Timer_Tick;
+            Timer.Start();
+            Resize += DisplayControl_Resize;
         }
-        public string? Title { get; set; }
-        public TimeSpan CurrentTime { get; set; } = TimeSpan.FromSeconds(29);
-        public TimeSpan TotalTime { get; set; } = TimeSpan.FromSeconds(60);
+
+        private void DisplayControl_Resize(object? sender, EventArgs e)
+        {
+            PreviousCurrentTime = TimeSpan.Zero;
+            PreviousTitle = "null";
+            PreviousTotalDuration = TimeSpan.Zero;
+        }
+
+        System.Windows.Forms.Timer Timer { get; }
+        private void Timer_Tick(object? sender, EventArgs e)
+        {
+            if (PreviousCurrentTime != CurrentTime ||
+                PreviousTitle != Title ||
+                PreviousTotalDuration != TotalDuration)
+            {
+                BeginInvoke(Invalidate);
+                PreviousCurrentTime = CurrentTime;
+                PreviousTitle = Title;
+                PreviousTotalDuration = TotalDuration;
+            }
+        }
+
+        public IAudioSource? AudioSource { get; set; }
+
+        private string? PreviousTitle { get; set; }
+        private TimeSpan PreviousCurrentTime { get; set; }
+        private TimeSpan PreviousTotalDuration { get; set; }
+
+        private string? Title => AudioSource?.Title;
+        private TimeSpan CurrentTime => AudioSource?.CurrentTime != null ? TimeSpan.FromSeconds(AudioSource.CurrentTime) : TimeSpan.FromSeconds(29);
+        private TimeSpan TotalDuration => AudioSource?.TotalDuration != null ? TimeSpan.FromSeconds(AudioSource.TotalDuration) : TimeSpan.FromSeconds(60);
 
         protected override void OnPaint(PaintEventArgs e)
         {
@@ -19,15 +52,15 @@ namespace YoutubeMixer.Controls
 
             Graphics g = e.Graphics;
 
-            var timeLeft = CurrentTime - TotalTime;
+            var timeLeft = CurrentTime - TotalDuration;
 
             // Calculate the progress percentage
-            double progress = CurrentTime.TotalSeconds / TotalTime.TotalSeconds;
+            double progress = CurrentTime.TotalSeconds / TotalDuration.TotalSeconds;
             if (double.IsNaN(progress)) progress = 0;
 
             // Calculate the rotation angle based on the current time position of the playback
             double revolutionsPerSecond = 45d / 60.0;
-            double revolutionsPerDuration = revolutionsPerSecond * TotalTime.TotalSeconds;
+            double revolutionsPerDuration = revolutionsPerSecond * TotalDuration.TotalSeconds;
             double rotationAngle = (progress * revolutionsPerDuration) * 360.0;
 
             // Clear screen
@@ -78,9 +111,5 @@ namespace YoutubeMixer.Controls
             }
         }
 
-        public void UpdateDisplay()
-        {
-            BeginInvoke(Invalidate);
-        }
     }
 }
