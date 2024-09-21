@@ -59,6 +59,7 @@ namespace YoutubeMixer.Library.AudioSources
         public double CurrentTime { get; private set; }
         public double TotalDuration { get; private set; }
         public double VuMeter { get; private set; }
+        public bool KickDetected { get; private set; }
         public double PreviousTime { get; private set; }
         public bool Disposed { get; private set; }
 
@@ -161,6 +162,7 @@ namespace YoutubeMixer.Library.AudioSources
 var context = new AudioContext();
 var source = context.createMediaElementSource(arguments[0]);
 
+
 // create an equalizer using BiquadFilterNodes
 var filters = [];
 var frequencies = [60, 170, 350, 1000, 3500, 10000];
@@ -181,69 +183,90 @@ for (var i = 0; i < filters.length - 1; i++) {
 filters[filters.length - 1].connect(context.destination);
 
 
-// function to update filter parameters
-function updateFilterParams(newGains) {
-    for (var i = 0; i < filters.length; i++) {
-        filters[i].gain.value = newGains[i];
-    }
-}
 
-// expose the updateFilterParams function to the global scope
-window.updateFilterParams = updateFilterParams;
+// Analyse the audio
+var kickFrequency = 60;
+var kickTresshold = 255;
+var volumeLowMidCrossover = 250;
+var volumeMidHighCrossover = 1000;
+var lastKickTimestamp = 0;
 
-
-var freqlow = 60;
-var tresshold = 255;
+var kickDetected = false;
+var kickTimestamps = [];
+var timelineTimestamps = [];
+var timelineKickVolumes = [];
+var timelineLows = [];
+var timelineMids = [];
+var timelineHighs = [];
+var timelineVolumes = [];
+var timelineKickDetected = [];
 
 // create a meter using a ScriptProcessorNode
 var bufferSize = 1024;
 var meter = context.createScriptProcessor(bufferSize, 1, 1);
 var maxLevel = 0;
-var kickDetected = false;
-
-var timestamps = [];
-var volumeTimestamps = [];
-var kickTimestamps = [];
-var lastKickTimestamp = 0;
 
 // Create an AnalyserNode to perform FFT
 var analyser = context.createAnalyser();
 analyser.fftSize = 1024;
 
+// Create a frequency data array to store FFT values
 //var frequencyData = new Float32Array(analyser.frequencyBinCount);
 var frequencyData = new Uint8Array(analyser.frequencyBinCount);
 
-
 meter.onaudioprocess = function(event) {
     try {
-        var inputBuffer = event.inputBuffer;
-        var inputData1 = inputBuffer.getChannelData(0);
+        let inputBuffer = event.inputBuffer;
+        let inputData1 = inputBuffer.getChannelData(0);
         //analyser.getFloatFrequencyData(frequencyData); // Get the frequency data
         analyser.getByteFrequencyData(frequencyData);
         
-        let volume = 0;
+        let kickVolume = 0;
+        let kickVolumeFound = false;
+        let volumeLowTotal = 0;
+        let volumeLowCount = 0;
+        let volumeMidTotal = 0;
+        let volumeMidCount = 0;
+        let volumeHighTotal = 0;
+        let volumeHighCount = 0;
         for (var i = 0; i < frequencyData.length; i++) {
             var frequency = i * (context.sampleRate / analyser.fftSize); 
-            if (frequency > freqlow) { 
-                volume = frequencyData[i];
-                break;
+            if (frequency > kickFrequency && !kickVolumeFound) { 
+                kickVolume = frequencyData[i];
+                kickVolumeFound = true;
+            }
+            if (frequency < volumeLowMidCrossover)
+            {
+                volumeLowTotal += frequencyData[i];
+                volumeLowCount++;
+            }
+            if (frequency >= volumeLowMidCrossover && frequency < volumeMidHighCrossover)
+            {
+                volumeMidTotal += frequencyData[i];
+                volumeMidCount++;
+            }
+            if (frequency >= volumeMidHighCrossover)
+            {
+                volumeHighTotal += frequencyData[i];
+                volumeHighCount++;
             }
         }
-        if (volume >= tresshold && !kickDetected ) {
+
+        if (kickVolume >= kickTresshold && !kickDetected ) {
 
             if (context.currentTime - lastKickTimestamp > 0.3) {
-                kickTimestamps.push(context.currentTime); // Store the timestamp of the detected kick
+                kickTimestamps.push(context.currentTime); 
                 lastKickTimestamp = context.currentTime;
                 console.log(""Kick detected at "" + context.currentTime); 
             }
 
-            kickDetected = true;                               
+            kickDetected = true;
         } 
-        else if (volume < tresshold) {
+        else if (kickVolume < kickTresshold) {
             kickDetected = false;
         }
 
-        // Visualize or store the maximum level for other purposes
+        let timelineMaxLevel = 0;
         for (var i = 0; i < inputData1.length; i++) {
             let data = inputData1[i];
             if (data < 0) {
@@ -252,7 +275,23 @@ meter.onaudioprocess = function(event) {
             if (maxLevel < data) {
                 maxLevel = data;
             }
+            if (timelineMaxLevel < data) {
+                timelineMaxLevel = data;
+            }
         }
+
+        let timelineLow = volumeLowTotal / volumeLowCount;
+        let timelineMid = volumeMidTotal / volumeMidCount;
+        let timelineHigh = volumeHighTotal / volumeHighCount;
+
+        timelineTimestamps.push(context.currentTime);
+        timelineKickVolumes.push(kickVolume);
+        timelineLows.push(timelineLow);
+        timelineMids.push(timelineMid);
+        timelineHighs.push(timelineHigh);
+        timelineVolumes.push(timelineMaxLevel);
+        timelineKickDetected.push(kickDetected);
+
     } catch (e) {
         console.log(e);
     }
@@ -263,54 +302,61 @@ source.connect(analyser);
 analyser.connect(meter);
 meter.connect(context.destination);
 
-// function to get the current vu-meter reading
-function getKickDrumDetection() {
+
+
+window.updateFilterParams = function (newGains) {
+    for (var i = 0; i < filters.length; i++) {
+        filters[i].gain.value = newGains[i];
+    }
+};
+window.getKickTimestamps = function() {
     let res = kickTimestamps;
     kickTimestamps = [];
     return res;
-}
-
-// expose the getKickDrumDetection function to the global scope
-window.getKickDrumDetection = getKickDrumDetection;
-
-
-//// create a meter using a ScriptProcessorNode
-//var bufferSize = 512;
-//var meter = context.createScriptProcessor(bufferSize, 1, 1);
-//var maxLevel = 0;
-
-//meter.onaudioprocess = function(event) {
-//    try {
-//        var inputBuffer = event.inputBuffer;
-//        var inputData1 = inputBuffer.getChannelData(0);
-//        for (var i = 0; i < inputData1.length; i++) {
-//            let data = inputData1[i];
-//            if (data < 0) {
-//                data = data * -1;           
-//            }
-//            if (maxLevel < data) {
-//                maxLevel = data;           
-//            }
-//        }
-//    }
-//    catch (e) {
-//        console.log(e);
-//    }
-//}
-
-//// connect the meter to the source
-//source.connect(meter);
-//meter.connect(context.destination);
-
-// function to get the current vu-meter reading
-function getVuMeter() {
+};
+window.getVuMeter = function() {
     let res = maxLevel;
     maxLevel = 0;
     return res;
-}
-
-// expose the getVuMeter function to the global scope
-window.getVuMeter = getVuMeter;
+};
+window.getKickDetected = function() {
+    return kickDetected;
+};
+window.getTimelineTimestamps = function() {
+    let res = timelineTimestamps;
+    timelineTimestamps = [];
+    return res;
+};
+window.getTimelineKickVolumes = function() {
+    let res = timelineKickVolumes;
+    timelineKickVolumes = [];
+    return res;
+};
+window.getTimelineLows = function() {
+    let res = timelineLows;
+    timelineLows = [];
+    return res;
+};
+window.getTimelineMids = function() {
+    let res = timelineMids;
+    timelineMids = [];
+    return res;
+};
+window.getTimelineHighs = function() {
+    let res = timelineHighs;
+    timelineHighs = [];
+    return res;
+};
+window.getTimelineVolumes = function() {
+    let res = timelineVolumes;
+    timelineVolumes = [];
+    return res;
+};
+window.getTimelineKickDetected = function() {
+    let res = timelineKickDetected;
+    timelineKickDetected = [];
+    return res;
+};
 
 arguments[0].setAttribute('eq-injected', 'true');
                 ";
@@ -371,19 +417,68 @@ arguments[0].setAttribute('eq-injected', 'true');
             Title = Driver?.Title ?? "";
 
             var state = (Dictionary<string, object>)JsExecutor
-                .ExecuteScript(@"return { vuMeter: window.getVuMeter(), kickTimestamps: getKickDrumDetection(), currentTime: arguments[0].currentTime, totalDuration: arguments[0].duration };", VideoElement);
-            VuMeter = Convert.ToDouble(state["vuMeter"]);
+                .ExecuteScript(@"
+return { 
+    currentTime: arguments[0].currentTime, 
+    totalDuration: arguments[0].duration,
+    vuMeter: window.getVuMeter(), 
+    kickTimestamps: window.getKickTimestamps(),
+    kickDetected: window.getKickDetected(),
+    timelineTimestamps: window.getTimelineTimestamps(),
+    timelineKickVolumes: window.getTimelineKickVolumes(),
+    timelineLows: window.getTimelineLows(),
+    timelineMids: window.getTimelineMids(),
+    timelineHighs: window.getTimelineHighs(),
+    timelineVolumes: window.getTimelineVolumes(),
+    timelineKickDetected: window.getTimelineKickDetected()    
+};", VideoElement);
+
             CurrentTime = Convert.ToDouble(state["currentTime"]);
             TotalDuration = Convert.ToDouble(state["totalDuration"]);
+            VuMeter = Convert.ToDouble(state["vuMeter"]);
+            KickDetected = Convert.ToBoolean(state["kickDetected"]);
 
-            var kickTimestamps = ((IEnumerable<object>)state["kickTimestamps"])
-                .Select(t => Convert.ToDouble(t))
-                .ToList();
-            if (kickTimestamps.Count> 0)
+            var kickTimestamps = ((IEnumerable<object>)state["kickTimestamps"]).Select(Convert.ToDouble).ToArray();
+
+            var timelineTimestamps = ((IEnumerable<object>)state["timelineTimestamps"]).Select(Convert.ToDouble).ToArray();
+            var timelineKickVolumes = ((IEnumerable<object>)state["timelineKickVolumes"]).Select(Convert.ToDouble).ToArray();
+            var timelineLows = ((IEnumerable<object>)state["timelineLows"]).Select(Convert.ToDouble).ToArray();
+            var timelineMids = ((IEnumerable<object>)state["timelineMids"]).Select(Convert.ToDouble).ToArray();
+            var timelineHighs = ((IEnumerable<object>)state["timelineHighs"]).Select(Convert.ToDouble).ToArray();
+            var timelineVolumes = ((IEnumerable<object>)state["timelineVolumes"]).Select(Convert.ToDouble).ToArray();
+            var timelineKickDetected = ((IEnumerable<object>)state["timelineKickDetected"]).Select(Convert.ToBoolean).ToArray();
+
+            var lengths = new int[] 
             {
+                timelineTimestamps.Length,
+                timelineKickVolumes.Length,
+                timelineLows.Length,
+                timelineMids.Length,
+                timelineHighs.Length,
+                timelineVolumes.Length,
+                timelineKickDetected.Length
+            };
 
+            if (lengths.GroupBy(a => a).Count() != 1)
+                throw new Exception("Stop! communicatie uit sync");
+
+            var timelineList = new List<TimeLineItem>();
+            for ( int i = 0; i < timelineTimestamps.Length; i++ )
+            {
+                var timelineItem = new TimeLineItem()
+                {
+                    Timestamp = timelineTimestamps[i],
+                    KickVolume = timelineKickVolumes[i],
+                    LowVolume = timelineLows[i],
+                    MidVolume = timelineMids[i],
+                    HighVolume = timelineHighs[i],
+                    Volume = timelineVolumes[i],
+                    KickDetected = timelineKickDetected[i]
+                };
+                timelineList.Add( timelineItem );
             }
-            VuDataOutput.ReceivedVuChunk(CurrentTime, PreviousTime, VuMeter);
+            var timeline = timelineList.ToArray();
+            VuDataOutput.ReceivedVuChunk(CurrentTime, PreviousTime, timeline);
             PreviousTime = CurrentTime;
         }
     }

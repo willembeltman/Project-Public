@@ -5,7 +5,7 @@ namespace YoutubeMixer.Forms
     public partial class TwoDeckForm : Form
     {
         public YoutubeAudioSource LeftAudioSource { get; }
-        //public YoutubeAudioSource RightAudioSource { get; }
+        public YoutubeAudioSource RightAudioSource { get; }
 
         public TwoDeckForm()
         {
@@ -15,9 +15,9 @@ namespace YoutubeMixer.Forms
             Mixer.LeftMixerChannel.AudioSource = LeftAudioSource;
             DeckLeft.AudioSource = LeftAudioSource;
 
-            //RightAudioSource = new YoutubeAudioSource(Mixer.RightMixerChannel, DeckRight, Mixer.RightMixerChannel);
-            //Mixer.RightMixerChannel.AudioSource = RightAudioSource;
-            //DeckRight.AudioSource = RightAudioSource;
+            RightAudioSource = new YoutubeAudioSource(null, DeckRight, DeckRight );
+            Mixer.RightMixerChannel.AudioSource = RightAudioSource;
+            DeckRight.AudioSource = RightAudioSource;
 
             Timer = new System.Windows.Forms.Timer();
             Timer.Interval = 16;
@@ -75,7 +75,7 @@ namespace YoutubeMixer.Forms
         private void TwoDeckForm_FormClosing(object? sender, FormClosingEventArgs e)
         {
             LeftAudioSource.Dispose();
-            //RightAudioSource.Dispose();
+            RightAudioSource.Dispose();
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿using YoutubeMixer.Library.Interfaces;
+﻿using YoutubeMixer.Forms.Controls;
+using YoutubeMixer.Library.AudioSources;
+using YoutubeMixer.Library.Interfaces;
 using YoutubeMixer.Library.Models;
 
 namespace YoutubeMixer.UserControls
@@ -95,9 +97,9 @@ namespace YoutubeMixer.UserControls
         }
 
 
-        public void ReceivedVuChunk(double currentTime, double previousTime, double vuMeter)
+        public void ReceivedVuChunk(double currentTime, double previousTime, TimeLineItem[] timeline)
         {
-            DisplayControl.ReceivedVuChunk(currentTime, previousTime, vuMeter);
+            DisplayControl.ReceivedVuChunk(currentTime, previousTime, timeline);
         }
 
         private void PlaybackDisplay_MouseDown(object sender, MouseEventArgs e)

@@ -1,4 +1,5 @@
-﻿using YoutubeMixer.Library.Interfaces;
+﻿using YoutubeMixer.Library.AudioSources;
+using YoutubeMixer.Library.Interfaces;
 using YoutubeMixer.Properties;
 
 namespace YoutubeMixer.Forms.Controls
@@ -15,16 +16,18 @@ namespace YoutubeMixer.Forms.Controls
         {
             if (PreviousCurrentTime != CurrentTime ||
                 PreviousTitle != Title ||
-                PreviousTotalDuration != TotalDuration)
+                PreviousTotalDuration != TotalDuration ||
+                PreviousKickDetected != KickDetected)
             {
                 BeginInvoke(Invalidate);
                 PreviousCurrentTime = CurrentTime;
                 PreviousTitle = Title;
                 PreviousTotalDuration = TotalDuration;
+                PreviousKickDetected = KickDetected;
             }
         }
 
-        public void ReceivedVuChunk(double currentTime, double previousTime, double vuMeter)
+        public void ReceivedVuChunk(double currentTime, double previousTime, TimeLineItem[] timeline)
         {
         }
 
@@ -40,10 +43,13 @@ namespace YoutubeMixer.Forms.Controls
         private string? PreviousTitle { get; set; }
         private TimeSpan PreviousCurrentTime { get; set; }
         private TimeSpan PreviousTotalDuration { get; set; }
+        private bool PreviousKickDetected { get; set; }
 
         private string? Title => AudioSource?.Title;
         private TimeSpan CurrentTime => AudioSource?.CurrentTime != null ? TimeSpan.FromSeconds(AudioSource.CurrentTime) : TimeSpan.FromSeconds(29);
         private TimeSpan TotalDuration => AudioSource?.TotalDuration != null ? TimeSpan.FromSeconds(AudioSource.TotalDuration) : TimeSpan.FromSeconds(60);
+        private bool KickDetected => AudioSource?.KickDetected ?? false;
+
 
         protected override void OnPaint(PaintEventArgs e)
         {
@@ -62,7 +68,7 @@ namespace YoutubeMixer.Forms.Controls
             double revolutionsPerDuration = revolutionsPerSecond * TotalDuration.TotalSeconds;
             double rotationAngle = progress * revolutionsPerDuration * 360.0;
 
-            // Clear screen
+            // Clear screen            
             g.Clear(Color.White);
 
             Image RecordImage = Resources.Record;
@@ -93,10 +99,16 @@ namespace YoutubeMixer.Forms.Controls
 
             using (Font font = new Font("Arial", 8))
             using (Brush brush = new SolidBrush(Color.Black))
+            using (Brush redbrush = new SolidBrush(Color.Red))
             using (Pen pen = new Pen(Color.Black))
             {
                 // Draw the current time
                 g.DrawString(CurrentTime.ToString("h':'mm':'ss'.'ff"), font, brush, 5, 5);
+
+                if (KickDetected)
+                {
+                    g.FillRectangle(redbrush, 0, ClientRectangle.Height - 16, ClientRectangle.Width, 16);
+                }
 
                 // Draw the progress bar
                 g.FillRectangle(brush, 115, 7, Convert.ToInt32(Convert.ToDouble(ClientRectangle.Width - 222) * progress), 18);

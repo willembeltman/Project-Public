@@ -17,5 +17,6 @@
         double HighVolume { get; set; }
         double PlaybackSpeed { get; set; }
         bool PitchControl { get; set; }
+        bool KickDetected { get; }
     }
 }
