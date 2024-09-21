@@ -177,11 +177,12 @@
             trackBarPitch.Maximum = 10000;
             trackBarPitch.Name = "trackBarPitch";
             trackBarPitch.Orientation = Orientation.Vertical;
+            trackBarPitch.RightToLeft = RightToLeft.Yes;
             trackBarPitch.Size = new Size(45, 443);
             trackBarPitch.TabIndex = 5;
             trackBarPitch.TickStyle = TickStyle.Both;
             trackBarPitch.Value = 5000;
-            trackBarPitch.Scroll += trackBarPitch_Scroll;
+            trackBarPitch.ValueChanged += trackBarPitch_ValueChanged;
             // 
             // DisplayControl
             // 

@@ -7,6 +7,12 @@
             InitializeComponent();
         }
 
+        internal void InitializeDraw()
+        {
+            LeftMixerChannel.InitializeDraw();
+            RightMixerChannel.InitializeDraw();
+        }
+
         private void Mixer_Load(object sender, EventArgs e)
         {
             Mixer_Resize(sender, e);

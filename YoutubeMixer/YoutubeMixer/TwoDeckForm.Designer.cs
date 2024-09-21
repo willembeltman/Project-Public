@@ -38,38 +38,38 @@ namespace YoutubeMixer.Forms
             // DeckLeft
             // 
             DeckLeft.AudioSource = null;
-            DeckLeft.Location = new Point(10, 10);
-            DeckLeft.Margin = new Padding(1, 2, 1, 2);
+            DeckLeft.Location = new Point(7, 6);
+            DeckLeft.Margin = new Padding(1, 1, 1, 1);
             DeckLeft.Name = "DeckLeft";
-            DeckLeft.Size = new Size(609, 460);
+            DeckLeft.Size = new Size(426, 276);
             DeckLeft.TabIndex = 0;
             // 
             // Mixer
             // 
-            Mixer.Location = new Point(621, 10);
-            Mixer.Margin = new Padding(1, 2, 1, 2);
+            Mixer.Location = new Point(435, 6);
+            Mixer.Margin = new Padding(1, 1, 1, 1);
             Mixer.Name = "Mixer";
-            Mixer.Size = new Size(151, 460);
+            Mixer.Size = new Size(106, 276);
             Mixer.TabIndex = 1;
             // 
             // DeckRight
             // 
             DeckRight.AudioSource = null;
-            DeckRight.Location = new Point(803, 10);
-            DeckRight.Margin = new Padding(1, 2, 1, 2);
+            DeckRight.Location = new Point(562, 6);
+            DeckRight.Margin = new Padding(1, 1, 1, 1);
             DeckRight.Name = "DeckRight";
-            DeckRight.Size = new Size(553, 460);
+            DeckRight.Size = new Size(387, 276);
             DeckRight.TabIndex = 0;
             // 
             // TwoDeckForm
             // 
-            AutoScaleDimensions = new SizeF(10F, 25F);
+            AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1374, 487);
+            ClientSize = new Size(962, 312);
             Controls.Add(Mixer);
             Controls.Add(DeckRight);
             Controls.Add(DeckLeft);
-            Margin = new Padding(4, 3, 4, 3);
+            Margin = new Padding(3, 2, 3, 2);
             Name = "TwoDeckForm";
             Text = "Form1";
             FormClosing += TwoDeckForm_FormClosing;

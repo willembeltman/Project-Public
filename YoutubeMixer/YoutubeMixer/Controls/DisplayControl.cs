@@ -3,27 +3,15 @@ using YoutubeMixer.Properties;
 
 namespace YoutubeMixer.Controls
 {
-    public class DisplayControl : Control
+    public class DisplayControl : Control, IVuDataOutput
     {
         public DisplayControl()
         {
             DoubleBuffered = true;
-            Timer = new System.Windows.Forms.Timer();
-            Timer.Interval = 16;
-            Timer.Tick += Timer_Tick;
-            Timer.Start();
             Resize += DisplayControl_Resize;
         }
 
-        private void DisplayControl_Resize(object? sender, EventArgs e)
-        {
-            PreviousCurrentTime = TimeSpan.Zero;
-            PreviousTitle = "null";
-            PreviousTotalDuration = TimeSpan.Zero;
-        }
-
-        System.Windows.Forms.Timer Timer { get; }
-        private void Timer_Tick(object? sender, EventArgs e)
+        public void InitializeDraw()
         {
             if (PreviousCurrentTime != CurrentTime ||
                 PreviousTitle != Title ||
@@ -34,6 +22,17 @@ namespace YoutubeMixer.Controls
                 PreviousTitle = Title;
                 PreviousTotalDuration = TotalDuration;
             }
+        }
+
+        public void ReceivedVuChunk(double currentTime, double previousTime, double vuMeter)
+        {
+        }
+
+        private void DisplayControl_Resize(object? sender, EventArgs e)
+        {
+            PreviousCurrentTime = TimeSpan.Zero;
+            PreviousTitle = "null";
+            PreviousTotalDuration = TimeSpan.Zero;
         }
 
         public IAudioSource? AudioSource { get; set; }

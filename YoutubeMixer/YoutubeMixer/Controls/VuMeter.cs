@@ -9,26 +9,21 @@ namespace YoutubeMixer.Controls
         public VuMeter()
         {
             DoubleBuffered = true;
-            Timer = new System.Windows.Forms.Timer();
-            Timer.Interval = 16;
-            Timer.Tick += Timer_Tick;
-            Timer.Start();
             Resize += VuMeter_Resize;
         }
 
-        private void VuMeter_Resize(object? sender, EventArgs e)
-        {
-            PreviousValue = -1;
-        }
-
-        System.Windows.Forms.Timer Timer { get; }
-        private void Timer_Tick(object? sender, EventArgs e)
+        public void InitializeDraw()
         {
             if (PreviousValue != Value)
             {
                 BeginInvoke(Invalidate);
                 PreviousValue = Value;
             }
+        }
+
+        private void VuMeter_Resize(object? sender, EventArgs e)
+        {
+            PreviousValue = -1;
         }
 
         public IAudioSource? AudioSource { get; set; }
@@ -72,6 +67,5 @@ namespace YoutubeMixer.Controls
             onBrush.Dispose();
             offBrush.Dispose();
         }
-
     }
 }

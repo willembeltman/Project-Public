@@ -53,6 +53,7 @@ namespace YoutubeMixer.AudioSources
         public double MidVolume { get => _MidVolume; set { _MidVolume = value; _SetEqualizer = true; } }
         public double HighVolume { get => _HighVolume; set { _HighVolume = value; _SetEqualizer = true; } }
         public double PlaybackSpeed { get => _PlaybackSpeed; set { _PlaybackSpeed = value; _SetPlaybackSpeed = true; } }
+        public bool PitchControl { get; set; }
 
         public string? Title { get; private set; }
         public double CurrentTime { get; private set; }
@@ -62,13 +63,9 @@ namespace YoutubeMixer.AudioSources
         public bool Disposed { get; private set; }
 
         public bool IsPlaying { get; private set; }
+        public bool IsReady { get; private set; }
 
-        public void Play()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Pause()
+        public void PlayPause()
         {
             throw new NotImplementedException();
         }
@@ -118,6 +115,7 @@ namespace YoutubeMixer.AudioSources
                 if (VideoElement != null)
                 {
                     // If video is playing
+                    IsReady = Convert.ToDouble(VideoElement.GetAttribute("currentTime")) > 0;
                     IsPlaying = VideoElement.GetAttribute("paused") != "true";
                     if (IsPlaying)
                     {
@@ -136,6 +134,10 @@ namespace YoutubeMixer.AudioSources
                         VideoElement = null;
                     }
                 }
+                else
+                {
+                    IsReady = false;
+                }
             }
             catch (Exception ex)
             {
@@ -145,6 +147,8 @@ namespace YoutubeMixer.AudioSources
                 // Reset videoelement and try again
                 VideoElement = null;
             }
+
+            // Ask for long delay
             return false;
         }
 

@@ -1,14 +1,18 @@
 ﻿using YoutubeMixer.Controls;
 using YoutubeMixer.Interfaces;
-using YoutubeMixer.Models;
 
 namespace YoutubeMixer.UserControls
 {
-    public partial class MixerChannel : UserControl, IAudioOutput, IVuDataOutput
+    public partial class MixerChannel : UserControl
     {
         public MixerChannel()
         {
             InitializeComponent();
+        }
+
+        public void InitializeDraw()
+        {
+            VuMeter.InitializeDraw();
         }
 
         public IAudioSource? AudioSource { get { return VuMeter.AudioSource; } set { VuMeter.AudioSource = value; } }
@@ -24,14 +28,6 @@ namespace YoutubeMixer.UserControls
             AudioSource.BassVolume = EqBassControl.Value;
             AudioSource.MidVolume = EqMidControl.Value;
             AudioSource.HighVolume = EqHighControl.Value;
-        }
-
-        public void ReceivedAudioData(AudioData audioData)
-        {
-            throw new NotImplementedException();
-        }
-        public void ReceivedVuChunk(double currentTime, double previousTime, double vuMeter)
-        {
         }
 
         private void MixerChannel_Resize(object sender, EventArgs e)
@@ -61,6 +57,5 @@ namespace YoutubeMixer.UserControls
         {
             MixerChannel_Resize(sender, e);
         }
-
     }
 }

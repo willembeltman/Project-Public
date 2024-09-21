@@ -1,11 +1,21 @@
-﻿using YoutubeMixer.AudioSources;
-using YoutubeMixer.Interfaces;
+﻿using YoutubeMixer.Interfaces;
 using YoutubeMixer.Models;
 
 namespace YoutubeMixer.UserControls
 {
-    public partial class Deck : UserControl, IPitchBendController
+    public enum PitchRange
     {
+        Range8,
+        Range16,
+        Range25,
+        Range50,
+        Range100,
+    }
+
+    public partial class Deck : UserControl, IPitchBendController, IVuDataOutput
+    {
+        static int Precicion = 10;
+        static int PrecicionDecimals = 1;
         private bool IsDragging { get; set; }
         private Point LastMousePosition { get; set; }
         private Point CurrentMousePosition { get; set; }
@@ -13,6 +23,28 @@ namespace YoutubeMixer.UserControls
         public Deck()
         {
             InitializeComponent();
+            trackBarPitch.Maximum = 100 * Precicion;
+            trackBarPitch.Value = 100 * Precicion;
+            PitchRange = PitchRange.Range16;
+        }
+
+        public void InitializeDraw()
+        {
+            DisplayControl.InitializeDraw();
+
+            if (AudioSource == null)
+            {
+                buttonPlayPause.Enabled = false;
+                return;
+            }
+            buttonPlayPause.Text = AudioSource.IsPlaying ? "Pause" : "Play";
+            buttonPlayPause.Enabled = AudioSource.IsReady;
+            buttonCue.Enabled = AudioSource.IsReady;
+            buttonHotcue1.Enabled = AudioSource.IsReady;
+            buttonHotcue2.Enabled = AudioSource.IsReady;
+            buttonHotcue3.Enabled = AudioSource.IsReady;
+            buttonHotcue4.Enabled = AudioSource.IsReady;
+            buttonSetHotcue.Enabled = AudioSource.IsReady;
         }
 
         public IAudioSource? AudioSource { get { return DisplayControl.AudioSource; } set { DisplayControl.AudioSource = value; } }
@@ -34,6 +66,40 @@ namespace YoutubeMixer.UserControls
             return new PitchBendState();
         }
 
+        private PitchRange _PitchRange { get; set; }
+        private PitchRange PitchRange
+        {
+            get { return _PitchRange; }
+            set
+            {
+                switch (value)
+                {
+                    case PitchRange.Range8:
+                        SetRange(92, 108);
+                        break;
+                    case PitchRange.Range16:
+                        SetRange(84, 116);
+                        break;
+                    case PitchRange.Range25:
+                        SetRange(75, 125);
+                        break;
+                    case PitchRange.Range50:
+                        SetRange(50, 150);
+                        break;
+                    case PitchRange.Range100:
+                        SetRange(0, 200);
+                        break;
+                }
+                _PitchRange = value;
+            }
+        }
+
+
+        public void ReceivedVuChunk(double currentTime, double previousTime, double vuMeter)
+        {
+            DisplayControl.ReceivedVuChunk(currentTime, previousTime, vuMeter);
+        }
+
         private void PlaybackDisplay_MouseDown(object sender, MouseEventArgs e)
         {
             CurrentMousePosition = e.Location;
@@ -52,13 +118,53 @@ namespace YoutubeMixer.UserControls
             IsDragging = false;
         }
 
-        private void trackBarPitch_Scroll(object sender, EventArgs e)
+        private void trackBarPitch_ValueChanged(object sender, EventArgs e)
         {
+            if (AudioSource == null) return;
+            var playbackSpeed = Convert.ToDouble(trackBarPitch.Value) / Precicion / 100;
+            var percentage = Convert.ToDouble(trackBarPitch.Value) / Precicion - 100;
+            AudioSource.PlaybackSpeed = playbackSpeed;
+            labelPitch.Text = $"{percentage.ToString("F" + PrecicionDecimals)}%";
+            ResizeLabelPitch();
+        }
+        private void buttonPitchRange_Click(object sender, EventArgs e)
+        {
+            var setnext = false;
+            var values = Enum.GetValues<PitchRange>();
+            foreach (var value in values)
+            {
+                if (setnext)
+                {
+                    PitchRange = value;
+                    return;
+                }
+                if (PitchRange == value)
+                {
+                    setnext = true;
+                }
+            }
+            PitchRange = values.First();
+        }
 
+        private void SetRange(int min, int max)
+        {
+            var min2 = min * Precicion;
+            var max2 = max * Precicion;
+
+            if (trackBarPitch.Value < min2)
+                trackBarPitch.Value = min2;
+            trackBarPitch.Minimum = min2;
+            if (trackBarPitch.Value > max2)
+                trackBarPitch.Value = max2;
+            trackBarPitch.Maximum = max2;
+
+            buttonPitchRange.Text = (max - 100).ToString() + "%";
         }
 
         private void buttonPlayPause_Click(object sender, EventArgs e)
         {
+            if (AudioSource == null) return;
+            AudioSource.PlayPause();
         }
         private void buttonCue_Click(object sender, EventArgs e)
         {
@@ -85,10 +191,6 @@ namespace YoutubeMixer.UserControls
 
         }
 
-        private void buttonPitchRange_Click(object sender, EventArgs e)
-        {
-
-        }
         private void buttonPitchControl_Click(object sender, EventArgs e)
         {
 
@@ -129,11 +231,7 @@ namespace YoutubeMixer.UserControls
 
             buttonPitchControl.Top = buttonPitchRange.Bottom + margin;
             buttonPitchControl.Left = ClientRectangle.Width - buttonPitchControl.Width;
-
-            var offset2 = (buttonPitchControl.Width - labelPitch.Width) / 2;
-
-            labelPitch.Top = ClientRectangle.Height - labelPitch.Height;
-            labelPitch.Left = ClientRectangle.Width - labelPitch.Width - offset2;
+            ResizeLabelPitch();
 
             var offset = (buttonPitchControl.Width - trackBarPitch.Width) / 2;
 
@@ -146,5 +244,14 @@ namespace YoutubeMixer.UserControls
             DisplayControl.Width = ClientRectangle.Width - buttonHotcue1.Width - buttonPitchRange.Width;
             DisplayControl.Height = ClientRectangle.Height;
         }
+
+        private void ResizeLabelPitch()
+        {
+            var offset2 = (buttonPitchControl.Width - labelPitch.Width) / 2;
+
+            labelPitch.Top = ClientRectangle.Height - labelPitch.Height;
+            labelPitch.Left = ClientRectangle.Width - labelPitch.Width - offset2;
+        }
+
     }
 }
