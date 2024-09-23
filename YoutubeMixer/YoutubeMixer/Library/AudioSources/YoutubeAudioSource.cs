@@ -2,6 +2,7 @@
 using OpenQA.Selenium;
 using System.Diagnostics;
 using YoutubeMixer.Library.Interfaces;
+using YoutubeMixer.Library.Models;
 
 namespace YoutubeMixer.Library.AudioSources
 {
@@ -16,12 +17,10 @@ namespace YoutubeMixer.Library.AudioSources
 
     public class YoutubeAudioSource : IAudioSource, IDisposable
     {
-        public YoutubeAudioSource(IAudioOutput audioOutput, IPitchBendController pitchBendController, IVuDataOutput vuDataOutput)
+        public YoutubeAudioSource(IPitchBendController pitchBendController, ITimelineProcessor timelineProcessor)
         {
-            AudioOutput = audioOutput;
             PitchBendController = pitchBendController;
-            VuDataOutput = vuDataOutput;
-
+            TimelineProcessor = timelineProcessor;
 
             Driver = new ChromeDriver();
             JsExecutor = Driver;
@@ -29,9 +28,8 @@ namespace YoutubeMixer.Library.AudioSources
             Thread.Start();
         }
 
-        private IAudioOutput AudioOutput { get; }
         private IPitchBendController PitchBendController { get; }
-        private IVuDataOutput VuDataOutput { get; }
+        private ITimelineProcessor TimelineProcessor { get; }
         private ChromeDriver Driver { get; }
         private IJavaScriptExecutor JsExecutor { get; }
         private Thread Thread { get; }
@@ -462,7 +460,7 @@ return {
             if (lengths.GroupBy(a => a).Count() != 1)
                 throw new Exception("Stop! communicatie uit sync");
 
-            var timelineList = new List<TimeLineItem>();
+            var timelineItemList = new List<TimeLineItem>();
             for ( int i = 0; i < timelineTimestamps.Length; i++ )
             {
                 var timelineItem = new TimeLineItem()
@@ -475,10 +473,10 @@ return {
                     Volume = timelineVolumes[i],
                     KickDetected = timelineKickDetected[i]
                 };
-                timelineList.Add( timelineItem );
+                timelineItemList.Add( timelineItem );
             }
-            var timeline = timelineList.ToArray();
-            VuDataOutput.ReceivedVuChunk(CurrentTime, PreviousTime, timeline);
+            var timelineItems = timelineItemList.ToArray();
+            TimelineProcessor.ProcessTimelineData(CurrentTime, PreviousTime, timelineItems);
             PreviousTime = CurrentTime;
         }
     }

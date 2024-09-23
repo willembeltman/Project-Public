@@ -1,4 +1,4 @@
-﻿namespace YoutubeMixer.Library.AudioSources
+﻿namespace YoutubeMixer.Library.Models
 {
     public class TimeLineItem
     {

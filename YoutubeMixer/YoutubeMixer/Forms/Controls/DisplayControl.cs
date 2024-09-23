@@ -1,10 +1,10 @@
-﻿using YoutubeMixer.Library.AudioSources;
-using YoutubeMixer.Library.Interfaces;
+﻿using YoutubeMixer.Library.Interfaces;
+using YoutubeMixer.Library.Models;
 using YoutubeMixer.Properties;
 
 namespace YoutubeMixer.Forms.Controls
 {
-    public class DisplayControl : Control, IVuDataOutput
+    public class DisplayControl : Control, ITimelineProcessor
     {
         public DisplayControl()
         {
@@ -27,10 +27,6 @@ namespace YoutubeMixer.Forms.Controls
             }
         }
 
-        public void ReceivedVuChunk(double currentTime, double previousTime, TimeLineItem[] timeline)
-        {
-        }
-
         private void DisplayControl_Resize(object? sender, EventArgs e)
         {
             PreviousCurrentTime = TimeSpan.Zero;
@@ -50,6 +46,9 @@ namespace YoutubeMixer.Forms.Controls
         private TimeSpan TotalDuration => AudioSource?.TotalDuration != null ? TimeSpan.FromSeconds(AudioSource.TotalDuration) : TimeSpan.FromSeconds(60);
         private bool KickDetected => AudioSource?.KickDetected ?? false;
 
+        public void ProcessTimelineData(double currentTime, double previousTime, TimeLineItem[] timelineItems)
+        {
+        }
 
         protected override void OnPaint(PaintEventArgs e)
         {

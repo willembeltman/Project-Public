@@ -11,11 +11,11 @@ namespace YoutubeMixer.Forms
         {
             InitializeComponent();
 
-            LeftAudioSource = new YoutubeAudioSource(null, DeckLeft, DeckLeft);
+            LeftAudioSource = new YoutubeAudioSource(DeckLeft, DeckLeft);
             Mixer.LeftMixerChannel.AudioSource = LeftAudioSource;
             DeckLeft.AudioSource = LeftAudioSource;
 
-            RightAudioSource = new YoutubeAudioSource(null, DeckRight, DeckRight );
+            RightAudioSource = new YoutubeAudioSource(DeckRight, DeckRight );
             Mixer.RightMixerChannel.AudioSource = RightAudioSource;
             DeckRight.AudioSource = RightAudioSource;
 

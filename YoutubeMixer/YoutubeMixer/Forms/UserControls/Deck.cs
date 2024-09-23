@@ -1,5 +1,4 @@
 ﻿using YoutubeMixer.Forms.Controls;
-using YoutubeMixer.Library.AudioSources;
 using YoutubeMixer.Library.Interfaces;
 using YoutubeMixer.Library.Models;
 
@@ -14,7 +13,7 @@ namespace YoutubeMixer.UserControls
         Range100,
     }
 
-    public partial class Deck : UserControl, IPitchBendController, IVuDataOutput
+    public partial class Deck : UserControl, IPitchBendController, ITimelineProcessor
     {
         static int Precicion = 10;
         static int PrecicionDecimals = 1;
@@ -97,9 +96,9 @@ namespace YoutubeMixer.UserControls
         }
 
 
-        public void ReceivedVuChunk(double currentTime, double previousTime, TimeLineItem[] timeline)
+        public void ProcessTimelineData(double currentTime, double previousTime, TimeLineItem[] timelineItems)
         {
-            DisplayControl.ReceivedVuChunk(currentTime, previousTime, timeline);
+            DisplayControl.ProcessTimelineData(currentTime, previousTime, timelineItems);
         }
 
         private void PlaybackDisplay_MouseDown(object sender, MouseEventArgs e)
