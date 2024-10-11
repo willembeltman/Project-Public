@@ -53,7 +53,7 @@ namespace SharpFtpServer
         AutoResetEvent LogReceived = new AutoResetEvent(false);
         public string Fullname { get; }
         public Thread Thread { get; }
-        public ConcurrentQueue<string> Queue { get; }
+        public ConcurrentQueue<string> Queue { get; } = new ConcurrentQueue<string>();
 
 
         public void Error(string message)
@@ -81,7 +81,7 @@ namespace SharpFtpServer
         private string GetLine(string message, bool error)
         {
             var caller = GetCallerName();
-            return $"{DateTime.Now.ToLongDateString()} {DateTime.Now.ToLongTimeString()} {caller}: {(error ? "ERROR" : "")} {message}";
+            return $"{DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()} {caller}: {(error ? "ERROR" : "")} {message}";
         }
         static string GetCallerName()
         {

@@ -4,23 +4,25 @@ using System.Threading.Tasks;
 
 namespace LanCloud
 {
-    internal class LogReader
+    internal class LoggedStreamReader
     {
-        public LogReader(StreamWriter log, StreamReader reader)
+        public LoggedStreamReader(StreamWriter log, StreamReader reader, string ipAdress)
         {
             Log = log;
             Reader = reader;
+            IpAdress = ipAdress;
         }
 
         public StreamWriter Log { get; }
         public StreamReader Reader { get; }
+        public string IpAdress { get; }
 
         internal async Task<string> ReadLineAsync()
         {
             var line = await Reader.ReadLineAsync();
             lock (Log)
             {
-                Log.WriteLine(line);
+                Log.WriteLine($"FROM {IpAdress}: {line}");
                 Log.Flush();
             }
             return line;

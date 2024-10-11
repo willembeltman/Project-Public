@@ -28,8 +28,8 @@ namespace SharpFtpServer
         FileStructureType FileStructureType { get; set; } = FileStructureType.File;
 
         string UserName { get; set; }
-        string Root { get; set; }
-        string CurrentDirectory { get; set; }
+        string Root { get; set; } = "D:\\Willem\\Videos";
+        string CurrentDirectory { get; set; } = "D:\\Willem\\Videos";
         IPEndPoint DataEndpoint { get; set; }
         IPEndPoint RemoteEndPoint { get; set; }
         string CertificateFileName { get; set; }
@@ -42,7 +42,7 @@ namespace SharpFtpServer
 
         //private List<string> _validCommands;
 
-        public ClientConnection(TcpClient client, string certificateFilename = null)
+        public ClientConnection(TcpClient client, ICommandHandler commandHandler, string certificateFilename = null)
         {
             Name = Guid.NewGuid().ToString().Substring(0, 4);
             ControlClient = client;
@@ -100,12 +100,12 @@ namespace SharpFtpServer
                         arguments = null;
                     }
 
-                    LogEntry logEntry = new LogEntry
-                    {
-                        Date = DateTime.Now,
-                        CIP = ClientIP,
-                        CSUriStem = arguments
-                    };
+                    //LogEntry logEntry = new LogEntry
+                    //{
+                    //    Date = DateTime.Now,
+                    //    CIP = ClientIP,
+                    //    CSUriStem = arguments
+                    //};
 
                     //if (!_validCommands.Contains(cmd))
                     //{
@@ -126,7 +126,7 @@ namespace SharpFtpServer
                                 break;
                             case "PASS":
                                 response = Password(arguments);
-                                logEntry.CSUriStem = "******";
+                                //logEntry.CSUriStem = "******";
                                 break;
                             case "CWD":
                                 response = ChangeWorkingDirectory(arguments);
@@ -147,15 +147,15 @@ namespace SharpFtpServer
                                 break;
                             case "PORT":
                                 response = Port(arguments);
-                                logEntry.CPort = DataEndpoint.Port.ToString();
+                                //logEntry.CPort = DataEndpoint.Port.ToString();
                                 break;
                             case "PASV":
                                 response = Passive();
-                                logEntry.SPort = ((IPEndPoint)PassiveListener.LocalEndpoint).Port.ToString();
+                                //logEntry.SPort = ((IPEndPoint)PassiveListener.LocalEndpoint).Port.ToString();
                                 break;
                             case "TYPE":
                                 response = Type(command[1], command.Length == 3 ? command[2] : null);
-                                logEntry.CSUriStem = command[1];
+                                //logEntry.CSUriStem = command[1];
                                 break;
                             case "STRU":
                                 response = Structure(arguments);
@@ -184,23 +184,23 @@ namespace SharpFtpServer
                                 break;
                             case "RETR":
                                 response = Retrieve(arguments);
-                                logEntry.Date = DateTime.Now;
+                                //logEntry.Date = DateTime.Now;
                                 break;
                             case "STOR":
                                 response = Store(arguments);
-                                logEntry.Date = DateTime.Now;
+                                //logEntry.Date = DateTime.Now;
                                 break;
                             case "STOU":
                                 response = StoreUnique();
-                                logEntry.Date = DateTime.Now;
+                                //logEntry.Date = DateTime.Now;
                                 break;
                             case "APPE":
                                 response = Append(arguments);
-                                logEntry.Date = DateTime.Now;
+                                //logEntry.Date = DateTime.Now;
                                 break;
                             case "LIST":
                                 response = List(arguments ?? CurrentDirectory);
-                                logEntry.Date = DateTime.Now;
+                                //logEntry.Date = DateTime.Now;
                                 break;
                             case "SYST":
                                 response = "215 UNIX Type: L8";
@@ -261,11 +261,11 @@ namespace SharpFtpServer
                             // Extensions defined by rfc 2428
                             case "EPRT":
                                 response = EPort(arguments);
-                                logEntry.CPort = DataEndpoint.Port.ToString();
+                                //logEntry.CPort = DataEndpoint.Port.ToString();
                                 break;
                             case "EPSV":
                                 response = EPassive();
-                                logEntry.SPort = ((IPEndPoint)PassiveListener.LocalEndpoint).Port.ToString();
+                                //logEntry.SPort = ((IPEndPoint)PassiveListener.LocalEndpoint).Port.ToString();
                                 break;
 
                             default:
@@ -274,11 +274,11 @@ namespace SharpFtpServer
                         }
                     }
 
-                    logEntry.CSMethod = cmd;
-                    logEntry.CSUsername = UserName;
-                    logEntry.SCStatus = response.Substring(0, response.IndexOf(' '));
+                    //logEntry.CSMethod = cmd;
+                    //logEntry.CSUsername = UserName;
+                    //logEntry.SCStatus = response.Substring(0, response.IndexOf(' '));
 
-                    Logger.Info(logEntry);
+                    //Logger.Info(logEntry);
 
                     if (ControlClient == null || !ControlClient.Connected)
                     {

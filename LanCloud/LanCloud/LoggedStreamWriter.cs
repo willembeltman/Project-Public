@@ -1,26 +1,29 @@
 ﻿using System;
 using System.IO;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace LanCloud
 {
-    internal class LogWriter
+    internal class LoggedStreamWriter
     {
-        public LogWriter(StreamWriter log, StreamWriter writer)
+        public LoggedStreamWriter(StreamWriter log, StreamWriter writer, string ipAdress)
         {
             Log = log;
             Writer = writer;
+            IpAdress = ipAdress;
         }
 
         public StreamWriter Log { get; }
         public StreamWriter Writer { get; }
+        public string IpAdress { get; }
 
         internal async Task WriteLineAsync(string line)
         {
             await Writer.WriteLineAsync(line);
             lock (Log)
             {
-                Log.WriteLine(line);
+                Log.WriteLine($"TO {IpAdress}: {line}");
                 Log.Flush();
             }
         }

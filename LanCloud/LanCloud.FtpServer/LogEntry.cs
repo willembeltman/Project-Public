@@ -7,7 +7,7 @@ namespace SharpFtpServer
 {
     // Fields: date time c-ip c-port cs-username cs-method cs-uri-stem sc-status sc-bytes cs-bytes s-name s-port
 
-    internal class LogEntry
+    public class LogEntry
     {
         public DateTime Date { get; set; }
         public string CIP { get; set; }
