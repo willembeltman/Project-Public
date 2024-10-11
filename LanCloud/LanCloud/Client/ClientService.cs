@@ -1,25 +1,25 @@
-﻿using LanCloud.Interfaces;
-using System.Threading.Tasks;
+﻿//using LanCloud.Interfaces;
+//using System.Threading.Tasks;
 
-namespace LanCloud.Client
-{
-    public class ClientService : IStarteble
-    {
-        public ClientService(App app)
-        {
-            App = app;
-        }
+//namespace LanCloud.Client
+//{
+//    public class ClientService : IStarteble
+//    {
+//        public ClientService(App app)
+//        {
+//            App = app;
+//        }
 
-        public App App { get; }
+//        public App App { get; }
 
-        public async Task StartAsync()
-        {
-            await Task.Run(() =>
-            {
-                while (!App.KillSwitch)
-                {
-                }
-            });
-        }
-    }
-}
+//        public async Task StartAsync()
+//        {
+//            await Task.Run(() =>
+//            {
+//                while (!App.KillSwitch)
+//                {
+//                }
+//            });
+//        }
+//    }
+//}

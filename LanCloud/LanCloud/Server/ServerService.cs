@@ -1,31 +1,31 @@
-﻿using LanCloud.Interfaces;
-using System.Net.Sockets;
-using System.Threading.Tasks;
+﻿//using LanCloud.Interfaces;
+//using System.Net.Sockets;
+//using System.Threading.Tasks;
 
-namespace LanCloud.Server
-{
-    public class ServerService : IStarteble
-    {
-        public ServerService(App app)
-        {
-            App = app;
-        }
+//namespace LanCloud.Server
+//{
+//    public class ServerService : IStarteble
+//    {
+//        public ServerService(App app)
+//        {
+//            App = app;
+//        }
 
-        App App { get; }
+//        App App { get; }
 
-        public async Task StartAsync()
-        {
-            await Task.Run(() =>
-            {
-                TcpListener listener = new TcpListener(App.Settings.IPAddress, App.Settings.Port);
-                listener.Start();
-                while (!App.KillSwitch && (listener.Server.Connected || listener.Pending()))
-                {
-                    using (var tcpclient = listener.AcceptTcpClient())
-                    {
-                    }
-                }
-            });
-        }
-    }
-}
+//        public async Task StartAsync()
+//        {
+//            await Task.Run(() =>
+//            {
+//                TcpListener listener = new TcpListener(App.Settings.IPAddress, App.Settings.Port);
+//                listener.Start();
+//                while (!App.KillSwitch && (listener.Server.Connected || listener.Pending()))
+//                {
+//                    using (var tcpclient = listener.AcceptTcpClient())
+//                    {
+//                    }
+//                }
+//            });
+//        }
+//    }
+//}

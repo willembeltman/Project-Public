@@ -1,12 +1,12 @@
-﻿namespace LanCloud.Forms
-{
-    public class FormsService
-    {
-        public FormsService(App app)
-        {
-            Main = new MainForm(app);
-        }
+﻿//namespace LanCloud.Forms
+//{
+//    public class FormsService
+//    {
+//        public FormsService(App app)
+//        {
+//            Main = new MainForm(app);
+//        }
 
-        public MainForm Main { get; }
-    }
-}
+//        public MainForm Main { get; }
+//    }
+//}
