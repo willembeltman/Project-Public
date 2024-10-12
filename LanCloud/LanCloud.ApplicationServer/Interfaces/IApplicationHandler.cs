@@ -1,4 +1,4 @@
-﻿namespace LanCloud.ApplicationServer.Interfaces
+﻿namespace LanCloud.Servers.Application.Interfaces
 {
     public interface IApplicationHandler
     {

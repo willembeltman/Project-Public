@@ -1,5 +1,5 @@
 ﻿using LanCloud.Models;
-using LanCloud.Ftp.Interfaces;
+using LanCloud.Servers.Ftp.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,10 +10,7 @@ namespace LanCloud.Handlers
     // Deze class is het entry point voor de gebruiker
     internal class VirtualFtpHandler : IFtpHandler
     {
-        public VirtualFtpHandler(
-            FolderCollection ownFtpShares, 
-            ExternalApplicationCollection externalApplications, 
-            ExternalFtpCollection externalFtpShares)
+        public VirtualFtpHandler(Application application)
         {
         }
 

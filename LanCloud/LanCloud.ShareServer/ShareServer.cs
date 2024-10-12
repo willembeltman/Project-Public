@@ -1,13 +1,13 @@
-﻿using LanCloud.ApplicationServer.Interfaces;
+﻿using LanCloud.Servers.Share.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 
-namespace LanCloud.ApplicationServer
+namespace LanCloud.Servers.Share
 {
-    public class Server : IDisposable
+    public class ShareServer : IDisposable
     {
         private bool Disposed = false;
         private bool Listening = false;
@@ -15,13 +15,13 @@ namespace LanCloud.ApplicationServer
         private List<ClientConnection> ActiveConnections;
 
         private IPEndPoint LocalEndPoint { get; }
-        public IApplicationHandler ApplicationHandler { get; }
+        public IShareHandler ShareHandler { get; }
         private TcpListener Listener { get; }
 
-        public Server(IPAddress ipAddress, int port, IApplicationHandler applicationHandler)
+        public ShareServer(IPAddress ipAddress, int port, IShareHandler applicationHandler)
         {
             LocalEndPoint = new IPEndPoint(ipAddress, port);
-            ApplicationHandler = applicationHandler;
+            ShareHandler = applicationHandler;
             Listener = new TcpListener(LocalEndPoint);
 
             Listening = true;
@@ -40,7 +40,7 @@ namespace LanCloud.ApplicationServer
 
                 TcpClient client = Listener.EndAcceptTcpClient(result);
 
-                ClientConnection connection = new ClientConnection(client, ApplicationHandler);
+                ClientConnection connection = new ClientConnection(client, ShareHandler);
 
                 ActiveConnections.Add(connection);
 

@@ -4,8 +4,8 @@ namespace MyVideoEditor.DTOs
 {
     public class Timeline
     {
-        public Guid Id { get; } = Guid.NewGuid();
-        public string Name { get; set; }
+        public Guid Id { get; set; } = Guid.NewGuid();
+        public string? Name { get; set; }
         public List<TimelineVideo> TimelineVideos { get; set; } = new List<TimelineVideo>();
         public List<TimelineAudio> TimelineAudios { get; set; } = new List<TimelineAudio>();
 

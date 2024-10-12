@@ -1,5 +1,5 @@
-﻿using MyVideoEditor.Enums;
-using MyVideoEditor.Models;
+﻿using MyVideoEditor.DTOs;
+using MyVideoEditor.Enums;
 using MyVideoEditor.VideoObjects;
 using System;
 using System.Collections.Generic;
@@ -10,16 +10,20 @@ using System.Threading.Tasks;
 
 namespace MyVideoEditor.Services
 {
-    public class MediaContainerService
+    public class StreamContainerService
     {
         public FfmpegExecuteblesPaths FfmpegExecuteblesPaths { get; }
+        public StreamInfoService StreamInfoService { get; }
 
-        public MediaContainerService(FfmpegExecuteblesPaths ffmpegExecuteblesPaths)
+        public StreamContainerService(
+            FfmpegExecuteblesPaths ffmpegExecuteblesPaths, 
+            StreamInfoService streamInfoService)
         {
             FfmpegExecuteblesPaths = ffmpegExecuteblesPaths;
+            StreamInfoService = streamInfoService;
         }
 
-        public MediaContainer Open(string fullName)
+        public StreamContainer Open(string fullName)
         {
             var startinfo = new ProcessStartInfo()
             {
@@ -47,7 +51,7 @@ namespace MyVideoEditor.Services
                         var parameters = line.Split(new string[] { "," }, StringSplitOptions.None);
                         if (parameters.Length > 1)
                         {
-                            var streaminfo = new StreamInfo(streamindex, parameters);
+                            var streaminfo = StreamInfoService.CreateStreamInfo(streamindex, parameters);
                             streaminfos.Add(streaminfo);
                             streamindex++;
                         }
@@ -57,32 +61,35 @@ namespace MyVideoEditor.Services
                 var videoInfos = streaminfos
                     .Where(a => a.CodecType == CodecTypeEnum.Video)
                     .ToArray();
-                var videoStreams = videoInfos
-                    .Select(a => new VideoStreamReader(FfmpegExecuteblesPaths, fullName, a))
-                    .ToArray();
+                //var videoStreams = videoInfos
+                //    .Select(a => new VideoStreamReader(FfmpegExecuteblesPaths, fullName, a))
+                //    .ToArray();
 
                 var audioInfos = streaminfos
                     .Where(a => a.CodecType == CodecTypeEnum.Audio)
                     .ToArray();
-                var audioStreams = audioInfos
-                    .Select(a => new AudioStreamReader(FfmpegExecuteblesPaths, fullName, a))
-                    .ToArray();
+                //var audioStreams = audioInfos
+                //    .Select(a => new AudioStreamReader(FfmpegExecuteblesPaths, fullName, a))
+                //    .ToArray();
 
-                return new MediaContainer(fullName, videoInfos, audioInfos, videoStreams, audioStreams);
+                return new StreamContainer()
+                {
+                    FullName = fullName,
+                    VideoInfos = videoInfos,
+                    AudioInfos = audioInfos
+                };
             }
         }
 
-
-        public MediaContainer[] Open(IEnumerable<string> files)
+        public StreamContainer[] Open(IEnumerable<string> files)
         {
             var filteredfiles = CheckFileType.Filter(files);
             if (!filteredfiles.Any())
-                return Array.Empty<MediaContainer>();
+                return Array.Empty<StreamContainer>();
 
             return filteredfiles
                 .Select(a => Open(a))
                 .ToArray();
         }
-
     }
 }

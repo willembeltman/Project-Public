@@ -1,4 +1,4 @@
-﻿using MyVideoEditor.Models;
+﻿using MyVideoEditor.DTOs;
 
 namespace MyVideoEditor.VideoObjects
 {

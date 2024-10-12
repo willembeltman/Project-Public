@@ -1,14 +1,6 @@
-﻿using Microsoft.VisualBasic.Devices;
-using MyVideoEditor.Controls;
-using MyVideoEditor.DTOs;
+﻿using MyVideoEditor.DTOs;
 using MyVideoEditor.Forms;
-using MyVideoEditor.Models;
 using MyVideoEditor.VideoObjects;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MyVideoEditor.Services
 {
@@ -16,18 +8,21 @@ namespace MyVideoEditor.Services
     {
         #region Props 
 
-        MainForm MainForm { get; }
+        StreamContainerService MediaContainerService { get; }
+        TimelineService TimelineService { get; }
+        TimeStampService TimeStampService { get; }
+        public FfmpegExecuteblesPaths FfmpegExecuteblesPaths { get; }
 
-        MediaContainerService MediaContainerService => MainForm.MediaContainerService;
-        TimelineService TimelineService => MainForm.TimelineService;
-        TimeStampService TimeStampService => MainForm.TimeStampService;
-
-        Project? Project => MainForm.Project;
-        Timeline? Timeline => MainForm.Timeline;
-
-        public ProjectService(MainForm mainForm)
+        public ProjectService(
+            FfmpegExecuteblesPaths ffmpegExecuteblesPaths,
+            StreamContainerService mediaContainerService,
+            TimelineService timelineService,
+            TimeStampService timeStampService)
         {
-            MainForm = mainForm;
+            FfmpegExecuteblesPaths = ffmpegExecuteblesPaths;
+            MediaContainerService = mediaContainerService;
+            TimelineService = timelineService;
+            TimeStampService = timeStampService;
         }
 
         #endregion
@@ -91,12 +86,12 @@ namespace MyVideoEditor.Services
             if (files.Any())
                 e.Effect = DragDropEffects.Copy;
         }
-        public void DragDrop(object sender, DragEventArgs e)
+        public void DragDrop(object sender, DragEventArgs e, Project project)
         {
             var files = GetDragAndDropFiles(e);
             if (files.Any())
             {
-                InsertVideos(files);
+                InsertVideos(project, files);
             }
         }
 
@@ -109,7 +104,7 @@ namespace MyVideoEditor.Services
             return new Project()
             {
                 Timelines = new List<Timeline>() { defaultTimeline },
-                Medias = new List<DTOs.Container>(),
+                Medias = new List<DTOs.Media>(),
                 Width = 1920,
                 Height = 1080,
                 FramerateBase = 60,
@@ -127,37 +122,41 @@ namespace MyVideoEditor.Services
             throw new NotImplementedException();
         }
 
-        public void InsertVideosButtonClicked()
+        public void InsertVideosButtonClicked(Project project)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Filter = "Video Files|*.mp4;*.avi;*.mkv;*.mov;*.wmv|All Files|*.*";
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
-                InsertVideos(openFileDialog.FileNames);
+                InsertVideos(project, openFileDialog.FileNames);
             }
         }
-        private void InsertVideos(string[] files)
+        private void InsertVideos(Project project, string[] files)
         {
-            if (Project == null) return;
-            if (Timeline == null) return;
+            if (project == null) return;
+            var timeline = project.Timelines.FirstOrDefault(a => a.Id == project.CurrentTimelineId);
+            if (timeline == null) return;
 
             var mediaContainers = MediaContainerService.Open(files);
             if (mediaContainers.Any())
             {
-                var timelinestart = Timeline.TotalLength;
+                var timelinestart = timeline.TotalLength;
 
                 foreach (var mediaContainer in mediaContainers)
                 {
                     var groupid = Guid.NewGuid();
                     var duration = 0d;
+                    var fullname = mediaContainer.FullName;
 
-                    var media = new DTOs.Container()
+                    var media = new DTOs.Media()
                     {
-                        FullName = mediaContainer.FullName
+                        FullName = fullname
                     };
-                    Project.Medias.Add(media);
+                    project.Medias.Add(media);
 
-                    foreach (var videostream in mediaContainer.VideoStreams)
+                    var videosteams = mediaContainer.VideoInfos
+                        .Select(a => new VideoStreamReader(FfmpegExecuteblesPaths, fullname, a));
+                    foreach (var videostream in videosteams)
                     {
                         if (duration == 0d)
                         {
@@ -166,7 +165,7 @@ namespace MyVideoEditor.Services
                         }
 
                         // Blauwdruk aanmaken
-                        var mediavideo = new ContainerVideo()
+                        var mediavideo = new MediaVideo()
                         {
                             MediaId = media.Id,
                             StreamIndex = videostream.StreamInfo.Index,
@@ -186,7 +185,7 @@ namespace MyVideoEditor.Services
                             MediaStartTime = 0,
                             MediaEndTime = duration,
                         };
-                        Timeline.TimelineVideos.Add(videoitem);
+                        timeline.TimelineVideos.Add(videoitem);
 
                         // Control aanmaken
                         MainForm.MainTimelineControl.TimelineControl.AddTimelineVideoControl(mediavideo, videoitem, videostream);
@@ -199,7 +198,7 @@ namespace MyVideoEditor.Services
                             duration = audiostream.StreamInfo.Duration.Value;
                         }
 
-                        var mediaaudio = new ContainerAudio()
+                        var mediaaudio = new MediaAudio()
                         {
                             MediaId = media.Id,
                             StreamIndex = audiostream.StreamInfo.Index,
@@ -216,7 +215,7 @@ namespace MyVideoEditor.Services
                             MediaStartTime = 0,
                             MediaEndTime = duration,
                         };
-                        Timeline.TimelineAudios.Add(audioitem);
+                        timeline.TimelineAudios.Add(audioitem);
 
                         // Control aanmaken
                         MainForm.MainTimelineControl.TimelineControl.AddTimelineAudioControl(mediaaudio, audioitem, audiostream);
@@ -225,7 +224,7 @@ namespace MyVideoEditor.Services
                     timelinestart += duration;
                 }
 
-                Timeline.TotalLength = timelinestart;
+                timeline.TotalLength = timelinestart;
 
                 MainForm.MainTimelineControl.TimelineControl.Invalidate();
             }

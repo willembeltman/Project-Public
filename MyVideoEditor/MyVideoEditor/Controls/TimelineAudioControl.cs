@@ -10,7 +10,7 @@ namespace MyVideoEditor.Controls
 {
     public partial class TimelineAudioControl : UserControl
     {
-        public TimelineAudioControl(TimelineAudio timelineAudio, ContainerAudio mediaAudio, AudioStreamReader audioStreamReader)
+        public TimelineAudioControl(TimelineAudio timelineAudio, MediaAudio mediaAudio, AudioStreamReader audioStreamReader)
         {
             TimelineAudio = timelineAudio;
             MediaAudio = mediaAudio;
@@ -19,7 +19,7 @@ namespace MyVideoEditor.Controls
         }
 
         public TimelineAudio TimelineAudio { get; }
-        public ContainerAudio MediaAudio { get; }
+        public MediaAudio MediaAudio { get; }
         public AudioStreamReader AudioStreamReader { get; }
 
     }

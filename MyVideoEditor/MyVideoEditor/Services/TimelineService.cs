@@ -17,7 +17,7 @@ namespace MyVideoEditor.Services
         MainForm MainForm { get; }
 
         ProjectService ProjectService => MainForm.ProjectService;
-        MediaContainerService MediaContainerService => MainForm.MediaContainerService;
+        StreamContainerService MediaContainerService => MainForm.MediaContainerService;
         TimeStampService TimeStampService => MainForm.TimeStampService;
 
         Project? Project => MainForm.Project;

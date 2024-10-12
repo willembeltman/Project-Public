@@ -1,5 +1,5 @@
-﻿using LanCloud.Ftp.Enums;
-using LanCloud.Ftp.Interfaces;
+﻿using LanCloud.Servers.Ftp.Enums;
+using LanCloud.Servers.Ftp.Interfaces;
 using LanCloud.Logger;
 using LanCloud.Models;
 using System;
@@ -10,7 +10,7 @@ using System.Net.Sockets;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
-namespace LanCloud.Ftp
+namespace LanCloud.Servers.Ftp
 {
     internal class ClientConnection : IDisposable
     {

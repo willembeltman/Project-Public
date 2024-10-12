@@ -1,14 +1,14 @@
-﻿using LanCloud.ApplicationServer.Interfaces;
+﻿using LanCloud.Servers.Application.Interfaces;
 using System;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
 
-namespace LanCloud.ApplicationServer
+namespace LanCloud.Servers.Application
 {
-    internal class ClientConnection : IDisposable
+    internal class ApplicationServerClient : IDisposable
     {
-        public ClientConnection(TcpClient client, IApplicationHandler applicationHandler)
+        public ApplicationServerClient(TcpClient client, IApplicationHandler applicationHandler)
         {
             var RemoteEndPoint = (IPEndPoint)client.Client.RemoteEndPoint;
             Name = RemoteEndPoint.Address.ToString();

@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Willem-Jan Beltman")]
-[assembly: AssemblyProduct("LanCloud.FtpServer")]
+[assembly: AssemblyProduct("LanCloud.Server.FtpServer")]
 [assembly: AssemblyCopyright("Copyright © Willem-Jan Beltman 2024")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

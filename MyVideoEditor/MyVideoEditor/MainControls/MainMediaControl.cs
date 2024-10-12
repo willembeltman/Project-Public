@@ -1,7 +1,6 @@
 ﻿using MyVideoEditor.Controls;
 using MyVideoEditor.DTOs;
 using MyVideoEditor.Forms;
-using MyVideoEditor.Models;
 using MyVideoEditor.Services;
 using System;
 using System.Collections.Generic;
@@ -22,7 +21,7 @@ namespace MyVideoEditor
         MainForm MainForm { get; }
 
         ProjectService ProjectService => MainForm.ProjectService;
-        MediaContainerService MediaContainerService => MainForm.MediaContainerService;
+        StreamContainerService MediaContainerService => MainForm.MediaContainerService;
         TimelineService TimelineService => MainForm.TimelineService;
         TimeStampService TimeStampService => MainForm.TimeStampService;
 
@@ -63,9 +62,9 @@ namespace MyVideoEditor
 
     internal class MediaControlItem
     {
-        private MediaContainer a;
+        private StreamContainer a;
 
-        public MediaControlItem(MediaContainer a)
+        public MediaControlItem(StreamContainer a)
         {
             this.a = a;
 

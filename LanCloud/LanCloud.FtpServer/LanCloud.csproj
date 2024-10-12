@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>LanCloud</RootNamespace>
     <AssemblyName>LanCloud</AssemblyName>
-    <TargetFrameworkVersion>v4.8.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
@@ -64,19 +64,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Collections\Folder.cs" />
-    <Compile Include="Handlers\OwnApplicationHandler.cs" />
-    <Compile Include="Models\ExternalApplication.cs" />
-    <Compile Include="Collections\ExternalApplicationCollection.cs" />
-    <Compile Include="Dtos\ExternalFtpDto.cs" />
-    <Compile Include="Models\OwnApplication.cs" />
-    <Compile Include="Collections\FolderCollection.cs" />
-    <Compile Include="Collections\ExternalFtpCollection.cs" />
-    <Compile Include="Models\ExternalFtp.cs" />
+    <Compile Include="Config\ShareConfig.cs" />
+    <Compile Include="Models\ApplicationProxyQueueItem.cs" />
+    <Compile Include="Models\Share.cs" />
+    <Compile Include="Handlers\ApplicationHandler.cs" />
+    <Compile Include="Models\ApplicationProxy.cs" />
+    <Compile Include="Collections\ApplicationProxyCollection.cs" />
+    <Compile Include="Dtos\ExternalShareDto.cs" />
+    <Compile Include="Models\Application.cs" />
+    <Compile Include="Collections\ShareCollection.cs" />
+    <Compile Include="Collections\ShareProxyCollection.cs" />
+    <Compile Include="Models\ShareProxy.cs" />
     <Compile Include="Handlers\VirtualFtpHandler.cs" />
     <Compile Include="Config\ServerConfig.cs" />
     <Compile Include="Config\ApplicationConfigService.cs" />
     <Compile Include="Config\ApplicationConfig.cs" />
+    <Compile Include="Handlers\ShareHandler.cs" />
+    <Compile Include="Models\ShareProxyQueueItem.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Handlers\FolderHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -99,17 +103,21 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\LanCloud.ApplicationServer\LanCloud.ApplicationServer.csproj">
+    <ProjectReference Include="..\LanCloud.ApplicationServer\LanCloud.Servers.Application.csproj">
       <Project>{7BA4B3A7-73C4-4725-9A26-7205F1F389E2}</Project>
-      <Name>LanCloud.ApplicationServer</Name>
+      <Name>LanCloud.Servers.Application</Name>
     </ProjectReference>
-    <ProjectReference Include="..\LanCloud.DriveServer\LanCloud.FtpServer.csproj">
+    <ProjectReference Include="..\LanCloud.DriveServer\LanCloud.Servers.Ftp.csproj">
       <Project>{c0e5fc5b-aa67-437f-a704-c0e34638c5d4}</Project>
-      <Name>LanCloud.FtpServer</Name>
+      <Name>LanCloud.Servers.Ftp</Name>
     </ProjectReference>
     <ProjectReference Include="..\LanCloud.Logger\LanCloud.Logger.csproj">
       <Project>{02268493-F812-4EDA-A386-DDCB2E787152}</Project>
       <Name>LanCloud.Logger</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\LanCloud.ShareServer\LanCloud.Servers.Share.csproj">
+      <Project>{B1C7D4D1-82B0-4F35-BDE2-0ED0744B4910}</Project>
+      <Name>LanCloud.Servers.Share</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

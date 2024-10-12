@@ -1,4 +1,4 @@
-﻿using MyVideoEditor.Models;
+﻿using MyVideoEditor.DTOs;
 using MyVideoEditor.Services;
 using MyVideoEditor.VideoObjects;
 using System;
@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -26,8 +27,10 @@ namespace MyVideoEditor.Forms
             var FfmpegExecuteblesPaths =
                 new FfmpegExecuteblesPaths(Environment.ProcessPath, "Executebles");
             var service = new MediaContainerService(FfmpegExecuteblesPaths);
-            var container = service.Open(@"D:\Willem\Videos\2024-04-19 20-18-38.mkv");
-            var videostream = container.VideoStreams.FirstOrDefault();
+            var fullname = @"D:\Willem\Videos\2024-04-19 20-18-38.mkv";
+            var container = service.Open(fullname);
+            var videoinfo = container.VideoInfos?.FirstOrDefault();
+            var videostream = new VideoStreamReader(FfmpegExecuteblesPaths, fullname, videoinfo);
             var i = 0;
             VideoFrame? frame = null;
 

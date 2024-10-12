@@ -1,5 +1,5 @@
 ﻿using System.Diagnostics;
-using MyVideoEditor.Models;
+using MyVideoEditor.DTOs;
 using MyVideoEditor.Services;
 
 namespace MyVideoEditor.VideoObjects

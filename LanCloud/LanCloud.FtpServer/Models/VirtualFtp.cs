@@ -1,5 +1,5 @@
 ﻿using LanCloud.Handlers;
-using LanCloud.Ftp;
+using LanCloud.Servers.Ftp;
 using System;
 using System.Net;
 
@@ -7,17 +7,14 @@ namespace LanCloud.Models
 {
     internal class VirtualFtp : IDisposable
     {
-        public VirtualFtp(
-            FolderCollection ownFtpShares, 
-            ExternalApplicationCollection externalApplications, 
-            ExternalFtpCollection externalFtpShares)
+        public VirtualFtp(Application application)
         {
-            FtpHandler = new VirtualFtpHandler(ownFtpShares, externalApplications, externalFtpShares);
-            FtpServer = new Server(IPAddress.Any, 21, FtpHandler);
+            FtpHandler = new VirtualFtpHandler(application);
+            FtpServer = new FtpServer(IPAddress.Any, 21, FtpHandler);
         }
 
         public VirtualFtpHandler FtpHandler { get; }
-        public Server FtpServer { get; }
+        public FtpServer FtpServer { get; }
 
         public void Dispose()
         {

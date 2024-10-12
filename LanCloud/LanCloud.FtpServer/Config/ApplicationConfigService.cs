@@ -32,7 +32,7 @@ namespace LanCloud.Services
                 var config = JsonConvert.DeserializeObject<ApplicationConfig>(json);
 
                 if ((config.Servers == null || config.Servers.Length == 0) && 
-                    (config.Folders == null || config.Folders.Length == 0))
+                    (config.Shares == null || config.Shares.Length == 0))
                     throw new System.Exception("Nothing is configured, please setup LanCloud.config file.");
 
                 return config;

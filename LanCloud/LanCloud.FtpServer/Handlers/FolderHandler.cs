@@ -1,5 +1,5 @@
 ﻿using LanCloud.Models;
-using LanCloud.Ftp.Interfaces;
+using LanCloud.Servers.Ftp.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.IO;

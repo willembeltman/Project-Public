@@ -10,7 +10,7 @@ namespace MyVideoEditor.Controls
 {
     public class TimelineVideoControl : UserControl
     {
-        public TimelineVideoControl(TimelineVideo timelineVideo, ContainerVideo mediaVideo, VideoStreamReader videoStreamReader)
+        public TimelineVideoControl(TimelineVideo timelineVideo, MediaVideo mediaVideo, VideoStreamReader videoStreamReader)
         {
             TimelineVideo = timelineVideo;
             MediaVideo = mediaVideo;
@@ -19,7 +19,7 @@ namespace MyVideoEditor.Controls
         }
 
         public TimelineVideo TimelineVideo { get; }
-        public ContainerVideo MediaVideo { get; }
+        public MediaVideo MediaVideo { get; }
         public VideoStreamReader VideoStreamReader { get; }
 
     }

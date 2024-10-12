@@ -1,4 +1,4 @@
-﻿using LanCloud.Ftp.Interfaces;
+﻿using LanCloud.Servers.Ftp.Interfaces;
 
 namespace LanCloud.Models
 {

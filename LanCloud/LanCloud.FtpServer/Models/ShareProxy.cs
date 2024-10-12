@@ -8,9 +8,9 @@ using System.Threading;
 
 namespace LanCloud.Models
 {
-    internal class ExternalApplication : IDisposable
+    internal class ShareProxy : IDisposable
     {
-        public ExternalApplication(ServerConfig config)
+        public ShareProxy(ServerConfig config)
         {
             if (config.IsThisComputer) throw new ArgumentNullException("geen verbinding naar jezelf opbouwen aub");
 
@@ -21,30 +21,19 @@ namespace LanCloud.Models
         private ServerConfig Config { get; }
         private Thread Thread { get; }
 
-        ConcurrentQueue<RequestItem> Requests { get; } = new ConcurrentQueue<RequestItem>();
-        AutoResetEvent NewRequest { get; } = new AutoResetEvent(false);
+        ConcurrentQueue<ShareProxyQueueItem> Requests { get; } = new ConcurrentQueue<ShareProxyQueueItem>();
+        AutoResetEvent RequestPending { get; } = new AutoResetEvent(false);
         public bool Stop { get; set; }
         public bool Connected { get; private set; }
         public event EventHandler<EventArgs> StateChanged;
 
-        public bool Ping()
-        {
-            try
-            {
-                return Send("Ping") == "Pong";
-            }
-            catch
-            {
-                return false;
-            }
-        }
-        public ExternalFtpDto[] GetExternalFtps()
+        public ExternalShareDto[] GetExternalShareDtos()
         {
 
             try
             {
-                var json = Send("GetOwnFtpsAsExternalFtps");
-                var list = JsonConvert.DeserializeObject<ExternalFtpDto[]>(json);
+                var json = Send(nameof(GetExternalShareDtos));//"GetExternalShareDtos");
+                var list = JsonConvert.DeserializeObject<ExternalShareDto[]>(json);
                 return list;
             }
             catch
@@ -56,15 +45,12 @@ namespace LanCloud.Models
 
         public string Send(string request)
         {
-            var requestItem = new RequestItem()
-            {
-                Request = request
-            };
-            Requests.Enqueue(requestItem);
-            NewRequest.Set();
-            if (!requestItem.RequestDone.WaitOne(10000))
+            var queueItem = new ShareProxyQueueItem(request);
+            Requests.Enqueue(queueItem);
+            RequestPending.Set();
+            if (!queueItem.RequestDone.WaitOne(10000))
                 throw new Exception("Timeout occured");
-            return requestItem.Response;
+            return queueItem.Response;
         }
 
         private void Start()
@@ -83,9 +69,9 @@ namespace LanCloud.Models
                             Connected = true;
                             StateChanged?.Invoke(this, null);
                         }
-                        if (NewRequest.WaitOne(1000))
+                        if (RequestPending.WaitOne(1000))
                         {
-                            while (Requests.TryDequeue(out RequestItem requestItem))
+                            while (Requests.TryDequeue(out ShareProxyQueueItem requestItem))
                             {
                                 writer.Write(requestItem.Request);
                                 requestItem.Response = reader.ReadString();
@@ -111,12 +97,5 @@ namespace LanCloud.Models
                 Thread.Join();
         }
 
-        class RequestItem
-        {
-            public AutoResetEvent RequestDone { get; } = new AutoResetEvent(false);
-            public string Request { get; set; }
-            public string Response { get; set; }
-        }
     }
-
 }

@@ -13,7 +13,7 @@ namespace MyVideoEditor.Forms
 
         public FfmpegExecuteblesPaths FfmpegExecuteblesPaths { get; }
         public ProjectService ProjectService { get; }
-        public MediaContainerService MediaContainerService { get; }
+        public StreamContainerService MediaContainerService { get; }
         public TimelineService TimelineService { get; }
         public TimeStampService TimeStampService { get; }
 

@@ -21,7 +21,7 @@ namespace MyVideoEditor.Controls
         MainForm MainForm { get; }
 
         ProjectService ProjectService => MainForm.ProjectService;
-        MediaContainerService MediaContainerService => MainForm.MediaContainerService;
+        StreamContainerService MediaContainerService => MainForm.MediaContainerService;
         TimelineService TimelineService => MainForm.TimelineService;
         TimeStampService TimeStampService => MainForm.TimeStampService;
 
@@ -113,13 +113,13 @@ namespace MyVideoEditor.Controls
         List<TimelineVideoControl> VideoControls { get; set; } = new List<TimelineVideoControl>();  
         List<TimelineAudioControl> AudioControls { get; set; } = new List<TimelineAudioControl>();
 
-        public void AddTimelineVideoControl(ContainerVideo mediaVideo, TimelineVideo timelineVideo, VideoStreamReader videoStreamReader)
+        public void AddTimelineVideoControl(MediaVideo mediaVideo, TimelineVideo timelineVideo, VideoStreamReader videoStreamReader)
         {
             var control = new TimelineVideoControl(timelineVideo, mediaVideo, videoStreamReader);
             VideoControls.Add(control);
             Controls.Add(control);
         }
-        public void AddTimelineAudioControl(ContainerAudio mediaAudio, TimelineAudio timelineAudio, AudioStreamReader audioStreamReader)
+        public void AddTimelineAudioControl(MediaAudio mediaAudio, TimelineAudio timelineAudio, AudioStreamReader audioStreamReader)
         {
             var control = new TimelineAudioControl(timelineAudio, mediaAudio, audioStreamReader);
             AudioControls.Add(control);

@@ -13,11 +13,11 @@ namespace LanCloud
             var configService = new ApplicationConfigService(currentDirectory);
             var config = configService.Load();
 
-            using (var ownFtpShares = new FolderCollection(config))
-            using (var externalApplications = new ExternalApplicationCollection(config))
-            using (var externalFtpShares = new ExternalFtpCollection(externalApplications))
-            using (var virtualFtpServer = new VirtualFtp(ownFtpShares, externalApplications, externalFtpShares))
-            using (var application = new OwnApplication(ownFtpShares, externalApplications, externalFtpShares))
+            using (var shares = new ShareCollection(config))
+            using (var externalApplications = new ApplicationProxyCollection(config))
+            using (var externalShares = new ShareProxyCollection(externalApplications))
+            using (var application = new Application(config, shares, externalApplications, externalShares))
+            using (var virtualFtpServer = new VirtualFtp(application))
             {
                 Console.WriteLine("Press any key to stop...");
                 Console.ReadKey(true);

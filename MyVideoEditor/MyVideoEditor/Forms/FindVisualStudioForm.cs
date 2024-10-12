@@ -1,5 +1,5 @@
 ﻿using Emgu.CV;
-using MyVideoEditor.Models;
+using MyVideoEditor.DTOs;
 using MyVideoEditor.Services;
 using MyVideoEditor.VideoObjects;
 using System.Data;
@@ -9,15 +9,17 @@ namespace MyVideoEditor.Forms
 {
     public partial class FindVisualStudioForm : Form
     {
-        public FindVisualStudioForm(MediaContainerService mediaContainerService, ConsoleForm consoleForm)
+        public FindVisualStudioForm(StreamContainerService mediaContainerService, FfmpegExecuteblesPaths ffmpegExecuteblesPaths, ConsoleForm consoleForm)
         {
             MediaContainerService = mediaContainerService;
             ConsoleForm = consoleForm;
+            FfmpegExecuteblesPaths = ffmpegExecuteblesPaths;
             InitializeComponent();
         }
 
-        public MediaContainerService MediaContainerService { get; }
+        public StreamContainerService MediaContainerService { get; }
         public ConsoleForm ConsoleForm { get; }
+        public FfmpegExecuteblesPaths FfmpegExecuteblesPaths { get; }
 
         private void button1_Click(object sender, EventArgs e)
         {
@@ -42,7 +44,8 @@ namespace MyVideoEditor.Forms
                     var fileinfo = dirinfo.GetFiles().OrderBy(a => a.Name).Skip(7).FirstOrDefault();
                     {
                         var mediacontainer = MediaContainerService.Open(fileinfo.FullName);
-                        var videostream = mediacontainer.VideoStreams.FirstOrDefault();
+                        var videoinfo = mediacontainer.VideoInfos?.FirstOrDefault();
+                        var videostream = new VideoStreamReader(FfmpegExecuteblesPaths, fileinfo.FullName, videoinfo);
                         if (videostream != null)
                         {
                             ProcessVideo(titleImage, titleFrame, logoFrame, videostream);
