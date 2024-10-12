@@ -8,8 +8,8 @@
     <ProjectGuid>{EA31F646-F757-4436-B3D2-D54AE82DB920}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>LanCloud.Application</RootNamespace>
-    <AssemblyName>LanCloud.Application</AssemblyName>
+    <RootNamespace>LanCloud</RootNamespace>
+    <AssemblyName>LanCloud</AssemblyName>
     <TargetFrameworkVersion>v4.8.1</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
@@ -64,12 +64,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Collections\Folder.cs" />
+    <Compile Include="Handlers\OwnApplicationHandler.cs" />
+    <Compile Include="Models\ExternalApplication.cs" />
+    <Compile Include="Collections\ExternalApplicationCollection.cs" />
+    <Compile Include="Dtos\ExternalFtpDto.cs" />
+    <Compile Include="Models\OwnApplication.cs" />
+    <Compile Include="Collections\FolderCollection.cs" />
+    <Compile Include="Collections\ExternalFtpCollection.cs" />
+    <Compile Include="Models\ExternalFtp.cs" />
+    <Compile Include="Handlers\VirtualFtpHandler.cs" />
+    <Compile Include="Config\ServerConfig.cs" />
+    <Compile Include="Config\ApplicationConfigService.cs" />
+    <Compile Include="Config\ApplicationConfig.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="Test\FtpCommandHandler.cs" />
+    <Compile Include="Handlers\FolderHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Test\FtpDirectory.cs" />
-    <Compile Include="Test\FtpFile.cs" />
-    <Compile Include="Test\FtpUser.cs" />
+    <Compile Include="Models\VirtualFtp.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -88,6 +99,10 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\LanCloud.ApplicationServer\LanCloud.ApplicationServer.csproj">
+      <Project>{7BA4B3A7-73C4-4725-9A26-7205F1F389E2}</Project>
+      <Name>LanCloud.ApplicationServer</Name>
+    </ProjectReference>
     <ProjectReference Include="..\LanCloud.DriveServer\LanCloud.FtpServer.csproj">
       <Project>{c0e5fc5b-aa67-437f-a704-c0e34638c5d4}</Project>
       <Name>LanCloud.FtpServer</Name>
@@ -97,6 +112,7 @@
       <Name>LanCloud.Logger</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -1,8 +1,8 @@
-﻿using LanCloud.FtpServer.Interfaces;
+﻿using LanCloud.Ftp.Interfaces;
 
-namespace LanCloud.Application
+namespace LanCloud.Models
 {
-    internal class FtpUser : IFtpUser
+    public class FtpUser
     {
         public FtpUser(string userName)
         {

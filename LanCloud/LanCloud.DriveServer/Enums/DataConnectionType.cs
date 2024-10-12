@@ -1,4 +1,4 @@
-﻿namespace LanCloud.FtpServer.Enums
+﻿namespace LanCloud.Ftp.Enums
 {
     public enum DataConnectionType
     {

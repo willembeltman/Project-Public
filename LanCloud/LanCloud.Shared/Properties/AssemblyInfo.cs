@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("LanCloud.Ftp")]
+[assembly: AssemblyTitle("LanCloud.Shared")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("LanCloud.Ftp")]
+[assembly: AssemblyProduct("LanCloud.Shared")]
 [assembly: AssemblyCopyright("Copyright ©  2024")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("c0e5fc5b-aa67-437f-a704-c0e34638c5d4")]
+[assembly: Guid("0cada772-a40d-4231-b56d-bd6a8e86e386")]
 
 // Version information for an assembly consists of the following four values:
 //

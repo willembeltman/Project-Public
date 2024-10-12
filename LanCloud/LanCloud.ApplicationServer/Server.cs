@@ -1,34 +1,28 @@
-﻿using LanCloud.Ftp.Interfaces;
-using LanCloud.Logger;
+﻿using LanCloud.ApplicationServer.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 
-namespace LanCloud.Ftp
+namespace LanCloud.ApplicationServer
 {
     public class Server : IDisposable
     {
-        ILogger Logger = LogManager.GetLogger(typeof(Server));
-
         private bool Disposed = false;
         private bool Listening = false;
 
         private List<ClientConnection> ActiveConnections;
 
         private IPEndPoint LocalEndPoint { get; }
-        public IFtpHandler CommandHandler { get; }
+        public IApplicationHandler ApplicationHandler { get; }
         private TcpListener Listener { get; }
 
-        public Server(IPAddress ipAddress, int port, IFtpHandler commandHandler)
+        public Server(IPAddress ipAddress, int port, IApplicationHandler applicationHandler)
         {
             LocalEndPoint = new IPEndPoint(ipAddress, port);
-            CommandHandler = commandHandler;
+            ApplicationHandler = applicationHandler;
             Listener = new TcpListener(LocalEndPoint);
-
-            Logger.Info("#Version: 1.0");
-            Logger.Info("#Fields: date time c-ip c-port cs-username cs-method cs-uri-stem sc-status sc-bytes cs-bytes s-name s-port");
 
             Listening = true;
             Listener.Start();
@@ -46,7 +40,7 @@ namespace LanCloud.Ftp
 
                 TcpClient client = Listener.EndAcceptTcpClient(result);
 
-                ClientConnection connection = new ClientConnection(client, CommandHandler);
+                ClientConnection connection = new ClientConnection(client, ApplicationHandler);
 
                 ActiveConnections.Add(connection);
 
@@ -65,8 +59,6 @@ namespace LanCloud.Ftp
             {
                 if (disposing)
                 {
-                    Logger.Info("Stopping FtpServer");
-
                     Listening = false;
                     Listener.Stop();
 

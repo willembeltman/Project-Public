@@ -1,10 +1,9 @@
-﻿using LanCloud.FtpServer.Interfaces;
-using System;
+﻿using System;
 using System.IO;
 
-namespace LanCloud.Application
+namespace LanCloud.Models
 {
-    internal class FtpFile : IFtpFile
+    public class FtpFile
     {
         public FtpFile(FileInfo fileInfo)
         {

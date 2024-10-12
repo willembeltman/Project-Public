@@ -1,19 +1,23 @@
-﻿using LanCloud.FtpServer.Interfaces;
+﻿using LanCloud.Models;
+using LanCloud.Ftp.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace LanCloud.Application
+namespace LanCloud.Handlers
 {
-    internal class FtpCommandHandler : IFtpCommandHandler
+    // Deze class is het entry point voor de gebruiker
+    internal class VirtualFtpHandler : IFtpHandler
     {
-        public FtpCommandHandler(string root)
+        public VirtualFtpHandler(
+            FolderCollection ownFtpShares, 
+            ExternalApplicationCollection externalApplications, 
+            ExternalFtpCollection externalFtpShares)
         {
-            Root = root;
         }
 
-        public string Root { get; }
+        public string Root => "\\\\";
 
         private bool IsPathValid(string path)
         {
@@ -42,16 +46,20 @@ namespace LanCloud.Application
             return IsPathValid(path) ? path : null;
         }
 
-        public IEnumerable<IFtpDirectory> EnumerateDirectories(string pathname)
+        public IEnumerable<FtpDirectory> EnumerateDirectories(string pathname)
         {
             pathname = NormalizeFilename(pathname);
             var dirinfo = new DirectoryInfo(pathname);
             var directories = dirinfo.GetDirectories();
             return directories
-                .Select(directoryInfo => new FtpDirectory(directoryInfo));
+                .Select(directoryInfo => new FtpDirectory()
+                {
+                    Name = directoryInfo.Name,
+                    LastWriteTime = directoryInfo.LastWriteTime,
+                });
         }
 
-        public IEnumerable<IFtpFile> EnumerateFiles(string pathname)
+        public IEnumerable<FtpFile> EnumerateFiles(string pathname)
         {
             pathname = NormalizeFilename(pathname);
             var dirinfo = new DirectoryInfo(pathname);
@@ -63,23 +71,23 @@ namespace LanCloud.Application
         public void CreateDirectory(string pathname)
         {
             pathname = NormalizeFilename(pathname);
-            Directory.CreateDirectory(pathname);
+            System.IO.Directory.CreateDirectory(pathname);
         }
         public void DeleteDirectory(string pathname)
         {
             pathname = NormalizeFilename(pathname);
-            Directory.Delete(pathname);
+            System.IO.Directory.Delete(pathname);
         }
         public bool DirectoryExists(string pathname)
         {
             pathname = NormalizeFilename(pathname);
-            return Directory.Exists(pathname);
+            return System.IO.Directory.Exists(pathname);
         }
         public void DirectoryMove(string renameFrom, string renameTo)
         {
             renameFrom = NormalizeFilename(renameFrom);
             renameTo = NormalizeFilename(renameTo);
-            Directory.Move(renameFrom, renameTo);
+            System.IO.Directory.Move(renameFrom, renameTo);
         }
 
         public bool FileExists(string pathname)
@@ -119,7 +127,7 @@ namespace LanCloud.Application
             pathname = NormalizeFilename(pathname);
             return File.Open(pathname, FileMode.Append);
         }
-        public IFtpUser ValidateUser(string userName, string password)
+        public FtpUser ValidateUser(string userName, string password)
         {
             return new FtpUser(userName);
         }

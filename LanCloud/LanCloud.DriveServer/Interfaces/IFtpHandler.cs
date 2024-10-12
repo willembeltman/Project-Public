@@ -1,20 +1,21 @@
-﻿using System;
+﻿using LanCloud.Models;
+using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace LanCloud.FtpServer.Interfaces
+namespace LanCloud.Ftp.Interfaces
 {
-    public interface IFtpCommandHandler
+    public interface IFtpHandler
     {
-        IFtpUser ValidateUser(string userName, string password);
+        FtpUser ValidateUser(string userName, string password);
 
-        IEnumerable<IFtpDirectory> EnumerateDirectories(string pathname);
+        IEnumerable<FtpDirectory> EnumerateDirectories(string pathname);
         void CreateDirectory(string pathname);
         void DeleteDirectory(string pathname);
         bool DirectoryExists(string pathname);
         void DirectoryMove(string renameFrom, string renameTo);
 
-        IEnumerable<IFtpFile> EnumerateFiles(string pathname);
+        IEnumerable<FtpFile> EnumerateFiles(string pathname);
         Stream FileOpenRead(string pathname);
         Stream FileOpenWriteCreate(string pathname);
         Stream FileOpenWriteAppend(string pathname);

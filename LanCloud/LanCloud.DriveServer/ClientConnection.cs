@@ -1,6 +1,7 @@
-﻿using LanCloud.FtpServer.Enums;
-using LanCloud.FtpServer.Interfaces;
+﻿using LanCloud.Ftp.Enums;
+using LanCloud.Ftp.Interfaces;
 using LanCloud.Logger;
+using LanCloud.Models;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -9,14 +10,14 @@ using System.Net.Sockets;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
-namespace LanCloud.FtpServer
+namespace LanCloud.Ftp
 {
-    public class ClientConnection : IDisposable
+    internal class ClientConnection : IDisposable
     {
         ILogger Logger { get; }
         string Name { get; }
         TcpClient ControlClient { get; }
-        public IFtpCommandHandler CommandHandler { get; }
+        public IFtpHandler CommandHandler { get; }
         TcpClient DataClient { get; set; }
         TcpListener PassiveListener { get; set; }
         NetworkStream ControlStream { get; set; }
@@ -29,21 +30,20 @@ namespace LanCloud.FtpServer
 
         string UserName { get; set; }
         IPEndPoint DataEndpoint { get; set; }
-        IPEndPoint RemoteEndPoint { get; set; }
         string CertificateFileName { get; set; }
         X509Certificate Cert { get; set; }
         SslStream SslStream { get; set; }
-        string ClientIP { get; set; }
         bool Disposed { get; set; }
         string CurrentPath { get; set; } = "/";
 
-        private IFtpUser CurrentUser;
+        private FtpUser CurrentUser;
 
         private List<string> _validCommands;
 
-        public ClientConnection(TcpClient client, IFtpCommandHandler commandHandler, string certificateFilename = null)
+        public ClientConnection(TcpClient client, IFtpHandler commandHandler, string certificateFilename = null)
         {
-            Name = client.Client.AddressFamily.ToString();
+            var RemoteEndPoint = (IPEndPoint)client.Client.RemoteEndPoint;
+            Name = RemoteEndPoint.Address.ToString();
             
             ControlClient = client;
             CommandHandler = commandHandler;
@@ -66,9 +66,6 @@ namespace LanCloud.FtpServer
 
         public void HandleClient(object obj)
         {
-            RemoteEndPoint = (IPEndPoint)ControlClient.Client.RemoteEndPoint;
-
-            ClientIP = RemoteEndPoint.Address.ToString();
 
             ControlStream = ControlClient.GetStream();
 
@@ -928,7 +925,7 @@ namespace LanCloud.FtpServer
         {
             var dataWriter = new System.IO.StreamWriter(dataStream, Encoding.ASCII);
 
-            IEnumerable<IFtpDirectory> directories = CommandHandler.EnumerateDirectories(pathname);
+            IEnumerable<FtpDirectory> directories = CommandHandler.EnumerateDirectories(pathname);
 
             foreach (var d in directories)
             {
@@ -947,7 +944,7 @@ namespace LanCloud.FtpServer
                 dataWriter.Flush();
             }
 
-            IEnumerable<IFtpFile> files = CommandHandler.EnumerateFiles(pathname);
+            IEnumerable<FtpFile> files = CommandHandler.EnumerateFiles(pathname);
 
             foreach (var f in files)
             {
