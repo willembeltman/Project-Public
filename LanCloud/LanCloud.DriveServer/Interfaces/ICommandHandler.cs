@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace LanCloud.FtpServer
+namespace LanCloud.FtpServer.Interfaces
 {
     public interface ICommandHandler
     {

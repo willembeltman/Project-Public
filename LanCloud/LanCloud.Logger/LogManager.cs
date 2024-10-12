@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.IO;
 using System.Xml.Linq;
 
-namespace LanCloud.FtpServer
+namespace LanCloud.Logger
 {
     public class LogManager
     {

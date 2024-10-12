@@ -1,9 +1,10 @@
-﻿using System;
+﻿using LanCloud.FtpServer.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace LanCloud.FtpServer
+namespace LanCloud.Application
 {
     internal class CommandHandler : ICommandHandler
     {

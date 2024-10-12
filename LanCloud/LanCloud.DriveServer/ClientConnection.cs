@@ -1,7 +1,8 @@
-﻿using System;
+﻿using LanCloud.FtpServer.Enums;
+using LanCloud.FtpServer.Interfaces;
+using LanCloud.Logger;
+using System;
 using System.Collections.Generic;
-//using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Security;
 using System.Net.Sockets;
@@ -10,7 +11,6 @@ using System.Text;
 
 namespace LanCloud.FtpServer
 {
-
     public class ClientConnection : IDisposable
     {
         ILogger Logger { get; }
@@ -1112,37 +1112,11 @@ namespace LanCloud.FtpServer
         }
 
         #endregion
+
+        class DataConnectionOperation
+        {
+            public Func<NetworkStream, string, string> Operation { get; set; }
+            public string Arguments { get; set; }
+        }
     }
-
-    #region Enums
-
-    public enum TransferType
-    {
-        Ascii,
-        Ebcdic,
-        Image,
-        Local,
-    }
-
-    public enum FormatControlType
-    {
-        NonPrint,
-        Telnet,
-        CarriageControl,
-    }
-
-    public enum DataConnectionType
-    {
-        Passive,
-        Active,
-    }
-
-    public enum FileStructureType
-    {
-        File,
-        Record,
-        Page,
-    }
-
-    #endregion
 }

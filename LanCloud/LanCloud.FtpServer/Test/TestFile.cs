@@ -1,7 +1,8 @@
-﻿using System;
+﻿using LanCloud.FtpServer.Interfaces;
+using System;
 using System.IO;
 
-namespace LanCloud.FtpServer
+namespace LanCloud.Application
 {
     internal class TestFile : IFileInfo
     {

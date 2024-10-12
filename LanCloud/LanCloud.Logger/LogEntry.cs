@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace LanCloud.FtpServer
+namespace LanCloud.Logger
 {
-    // Fields: date time c-ip c-port cs-username cs-method cs-uri-stem sc-status sc-bytes cs-bytes s-name s-port
-
     public class LogEntry
     {
         public DateTime Date { get; set; }

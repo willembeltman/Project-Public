@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace LanCloud.FtpServer
+namespace LanCloud.FtpServer.Interfaces
 {
     public interface IFileInfo
     {
