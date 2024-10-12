@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Net;
 using LanCloud.FtpServer;
 
@@ -11,8 +8,8 @@ namespace LanCloud.Application
     {
         static void Main(string[] args)
         {
-            var commandHandler = new FtpCommandHandler(@"D:\Willem\Videos");
-            using (FtpServer.FtpServer server = new FtpServer.FtpServer(IPAddress.Any, 21, commandHandler))
+            var commandHandler = new FtpCommandHandler(@"E:\LanCloud");
+            using (Server server = new Server(IPAddress.Any, 21, commandHandler))
             {
                 server.Start();
 

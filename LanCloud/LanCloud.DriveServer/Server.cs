@@ -8,9 +8,9 @@ using System.Threading;
 
 namespace LanCloud.FtpServer
 {
-    public class FtpServer : IDisposable
+    public class Server : IDisposable
     {
-        ILogger Logger = LogManager.GetLogger(typeof(FtpServer));
+        ILogger Logger = LogManager.GetLogger(typeof(Server));
 
         private bool Disposed = false;
         private bool Listening = false;
@@ -21,7 +21,7 @@ namespace LanCloud.FtpServer
         private IPEndPoint LocalEndPoint { get; }
         public IFtpCommandHandler CommandHandler { get; }
 
-        public FtpServer(IPAddress ipAddress, int port, IFtpCommandHandler commandHandler)
+        public Server(IPAddress ipAddress, int port, IFtpCommandHandler commandHandler)
         {
             LocalEndPoint = new IPEndPoint(ipAddress, port);
             CommandHandler = commandHandler;
