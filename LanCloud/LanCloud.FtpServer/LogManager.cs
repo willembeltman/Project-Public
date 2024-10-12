@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.IO;
 using System.Xml.Linq;
 
-namespace SharpFtpServer
+namespace LanCloud.FtpServer
 {
     public class LogManager
     {

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
+//using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Security;
@@ -8,7 +8,7 @@ using System.Net.Sockets;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
-namespace SharpFtpServer
+namespace LanCloud.FtpServer
 {
 
     public class ClientConnection : IDisposable
@@ -16,20 +16,20 @@ namespace SharpFtpServer
         ILogger Logger { get; }
         string Name { get; }
         TcpClient ControlClient { get; }
-
+        public ICommandHandler CommandHandler { get; }
         TcpClient DataClient { get; set; }
         TcpListener PassiveListener { get; set; }
         NetworkStream ControlStream { get; set; }
-        StreamReader ControlReader { get; set; }
-        StreamWriter ControlWriter { get; set; }
+        System.IO.StreamReader ControlReader { get; set; }
+        System.IO.StreamWriter ControlWriter { get; set; }
         TransferType ConnectionType { get; set; } = TransferType.Ascii;
         FormatControlType FormatControlType { get; set; } = FormatControlType.NonPrint;
         DataConnectionType DataConnectionType { get; set; } = DataConnectionType.Active;
         FileStructureType FileStructureType { get; set; } = FileStructureType.File;
 
         string UserName { get; set; }
-        string Root { get; set; } = "D:\\Willem\\Videos";
-        string CurrentDirectory { get; set; } = "D:\\Willem\\Videos";
+        //string Root { get; set; } = "D:\\Willem\\Videos";
+        //string CurrentDirectory { get; set; } //= "D:\\Willem\\Videos";
         IPEndPoint DataEndpoint { get; set; }
         IPEndPoint RemoteEndPoint { get; set; }
         string CertificateFileName { get; set; }
@@ -37,6 +37,7 @@ namespace SharpFtpServer
         SslStream SslStream { get; set; }
         string ClientIP { get; set; }
         bool Disposed { get; set; }
+        string CurrentPath { get; set; } = "/";
 
         //private User _currentUser;
 
@@ -44,9 +45,12 @@ namespace SharpFtpServer
 
         public ClientConnection(TcpClient client, ICommandHandler commandHandler, string certificateFilename = null)
         {
-            Name = Guid.NewGuid().ToString().Substring(0, 4);
+            Name = client.Client.AddressFamily.ToString();
+            
             ControlClient = client;
+            CommandHandler = commandHandler;
             CertificateFileName = certificateFilename;
+
             Logger = LogManager.GetLogger(typeof(ClientConnection), Name);
 
             //_validCommands = new List<string>();
@@ -70,8 +74,8 @@ namespace SharpFtpServer
 
             ControlStream = ControlClient.GetStream();
 
-            ControlReader = new StreamReader(ControlStream);
-            ControlWriter = new StreamWriter(ControlStream);
+            ControlReader = new System.IO.StreamReader(ControlStream);
+            ControlWriter = new System.IO.StreamWriter(ControlStream);
 
             ControlWriter.WriteLine("220 Service Ready.");
             ControlWriter.Flush();
@@ -199,7 +203,7 @@ namespace SharpFtpServer
                                 //logEntry.Date = DateTime.Now;
                                 break;
                             case "LIST":
-                                response = List(arguments ?? CurrentDirectory);
+                                response = List(arguments ?? CurrentPath);
                                 //logEntry.Date = DateTime.Now;
                                 break;
                             case "SYST":
@@ -238,8 +242,7 @@ namespace SharpFtpServer
 
                             // Extensions defined by rfc 2228
                             case "AUTH":
-                                response = "502 Command not implemented";
-                                //response = Auth(arguments);
+                                response = Auth(arguments);
                                 break;
 
                             // Extensions defined by rfc 2389
@@ -302,8 +305,8 @@ namespace SharpFtpServer
 
                             SslStream.AuthenticateAsServer(Cert);
 
-                            ControlReader = new StreamReader(SslStream);
-                            ControlWriter = new StreamWriter(SslStream);
+                            ControlReader = new System.IO.StreamReader(SslStream);
+                            ControlWriter = new System.IO.StreamWriter(SslStream);
                         }
                     }
                 }
@@ -315,11 +318,33 @@ namespace SharpFtpServer
 
             Dispose();
         }
+        //private bool IsPathValid(string path)
+        //{
+        //    return path.StartsWith(Root);
+        //}
+        //private string NormalizeFilename(string path)
+        //{
+        //    if (path == null)
+        //    {
+        //        path = string.Empty;
+        //    }
 
-        private bool IsPathValid(string path)
-        {
-            return path.StartsWith(Root);
-        }
+        //    if (path == "/")
+        //    {
+        //        return Root;
+        //    }
+        //    else if (path.StartsWith("/"))
+        //    {
+        //        path = new FileInfo(Path.Combine(Root, path.Substring(1))).FullName;
+        //    }
+        //    else
+        //    {
+        //        path = new FileInfo(Path.Combine(CurrentDirectory, path)).FullName;
+        //    }
+
+        //    return IsPathValid(path) ? path : null;
+        //}
+
 
         private string NormalizeFilename(string path)
         {
@@ -327,21 +352,32 @@ namespace SharpFtpServer
             {
                 path = string.Empty;
             }
-
-            if (path == "/")
+            
+            if (!path.StartsWith("/")) // = bestand zonder directory
             {
-                return Root;
+                path = CombineWithCurrentPath(path);
             }
-            else if (path.StartsWith("/"))
+
+            return path;
+        }
+
+        private string CombineWithCurrentPath(string path)
+        {
+            if (string.IsNullOrEmpty(CurrentPath))
             {
-                path = new FileInfo(Path.Combine(Root, path.Substring(1))).FullName;
+                return "/" + path;
             }
             else
             {
-                path = new FileInfo(Path.Combine(CurrentDirectory, path)).FullName;
+                if (CurrentPath.EndsWith("/"))
+                {
+                    return CurrentPath + path;
+                }
+                else
+                {
+                    return CurrentPath + "/" + path;
+                }
             }
-
-            return IsPathValid(path) ? path : null;
         }
 
         #region FTP Commands
@@ -361,13 +397,20 @@ namespace SharpFtpServer
 
         private string Auth(string authMode)
         {
-            if (authMode == "TLS")
+            if (CertificateFileName != null)
             {
-                return "234 Enabling TLS Connection";
+                if (authMode == "TLS")
+                {
+                    return "234 Enabling TLS Connection";
+                }
+                else
+                {
+                    return "504 Unrecognized AUTH mode";
+                }
             }
             else
             {
-                return "504 Unrecognized AUTH mode";
+                return "502 Command not implemented";
             }
         }
 
@@ -398,41 +441,51 @@ namespace SharpFtpServer
 
         private string ChangeWorkingDirectory(string pathname)
         {
-            if (pathname == "/")
+            pathname = NormalizeFilename(pathname);
+
+            if (!CommandHandler.DirectoryExists(pathname))
             {
-                CurrentDirectory = Root;
-            }
-            else
-            {
-                string newDir;
-
-                if (pathname.StartsWith("/"))
-                {
-                    pathname = pathname.Substring(1).Replace('/', '\\');
-                    newDir = Path.Combine(Root, pathname);
-                }
-                else
-                {
-                    pathname = pathname.Replace('/', '\\');
-                    newDir = Path.Combine(CurrentDirectory, pathname);
-                }
-
-                if (Directory.Exists(newDir))
-                {
-                    CurrentDirectory = new DirectoryInfo(newDir).FullName;
-
-                    if (!IsPathValid(CurrentDirectory))
-                    {
-                        CurrentDirectory = Root;
-                    }
-                }
-                else
-                {
-                    CurrentDirectory = Root;
-                }
+                return $"550 CWD failed. Directory '{pathname}' not found.";
             }
 
+            CurrentPath = pathname;
             return "250 Changed to new directory";
+
+            //if (pathname == "/")
+            //{
+            //    CurrentDirectory = Root;
+            //}
+            //else
+            //{
+            //    string newDir;
+
+            //    if (pathname.StartsWith("/"))
+            //    {
+            //        pathname = pathname.Substring(1).Replace('/', '\\');
+            //        newDir = Path.Combine(Root, pathname);
+            //    }
+            //    else
+            //    {
+            //        pathname = pathname.Replace('/', '\\');
+            //        newDir = Path.Combine(CurrentDirectory, pathname);
+            //    }
+
+            //    if (Directory.Exists(newDir))
+            //    {
+            //        CurrentDirectory = new DirectoryInfo(newDir).FullName;
+
+            //        if (!IsPathValid(CurrentDirectory))
+            //        {
+            //            CurrentDirectory = Root;
+            //        }
+            //    }
+            //    else
+            //    {
+            //        CurrentDirectory = Root;
+            //    }
+            //}
+
+            //return "250 Changed to new directory";
         }
 
         private string Port(string hostPort)
@@ -551,9 +604,9 @@ namespace SharpFtpServer
 
             if (pathname != null)
             {
-                if (File.Exists(pathname))
+                if (CommandHandler.FileExists(pathname))
                 {
-                    File.Delete(pathname);
+                    CommandHandler.FileDelete(pathname);
                 }
                 else
                 {
@@ -572,9 +625,9 @@ namespace SharpFtpServer
 
             if (pathname != null)
             {
-                if (Directory.Exists(pathname))
+                if (CommandHandler.DirectoryExists(pathname))
                 {
-                    Directory.Delete(pathname);
+                    CommandHandler.DeleteDirectory(pathname);
                 }
                 else
                 {
@@ -593,9 +646,9 @@ namespace SharpFtpServer
 
             if (pathname != null)
             {
-                if (!Directory.Exists(pathname))
+                if (!CommandHandler.DirectoryExists(pathname))
                 {
-                    Directory.CreateDirectory(pathname);
+                    CommandHandler.CreateDirectory(pathname);
                 }
                 else
                 {
@@ -614,9 +667,9 @@ namespace SharpFtpServer
 
             if (pathname != null)
             {
-                if (File.Exists(pathname))
+                if (CommandHandler.FileExists(pathname))
                 {
-                    return string.Format("213 {0}", File.GetLastWriteTime(pathname).ToString("yyyyMMddHHmmss.fff"));
+                    return string.Format("213 {0}", CommandHandler.FileGetLastWriteTime(pathname).ToString("yyyyMMddHHmmss.fff"));
                 }
             }
 
@@ -629,11 +682,11 @@ namespace SharpFtpServer
 
             if (pathname != null)
             {
-                if (File.Exists(pathname))
+                if (CommandHandler.FileExists(pathname))
                 {
                     long length = 0;
 
-                    using (FileStream fs = File.Open(pathname, FileMode.Open, FileAccess.Read, FileShare.Read))
+                    using (var fs = CommandHandler.FileOpenRead(pathname))
                     {
                         length = fs.Length;
                     }
@@ -651,7 +704,7 @@ namespace SharpFtpServer
 
             if (pathname != null)
             {
-                if (File.Exists(pathname))
+                if (CommandHandler.FileExists(pathname))
                 {
                     var state = new DataConnectionOperation { Arguments = pathname, Operation = RetrieveOperation };
 
@@ -698,7 +751,7 @@ namespace SharpFtpServer
 
         private string StoreUnique()
         {
-            string pathname = NormalizeFilename(new Guid().ToString());
+            string pathname =  NormalizeFilename(new Guid().ToString());
 
             var state = new DataConnectionOperation { Arguments = pathname, Operation = StoreOperation };
 
@@ -709,8 +762,8 @@ namespace SharpFtpServer
 
         private string PrintWorkingDirectory()
         {
-            string current = CurrentDirectory.Replace(Root, string.Empty).Replace('\\', '/');
-
+            //string current = CurrentDirectory.Replace(Root, string.Empty).Replace('\\', '/');
+            string current = CurrentPath;
             if (current.Length == 0)
             {
                 current = "/";
@@ -776,13 +829,13 @@ namespace SharpFtpServer
 
             if (renameFrom != null && renameTo != null)
             {
-                if (File.Exists(renameFrom))
+                if (CommandHandler.FileExists(renameFrom))
                 {
-                    File.Move(renameFrom, renameTo);
+                    CommandHandler.FileMove(renameFrom, renameTo);
                 }
-                else if (Directory.Exists(renameFrom))
+                else if (CommandHandler.DirectoryExists(renameFrom))
                 {
-                    Directory.Move(renameFrom, renameTo);
+                    CommandHandler.DirectoryMove(renameFrom, renameTo);
                 }
                 else
                 {
@@ -848,7 +901,7 @@ namespace SharpFtpServer
         {
             long bytes = 0;
 
-            using (FileStream fs = new FileStream(pathname, FileMode.Open, FileAccess.Read))
+            using (var fs = CommandHandler.FileOpenRead(pathname))
             {
                 bytes = CopyStream(fs, dataStream);
             }
@@ -860,22 +913,22 @@ namespace SharpFtpServer
         {
             long bytes = 0;
 
-            using (FileStream fs = new FileStream(pathname, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None, 4096, FileOptions.SequentialScan))
+            using (var fs = CommandHandler.FileOpenWriteCreate(pathname))
             {
                 bytes = CopyStream(dataStream, fs);
             }
 
-            LogEntry logEntry = new LogEntry
-            {
-                Date = DateTime.Now,
-                CIP = ClientIP,
-                CSMethod = "STOR",
-                CSUsername = UserName,
-                SCStatus = "226",
-                CSBytes = bytes.ToString()
-            };
+            //LogEntry logEntry = new LogEntry
+            //{
+            //    Date = DateTime.Now,
+            //    CIP = ClientIP,
+            //    CSMethod = "STOR",
+            //    CSUsername = UserName,
+            //    SCStatus = "226",
+            //    CSBytes = bytes.ToString()
+            //};
 
-            Logger.Info(logEntry);
+            //Logger.Info(logEntry);
 
             return "226 Closing data connection, file transfer successful";
         }
@@ -884,72 +937,77 @@ namespace SharpFtpServer
         {
             long bytes = 0;
 
-            using (FileStream fs = new FileStream(pathname, FileMode.Append, FileAccess.Write, FileShare.None, 4096, FileOptions.SequentialScan))
+            using (var fs = CommandHandler.FileOpenWriteAppend(pathname))
             {
                 bytes = CopyStream(dataStream, fs);
             }
 
-            LogEntry logEntry = new LogEntry
-            {
-                Date = DateTime.Now,
-                CIP = ClientIP,
-                CSMethod = "APPE",
-                CSUsername = UserName,
-                SCStatus = "226",
-                CSBytes = bytes.ToString()
-            };
+            //LogEntry logEntry = new LogEntry
+            //{
+            //    Date = DateTime.Now,
+            //    CIP = ClientIP,
+            //    CSMethod = "APPE",
+            //    CSUsername = UserName,
+            //    SCStatus = "226",
+            //    CSBytes = bytes.ToString()
+            //};
 
-            Logger.Info(logEntry);
+            //Logger.Info(logEntry);
 
             return "226 Closing data connection, file transfer successful";
         }
 
         private string ListOperation(NetworkStream dataStream, string pathname)
         {
-            StreamWriter dataWriter = new StreamWriter(dataStream, Encoding.ASCII);
+            var dataWriter = new System.IO.StreamWriter(dataStream, Encoding.ASCII);
 
-            IEnumerable<string> directories = Directory.EnumerateDirectories(pathname);
+            IEnumerable<IDirectoryInfo> directories = CommandHandler.EnumerateDirectories(pathname);
 
-            foreach (string dir in directories)
+            foreach (var d in directories)
             {
-                DirectoryInfo d = new DirectoryInfo(dir);
+                //DirectoryInfo d = new DirectoryInfo(dir);
 
                 string date = d.LastWriteTime < DateTime.Now - TimeSpan.FromDays(180) ?
                     d.LastWriteTime.ToString("MMM dd  yyyy") :
                     d.LastWriteTime.ToString("MMM dd HH:mm");
 
-                string line = string.Format("drwxr-xr-x    2 2003     2003     {0,8} {1} {2}", "4096", date, d.Name);
+                string line = string.Format(
+                    "drwxr-xr-x    2 2003     2003     {0,8} {1} {2}", "4096",
+                    date, 
+                    d.Name);
 
                 dataWriter.WriteLine(line);
                 dataWriter.Flush();
             }
 
-            IEnumerable<string> files = Directory.EnumerateFiles(pathname);
+            IEnumerable<IFileInfo> files = CommandHandler.EnumerateFiles(pathname);
 
-            foreach (string file in files)
+            foreach (var f in files)
             {
-                FileInfo f = new FileInfo(file);
-
                 string date = f.LastWriteTime < DateTime.Now - TimeSpan.FromDays(180) ?
                     f.LastWriteTime.ToString("MMM dd  yyyy") :
                     f.LastWriteTime.ToString("MMM dd HH:mm");
 
-                string line = string.Format("-rw-r--r--    2 2003     2003     {0,8} {1} {2}", f.Length, date, f.Name);
+                string line = string.Format(
+                    "-rw-r--r--    2 2003     2003     {0,8} {1} {2}", 
+                    f.Length, 
+                    date, 
+                    f.Name);
 
                 dataWriter.WriteLine(line);
                 dataWriter.Flush();
             }
 
-            LogEntry logEntry = new LogEntry
-            {
-                Date = DateTime.Now,
-                CIP = ClientIP,
-                CSMethod = "LIST",
-                CSUsername = UserName,
-                SCStatus = "226"
-            };
+            //LogEntry logEntry = new LogEntry
+            //{
+            //    Date = DateTime.Now,
+            //    CIP = ClientIP,
+            //    CSMethod = "LIST",
+            //    CSUsername = UserName,
+            //    SCStatus = "226"
+            //};
 
-            Logger.Info(logEntry);
+            //Logger.Info(logEntry);
 
             return "226 Transfer complete";
         }
@@ -958,7 +1016,7 @@ namespace SharpFtpServer
 
         #region Copy Stream Implementations
 
-        private static long CopyStream(Stream input, Stream output, int bufferSize)
+        private static long CopyStream(System.IO.Stream input, System.IO.Stream output, int bufferSize)
         {
             byte[] buffer = new byte[bufferSize];
             int count = 0;
@@ -973,15 +1031,15 @@ namespace SharpFtpServer
             return total;
         }
 
-        private static long CopyStreamAscii(Stream input, Stream output, int bufferSize)
+        private static long CopyStreamAscii(System.IO.Stream input, System.IO.Stream output, int bufferSize)
         {
             char[] buffer = new char[bufferSize];
             int count = 0;
             long total = 0;
 
-            using (StreamReader rdr = new StreamReader(input, Encoding.ASCII))
+            using (var rdr = new System.IO.StreamReader(input, Encoding.ASCII))
             {
-                using (StreamWriter wtr = new StreamWriter(output, Encoding.ASCII))
+                using (var wtr = new System.IO.StreamWriter(output, Encoding.ASCII))
                 {
                     while ((count = rdr.Read(buffer, 0, buffer.Length)) > 0)
                     {
@@ -994,9 +1052,9 @@ namespace SharpFtpServer
             return total;
         }
 
-        private long CopyStream(Stream input, Stream output)
+        private long CopyStream(System.IO.Stream input, System.IO.Stream output)
         {
-            Stream limitedStream = output; // new RateLimitingStream(output, 131072, 0.5);
+            var limitedStream = output; // new RateLimitingStream(output, 131072, 0.5);
 
             if (ConnectionType == TransferType.Image)
             {

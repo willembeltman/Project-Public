@@ -4,13 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Net;
 
-namespace SharpFtpServer
+namespace LanCloud.FtpServer
 {
     class Program
     {
         static void Main(string[] args)
         {
-            using (FtpServer server = new FtpServer(IPAddress.Any, 21, new CommandHandler(@"D:\Willem\Videos")))
+            var commandHandler = new CommandHandler(@"D:\Willem\Videos");
+            using (FtpServer server = new FtpServer(IPAddress.Any, 21, commandHandler))
             {
                 server.Start();
 

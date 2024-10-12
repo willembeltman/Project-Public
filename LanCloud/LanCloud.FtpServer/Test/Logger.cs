@@ -7,7 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 
-namespace SharpFtpServer
+namespace LanCloud.FtpServer
 {
     internal class Logger : ILogger, IDisposable
     {
@@ -65,14 +65,6 @@ namespace SharpFtpServer
 
         public void Info(string message)
         {
-            var line = GetLine(message, false);
-            Queue.Enqueue(line);
-            LogReceived.Set();
-        }
-
-        public void Info(LogEntry logEntry)
-        {
-            var message = JsonConvert.SerializeObject(logEntry);
             var line = GetLine(message, false);
             Queue.Enqueue(line);
             LogReceived.Set();

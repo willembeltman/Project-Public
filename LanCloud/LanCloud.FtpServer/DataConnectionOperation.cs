@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net.Sockets;
 
-namespace SharpFtpServer
+namespace LanCloud.FtpServer
 {
     public class DataConnectionOperation
     {

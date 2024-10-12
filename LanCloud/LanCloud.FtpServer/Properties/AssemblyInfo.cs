@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("SharpFtpServer")]
+[assembly: AssemblyTitle("LanCloud.FtpServer")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Rick Bassham")]
-[assembly: AssemblyProduct("SharpFtpServer")]
-[assembly: AssemblyCopyright("Copyright © Rick Bassham 2012")]
+[assembly: AssemblyCompany("Willem-Jan Beltman")]
+[assembly: AssemblyProduct("LanCloud.FtpServer")]
+[assembly: AssemblyCopyright("Copyright © Willem-Jan Beltman 2024")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("0ff9776a-1a71-4b97-b6ba-f63da37ce6a8")]
+[assembly: Guid("ba4690b8-7d55-4483-b96d-d03e0870f47f")]
 
 // Version information for an assembly consists of the following four values:
 //
