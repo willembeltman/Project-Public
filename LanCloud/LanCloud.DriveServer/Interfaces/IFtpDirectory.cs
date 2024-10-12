@@ -2,10 +2,9 @@
 
 namespace LanCloud.FtpServer.Interfaces
 {
-    public interface IFileInfo
+    public interface IFtpDirectory
     {
         string Name { get; }
-        long Length { get; }
         DateTime LastWriteTime { get; }
     }
 }

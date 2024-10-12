@@ -47,9 +47,10 @@
     <Compile Include="Enums\FormatControlType.cs" />
     <Compile Include="Enums\TransferType.cs" />
     <Compile Include="FtpServer.cs" />
-    <Compile Include="Interfaces\ICommandHandler.cs" />
-    <Compile Include="Interfaces\IDirectoryInfo.cs" />
-    <Compile Include="Interfaces\IFileInfo.cs" />
+    <Compile Include="Interfaces\IFtpCommandHandler.cs" />
+    <Compile Include="Interfaces\IFtpDirectory.cs" />
+    <Compile Include="Interfaces\IFtpFile.cs" />
+    <Compile Include="Interfaces\IFtpUser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

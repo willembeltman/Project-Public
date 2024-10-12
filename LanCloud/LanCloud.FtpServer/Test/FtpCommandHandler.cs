@@ -6,9 +6,9 @@ using System.Linq;
 
 namespace LanCloud.Application
 {
-    internal class CommandHandler : ICommandHandler
+    internal class FtpCommandHandler : IFtpCommandHandler
     {
-        public CommandHandler(string root)
+        public FtpCommandHandler(string root)
         {
             Root = root;
         }
@@ -42,22 +42,22 @@ namespace LanCloud.Application
             return IsPathValid(path) ? path : null;
         }
 
-        public IEnumerable<IDirectoryInfo> EnumerateDirectories(string pathname)
+        public IEnumerable<IFtpDirectory> EnumerateDirectories(string pathname)
         {
             pathname = NormalizeFilename(pathname);
             var dirinfo = new DirectoryInfo(pathname);
             var directories = dirinfo.GetDirectories();
             return directories
-                .Select(directoryInfo => new TestDirectory(directoryInfo));
+                .Select(directoryInfo => new FtpDirectory(directoryInfo));
         }
 
-        public IEnumerable<IFileInfo> EnumerateFiles(string pathname)
+        public IEnumerable<IFtpFile> EnumerateFiles(string pathname)
         {
             pathname = NormalizeFilename(pathname);
             var dirinfo = new DirectoryInfo(pathname);
             var fileInfos = dirinfo.GetFiles();
             return fileInfos
-                .Select(fileInfo => new TestFile(fileInfo));
+                .Select(fileInfo => new FtpFile(fileInfo));
         }
 
         public void CreateDirectory(string pathname)
@@ -119,6 +119,9 @@ namespace LanCloud.Application
             pathname = NormalizeFilename(pathname);
             return File.Open(pathname, FileMode.Append);
         }
-
+        public IFtpUser ValidateUser(string userName, string password)
+        {
+            return new FtpUser(userName);
+        }
     }
 }

@@ -4,9 +4,9 @@ using System.IO;
 
 namespace LanCloud.Application
 {
-    internal class TestFile : IFileInfo
+    internal class FtpFile : IFtpFile
     {
-        public TestFile(FileInfo fileInfo)
+        public FtpFile(FileInfo fileInfo)
         {
             FileInfo = fileInfo;
         }

@@ -19,9 +19,9 @@ namespace LanCloud.FtpServer
         private List<ClientConnection> ActiveConnections;
 
         private IPEndPoint LocalEndPoint { get; }
-        public ICommandHandler CommandHandler { get; }
+        public IFtpCommandHandler CommandHandler { get; }
 
-        public FtpServer(IPAddress ipAddress, int port, ICommandHandler commandHandler)
+        public FtpServer(IPAddress ipAddress, int port, IFtpCommandHandler commandHandler)
         {
             LocalEndPoint = new IPEndPoint(ipAddress, port);
             CommandHandler = commandHandler;

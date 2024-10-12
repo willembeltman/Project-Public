@@ -4,9 +4,9 @@ using System.IO;
 
 namespace LanCloud.Application
 {
-    internal class TestDirectory : IDirectoryInfo
+    internal class FtpDirectory : IFtpDirectory
     {
-        public TestDirectory(DirectoryInfo directoryInfo)
+        public FtpDirectory(DirectoryInfo directoryInfo)
         {
             DirectoryInfo = directoryInfo;
         }

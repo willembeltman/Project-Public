@@ -11,7 +11,7 @@ namespace LanCloud.Application
     {
         static void Main(string[] args)
         {
-            var commandHandler = new CommandHandler(@"D:\Willem\Videos");
+            var commandHandler = new FtpCommandHandler(@"D:\Willem\Videos");
             using (FtpServer.FtpServer server = new FtpServer.FtpServer(IPAddress.Any, 21, commandHandler))
             {
                 server.Start();

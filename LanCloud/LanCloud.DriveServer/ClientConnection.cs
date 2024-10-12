@@ -16,7 +16,7 @@ namespace LanCloud.FtpServer
         ILogger Logger { get; }
         string Name { get; }
         TcpClient ControlClient { get; }
-        public ICommandHandler CommandHandler { get; }
+        public IFtpCommandHandler CommandHandler { get; }
         TcpClient DataClient { get; set; }
         TcpListener PassiveListener { get; set; }
         NetworkStream ControlStream { get; set; }
@@ -28,8 +28,6 @@ namespace LanCloud.FtpServer
         FileStructureType FileStructureType { get; set; } = FileStructureType.File;
 
         string UserName { get; set; }
-        //string Root { get; set; } = "D:\\Willem\\Videos";
-        //string CurrentDirectory { get; set; } //= "D:\\Willem\\Videos";
         IPEndPoint DataEndpoint { get; set; }
         IPEndPoint RemoteEndPoint { get; set; }
         string CertificateFileName { get; set; }
@@ -39,11 +37,11 @@ namespace LanCloud.FtpServer
         bool Disposed { get; set; }
         string CurrentPath { get; set; } = "/";
 
-        //private User _currentUser;
+        private IFtpUser CurrentUser;
 
-        //private List<string> _validCommands;
+        private List<string> _validCommands;
 
-        public ClientConnection(TcpClient client, ICommandHandler commandHandler, string certificateFilename = null)
+        public ClientConnection(TcpClient client, IFtpCommandHandler commandHandler, string certificateFilename = null)
         {
             Name = client.Client.AddressFamily.ToString();
             
@@ -53,18 +51,18 @@ namespace LanCloud.FtpServer
 
             Logger = LogManager.GetLogger(typeof(ClientConnection), Name);
 
-            //_validCommands = new List<string>();
+            _validCommands = new List<string>();
         }
 
-        //private string CheckUser()
-        //{
-        //    if (_currentUser == null)
-        //    {
-        //        return "530 Not logged in";
-        //    }
+        private string CheckUser()
+        {
+            if (CurrentUser == null)
+            {
+                return "530 Not logged in";
+            }
 
-        //    return null;
-        //}
+            return null;
+        }
 
         public void HandleClient(object obj)
         {
@@ -80,7 +78,7 @@ namespace LanCloud.FtpServer
             ControlWriter.WriteLine("220 Service Ready.");
             ControlWriter.Flush();
 
-            //_validCommands.AddRange(new string[] { "AUTH", "USER", "PASS", "QUIT", "HELP", "NOOP" });
+            _validCommands.AddRange(new string[] { "AUTH", "USER", "PASS", "QUIT", "HELP", "NOOP" });
 
             string line;
 
@@ -111,10 +109,10 @@ namespace LanCloud.FtpServer
                     //    CSUriStem = arguments
                     //};
 
-                    //if (!_validCommands.Contains(cmd))
-                    //{
-                    //    response = CheckUser();
-                    //}
+                    if (!_validCommands.Contains(cmd))
+                    {
+                        response = CheckUser();
+                    }
 
                     if (cmd != "RNTO")
                     {
@@ -142,7 +140,7 @@ namespace LanCloud.FtpServer
                                 response = "221 Service closing control connection";
                                 break;
                             case "REIN":
-                                //_currentUser = null;
+                                CurrentUser = null;
                                 UserName = null;
                                 PassiveListener = null;
                                 DataClient = null;
@@ -318,33 +316,6 @@ namespace LanCloud.FtpServer
 
             Dispose();
         }
-        //private bool IsPathValid(string path)
-        //{
-        //    return path.StartsWith(Root);
-        //}
-        //private string NormalizeFilename(string path)
-        //{
-        //    if (path == null)
-        //    {
-        //        path = string.Empty;
-        //    }
-
-        //    if (path == "/")
-        //    {
-        //        return Root;
-        //    }
-        //    else if (path.StartsWith("/"))
-        //    {
-        //        path = new FileInfo(Path.Combine(Root, path.Substring(1))).FullName;
-        //    }
-        //    else
-        //    {
-        //        path = new FileInfo(Path.Combine(CurrentDirectory, path)).FullName;
-        //    }
-
-        //    return IsPathValid(path) ? path : null;
-        //}
-
 
         private string NormalizeFilename(string path)
         {
@@ -423,20 +394,16 @@ namespace LanCloud.FtpServer
 
         private string Password(string password)
         {
-            //_currentUser = UserStore.Validate(_username, password);
+            CurrentUser = CommandHandler.ValidateUser(UserName, password);
 
-            //if (_currentUser != null)
-            //{
-            //    _root = _currentUser.HomeDir;
-            //    _currentDirectory = _root;
-
-            //    return "230 User logged in";
-            //}
-            //else
-            //{
-            //    return "530 Not logged in";
-            //}
-            return "230 User logged in";
+            if (CurrentUser != null)
+            {
+                return "230 User logged in";
+            }
+            else
+            {
+                return "530 Not logged in";
+            }
         }
 
         private string ChangeWorkingDirectory(string pathname)
@@ -961,7 +928,7 @@ namespace LanCloud.FtpServer
         {
             var dataWriter = new System.IO.StreamWriter(dataStream, Encoding.ASCII);
 
-            IEnumerable<IDirectoryInfo> directories = CommandHandler.EnumerateDirectories(pathname);
+            IEnumerable<IFtpDirectory> directories = CommandHandler.EnumerateDirectories(pathname);
 
             foreach (var d in directories)
             {
@@ -980,7 +947,7 @@ namespace LanCloud.FtpServer
                 dataWriter.Flush();
             }
 
-            IEnumerable<IFileInfo> files = CommandHandler.EnumerateFiles(pathname);
+            IEnumerable<IFtpFile> files = CommandHandler.EnumerateFiles(pathname);
 
             foreach (var f in files)
             {

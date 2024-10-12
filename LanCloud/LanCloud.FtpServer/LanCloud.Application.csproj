@@ -65,10 +65,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
-    <Compile Include="Test\CommandHandler.cs" />
+    <Compile Include="Test\FtpCommandHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Test\TestDirectory.cs" />
-    <Compile Include="Test\TestFile.cs" />
+    <Compile Include="Test\FtpDirectory.cs" />
+    <Compile Include="Test\FtpFile.cs" />
+    <Compile Include="Test\FtpUser.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
