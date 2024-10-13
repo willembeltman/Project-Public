@@ -1,0 +1,21 @@
+{
+  "Port": 8080,
+  "Shares": [
+    {
+      "FullName": "D:\\Test1"
+    },
+    {
+      "FullName": "D:\\Test2"
+    },
+    {
+      "FullName": "D:\\Test3"
+    }
+  ],
+  "Servers": [
+    {
+      "Hostname": "WJLAPTOP",
+      "Port": 8080,
+      "IsThisComputer": true
+    }
+  ]
+}

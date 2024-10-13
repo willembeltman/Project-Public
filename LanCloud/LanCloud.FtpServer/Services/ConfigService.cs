@@ -16,7 +16,7 @@ namespace LanCloud.Services
 
         public Config Load()
         {
-            var fullname = Path.Combine(CurrentDirectory, "LanCloudConfig.json");
+            var fullname = Path.Combine(CurrentDirectory, "LanCloud.json");
             if (!File.Exists(fullname))
             {
                 var config = new Config()
@@ -62,7 +62,7 @@ namespace LanCloud.Services
 
         public void Load(Config config)
         {
-            var fullname = Path.Combine(CurrentDirectory, "LanCloudConfig.json");
+            var fullname = Path.Combine(CurrentDirectory, "LanCloud.json");
             if (File.Exists(fullname))
             {
                 File.Delete(fullname);
