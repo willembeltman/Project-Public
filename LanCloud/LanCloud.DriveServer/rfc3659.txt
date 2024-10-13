@@ -233,7 +233,7 @@ RFC 3659                   Extensions to FTP                  March 2007
       raw            = <any string that is not a valid UTF-8 encoding>
 
    Which format is used is at the option of the user-PI or server-PI
-   sending the pathname.  UTF-8 encodings [2] contain enough internal
+   sending the pathname.  UTF-8 encodings [2] contain enough public
    structure that it is always, in practice, possible to determine
    whether a UTF-8 or raw encoding has been used, in those cases where
    it matters.  While it is useful for the user-PI to be able to

@@ -397,7 +397,7 @@ RFC 2228                FTP Security Extensions             October 1997
 
 
       If the ADAT command returns an error, the security data exchange
-      will fail, and the client must reset its internal security state.
+      will fail, and the client must reset its public security state.
       If the client becomes unsynchronized with the server (for example,
       the server sends a 234 reply code to an AUTH command, but the
       client has more data to transmit), then the client must reset the

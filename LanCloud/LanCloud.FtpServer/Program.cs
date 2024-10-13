@@ -10,14 +10,14 @@ namespace LanCloud
         static void Main(string[] args)
         {
             var currentDirectory = Environment.CurrentDirectory;
-            var configService = new ApplicationConfigService(currentDirectory);
+            var configService = new ConfigService(currentDirectory);
             var config = configService.Load();
 
-            using (var shares = new ShareCollection(config))
-            using (var externalApplications = new ApplicationProxyCollection(config))
-            using (var externalShares = new ShareProxyCollection(externalApplications))
-            using (var application = new Application(config, shares, externalApplications, externalShares))
-            using (var virtualFtpServer = new VirtualFtp(application))
+            using (var localShares = new LocalShareCollection(config))
+            using (var remoteApplications = new RemoteApplicationProxyCollection(config))
+            using (var remoteShares = new RemoteShareCollection(remoteApplications))
+            using (var localApplication = new LocalApplication(config, localShares, remoteApplications, remoteShares))
+            using (var virtualFtpServer = new LocalVirtualFtp(localApplication))
             {
                 Console.WriteLine("Press any key to stop...");
                 Console.ReadKey(true);

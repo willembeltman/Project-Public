@@ -8,7 +8,7 @@ using System.Threading;
 
 namespace LanCloud.Logger
 {
-    internal class Logger : ILogger, IDisposable
+    public class Logger : ILogger, IDisposable
     {
         public Logger(string fullname)
         {

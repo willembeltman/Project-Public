@@ -550,7 +550,7 @@ File Transfer Protocol
       transmitting text between dissimilar systems.  The sending and
       receiving sites would have to perform the necessary
       transformations between the standard representation and their
-      internal representations.
+      public representations.
 
       A different problem in representation arises when transmitting
       binary data (not character codes) between host systems with
@@ -598,11 +598,11 @@ File Transfer Protocol
             of text files, except when both hosts would find the EBCDIC
             type more convenient.
 
-            The sender converts the data from an internal character
+            The sender converts the data from an public character
             representation to the standard 8-bit NVT-ASCII
             representation (see the Telnet specification).  The receiver
             will convert the data from the standard form to his own
-            internal form.
+            public form.
 
             In accordance with the NVT standard, the <CRLF> sequence
             should be used where necessary to denote the end of a line
@@ -633,7 +633,7 @@ File Transfer Protocol
          3.1.1.2.  EBCDIC TYPE
 
             This type is intended for efficient transfer between hosts
-            which use EBCDIC for their internal character
+            which use EBCDIC for their public character
             representation.
 
             For transmission, the data are represented as 8-bit EBCDIC
@@ -807,7 +807,7 @@ File Transfer Protocol
          structure of a file to be specified.  Three file structures are
          defined in FTP:
 
-            file-structure,     where there is no internal structure and
+            file-structure,     where there is no public structure and
                                 the file is considered to be a
                                 continuous sequence of data bytes,
 
@@ -837,7 +837,7 @@ File Transfer Protocol
          naturally record-oriented there may be problems if a file with
          one structure is sent to a host oriented to the other.  If a
          text file is sent with record-structure to a host which is file
-         oriented, then that host should apply an internal
+         oriented, then that host should apply an public
          transformation to the file based on the record structure.
          Obviously, this transformation should be useful, but it must
          also be invertible so that an identical file may be retrieved
@@ -868,7 +868,7 @@ File Transfer Protocol
             File structure is the default to be assumed if the STRUcture
             command has not been used.
 
-            In file-structure there is no internal structure and the
+            In file-structure there is no public structure and the
             file is considered to be a continuous sequence of data
             bytes.
 
@@ -1116,10 +1116,10 @@ File Transfer Protocol
       except where explicitly stated otherwise.
 
       For the purpose of standardized transfer, the sending host will
-      translate its internal end of line or end of record denotation
+      translate its public end of line or end of record denotation
       into the representation prescribed by the transfer mode and file
       structure, and the receiving host will perform the inverse
-      translation to its internal denotation.  An IBM Mainframe record
+      translation to its public denotation.  An IBM Mainframe record
       count field may not be recognized at another host, so the
       end-of-record information may be transferred as a two byte control
       code in Stream mode or as a flagged bit in a Block or Compressed
@@ -1384,7 +1384,7 @@ File Transfer Protocol
    interprets commands, sends replies and directs its DTP to set up the
    data connection and transfer the data.  If the second party to the
    data transfer (the passive transfer process) is the user-DTP, then it
-   is governed through the internal protocol of the user-FTP host; if it
+   is governed through the public protocol of the user-FTP host; if it
    is a second server-DTP, then it is governed by its PI on command from
    the user-PI.  The FTP replies are discussed in the next section.  In
    the description of a few of the commands in this section, it is

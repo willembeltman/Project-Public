@@ -7,14 +7,14 @@ using System.Linq;
 
 namespace LanCloud.Handlers
 {
-    public class FolderHandler : IFtpHandler
+    // Deze class is het entry point voor de gebruiker
+    public class LocalVirtualFtpHandler : IFtpHandler
     {
-        public FolderHandler(string root)
+        public LocalVirtualFtpHandler(LocalApplication application)
         {
-            Root = root;
         }
 
-        public string Root { get; }
+        public string Root => "\\\\";
 
         private bool IsPathValid(string path)
         {

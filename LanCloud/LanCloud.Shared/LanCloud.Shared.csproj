@@ -41,10 +41,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Dtos\ShareDto.cs" />
+    <Compile Include="Dtos\ShareRequestDto.cs" />
+    <Compile Include="Dtos\ShareResponseDto.cs" />
+    <Compile Include="Interfaces\ILocalApplicationHandler.cs" />
+    <Compile Include="Interfaces\ILocalShareHandler.cs" />
+    <Compile Include="Messages\ApplicationMessages.cs" />
+    <Compile Include="Messages\ShareMessages.cs" />
+    <Compile Include="Models\LocalShareRequest.cs" />
+    <Compile Include="Models\RemoteShareResponse.cs" />
+    <Compile Include="Models\ServerConfig.cs" />
+    <Compile Include="Models\LocalShareConfig.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Interfaces\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

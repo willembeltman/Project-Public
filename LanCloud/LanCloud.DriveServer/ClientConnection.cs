@@ -12,7 +12,7 @@ using System.Text;
 
 namespace LanCloud.Servers.Ftp
 {
-    internal class ClientConnection : IDisposable
+    public class ClientConnection : IDisposable
     {
         ILogger Logger { get; }
         string Name { get; }
