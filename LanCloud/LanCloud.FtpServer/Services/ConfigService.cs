@@ -22,9 +22,9 @@ namespace LanCloud.Services
                 var config = new Config()
                 {
                     Port = 8080,
-                    Servers = new ServerConfig[]
+                    Servers = new RemoteApplicationConfig[]
                     {
-                        new ServerConfig()
+                        new RemoteApplicationConfig()
                         {
                             Hostname = "WJLAPTOP",
                             Port = 8080,

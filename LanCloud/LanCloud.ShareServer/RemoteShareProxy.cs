@@ -11,14 +11,14 @@ namespace LanCloud.Servers.Share
 {
     public class RemoteShareProxy : IDisposable
     {
-        public RemoteShareProxy(ServerConfig config, ShareDto share)
+        public RemoteShareProxy(RemoteApplicationConfig config, ShareDto share)
         {
             Config = config;
             Share = share;
             Thread = new Thread(new ThreadStart(Start));
             Thread.Start();
         }
-        private ServerConfig Config { get; }
+        private RemoteApplicationConfig Config { get; }
         public ShareDto Share { get; }
         private Thread Thread { get; }
 

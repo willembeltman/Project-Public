@@ -1,5 +1,6 @@
 ﻿using LanCloud.Handlers;
 using LanCloud.Servers.Application;
+using LanCloud.Shared.Models;
 using System;
 using System.Net;
 

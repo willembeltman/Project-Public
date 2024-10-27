@@ -1,23 +1,19 @@
-﻿using LanCloud.Servers.Ftp;
-using LanCloud.Servers.Ftp.Interfaces;
-using LanCloud.Handlers;
-using LanCloud.Models;
+﻿using LanCloud.Models;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
-using System.Security.Policy;
+using LanCloud.Shared.Models;
 
 namespace LanCloud
 {
     public class LocalShareCollection : IEnumerable<LocalShare>, IDisposable
     {
-        public LocalShareCollection(Config applicationConfig)
+        public LocalShareCollection(Config config)
         {
-            var port = applicationConfig.Port;
-            Shares = applicationConfig.Shares
+            var port = config.Port;
+            Shares = config.Shares
                 .Select(shareConfig => new LocalShare(IPAddress.Any, ++port, shareConfig))
                 .ToArray();
         }

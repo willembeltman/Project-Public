@@ -1,4 +1,5 @@
 ﻿using LanCloud.Models;
+using LanCloud.Shared.Models;
 using System;
 using System.Collections;
 using System.Collections.Generic;

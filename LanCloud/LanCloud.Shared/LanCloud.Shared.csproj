@@ -48,9 +48,10 @@
     <Compile Include="Interfaces\ILocalShareHandler.cs" />
     <Compile Include="Messages\ApplicationMessages.cs" />
     <Compile Include="Messages\ShareMessages.cs" />
+    <Compile Include="Models\Config.cs" />
     <Compile Include="Models\LocalShareRequest.cs" />
     <Compile Include="Models\RemoteShareResponse.cs" />
-    <Compile Include="Models\ServerConfig.cs" />
+    <Compile Include="Models\RemoteApplicationConfig.cs" />
     <Compile Include="Models\LocalShareConfig.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

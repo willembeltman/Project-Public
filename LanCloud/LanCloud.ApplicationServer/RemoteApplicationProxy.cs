@@ -1,5 +1,4 @@
-﻿using LanCloud.Servers.Application;
-using LanCloud.Shared.Dtos;
+﻿using LanCloud.Shared.Dtos;
 using LanCloud.Shared.Messages;
 using LanCloud.Shared.Models;
 using Newtonsoft.Json;
@@ -13,7 +12,7 @@ namespace LanCloud.Models
 {
     public class RemoteApplicationProxy : IDisposable
     {
-        public RemoteApplicationProxy(ServerConfig config)
+        public RemoteApplicationProxy(RemoteApplicationConfig config)
         {
             if (config.IsThisComputer) throw new ArgumentNullException("geen verbinding naar jezelf opbouwen aub");
 
@@ -21,7 +20,7 @@ namespace LanCloud.Models
             Thread = new Thread(new ThreadStart(Start));
             Thread.Start();
         }
-        private ServerConfig Config { get; }
+        private RemoteApplicationConfig Config { get; }
         private Thread Thread { get; }
 
         ConcurrentQueue<RemoteApplicationProxyQueueItem> Queue { get; } = new ConcurrentQueue<RemoteApplicationProxyQueueItem>();

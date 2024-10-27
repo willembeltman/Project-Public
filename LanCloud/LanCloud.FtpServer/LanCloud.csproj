@@ -64,7 +64,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Models\Config.cs" />
+    <Compile Include="Handlers\FileBit.cs" />
+    <Compile Include="Handlers\FileBitInformation.cs" />
+    <Compile Include="Handlers\HashHelper.cs" />
     <Compile Include="Models\LocalShare.cs" />
     <Compile Include="Handlers\LocalApplicationHandler.cs" />
     <Compile Include="Collections\RemoteApplicationProxyCollection.cs" />
