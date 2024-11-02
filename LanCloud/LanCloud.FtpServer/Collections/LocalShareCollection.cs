@@ -16,10 +16,11 @@ namespace LanCloud.Collections
         {
             var port = config.StartPort;
             Shares = config.Shares
-                .Select(shareConfig => 
-                    new LocalShare(IPAddress.Any, ++port, shareConfig, logger))
+                .Select(shareConfig => new LocalShare(IPAddress.Any, ++port, shareConfig, logger))
                 .ToArray();
             Logger = logger;
+
+            Logger.Info("Loaded");
         }
 
         public LocalShare[] Shares { get; }

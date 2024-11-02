@@ -5,14 +5,12 @@ namespace LanCloud.Collections
 {
     public class RemoteShareCollection : IDisposable
     {
-        public RemoteShareCollection(RemoteApplicationProxyCollection applicationProxies)
+        public RemoteShareCollection(RemoteApplicationProxyCollection applicationProxies, ILogger logger)
         {
             ApplicationProxies = applicationProxies;
-        }
-
-        public RemoteShareCollection(RemoteApplicationProxyCollection applicationProxies, ILogger logger) : this(applicationProxies)
-        {
             Logger = logger;
+
+            Logger.Info($"Loaded");
         }
 
         public RemoteApplicationProxyCollection ApplicationProxies { get; }

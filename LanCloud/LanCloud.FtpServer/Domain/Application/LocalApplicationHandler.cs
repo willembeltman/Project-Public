@@ -21,6 +21,8 @@ namespace LanCloud.Domain.Application
             Application = application;
             Shares = shares;
             Logger = logger;
+
+            Logger.Info($"Loaded");
         }
 
         public LocalApplication Application { get; }

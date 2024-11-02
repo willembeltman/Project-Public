@@ -31,18 +31,6 @@ namespace LanCloud.Services
                             Hostname = "WJPC2",
                             Port = 8080,
                             IsThisComputer = true
-                        },
-                        new RemoteApplicationConfig()
-                        {
-                            Hostname = "WJPC3",
-                            Port = 8080,
-                            IsThisComputer = false
-                        },
-                        new RemoteApplicationConfig()
-                        {
-                            Hostname = "HOST3",
-                            Port = 8080,
-                            IsThisComputer = false
                         }
                     },
                     Shares = new LocalShareConfig[]
@@ -50,19 +38,32 @@ namespace LanCloud.Services
                         new LocalShareConfig()
                         {
                             FullName = "D:\\Test",
-                            MaxSize = 100L * 1024 * 1024 * 1024
+                            MaxSize = (new DriveInfo("D")).TotalFreeSpace,
+                            Parts = new LocalSharePartConfig[]
+                            {
+                                new LocalSharePartConfig(1)
+                            }
                         },
                         new LocalShareConfig()
                         {
                             FullName = "E:\\Test",
-                            MaxSize = 100L * 1024 * 1024 * 1024
+                            MaxSize = (new DriveInfo("E")).TotalFreeSpace,
+                            Parts = new LocalSharePartConfig[]
+                            {
+                                new LocalSharePartConfig(2)
+                            }
                         },
                         new LocalShareConfig()
                         {
                             FullName = "F:\\Test",
-                            MaxSize = 100L * 1024 * 1024 * 1024
+                            MaxSize = (new DriveInfo("F")).TotalFreeSpace,
+                            Parts = new LocalSharePartConfig[]
+                            {
+                                new LocalSharePartConfig(new [] { 1, 2 })
+                            }
                         }
-                    }
+                    },
+
                 };
                 Save(config);
                 return config;

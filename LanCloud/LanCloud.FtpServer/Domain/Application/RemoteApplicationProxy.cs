@@ -3,13 +3,21 @@ using LanCloud.Models.Responses;
 using LanCloud.Configs;
 using LanCloud.Servers.Wjp;
 using Newtonsoft.Json;
+using LanCloud.Shared.Log;
 
 namespace LanCloud.Domain.Application
 {
     public class RemoteApplicationProxy : WjpProxy
     {
-        public RemoteApplicationProxy(RemoteApplicationConfig config) : base(config)
+        public RemoteApplicationConfig Config { get; }
+        public ILogger Logger { get; }
+
+        public RemoteApplicationProxy(RemoteApplicationConfig config, ILogger logger) : base(config)
         {
+            Config = config;
+            Logger = logger;
+
+            Logger.Info($"Loaded");
         }
 
         public PingResponse Ping()

@@ -12,17 +12,17 @@ namespace LanCloud.Domain.VirtualFtp
     // Deze class is het entry point voor de gebruiker
     public class LocalVirtualFtpHandler : IFtpHandler
     {
-        public LocalVirtualFtpHandler(LocalApplication application)
+        public LocalVirtualFtpHandler(LocalApplication application, ILogger logger)
         {
-        }
-
-        public LocalVirtualFtpHandler(LocalApplication application, ILogger logger) : this(application)
-        {
+            Application = application;
             Logger = logger;
+
+            Logger.Info($"Loaded");
         }
 
         public string Root => "\\\\";
 
+        public LocalApplication Application { get; }
         public ILogger Logger { get; }
 
         private bool IsPathValid(string path)

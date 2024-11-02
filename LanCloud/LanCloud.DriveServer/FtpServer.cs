@@ -20,14 +20,12 @@ namespace LanCloud.Servers.Ftp
         private TcpListener Listener { get; }
         public ILogger Logger { get; }
 
-        public FtpServer(IPAddress ipAddress, int port, IFtpHandler commandHandler)
+        public FtpServer(IPAddress ipAddress, int port, IFtpHandler commandHandler, ILogger logger)
         {
             LocalEndPoint = new IPEndPoint(ipAddress, port);
             CommandHandler = commandHandler;
+            Logger = logger;
             Listener = new TcpListener(LocalEndPoint);
-
-            Logger.Info("#Version: 1.0");
-            Logger.Info("#Fields: date time c-ip c-port cs-username cs-method cs-uri-stem sc-status sc-bytes cs-bytes s-name s-port");
 
             Listening = true;
             Listener.Start();
@@ -35,11 +33,8 @@ namespace LanCloud.Servers.Ftp
             ActiveConnections = new List<ClientConnection>();
 
             Listener.BeginAcceptTcpClient(HandleAcceptTcpClient, Listener);
-        }
 
-        public FtpServer(IPAddress ipAddress, int port, IFtpHandler commandHandler, ILogger logger) : this(ipAddress, port, commandHandler)
-        {
-            Logger = logger;
+            Logger.Info("Virtual Ftp Server started");
         }
 
         private void HandleAcceptTcpClient(IAsyncResult result)

@@ -10,21 +10,21 @@ namespace LanCloud.Collections
 {
     public class RemoteApplicationProxyCollection : IEnumerable<RemoteApplicationProxy>, IDisposable
     {
-        public RemoteApplicationProxyCollection(Config config)
+        public RemoteApplicationProxyCollection(Config config, ILogger logger)
         {
+            Config = config;
+            Logger = logger;
             ApplicationProxies = config.Servers
                 .Where(a => a.IsThisComputer == false)
-                .Select(serverName => new RemoteApplicationProxy(serverName))
+                .Select(remoteconfig => new RemoteApplicationProxy(remoteconfig, logger))
                 .ToArray();
+
+            Logger.Info("Loaded");
         }
 
-        public RemoteApplicationProxyCollection(Config config, ILogger logger) : this(config)
-        {
-            Logger = logger;
-        }
-
-        public RemoteApplicationProxy[] ApplicationProxies { get; }
+        public Config Config { get; }
         public ILogger Logger { get; }
+        public RemoteApplicationProxy[] ApplicationProxies { get; }
 
         public void Dispose()
         {

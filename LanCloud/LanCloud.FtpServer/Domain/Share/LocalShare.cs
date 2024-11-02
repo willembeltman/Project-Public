@@ -15,22 +15,24 @@ namespace LanCloud.Domain.Share
             Config = shareConfig;
             Logger = logger;
 
-            ShareStorage = new LocalShareStorage(shareConfig, logger);
-            ShareHandler = new LocalShareHandler(shareConfig, Logger);
-            ShareServer = new WjpServer(ipAdress, port, ShareHandler, Logger);
+            Storage = new LocalShareStorage(shareConfig, logger);
+            Handler = new LocalShareHandler(Storage, Logger);
+            Server = new WjpServer(ipAdress, port, Handler, Logger);
+
+            Logger.Info($"Loaded");
         }
 
         public IPAddress IpAdress { get; }
         public int Port { get; }
         public LocalShareConfig Config { get; }
         public ILogger Logger { get; }
-        public LocalShareStorage ShareStorage { get; }
-        public LocalShareHandler ShareHandler { get; }
-        public WjpServer ShareServer { get; }
+        public LocalShareStorage Storage { get; }
+        public LocalShareHandler Handler { get; }
+        public WjpServer Server { get; }
 
         public void Dispose()
         {
-            ShareServer.Dispose();
+            Server.Dispose();
         }
 
         public int GetFreeSpace()

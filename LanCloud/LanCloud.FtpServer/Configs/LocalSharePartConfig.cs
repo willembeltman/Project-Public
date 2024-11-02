@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using Newtonsoft.Json;
+using System.Linq;
 
 namespace LanCloud.Configs
 {
@@ -7,17 +8,17 @@ namespace LanCloud.Configs
         public LocalSharePartConfig() { }
         public LocalSharePartConfig(int index)
         {
-            IsPartity = false;
             Indexes = new int[] { index };
         }
         public LocalSharePartConfig(int[] indexes)
         {
-            IsPartity = true;
             Indexes = indexes;
         }
 
-        public bool IsPartity { get; set; }
         public int[] Indexes { get; set; }
+        [JsonIgnore]
+        public bool IsPartity => Indexes.Length > 1;
+        [JsonIgnore]
         public int? Index => IsPartity ? null as int? : Indexes.FirstOrDefault();
     }
 }

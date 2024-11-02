@@ -73,15 +73,17 @@ namespace LanCloud.Shared.Log
         private string GetLine(string message, bool error)
         {
             var caller = GetCallerName();
-            return $"{DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()} {caller}: {(error ? "ERROR" : "")} {message}";
+            return $"{DateTime.Now.ToString("HH:mm:ss.fff")} {caller}: {(error ? "ERROR" : "")} {message}";
         }
         static string GetCallerName()
         {
             StackTrace stackTrace = new StackTrace();
             // De tweede entry in de stack trace is de aanroepende functie
-            var frame = stackTrace.GetFrame(1);
+            var frame = stackTrace.GetFrame(3);
             var method = frame.GetMethod();
-            return method.Name;
+            var methodname = method.Name == ".ctor" ? method.Name : "." + method.Name;
+
+            return $"{method.DeclaringType.Namespace}.{method.DeclaringType.Name}{methodname}";
         }
 
         public void Dispose()
