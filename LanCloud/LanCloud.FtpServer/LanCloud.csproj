@@ -57,6 +57,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.IO.Compression" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -64,6 +65,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Domain\Share\FileBitStreamWriter.cs" />
+    <Compile Include="Domain\Share\FileBitStreamReader.cs" />
     <Compile Include="Models\Dtos\ShareDto.cs" />
     <Compile Include="Models\Dtos\ShareRequestDto.cs" />
     <Compile Include="Models\Dtos\ShareResponseDto.cs" />
@@ -72,7 +75,7 @@
     <Compile Include="Enums\ShareMessageEnum.cs" />
     <Compile Include="Configs\Config.cs" />
     <Compile Include="Domain\Share\FileBit.cs" />
-    <Compile Include="Domain\Share\FileBitInformation.cs" />
+    <Compile Include="Domain\Share\FileRefInfo.cs" />
     <Compile Include="Services\HashService.cs" />
     <Compile Include="Domain\Share\LocalShare.cs" />
     <Compile Include="Domain\Application\LocalApplicationHandler.cs" />

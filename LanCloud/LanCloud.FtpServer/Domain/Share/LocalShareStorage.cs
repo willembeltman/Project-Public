@@ -16,12 +16,13 @@ namespace LanCloud.Domain.Share
             Logger = logger;
 
             HashService = new HashService();
-            Root = new DirectoryInfo(Config.FullName);
+            Root = new DirectoryInfo(Config.DirectoryName);
             if (!Root.Exists) Root.Create();
+            
             _FileBits = Root
                 .GetFiles("*.filebit")
-                .Select(file => new FileBit(file))
-                .ToList();
+                .Select(fileRefInfo => new FileBit(fileRefInfo))
+                .ToArray();
 
             Logger.Info($"Loaded");
         }
@@ -30,7 +31,7 @@ namespace LanCloud.Domain.Share
         private ILogger Logger { get; }
         private HashService HashService { get; }
         public DirectoryInfo Root { get; }
-        private List<FileBit> _FileBits { get; }
+        private FileBit[] _FileBits { get; set; }
 
         //public Thread Thread { get; }
         //private bool KillSwitch { get; set; }
@@ -45,48 +46,48 @@ namespace LanCloud.Domain.Share
                 }
             }
         }
-        public FileBit AddFileBit(string path, long part, byte[] data, long originalSize)
-        {
-            var extention = path.Split('.').Last();
-            string hash = HashService.CalculateHash(data);
+        ////public FileBit AddFileBit(string path, long part, byte[] data, long originalSize)
+        //{
+        //    var extention = path.Split('.').Last();
+        //    string hash = HashService.CalculateHash(data);
 
-            var duplicate = FileBits.FirstOrDefault(a =>
-                a.Information.Extention == extention &&
-                a.Information.Part == part &&
-                a.Information.OriginalSize == originalSize &&
-                a.Information.Hash == hash);
-            if (duplicate != null)
-            {
-                var paths = duplicate.Information.Paths.ToList();
-                paths.Add(path);
-                duplicate.Information.Paths = paths.ToArray();
-                duplicate.SaveInformation();
-            }
+        //    var duplicate = FileBits.FirstOrDefault(a =>
+        //        a.Information.Extention == extention &&
+        //        a.Information.Part == part &&
+        //        a.Information.OriginalSize == originalSize &&
+        //        a.Information.Hash == hash);
+        //    if (duplicate != null)
+        //    {
+        //        var paths = duplicate.Information.Paths.ToList();
+        //        paths.Add(path);
+        //        duplicate.Information.Paths = paths.ToArray();
+        //        duplicate.SaveInformation();
+        //    }
 
-            var information = new FileBitInformation()
-            {
-                Paths = new string[] { path },
-                Part = part,
-                Size = data.Length,
-                Extention = extention,
-                OriginalSize = originalSize,
-                Hash = hash
-            };
+        //    var information = new FileBitInformation()
+        //    {
+        //        Paths = new string[] { path },
+        //        Part = part,
+        //        Size = data.Length,
+        //        Extention = extention,
+        //        OriginalSize = originalSize,
+        //        Hash = hash
+        //    };
 
-            var guid = Guid.NewGuid().ToString().Replace("-", "");
-            var jsonFullname = Path.Combine(Root.FullName, $"{guid}.json");
-            var jsonFileInfo = new FileInfo(jsonFullname);
+        //    var guid = Guid.NewGuid().ToString().Replace("-", "");
+        //    var jsonFullname = Path.Combine(Root.FullName, $"{guid}.json");
+        //    var jsonFileInfo = new FileInfo(jsonFullname);
 
 
-            //var jsonFile
+        //    //var jsonFile
 
-            var bit = new FileBit(jsonFileInfo, information, data);
-            lock (_FileBits)
-            {
-                _FileBits.Add(bit);
-            }
-            return bit;
-        }
+        //    var bit = new FileBit(jsonFileInfo, information, data);
+        //    lock (_FileBits)
+        //    {
+        //        _FileBits.Add(bit);
+        //    }
+        //    return bit;
+        //}
 
 
         //public void Dispose()

@@ -24,6 +24,7 @@ namespace LanCloud.Services
                 var config = new Config()
                 {
                     StartPort = 8080,
+                    FileDatabaseDirectoryName = "C:\\Test",
                     Servers = new RemoteApplicationConfig[]
                     {
                         new RemoteApplicationConfig()
@@ -37,8 +38,7 @@ namespace LanCloud.Services
                     {
                         new LocalShareConfig()
                         {
-                            FullName = "D:\\Test",
-                            MaxSize = (new DriveInfo("D")).TotalFreeSpace,
+                            DirectoryName = "D:\\Test",
                             Parts = new LocalSharePartConfig[]
                             {
                                 new LocalSharePartConfig(1)
@@ -46,8 +46,7 @@ namespace LanCloud.Services
                         },
                         new LocalShareConfig()
                         {
-                            FullName = "E:\\Test",
-                            MaxSize = (new DriveInfo("E")).TotalFreeSpace,
+                            DirectoryName = "E:\\Test",
                             Parts = new LocalSharePartConfig[]
                             {
                                 new LocalSharePartConfig(2)
@@ -55,8 +54,7 @@ namespace LanCloud.Services
                         },
                         new LocalShareConfig()
                         {
-                            FullName = "F:\\Test",
-                            MaxSize = (new DriveInfo("F")).TotalFreeSpace,
+                            DirectoryName = "F:\\Test",
                             Parts = new LocalSharePartConfig[]
                             {
                                 new LocalSharePartConfig(new [] { 1, 2 })
