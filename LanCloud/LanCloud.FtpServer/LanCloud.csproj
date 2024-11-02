@@ -65,6 +65,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Domain\Application\FileRefBit.cs" />
     <Compile Include="Domain\Share\FileBitStreamWriter.cs" />
     <Compile Include="Domain\Share\FileBitStreamReader.cs" />
     <Compile Include="Models\Dtos\ShareDto.cs" />
@@ -75,7 +76,7 @@
     <Compile Include="Enums\ShareMessageEnum.cs" />
     <Compile Include="Configs\Config.cs" />
     <Compile Include="Domain\Share\FileBit.cs" />
-    <Compile Include="Domain\Share\FileRefInfo.cs" />
+    <Compile Include="Domain\Application\FileRef.cs" />
     <Compile Include="Services\HashService.cs" />
     <Compile Include="Domain\Share\LocalShare.cs" />
     <Compile Include="Domain\Application\LocalApplicationHandler.cs" />
