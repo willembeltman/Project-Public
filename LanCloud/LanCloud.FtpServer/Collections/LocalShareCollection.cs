@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using LanCloud.Shared.Log;
 using LanCloud.Configs;
+using LanCloud.Domain.Share;
 
 namespace LanCloud.Collections
 {

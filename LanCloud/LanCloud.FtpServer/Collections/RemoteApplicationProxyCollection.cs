@@ -1,5 +1,5 @@
 ﻿using LanCloud.Configs;
-using LanCloud.Proxies;
+using LanCloud.Domain.Application;
 using LanCloud.Shared.Log;
 using System;
 using System.Collections;

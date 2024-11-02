@@ -1,9 +1,8 @@
 ﻿using System;
-using LanCloud.Models;
 using LanCloud.Services;
-using LanCloud.Shared.Log;
-using System.IO;
 using LanCloud.Collections;
+using LanCloud.Domain.Application;
+using LanCloud.Domain.VirtualFtp;
 
 namespace LanCloud
 {
@@ -31,3 +30,5 @@ namespace LanCloud
         }
     }
 }
+
+

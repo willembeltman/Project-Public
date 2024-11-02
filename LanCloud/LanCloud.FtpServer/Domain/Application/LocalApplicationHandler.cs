@@ -6,10 +6,10 @@ using System.Linq;
 using LanCloud.Collections;
 using LanCloud.Enums;
 using System;
-using LanCloud.Communication.Responses;
-using LanCloud.Communication.Dtos;
+using LanCloud.Models.Responses;
+using LanCloud.Models.Dtos;
 
-namespace LanCloud.Handlers
+namespace LanCloud.Domain.Application
 {
     public class LocalApplicationHandler : IWjpHandler
     {

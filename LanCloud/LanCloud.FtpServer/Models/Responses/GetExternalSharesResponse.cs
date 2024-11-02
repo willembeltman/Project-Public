@@ -1,4 +1,4 @@
-﻿namespace LanCloud.Communication.Responses
+﻿namespace LanCloud.Models.Responses
 {
     public class GetExternalSharesResponse
     {

@@ -1,4 +1,4 @@
-﻿namespace LanCloud.Communication.Dtos
+﻿namespace LanCloud.Models.Dtos
 {
     public class ShareResponseDto
     {

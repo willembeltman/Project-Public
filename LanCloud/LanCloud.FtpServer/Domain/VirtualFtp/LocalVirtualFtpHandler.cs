@@ -1,20 +1,29 @@
-﻿using LanCloud.Models;
+﻿using LanCloud.Shared.Log;
+using LanCloud.Models;
 using LanCloud.Servers.Ftp.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using LanCloud.Domain.Application;
 
-namespace LanCloud.Handlers
+namespace LanCloud.Domain.VirtualFtp
 {
-    public class FolderHandler : IFtpHandler
+    // Deze class is het entry point voor de gebruiker
+    public class LocalVirtualFtpHandler : IFtpHandler
     {
-        public FolderHandler(string root)
+        public LocalVirtualFtpHandler(LocalApplication application)
         {
-            Root = root;
         }
 
-        public string Root { get; }
+        public LocalVirtualFtpHandler(LocalApplication application, ILogger logger) : this(application)
+        {
+            Logger = logger;
+        }
+
+        public string Root => "\\\\";
+
+        public ILogger Logger { get; }
 
         private bool IsPathValid(string path)
         {
@@ -55,7 +64,6 @@ namespace LanCloud.Handlers
                     LastWriteTime = directoryInfo.LastWriteTime,
                 });
         }
-
         public IEnumerable<FtpFile> EnumerateFiles(string pathname)
         {
             pathname = NormalizeFilename(pathname);

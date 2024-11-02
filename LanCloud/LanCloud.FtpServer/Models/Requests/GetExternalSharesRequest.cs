@@ -1,6 +1,6 @@
 ﻿using LanCloud.Enums;
 
-namespace LanCloud.Communication.Requests
+namespace LanCloud.Models.Requests
 {
     public class GetExternalSharesRequest : IApplicationRequest
     {

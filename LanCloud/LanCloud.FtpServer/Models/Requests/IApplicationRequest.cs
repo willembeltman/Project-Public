@@ -1,4 +1,4 @@
-﻿namespace LanCloud.Communication.Requests
+﻿namespace LanCloud.Models.Requests
 {
     public interface IApplicationRequest
     {

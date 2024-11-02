@@ -1,12 +1,11 @@
 ﻿using LanCloud.Collections;
 using LanCloud.Configs;
-using LanCloud.Handlers;
 using LanCloud.Servers.Wjp;
 using LanCloud.Shared.Log;
 using System;
 using System.Net;
 
-namespace LanCloud.Models
+namespace LanCloud.Domain.Application
 {
     public class LocalApplication : IDisposable
     {

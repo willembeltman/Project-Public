@@ -1,7 +1,7 @@
-﻿using LanCloud.Communication.Dtos;
+﻿using LanCloud.Models.Dtos;
 using LanCloud.Servers.Wjp;
 
-namespace LanCloud.Proxies
+namespace LanCloud.Domain.Share
 {
     public class RemoteShareProxy : WjpProxy
     {

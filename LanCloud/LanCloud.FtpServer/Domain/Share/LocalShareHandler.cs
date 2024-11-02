@@ -7,9 +7,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using LanCloud.Configs;
-using LanCloud.Communication.Dtos;
+using LanCloud.Models.Dtos;
+using LanCloud.Services;
 
-namespace LanCloud.Handlers
+namespace LanCloud.Domain.Share
 {
     public class LocalShareHandler : IWjpHandler
     {
@@ -23,12 +24,14 @@ namespace LanCloud.Handlers
                 .GetFiles("*.json")
                 .Select(file => new FileBit(file))
                 .ToList();
+            HashService = new HashService();
         }
 
         public LocalShareConfig ShareConfig { get; }
         public ILogger Logger { get; }
         public DirectoryInfo Root { get; }
         private List<FileBit> _FileBits { get; }
+        private HashService HashService { get; }
 
         public FileBit[] FileBits
         {
@@ -43,7 +46,7 @@ namespace LanCloud.Handlers
         public FileBit AddFileBit(string path, long part, byte[] data, long originalSize)
         {
             var extention = path.Split('.').Last();
-            string hash = HashHelper.CalculateHash(data);
+            string hash = HashService.CalculateHash(data);
 
             var duplicate = FileBits.FirstOrDefault(a =>
                 a.Information.Extention == extention &&

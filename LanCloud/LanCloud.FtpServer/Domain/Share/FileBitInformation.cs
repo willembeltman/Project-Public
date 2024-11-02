@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace LanCloud.Models
+namespace LanCloud.Domain.Share
 {
     public class FileBitInformation
     {

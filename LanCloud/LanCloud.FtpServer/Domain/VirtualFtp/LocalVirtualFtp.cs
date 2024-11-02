@@ -1,10 +1,10 @@
-﻿using LanCloud.Handlers;
+﻿using LanCloud.Domain.Application;
 using LanCloud.Servers.Ftp;
 using LanCloud.Shared.Log;
 using System;
 using System.Net;
 
-namespace LanCloud.Models
+namespace LanCloud.Domain.VirtualFtp
 {
     public class LocalVirtualFtp : IDisposable
     {

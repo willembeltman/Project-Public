@@ -1,6 +1,6 @@
 ﻿using LanCloud.Servers.Wjp;
 
-namespace LanCloud.Communication.Dtos
+namespace LanCloud.Models.Dtos
 {
     public class RemoteShareDto : IWjpProxyConfig
     {

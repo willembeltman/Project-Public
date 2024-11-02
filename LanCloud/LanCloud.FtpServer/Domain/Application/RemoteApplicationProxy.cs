@@ -1,10 +1,10 @@
-﻿using LanCloud.Communication.Requests;
-using LanCloud.Communication.Responses;
+﻿using LanCloud.Models.Requests;
+using LanCloud.Models.Responses;
 using LanCloud.Configs;
 using LanCloud.Servers.Wjp;
 using Newtonsoft.Json;
 
-namespace LanCloud.Proxies
+namespace LanCloud.Domain.Application
 {
     public class RemoteApplicationProxy : WjpProxy
     {

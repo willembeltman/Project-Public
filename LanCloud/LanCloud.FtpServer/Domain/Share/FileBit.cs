@@ -2,7 +2,7 @@
 using System;
 using System.IO;
 
-namespace LanCloud.Models
+namespace LanCloud.Domain.Share
 {
     public class FileBit
     {

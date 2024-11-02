@@ -2,10 +2,9 @@
 using LanCloud.Servers.Wjp;
 using System;
 using System.Net;
-using LanCloud.Handlers;
 using LanCloud.Configs;
 
-namespace LanCloud.Models
+namespace LanCloud.Domain.Share
 {
     public class LocalShare : IDisposable
     {
@@ -16,6 +15,7 @@ namespace LanCloud.Models
             Config = shareConfig;
             Logger = logger;
 
+            ShareStorage = new LocalShareStorage(shareConfig, logger);
             ShareHandler = new LocalShareHandler(shareConfig, Logger);
             ShareServer = new WjpServer(ipAdress, port, ShareHandler, Logger);
         }
@@ -23,9 +23,10 @@ namespace LanCloud.Models
         public IPAddress IpAdress { get; }
         public int Port { get; }
         public LocalShareConfig Config { get; }
+        public ILogger Logger { get; }
+        public LocalShareStorage ShareStorage { get; }
         public LocalShareHandler ShareHandler { get; }
         public WjpServer ShareServer { get; }
-        public ILogger Logger { get; }
 
         public void Dispose()
         {
