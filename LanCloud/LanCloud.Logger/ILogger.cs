@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace LanCloud.Logger
+namespace LanCloud.Shared.Log
 {
     public interface ILogger : IDisposable
     {

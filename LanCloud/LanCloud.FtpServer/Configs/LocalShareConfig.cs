@@ -1,8 +1,8 @@
-﻿namespace LanCloud.Shared.Models
+﻿namespace LanCloud.Configs
 {
     public class LocalShareConfig
     {
         public string FullName { get; set; }
-        public long Size { get; set; }
+        public long MaxSize { get; set; }
     }
 }

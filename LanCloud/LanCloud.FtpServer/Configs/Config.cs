@@ -1,8 +1,8 @@
-﻿namespace LanCloud.Shared.Models
+﻿namespace LanCloud.Configs
 {
     public class Config
     {
-        public int Port { get; set; }
+        public int StartPort { get; set; }
         public LocalShareConfig[] Shares { get; set; } = new LocalShareConfig[0];
         public RemoteApplicationConfig[] Servers { get; set; } = new RemoteApplicationConfig[0];
     }

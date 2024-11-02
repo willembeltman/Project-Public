@@ -1,5 +1,6 @@
 ﻿using LanCloud.Handlers;
 using LanCloud.Servers.Ftp;
+using LanCloud.Shared.Log;
 using System;
 using System.Net;
 
@@ -7,10 +8,10 @@ namespace LanCloud.Models
 {
     public class LocalVirtualFtp : IDisposable
     {
-        public LocalVirtualFtp(LocalApplication application)
+        public LocalVirtualFtp(LocalApplication application, ILogger logger)
         {
-            FtpHandler = new LocalVirtualFtpHandler(application);
-            FtpServer = new FtpServer(IPAddress.Any, 21, FtpHandler);
+            FtpHandler = new LocalVirtualFtpHandler(application, logger);
+            FtpServer = new FtpServer(IPAddress.Any, 21, FtpHandler, logger);
         }
 
         public LocalVirtualFtpHandler FtpHandler { get; }

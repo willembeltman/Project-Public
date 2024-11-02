@@ -1,5 +1,5 @@
 ﻿using LanCloud.Servers.Ftp.Interfaces;
-using LanCloud.Logger;
+using LanCloud.Shared.Log;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -10,8 +10,6 @@ namespace LanCloud.Servers.Ftp
 {
     public class FtpServer : IDisposable
     {
-        ILogger Logger = LogManager.GetLogger(typeof(FtpServer));
-
         private bool Disposed = false;
         private bool Listening = false;
 
@@ -20,6 +18,7 @@ namespace LanCloud.Servers.Ftp
         private IPEndPoint LocalEndPoint { get; }
         public IFtpHandler CommandHandler { get; }
         private TcpListener Listener { get; }
+        public ILogger Logger { get; }
 
         public FtpServer(IPAddress ipAddress, int port, IFtpHandler commandHandler)
         {
@@ -38,6 +37,11 @@ namespace LanCloud.Servers.Ftp
             Listener.BeginAcceptTcpClient(HandleAcceptTcpClient, Listener);
         }
 
+        public FtpServer(IPAddress ipAddress, int port, IFtpHandler commandHandler, ILogger logger) : this(ipAddress, port, commandHandler)
+        {
+            Logger = logger;
+        }
+
         private void HandleAcceptTcpClient(IAsyncResult result)
         {
             if (Listening)
@@ -46,7 +50,7 @@ namespace LanCloud.Servers.Ftp
 
                 TcpClient client = Listener.EndAcceptTcpClient(result);
 
-                ClientConnection connection = new ClientConnection(client, CommandHandler);
+                ClientConnection connection = new ClientConnection(client, CommandHandler, Logger);
 
                 ActiveConnections.Add(connection);
 

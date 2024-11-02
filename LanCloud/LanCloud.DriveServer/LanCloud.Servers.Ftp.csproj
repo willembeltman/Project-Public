@@ -60,9 +60,9 @@
     <Content Include="rfc959.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\LanCloud.Logger\LanCloud.Logger.csproj">
+    <ProjectReference Include="..\LanCloud.Logger\LanCloud.Shared.Log.csproj">
       <Project>{02268493-F812-4EDA-A386-DDCB2E787152}</Project>
-      <Name>LanCloud.Logger</Name>
+      <Name>LanCloud.Shared.Log</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

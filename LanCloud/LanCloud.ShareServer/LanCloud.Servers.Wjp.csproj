@@ -44,19 +44,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="RemoteShareProxy.cs" />
-    <Compile Include="RemoteShareProxyQueueItem.cs" />
-    <Compile Include="LocalShareServerConnection.cs" />
+    <Compile Include="IWjpHandler.cs" />
+    <Compile Include="IWjpProxyConfig.cs" />
+    <Compile Include="WjpProxy.cs" />
+    <Compile Include="WjpProxyQueueItem.cs" />
+    <Compile Include="WjpClientConnection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="LocalShareServer.cs" />
+    <Compile Include="WjpRequest.cs" />
+    <Compile Include="WjpResponse.cs" />
+    <Compile Include="WjpServer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\LanCloud.Shared\LanCloud.Shared.csproj">
-      <Project>{0CADA772-A40D-4231-B56D-BD6A8E86E386}</Project>
-      <Name>LanCloud.Shared</Name>
+    <ProjectReference Include="..\LanCloud.Logger\LanCloud.Shared.Log.csproj">
+      <Project>{02268493-F812-4EDA-A386-DDCB2E787152}</Project>
+      <Name>LanCloud.Shared.Log</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

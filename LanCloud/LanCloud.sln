@@ -5,15 +5,11 @@ VisualStudioVersion = 17.11.35327.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LanCloud", "LanCloud.FtpServer\LanCloud.csproj", "{EA31F646-F757-4436-B3D2-D54AE82DB920}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LanCloud.Logger", "LanCloud.Logger\LanCloud.Logger.csproj", "{02268493-F812-4EDA-A386-DDCB2E787152}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LanCloud.Shared.Log", "LanCloud.Logger\LanCloud.Shared.Log.csproj", "{02268493-F812-4EDA-A386-DDCB2E787152}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LanCloud.Servers.Ftp", "LanCloud.DriveServer\LanCloud.Servers.Ftp.csproj", "{C0E5FC5B-AA67-437F-A704-C0E34638C5D4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LanCloud.Servers.Application", "LanCloud.ApplicationServer\LanCloud.Servers.Application.csproj", "{7BA4B3A7-73C4-4725-9A26-7205F1F389E2}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LanCloud.Shared", "LanCloud.Shared\LanCloud.Shared.csproj", "{0CADA772-A40D-4231-B56D-BD6A8E86E386}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LanCloud.Servers.Share", "LanCloud.ShareServer\LanCloud.Servers.Share.csproj", "{B1C7D4D1-82B0-4F35-BDE2-0ED0744B4910}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LanCloud.Servers.Wjp", "LanCloud.ShareServer\LanCloud.Servers.Wjp.csproj", "{B1C7D4D1-82B0-4F35-BDE2-0ED0744B4910}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,22 +43,6 @@ Global
 		{C0E5FC5B-AA67-437F-A704-C0E34638C5D4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C0E5FC5B-AA67-437F-A704-C0E34638C5D4}.Release|x86.ActiveCfg = Release|Any CPU
 		{C0E5FC5B-AA67-437F-A704-C0E34638C5D4}.Release|x86.Build.0 = Release|Any CPU
-		{7BA4B3A7-73C4-4725-9A26-7205F1F389E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7BA4B3A7-73C4-4725-9A26-7205F1F389E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7BA4B3A7-73C4-4725-9A26-7205F1F389E2}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{7BA4B3A7-73C4-4725-9A26-7205F1F389E2}.Debug|x86.Build.0 = Debug|Any CPU
-		{7BA4B3A7-73C4-4725-9A26-7205F1F389E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7BA4B3A7-73C4-4725-9A26-7205F1F389E2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7BA4B3A7-73C4-4725-9A26-7205F1F389E2}.Release|x86.ActiveCfg = Release|Any CPU
-		{7BA4B3A7-73C4-4725-9A26-7205F1F389E2}.Release|x86.Build.0 = Release|Any CPU
-		{0CADA772-A40D-4231-B56D-BD6A8E86E386}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0CADA772-A40D-4231-B56D-BD6A8E86E386}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0CADA772-A40D-4231-B56D-BD6A8E86E386}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{0CADA772-A40D-4231-B56D-BD6A8E86E386}.Debug|x86.Build.0 = Debug|Any CPU
-		{0CADA772-A40D-4231-B56D-BD6A8E86E386}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0CADA772-A40D-4231-B56D-BD6A8E86E386}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0CADA772-A40D-4231-B56D-BD6A8E86E386}.Release|x86.ActiveCfg = Release|Any CPU
-		{0CADA772-A40D-4231-B56D-BD6A8E86E386}.Release|x86.Build.0 = Release|Any CPU
 		{B1C7D4D1-82B0-4F35-BDE2-0ED0744B4910}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B1C7D4D1-82B0-4F35-BDE2-0ED0744B4910}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B1C7D4D1-82B0-4F35-BDE2-0ED0744B4910}.Debug|x86.ActiveCfg = Debug|Any CPU

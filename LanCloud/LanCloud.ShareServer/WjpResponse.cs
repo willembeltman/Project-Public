@@ -1,8 +1,8 @@
-﻿namespace LanCloud.Shared.Models
+﻿namespace LanCloud.Servers.Wjp
 {
-    public class RemoteShareResponse
+    public class WjpResponse
     {
-        public RemoteShareResponse(string response, byte[] data)
+        public WjpResponse(string response, byte[] data)
         {
             Json = response;
             Data = data;

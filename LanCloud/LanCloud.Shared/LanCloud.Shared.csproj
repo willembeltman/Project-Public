@@ -41,20 +41,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Dtos\ShareDto.cs" />
-    <Compile Include="Dtos\ShareRequestDto.cs" />
-    <Compile Include="Dtos\ShareResponseDto.cs" />
-    <Compile Include="Interfaces\ILocalApplicationHandler.cs" />
-    <Compile Include="Interfaces\ILocalShareHandler.cs" />
-    <Compile Include="Messages\ApplicationMessages.cs" />
-    <Compile Include="Messages\ShareMessages.cs" />
-    <Compile Include="Models\Config.cs" />
-    <Compile Include="Models\LocalShareRequest.cs" />
-    <Compile Include="Models\RemoteShareResponse.cs" />
-    <Compile Include="Models\RemoteApplicationConfig.cs" />
-    <Compile Include="Models\LocalShareConfig.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Interfaces\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\LanCloud.ShareServer\LanCloud.Servers.Wjp.csproj">
+      <Project>{b1c7d4d1-82b0-4f35-bde2-0ed0744b4910}</Project>
+      <Name>LanCloud.Servers.Wjp</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

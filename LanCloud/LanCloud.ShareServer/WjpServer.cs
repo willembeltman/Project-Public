@@ -1,33 +1,32 @@
-﻿using LanCloud.Shared.Interfaces;
+﻿using LanCloud.Shared.Log;
 using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
-using System.Threading;
 
-namespace LanCloud.Servers.Share
+namespace LanCloud.Servers.Wjp
 {
-    public class LocalShareServer : IDisposable
+    public class WjpServer : IDisposable
     {
         private bool Disposed = false;
         private bool Listening = false;
 
-        private List<LocalShareServerConnection> ActiveConnections;
-
         private IPEndPoint LocalEndPoint { get; }
-        public ILocalShareHandler ShareHandler { get; }
+        public IWjpHandler ShareHandler { get; }
+        public ILogger Logger { get; }
         private TcpListener Listener { get; }
+        private List<WjpClientConnection> ActiveConnections { get; } = new List<WjpClientConnection>();
 
-        public LocalShareServer(IPAddress ipAddress, int port, ILocalShareHandler applicationHandler)
+        public WjpServer(IPAddress ipAddress, int port, IWjpHandler applicationHandler, ILogger logger)
         {
             LocalEndPoint = new IPEndPoint(ipAddress, port);
             ShareHandler = applicationHandler;
+            Logger = logger;
+
             Listener = new TcpListener(LocalEndPoint);
 
             Listening = true;
             Listener.Start();
-
-            ActiveConnections = new List<LocalShareServerConnection>();
 
             Listener.BeginAcceptTcpClient(HandleAcceptTcpClient, Listener);
         }
@@ -38,14 +37,21 @@ namespace LanCloud.Servers.Share
             {
                 Listener.BeginAcceptTcpClient(HandleAcceptTcpClient, Listener);
 
-                TcpClient client = Listener.EndAcceptTcpClient(result);
+                var client = Listener.EndAcceptTcpClient(result);
 
-                LocalShareServerConnection connection = new LocalShareServerConnection(client, ShareHandler);
-
-                ActiveConnections.Add(connection);
-
-                ThreadPool.QueueUserWorkItem(connection.HandleClient, client);
+                var connection = new WjpClientConnection(this, client, ShareHandler);
+                connection.Start();
             }
+        }
+        public void AddConnection(WjpClientConnection connection)
+        {
+            lock(this)
+                ActiveConnections.Add(connection);
+        }
+        public void RemoveConnection(WjpClientConnection connection)
+        {
+            lock (this) 
+                ActiveConnections.Remove(connection);
         }
 
         public void Dispose()
@@ -62,7 +68,7 @@ namespace LanCloud.Servers.Share
                     Listening = false;
                     Listener.Stop();
 
-                    foreach (LocalShareServerConnection conn in ActiveConnections)
+                    foreach (WjpClientConnection conn in ActiveConnections)
                     {
                         conn.Dispose();
                     }

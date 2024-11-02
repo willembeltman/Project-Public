@@ -2,9 +2,9 @@
 
 namespace LanCloud
 {
-    internal class HashHelper
+    public class HashHelper
     {
-        internal static string CalculateHash(byte[] data)
+        public static string CalculateHash(byte[] data)
         {
             throw new NotImplementedException();
         }

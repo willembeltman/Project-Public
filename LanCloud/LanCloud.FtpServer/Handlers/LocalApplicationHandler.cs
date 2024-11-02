@@ -1,41 +1,55 @@
-﻿using LanCloud.Models;
-using LanCloud.Shared.Dtos;
-using LanCloud.Shared.Interfaces;
-using LanCloud.Shared.Messages;
+﻿using LanCloud.Shared.Log;
+using LanCloud.Models;
+using LanCloud.Servers.Wjp;
 using Newtonsoft.Json;
-using System;
 using System.Linq;
+using LanCloud.Collections;
+using LanCloud.Enums;
+using System;
+using LanCloud.Communication.Responses;
+using LanCloud.Communication.Dtos;
 
 namespace LanCloud.Handlers
 {
-    public class LocalApplicationHandler : ILocalApplicationHandler
+    public class LocalApplicationHandler : IWjpHandler
     {
-        public LocalApplicationHandler(LocalApplication application, LocalShareCollection shares)
+        public LocalApplicationHandler(
+            LocalApplication application, 
+            LocalShareCollection shares, 
+            ILogger logger)
         {
             Application = application;
             Shares = shares;
+            Logger = logger;
         }
 
         public LocalApplication Application { get; }
         private LocalShareCollection Shares { get; }
+        public ILogger Logger { get; }
 
-        public string Receive(ApplicationMessages message)
+        public WjpResponse ProcessRequest(WjpRequest request)
         {
-            switch (message) {
-                case ApplicationMessages.Ping:
+            switch (request.MessageType)
+            {
+                case (int)ApplicationMessageEnum.Ping:
                     return Handle_Ping();
-                case ApplicationMessages.GetExternalShareDtos:
+                case (int)ApplicationMessageEnum.GetExternalShares:
                     return Handle_GetExternalShareDtos();
                 default:
                     throw new NotImplementedException();
             }
         }
 
-        private string Handle_Ping()
+        private WjpResponse Handle_Ping()
         {
-            return "Pong";
+            var model = new PingResponse()
+            {
+                Pong = true
+            };
+            var json = JsonConvert.SerializeObject(model);
+            return new WjpResponse(json, null);
         }
-        private string Handle_GetExternalShareDtos()
+        private WjpResponse Handle_GetExternalShareDtos()
         {
             var list = Shares
                 .Select(a => new ShareDto()
@@ -45,7 +59,7 @@ namespace LanCloud.Handlers
                 })
                 .ToArray();
             var json = JsonConvert.SerializeObject(list);
-            return json;
+            return new WjpResponse(json, null);
         }
 
     }

@@ -1,6 +1,6 @@
 ﻿using LanCloud.Servers.Ftp.Enums;
 using LanCloud.Servers.Ftp.Interfaces;
-using LanCloud.Logger;
+using LanCloud.Shared.Log;
 using LanCloud.Models;
 using System;
 using System.Collections.Generic;
@@ -40,16 +40,19 @@ namespace LanCloud.Servers.Ftp
 
         private List<string> _validCommands;
 
-        public ClientConnection(TcpClient client, IFtpHandler commandHandler, string certificateFilename = null)
+        public ClientConnection(
+            TcpClient client,
+            IFtpHandler commandHandler, 
+            ILogger logger,
+            string certificateFilename = null)
         {
             var RemoteEndPoint = (IPEndPoint)client.Client.RemoteEndPoint;
             Name = RemoteEndPoint.Address.ToString();
             
             ControlClient = client;
             CommandHandler = commandHandler;
+            Logger = logger;
             CertificateFileName = certificateFilename;
-
-            Logger = LogManager.GetLogger(typeof(ClientConnection), Name);
 
             _validCommands = new List<string>();
         }

@@ -1,4 +1,5 @@
-﻿using LanCloud.Shared.Interfaces;
+﻿using LanCloud.LogHelper;
+using LanCloud.Shared.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -17,8 +18,13 @@ namespace LanCloud.Servers.Application
         private IPEndPoint LocalEndPoint { get; }
         public ILocalApplicationHandler ApplicationHandler { get; }
         private TcpListener Listener { get; }
+        public ILogger Logger { get; }
 
-        public LocalApplicationServer(IPAddress ipAddress, int port, ILocalApplicationHandler applicationHandler)
+        public LocalApplicationServer(
+            IPAddress ipAddress,
+            int port, 
+            ILocalApplicationHandler applicationHandler, 
+            ILogger logger)
         {
             LocalEndPoint = new IPEndPoint(ipAddress, port);
             ApplicationHandler = applicationHandler;
@@ -30,6 +36,7 @@ namespace LanCloud.Servers.Application
             ActiveConnections = new List<LocalApplicationServerConnection>();
 
             Listener.BeginAcceptTcpClient(HandleAcceptTcpClient, Listener);
+            Logger = logger;
         }
 
         private void HandleAcceptTcpClient(IAsyncResult result)

@@ -1,6 +1,8 @@
-﻿using LanCloud.Handlers;
-using LanCloud.Servers.Application;
-using LanCloud.Shared.Models;
+﻿using LanCloud.Collections;
+using LanCloud.Configs;
+using LanCloud.Handlers;
+using LanCloud.Servers.Wjp;
+using LanCloud.Shared.Log;
 using System;
 using System.Net;
 
@@ -12,14 +14,15 @@ namespace LanCloud.Models
             Config config, 
             LocalShareCollection shares, 
             RemoteApplicationProxyCollection remoteApplications, 
-            RemoteShareCollection remoteShares)
+            RemoteShareCollection remoteShares,
+            ILogger logger)
         {
-            ApplicationHandler = new LocalApplicationHandler(this, shares);
-            ApplicationServer = new LocalApplicationServer(IPAddress.Any, config.Port, ApplicationHandler);
+            ApplicationHandler = new LocalApplicationHandler(this, shares, logger);
+            ApplicationServer = new WjpServer(IPAddress.Any, config.StartPort, ApplicationHandler, logger);
         }
 
         public LocalApplicationHandler ApplicationHandler { get; }
-        public LocalApplicationServer ApplicationServer { get; }
+        public WjpServer ApplicationServer { get; }
 
         public void Dispose()
         {

@@ -1,20 +1,23 @@
-﻿using LanCloud.Shared.Dtos;
-using LanCloud.Shared.Interfaces;
-using LanCloud.Shared.Models;
+﻿using LanCloud.Shared.Log;
+using LanCloud.Models;
+using LanCloud.Servers.Wjp;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using LanCloud.Configs;
+using LanCloud.Communication.Dtos;
 
-namespace LanCloud
+namespace LanCloud.Handlers
 {
-    public class LocalShareHandler : ILocalShareHandler
+    public class LocalShareHandler : IWjpHandler
     {
-        public LocalShareHandler(LocalShareConfig shareConfig)
+        public LocalShareHandler(LocalShareConfig shareConfig, ILogger logger)
         {
             ShareConfig = shareConfig;
+            Logger = logger;
+
             Root = new DirectoryInfo(shareConfig.FullName);
             _FileBits = Root
                 .GetFiles("*.json")
@@ -23,6 +26,7 @@ namespace LanCloud
         }
 
         public LocalShareConfig ShareConfig { get; }
+        public ILogger Logger { get; }
         public DirectoryInfo Root { get; }
         private List<FileBit> _FileBits { get; }
 
@@ -79,7 +83,7 @@ namespace LanCloud
             return bit;
         }
 
-        public RemoteShareResponse Receive(LocalShareRequest request)
+        public WjpResponse ProcessRequest(WjpRequest request)
         {
             var requestDto = JsonConvert.DeserializeObject<ShareRequestDto>(request.Json);
 

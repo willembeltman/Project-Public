@@ -1,5 +1,5 @@
-﻿using LanCloud.Models;
-using LanCloud.Shared.Models;
+﻿using LanCloud.Configs;
+using LanCloud.Shared.Log;
 using Newtonsoft.Json;
 using System.IO;
 
@@ -7,46 +7,69 @@ namespace LanCloud.Services
 {
     public class ConfigService
     {
-        public ConfigService(string currentDirectory)
+        public ConfigService(string currentDirectory, ILogger logger)
         {
-            CurrentDirectory = currentDirectory;
+            Logger = logger;
+            Fullname = Path.Combine(currentDirectory, "LanCloud.json");
         }
 
-        public string CurrentDirectory { get; }
+        public string Fullname { get; }
+        public ILogger Logger { get; }
 
         public Config Load()
         {
-            var fullname = Path.Combine(CurrentDirectory, "LanCloud.json");
-            if (!File.Exists(fullname))
+            if (!File.Exists(Fullname))
             {
+                Logger.Info("No config found, creating dummy config");
                 var config = new Config()
                 {
-                    Port = 8080,
+                    StartPort = 8080,
                     Servers = new RemoteApplicationConfig[]
                     {
                         new RemoteApplicationConfig()
                         {
-                            Hostname = "WJLAPTOP",
+                            Hostname = "WJPC2",
                             Port = 8080,
                             IsThisComputer = true
+                        },
+                        new RemoteApplicationConfig()
+                        {
+                            Hostname = "WJPC3",
+                            Port = 8080,
+                            IsThisComputer = false
+                        },
+                        new RemoteApplicationConfig()
+                        {
+                            Hostname = "HOST3",
+                            Port = 8080,
+                            IsThisComputer = false
                         }
                     },
                     Shares = new LocalShareConfig[]
                     {
                         new LocalShareConfig()
                         {
-                            FullName="D:\\Test"
+                            FullName = "D:\\Test",
+                            MaxSize = 100L * 1024 * 1024 * 1024
+                        },
+                        new LocalShareConfig()
+                        {
+                            FullName = "E:\\Test",
+                            MaxSize = 100L * 1024 * 1024 * 1024
+                        },
+                        new LocalShareConfig()
+                        {
+                            FullName = "F:\\Test",
+                            MaxSize = 100L * 1024 * 1024 * 1024
                         }
                     }
                 };
-                var json = JsonConvert.SerializeObject(config);
-                using (var writer = new StreamWriter(fullname))
-                {
-                    writer.Write(json);
-                }
+                Save(config);
+                return config;
             }
 
-            using (var reader = new StreamReader(fullname))
+            Logger.Info("Config found, reading config settings");
+            using (var reader = new StreamReader(Fullname))
             {
                 var json = reader.ReadToEnd();
                 var config = JsonConvert.DeserializeObject<Config>(json);
@@ -57,19 +80,19 @@ namespace LanCloud.Services
 
                 return config;
             }
-
         }
 
-        public void Load(Config config)
+        public void Save(Config config)
         {
-            var fullname = Path.Combine(CurrentDirectory, "LanCloud.json");
-            if (File.Exists(fullname))
+            Logger.Info("Saving the config");
+
+            if (File.Exists(Fullname))
             {
-                File.Delete(fullname);
+                File.Delete(Fullname);
             }
 
             var json = JsonConvert.SerializeObject(config);
-            using (var writer = new StreamWriter(fullname))
+            using (var writer = new StreamWriter(Fullname))
             {
                 writer.Write(json);
             }

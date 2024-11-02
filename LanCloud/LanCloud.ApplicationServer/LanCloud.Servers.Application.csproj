@@ -51,6 +51,10 @@
     <Compile Include="LocalApplicationServer.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\LanCloud.Logger\LanCloud.LogHelper.csproj">
+      <Project>{02268493-f812-4eda-a386-ddcb2e787152}</Project>
+      <Name>LanCloud.LogHelper</Name>
+    </ProjectReference>
     <ProjectReference Include="..\LanCloud.Shared\LanCloud.Shared.csproj">
       <Project>{0CADA772-A40D-4231-B56D-BD6A8E86E386}</Project>
       <Name>LanCloud.Shared</Name>

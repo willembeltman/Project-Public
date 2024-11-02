@@ -1,4 +1,4 @@
-﻿namespace LanCloud.Shared.Dtos
+﻿namespace LanCloud.Communication.Dtos
 {
     public class ShareDto
     {

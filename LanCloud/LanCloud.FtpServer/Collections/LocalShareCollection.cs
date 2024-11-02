@@ -4,21 +4,25 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using LanCloud.Shared.Models;
+using LanCloud.Shared.Log;
+using LanCloud.Configs;
 
-namespace LanCloud
+namespace LanCloud.Collections
 {
     public class LocalShareCollection : IEnumerable<LocalShare>, IDisposable
     {
-        public LocalShareCollection(Config config)
+        public LocalShareCollection(Config config, ILogger logger)
         {
-            var port = config.Port;
+            var port = config.StartPort;
             Shares = config.Shares
-                .Select(shareConfig => new LocalShare(IPAddress.Any, ++port, shareConfig))
+                .Select(shareConfig => 
+                    new LocalShare(IPAddress.Any, ++port, shareConfig, logger))
                 .ToArray();
+            Logger = logger;
         }
 
         public LocalShare[] Shares { get; }
+        public ILogger Logger { get; }
 
         public IEnumerator<LocalShare> GetEnumerator()
         {

@@ -1,11 +1,12 @@
-﻿using LanCloud.Models;
-using LanCloud.Shared.Models;
+﻿using LanCloud.Configs;
+using LanCloud.Proxies;
+using LanCloud.Shared.Log;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace LanCloud
+namespace LanCloud.Collections
 {
     public class RemoteApplicationProxyCollection : IEnumerable<RemoteApplicationProxy>, IDisposable
     {
@@ -17,7 +18,13 @@ namespace LanCloud
                 .ToArray();
         }
 
+        public RemoteApplicationProxyCollection(Config config, ILogger logger) : this(config)
+        {
+            Logger = logger;
+        }
+
         public RemoteApplicationProxy[] ApplicationProxies { get; }
+        public ILogger Logger { get; }
 
         public void Dispose()
         {

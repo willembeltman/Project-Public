@@ -1,44 +1,27 @@
-﻿using LanCloud.Shared.Dtos;
-using LanCloud.Shared.Models;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.IO;
 using System.Net.Sockets;
 using System.Threading;
 
-namespace LanCloud.Servers.Share
+namespace LanCloud.Servers.Wjp
 {
-    public class RemoteShareProxy : IDisposable
+    public class WjpProxy : IDisposable
     {
-        public RemoteShareProxy(RemoteApplicationConfig config, ShareDto share)
+        public WjpProxy(IWjpProxyConfig config)
         {
             Config = config;
-            Share = share;
             Thread = new Thread(new ThreadStart(Start));
             Thread.Start();
         }
-        private RemoteApplicationConfig Config { get; }
-        public ShareDto Share { get; }
+        private IWjpProxyConfig Config { get; }
         private Thread Thread { get; }
 
-        ConcurrentQueue<RemoteShareProxyQueueItem> Queue { get; } = new ConcurrentQueue<RemoteShareProxyQueueItem>();
+        ConcurrentQueue<WjpProxyQueueItem> Queue { get; } = new ConcurrentQueue<WjpProxyQueueItem>();
         AutoResetEvent Enqueued { get; } = new AutoResetEvent(false);
         public bool Stop { get; set; }
         public bool Connected { get; private set; }
         public event EventHandler<EventArgs> StateChanged;
-
-
-
-        public RemoteShareResponse Send(LocalShareRequest request)
-        {
-            var queueItem = new RemoteShareProxyQueueItem(request);
-            Queue.Enqueue(queueItem);
-            Enqueued.Set();
-            if (!queueItem.Done.WaitOne(10000))
-                throw new Exception("Timeout occured");
-            return queueItem.Response;
-        }
 
         private void Start()
         {
@@ -58,8 +41,9 @@ namespace LanCloud.Servers.Share
                         }
                         if (Enqueued.WaitOne(1000))
                         {
-                            while (Queue.TryDequeue(out RemoteShareProxyQueueItem requestItem))
+                            while (Queue.TryDequeue(out WjpProxyQueueItem requestItem))
                             {
+                                writer.Write(requestItem.Request.MessageType);
                                 writer.Write(requestItem.Request.Json);
                                 writer.Write(Convert.ToInt32(requestItem.Request.Data?.Length ?? -1));
                                 if (requestItem.Request.Data != null)
@@ -73,7 +57,7 @@ namespace LanCloud.Servers.Share
                                 {
                                     data = reader.ReadBytes(datalength);
                                 }
-                                requestItem.Response = new RemoteShareResponse(response, data);
+                                requestItem.Response = new WjpResponse(response, data);
                                 requestItem.Done.Set();
                             }
                         }
@@ -89,6 +73,15 @@ namespace LanCloud.Servers.Share
             }
         }
 
+        public WjpResponse SendRequest(WjpRequest request)
+        {
+            var queueItem = new WjpProxyQueueItem(request);
+            Queue.Enqueue(queueItem);
+            Enqueued.Set();
+            if (!queueItem.Done.WaitOne(10000))
+                throw new Exception("Timeout occured");
+            return queueItem.Response;
+        }
         public void Dispose()
         {
             Stop = true;

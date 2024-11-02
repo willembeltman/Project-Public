@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace LanCloud.Logger
+namespace LanCloud.Shared.Log
 {
     public class LogEntry
     {

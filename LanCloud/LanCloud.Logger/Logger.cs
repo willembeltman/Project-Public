@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 
-namespace LanCloud.Logger
+namespace LanCloud.Shared.Log
 {
     public class Logger : ILogger, IDisposable
     {
@@ -45,6 +45,7 @@ namespace LanCloud.Logger
                 foreach (var item in list)
                 {
                     writer.WriteLine(item);
+                    Console.WriteLine(item);
                 }
             }
         }
