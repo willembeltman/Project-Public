@@ -1,9 +1,9 @@
 ﻿using LanCloud.Models.Requests;
 using LanCloud.Models.Responses;
-using LanCloud.Configs;
 using LanCloud.Servers.Wjp;
 using Newtonsoft.Json;
 using LanCloud.Shared.Log;
+using LanCloud.Models.Configs;
 
 namespace LanCloud.Domain.Application
 {

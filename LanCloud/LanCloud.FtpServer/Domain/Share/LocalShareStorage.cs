@@ -1,8 +1,7 @@
-﻿using LanCloud.Configs;
+﻿using LanCloud.Domain.IO;
+using LanCloud.Models.Configs;
 using LanCloud.Services;
 using LanCloud.Shared.Log;
-using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -15,7 +14,6 @@ namespace LanCloud.Domain.Share
             Config = config;
             Logger = logger;
 
-            HashService = new HashService();
             Root = new DirectoryInfo(Config.DirectoryName);
             if (!Root.Exists) Root.Create();
             
@@ -29,7 +27,6 @@ namespace LanCloud.Domain.Share
 
         private LocalShareConfig Config { get; }
         private ILogger Logger { get; }
-        private HashService HashService { get; }
         public DirectoryInfo Root { get; }
         private FileBit[] _FileBits { get; set; }
 

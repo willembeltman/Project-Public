@@ -1,6 +1,6 @@
 ﻿using LanCloud.Servers.Wjp;
 
-namespace LanCloud.Configs
+namespace LanCloud.Models.Configs
 {
     public class RemoteApplicationConfig : IWjpProxyConfig
     {

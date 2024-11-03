@@ -2,7 +2,7 @@
 using System.IO;
 using System.IO.Compression;
 
-namespace LanCloud.Domain.Share
+namespace LanCloud.Domain.IO
 {
     public class FileBitStreamWriter : Stream, IDisposable
     {

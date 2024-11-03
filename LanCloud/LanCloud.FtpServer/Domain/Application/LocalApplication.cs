@@ -1,6 +1,5 @@
 ﻿using LanCloud.Collections;
-using LanCloud.Configs;
-using LanCloud.Models;
+using LanCloud.Models.Configs;
 using LanCloud.Servers.Wjp;
 using LanCloud.Shared.Log;
 using System;

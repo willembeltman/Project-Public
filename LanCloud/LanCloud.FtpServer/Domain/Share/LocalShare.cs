@@ -2,7 +2,7 @@
 using LanCloud.Servers.Wjp;
 using System;
 using System.Net;
-using LanCloud.Configs;
+using LanCloud.Models.Configs;
 
 namespace LanCloud.Domain.Share
 {

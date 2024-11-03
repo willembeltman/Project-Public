@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.Linq;
 
-namespace LanCloud.Configs
+namespace LanCloud.Models.Configs
 {
     public class LocalSharePartConfig
     {

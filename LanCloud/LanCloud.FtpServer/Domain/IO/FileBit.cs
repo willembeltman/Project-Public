@@ -3,7 +3,7 @@ using System;
 using System.IO;
 using System.IO.Compression;
 
-namespace LanCloud.Domain.Share
+namespace LanCloud.Domain.IO
 {
     public class FileBit
     {
@@ -34,8 +34,7 @@ namespace LanCloud.Domain.Share
         public long Size { get; }
         public int Part { get; }
         public string Hash { get; }
-
-        public bool Exists() { return Info.Exists; }
+        
         public FileBitStreamReader OpenRead()
         {
             return new FileBitStreamReader(Info);

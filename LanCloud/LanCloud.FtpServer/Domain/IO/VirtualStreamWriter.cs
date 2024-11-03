@@ -8,6 +8,8 @@ namespace LanCloud.Domain.IO
         public VirtualStreamWriter(VirtualFileInfo virtualFileInfo)
         {
             VirtualFileInfo = virtualFileInfo;
+
+
         }
         public VirtualFileInfo VirtualFileInfo { get; }
 

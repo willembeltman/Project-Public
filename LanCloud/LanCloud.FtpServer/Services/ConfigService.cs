@@ -1,4 +1,4 @@
-﻿using LanCloud.Configs;
+﻿using LanCloud.Models.Configs;
 using LanCloud.Shared.Log;
 using Newtonsoft.Json;
 using System.IO;

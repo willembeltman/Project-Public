@@ -1,4 +1,5 @@
 ﻿using LanCloud.Domain.Application;
+using System.IO;
 
 namespace LanCloud.Domain.IO
 {
@@ -10,8 +11,9 @@ namespace LanCloud.Domain.IO
                 path = "/";
 
             path = path.Replace("/", "\\");
-            var root = application.Config.FileDatabaseDirectoryName;
-            return System.IO.Path.Combine(root, path);
+            var rootInfo = new DirectoryInfo(application.Config.FileDatabaseDirectoryName);
+            if (!rootInfo.Exists ) { rootInfo.Create(); }
+            return rootInfo.FullName + path;
         }
     }
 }

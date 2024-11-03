@@ -65,9 +65,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AuthenticationService.cs" />
-    <Compile Include="Domain\Application\FileRefBit.cs" />
-    <Compile Include="Domain\Application\User.cs" />
+    <Compile Include="Services\AuthenticationService.cs" />
+    <Compile Include="Models\FileRefBit.cs" />
+    <Compile Include="Models\User.cs" />
     <Compile Include="Domain\IO\FullNameToPath.cs" />
     <Compile Include="Domain\IO\VirtualDirectoryInfo.cs" />
     <Compile Include="Domain\IO\VirtualFileInfo.cs" />
@@ -76,17 +76,17 @@
     <Compile Include="Domain\IO\VirtualStreamAppender.cs" />
     <Compile Include="Domain\IO\VirtualStreamWriter.cs" />
     <Compile Include="Domain\IO\VirtualStreamReader.cs" />
-    <Compile Include="Domain\Share\FileBitStreamWriter.cs" />
-    <Compile Include="Domain\Share\FileBitStreamReader.cs" />
+    <Compile Include="Domain\IO\FileBitStreamWriter.cs" />
+    <Compile Include="Domain\IO\FileBitStreamReader.cs" />
     <Compile Include="Models\Dtos\ShareDto.cs" />
     <Compile Include="Models\Dtos\ShareRequestDto.cs" />
     <Compile Include="Models\Dtos\ShareResponseDto.cs" />
-    <Compile Include="Configs\LocalSharePartConfig.cs" />
+    <Compile Include="Models\Configs\LocalSharePartConfig.cs" />
     <Compile Include="Enums\ApplicationMessageEnum.cs" />
     <Compile Include="Enums\ShareMessageEnum.cs" />
-    <Compile Include="Configs\ApplicationConfig.cs" />
-    <Compile Include="Domain\Share\FileBit.cs" />
-    <Compile Include="Domain\Application\FileRef.cs" />
+    <Compile Include="Models\Configs\ApplicationConfig.cs" />
+    <Compile Include="Domain\IO\FileBit.cs" />
+    <Compile Include="Models\FileRef.cs" />
     <Compile Include="Services\FileRefService.cs" />
     <Compile Include="Services\HashService.cs" />
     <Compile Include="Domain\Share\LocalShare.cs" />
@@ -96,8 +96,8 @@
     <Compile Include="Collections\LocalShareCollection.cs" />
     <Compile Include="Collections\RemoteShareCollection.cs" />
     <Compile Include="Domain\VirtualFtp\LocalVirtualFtpHandler.cs" />
-    <Compile Include="Configs\LocalShareConfig.cs" />
-    <Compile Include="Configs\RemoteApplicationConfig.cs" />
+    <Compile Include="Models\Configs\LocalShareConfig.cs" />
+    <Compile Include="Models\Configs\RemoteApplicationConfig.cs" />
     <Compile Include="Models\Requests\IApplicationRequest.cs" />
     <Compile Include="Models\Responses\PingResponse.cs" />
     <Compile Include="Models\Requests\GetExternalSharesRequest.cs" />

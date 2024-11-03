@@ -1,4 +1,4 @@
-﻿namespace LanCloud.Configs
+﻿namespace LanCloud.Models.Configs
 {
     public class LocalShareConfig
     {
