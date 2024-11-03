@@ -1,15 +1,13 @@
 ﻿using LanCloud.Shared.Log;
 using LanCloud.Models;
 using LanCloud.Servers.Ftp.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using LanCloud.Domain.Application;
+using LanCloud.Domain.IO;
+using System;
+using System.IO;
 
 namespace LanCloud.Domain.VirtualFtp
 {
-    // Deze class is het entry point voor de gebruiker
     public class LocalVirtualFtpHandler : IFtpHandler
     {
         public LocalVirtualFtpHandler(LocalApplication application, ILogger logger)
@@ -20,121 +18,48 @@ namespace LanCloud.Domain.VirtualFtp
             Logger.Info($"Loaded");
         }
 
-        public string Root => "\\\\";
-
-        public LocalApplication Application { get; }
         public ILogger Logger { get; }
+        public LocalApplication Application { get; }
 
-        private bool IsPathValid(string path)
-        {
-            return path.StartsWith(Root);
-        }
-        private string NormalizeFilename(string path)
-        {
-            if (path == null)
-            {
-                path = string.Empty;
-            }
+        public IFtpUser ValidateUser(string userName, string password)
+            => Application.Authentication.ValidateUser(userName, password);
 
-            if (path == "/")
-            {
-                return Root;
-            }
-            else if (path.StartsWith("/"))
-            {
-                path = new FileInfo(Path.Combine(Root, path.Substring(1))).FullName;
-            }
-            else
-            {
-                throw new Exception("Not valid path");
-            }
+        public IFtpDirectory[] EnumerateDirectories(string path) 
+            => new VirtualDirectoryInfo(Application, path).GetDirectories();
+        public IFtpFile[] EnumerateFiles(string path)
+            => new VirtualDirectoryInfo(Application, path).GetFiles();
 
-            return IsPathValid(path) ? path : null;
-        }
-
-        public IEnumerable<FtpDirectory> EnumerateDirectories(string pathname)
-        {
-            pathname = NormalizeFilename(pathname);
-            var dirinfo = new DirectoryInfo(pathname);
-            var directories = dirinfo.GetDirectories();
-            return directories
-                .Select(directoryInfo => new FtpDirectory()
-                {
-                    Name = directoryInfo.Name,
-                    LastWriteTime = directoryInfo.LastWriteTime,
-                });
-        }
-        public IEnumerable<FtpFile> EnumerateFiles(string pathname)
-        {
-            pathname = NormalizeFilename(pathname);
-            var dirinfo = new DirectoryInfo(pathname);
-            var fileInfos = dirinfo.GetFiles();
-            return fileInfos
-                .Select(fileInfo => new FtpFile(fileInfo));
-        }
-
-        public void CreateDirectory(string pathname)
-        {
-            pathname = NormalizeFilename(pathname);
-            System.IO.Directory.CreateDirectory(pathname);
-        }
-        public void DeleteDirectory(string pathname)
-        {
-            pathname = NormalizeFilename(pathname);
-            System.IO.Directory.Delete(pathname);
-        }
-        public bool DirectoryExists(string pathname)
-        {
-            pathname = NormalizeFilename(pathname);
-            return System.IO.Directory.Exists(pathname);
-        }
+        public void CreateDirectory(string path)
+            => new VirtualDirectoryInfo(Application, path).Create();
+        public void DeleteDirectory(string path) 
+            => new VirtualDirectoryInfo(Application, path).Delete();
+        public bool DirectoryExists(string path) 
+            => new VirtualDirectoryInfo(Application, path).Exists;
         public void DirectoryMove(string renameFrom, string renameTo)
         {
-            renameFrom = NormalizeFilename(renameFrom);
-            renameTo = NormalizeFilename(renameTo);
-            System.IO.Directory.Move(renameFrom, renameTo);
+            var from = new VirtualDirectoryInfo(Application, renameFrom);
+            var to = new VirtualDirectoryInfo(Application, renameTo);
+            from.MoveTo(to);
         }
 
-        public bool FileExists(string pathname)
-        {
-            pathname = NormalizeFilename(pathname);
-            return File.Exists(pathname);
-        }
-        public void FileDelete(string pathname)
-        {
-            pathname = NormalizeFilename(pathname);
-            File.Delete(pathname);
-        }
+        public bool FileExists(string path) 
+            => new VirtualFileInfo(Application, path).Exists;
+        public void FileDelete(string path)
+            => new VirtualFileInfo(Application, path).Delete();
         public void FileMove(string renameFrom, string renameTo)
         {
-            renameFrom = NormalizeFilename(renameFrom);
-            renameTo = NormalizeFilename(renameTo);
-            File.Move(renameFrom, renameTo);
+            var from = new VirtualFileInfo(Application, renameFrom);
+            var to = new VirtualFileInfo(Application, renameTo);
+            from.Move(to);
         }
-        public DateTime FileGetLastWriteTime(string pathname)
-        {
-            pathname = NormalizeFilename(pathname);
-            return File.GetLastWriteTime(pathname);
-        }
+        public DateTime FileGetLastWriteTime(string path) 
+            => new VirtualFileInfo(Application, path).LastWriteTime;
 
-        public Stream FileOpenRead(string pathname)
-        {
-            pathname = NormalizeFilename(pathname);
-            return File.OpenRead(pathname);
-        }
-        public Stream FileOpenWriteCreate(string pathname)
-        {
-            pathname = NormalizeFilename(pathname);
-            return File.Create(pathname);
-        }
-        public Stream FileOpenWriteAppend(string pathname)
-        {
-            pathname = NormalizeFilename(pathname);
-            return File.Open(pathname, FileMode.Append);
-        }
-        public FtpUser ValidateUser(string userName, string password)
-        {
-            return new FtpUser(userName);
-        }
+        public Stream FileOpenRead(string path)
+            => new VirtualFileInfo(Application, path).OpenRead();
+        public Stream FileOpenWriteCreate(string path)
+            => new VirtualFileInfo(Application, path).Create();
+        public Stream FileOpenWriteAppend(string path) 
+            => new VirtualFileInfo(Application, path).OpenAppend();
     }
 }

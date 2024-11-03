@@ -12,7 +12,7 @@ namespace LanCloud.Collections
 {
     public class LocalShareCollection : IEnumerable<LocalShare>, IDisposable
     {
-        public LocalShareCollection(Config config, ILogger logger)
+        public LocalShareCollection(ApplicationConfig config, ILogger logger)
         {
             var port = config.StartPort;
             Shares = config.Shares

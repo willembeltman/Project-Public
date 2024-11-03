@@ -16,12 +16,12 @@ namespace LanCloud.Services
         public string Fullname { get; }
         public ILogger Logger { get; }
 
-        public Config Load()
+        public ApplicationConfig Load()
         {
             if (!File.Exists(Fullname))
             {
                 Logger.Info("No config found, creating dummy config");
-                var config = new Config()
+                var config = new ApplicationConfig()
                 {
                     StartPort = 8080,
                     FileDatabaseDirectoryName = "C:\\Test",
@@ -29,7 +29,7 @@ namespace LanCloud.Services
                     {
                         new RemoteApplicationConfig()
                         {
-                            Hostname = "WJPC2",
+                            Hostname = "WJLAPTOP",
                             Port = 8080,
                             IsThisComputer = true
                         }
@@ -38,7 +38,7 @@ namespace LanCloud.Services
                     {
                         new LocalShareConfig()
                         {
-                            DirectoryName = "D:\\Test",
+                            DirectoryName = "D:\\Test\\1",
                             Parts = new LocalSharePartConfig[]
                             {
                                 new LocalSharePartConfig(1)
@@ -46,7 +46,7 @@ namespace LanCloud.Services
                         },
                         new LocalShareConfig()
                         {
-                            DirectoryName = "E:\\Test",
+                            DirectoryName = "D:\\Test\\2",
                             Parts = new LocalSharePartConfig[]
                             {
                                 new LocalSharePartConfig(2)
@@ -54,7 +54,7 @@ namespace LanCloud.Services
                         },
                         new LocalShareConfig()
                         {
-                            DirectoryName = "F:\\Test",
+                            DirectoryName = "D:\\Test\\P",
                             Parts = new LocalSharePartConfig[]
                             {
                                 new LocalSharePartConfig(new [] { 1, 2 })
@@ -71,7 +71,7 @@ namespace LanCloud.Services
             using (var reader = new StreamReader(Fullname))
             {
                 var json = reader.ReadToEnd();
-                var config = JsonConvert.DeserializeObject<Config>(json);
+                var config = JsonConvert.DeserializeObject<ApplicationConfig>(json);
 
                 if ((config.Servers == null || config.Servers.Length == 0) &&
                     (config.Shares == null || config.Shares.Length == 0))
@@ -81,7 +81,7 @@ namespace LanCloud.Services
             }
         }
 
-        public void Save(Config config)
+        public void Save(ApplicationConfig config)
         {
             Logger.Info("Saving the config");
 

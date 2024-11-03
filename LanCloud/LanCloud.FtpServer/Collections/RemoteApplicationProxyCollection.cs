@@ -10,7 +10,7 @@ namespace LanCloud.Collections
 {
     public class RemoteApplicationProxyCollection : IEnumerable<RemoteApplicationProxy>, IDisposable
     {
-        public RemoteApplicationProxyCollection(Config config, ILogger logger)
+        public RemoteApplicationProxyCollection(ApplicationConfig config, ILogger logger)
         {
             Config = config;
             Logger = logger;
@@ -22,7 +22,7 @@ namespace LanCloud.Collections
             Logger.Info("Loaded");
         }
 
-        public Config Config { get; }
+        public ApplicationConfig Config { get; }
         public ILogger Logger { get; }
         public RemoteApplicationProxy[] ApplicationProxies { get; }
 

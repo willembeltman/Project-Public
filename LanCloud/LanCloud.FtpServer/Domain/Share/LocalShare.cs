@@ -8,7 +8,7 @@ namespace LanCloud.Domain.Share
 {
     public class LocalShare : IDisposable
     {
-        public LocalShare(IPAddress ipAdress, int port, Config config, LocalShareConfig shareConfig, ILogger logger)
+        public LocalShare(IPAddress ipAdress, int port, ApplicationConfig config, LocalShareConfig shareConfig, ILogger logger)
         {
             IpAdress = ipAdress;
             Port = port;

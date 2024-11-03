@@ -63,6 +63,5 @@ namespace LanCloud.Domain.Application
             var json = JsonConvert.SerializeObject(list);
             return new WjpResponse(json, null);
         }
-
     }
 }

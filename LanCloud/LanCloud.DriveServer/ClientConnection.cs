@@ -36,7 +36,7 @@ namespace LanCloud.Servers.Ftp
         bool Disposed { get; set; }
         string CurrentPath { get; set; } = "/";
 
-        private FtpUser CurrentUser;
+        private IFtpUser CurrentUser;
 
         private List<string> _validCommands;
 
@@ -928,7 +928,7 @@ namespace LanCloud.Servers.Ftp
         {
             var dataWriter = new System.IO.StreamWriter(dataStream, Encoding.ASCII);
 
-            IEnumerable<FtpDirectory> directories = CommandHandler.EnumerateDirectories(pathname);
+            IEnumerable<IFtpDirectory> directories = CommandHandler.EnumerateDirectories(pathname);
 
             foreach (var d in directories)
             {
@@ -947,7 +947,7 @@ namespace LanCloud.Servers.Ftp
                 dataWriter.Flush();
             }
 
-            IEnumerable<FtpFile> files = CommandHandler.EnumerateFiles(pathname);
+            IEnumerable<IFtpFile> files = CommandHandler.EnumerateFiles(pathname);
 
             foreach (var f in files)
             {

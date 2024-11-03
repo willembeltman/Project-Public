@@ -1,5 +1,6 @@
 ﻿using LanCloud.Collections;
 using LanCloud.Configs;
+using LanCloud.Models;
 using LanCloud.Servers.Wjp;
 using LanCloud.Shared.Log;
 using System;
@@ -10,7 +11,7 @@ namespace LanCloud.Domain.Application
     public class LocalApplication : IDisposable
     {
         public LocalApplication(
-            Config config, 
+            ApplicationConfig config, 
             LocalShareCollection shares, 
             RemoteApplicationProxyCollection remoteApplications, 
             RemoteShareCollection remoteShares,
@@ -22,19 +23,21 @@ namespace LanCloud.Domain.Application
             RemoteShares = remoteShares;
             Logger = logger;
 
+            Authentication = new AuthenticationService(this, logger);
             ApplicationHandler = new LocalApplicationHandler(this, shares, logger);
             ApplicationServer = new WjpServer(IPAddress.Any, config.StartPort, ApplicationHandler, logger);
 
             Logger.Info($"Loaded");
         }
 
-        public LocalApplicationHandler ApplicationHandler { get; }
-        public WjpServer ApplicationServer { get; }
-        public Config Config { get; }
-        public LocalShareCollection Shares { get; private set; }
+        public ApplicationConfig Config { get; }
+        public LocalShareCollection Shares { get; }
         public RemoteApplicationProxyCollection RemoteApplications { get; }
         public RemoteShareCollection RemoteShares { get; }
         public ILogger Logger { get; }
+        public AuthenticationService Authentication { get; }
+        public LocalApplicationHandler ApplicationHandler { get; }
+        public WjpServer ApplicationServer { get; }
 
         public void Dispose()
         {

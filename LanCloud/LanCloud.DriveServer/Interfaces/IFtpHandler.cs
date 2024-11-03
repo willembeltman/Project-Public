@@ -7,15 +7,15 @@ namespace LanCloud.Servers.Ftp.Interfaces
 {
     public interface IFtpHandler
     {
-        FtpUser ValidateUser(string userName, string password);
+        IFtpUser ValidateUser(string userName, string password);
 
-        IEnumerable<FtpDirectory> EnumerateDirectories(string pathname);
+        IFtpDirectory[] EnumerateDirectories(string pathname);
         void CreateDirectory(string pathname);
         void DeleteDirectory(string pathname);
         bool DirectoryExists(string pathname);
         void DirectoryMove(string renameFrom, string renameTo);
 
-        IEnumerable<FtpFile> EnumerateFiles(string pathname);
+        IFtpFile[] EnumerateFiles(string pathname);
         Stream FileOpenRead(string pathname);
         Stream FileOpenWriteCreate(string pathname);
         Stream FileOpenWriteAppend(string pathname);
