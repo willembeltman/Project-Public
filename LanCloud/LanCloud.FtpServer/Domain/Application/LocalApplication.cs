@@ -3,6 +3,7 @@ using LanCloud.Models.Configs;
 using LanCloud.Servers.Wjp;
 using LanCloud.Shared.Log;
 using System;
+using System.IO;
 using System.Net;
 
 namespace LanCloud.Domain.Application
@@ -10,9 +11,9 @@ namespace LanCloud.Domain.Application
     public class LocalApplication : IDisposable
     {
         public LocalApplication(
-            ApplicationConfig config, 
-            LocalShareCollection shares, 
-            RemoteApplicationProxyCollection remoteApplications, 
+            ApplicationConfig config,
+            LocalShareCollection shares,
+            RemoteApplicationProxyCollection remoteApplications,
             RemoteShareCollection remoteShares,
             ILogger logger)
         {
@@ -21,6 +22,10 @@ namespace LanCloud.Domain.Application
             RemoteApplications = remoteApplications;
             RemoteShares = remoteShares;
             Logger = logger;
+
+            var rootInfo = new DirectoryInfo(config.FileDatabaseDirectoryName);
+            if (!rootInfo.Exists) { rootInfo.Create(); }
+            RootDirectory = rootInfo.FullName.TrimEnd('\\');
 
             Authentication = new AuthenticationService(this, logger);
             ApplicationHandler = new LocalApplicationHandler(this, shares, logger);
@@ -34,6 +39,7 @@ namespace LanCloud.Domain.Application
         public RemoteApplicationProxyCollection RemoteApplications { get; }
         public RemoteShareCollection RemoteShares { get; }
         public ILogger Logger { get; }
+        public string RootDirectory { get; }
         public AuthenticationService Authentication { get; }
         public LocalApplicationHandler ApplicationHandler { get; }
         public WjpServer ApplicationServer { get; }

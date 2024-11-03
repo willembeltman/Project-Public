@@ -38,6 +38,14 @@ namespace LanCloud.Services
                     {
                         new LocalShareConfig()
                         {
+                            DirectoryName = "D:\\Test\\0",
+                            Parts = new LocalSharePartConfig[]
+                            {
+                                new LocalSharePartConfig(0)
+                            }
+                        },
+                        new LocalShareConfig()
+                        {
                             DirectoryName = "D:\\Test\\1",
                             Parts = new LocalSharePartConfig[]
                             {
@@ -46,18 +54,10 @@ namespace LanCloud.Services
                         },
                         new LocalShareConfig()
                         {
-                            DirectoryName = "D:\\Test\\2",
-                            Parts = new LocalSharePartConfig[]
-                            {
-                                new LocalSharePartConfig(2)
-                            }
-                        },
-                        new LocalShareConfig()
-                        {
                             DirectoryName = "D:\\Test\\P",
                             Parts = new LocalSharePartConfig[]
                             {
-                                new LocalSharePartConfig(new [] { 1, 2 })
+                                new LocalSharePartConfig(new [] { 0, 1 })
                             }
                         }
                     },

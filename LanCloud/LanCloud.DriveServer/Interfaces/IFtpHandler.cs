@@ -23,5 +23,7 @@ namespace LanCloud.Servers.Ftp.Interfaces
         bool FileExists(string pathname);
         void FileMove(string renameFrom, string renameTo);
         DateTime FileGetLastWriteTime(string pathname);
+
+        int BufferSize { get; }
     }
 }

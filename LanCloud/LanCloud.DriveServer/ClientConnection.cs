@@ -17,7 +17,7 @@ namespace LanCloud.Servers.Ftp
         ILogger Logger { get; }
         string Name { get; }
         TcpClient ControlClient { get; }
-        public IFtpHandler CommandHandler { get; }
+        public IFtpHandler FtpHandler { get; }
         TcpClient DataClient { get; set; }
         TcpListener PassiveListener { get; set; }
         NetworkStream ControlStream { get; set; }
@@ -50,7 +50,7 @@ namespace LanCloud.Servers.Ftp
             Name = RemoteEndPoint.Address.ToString();
             
             ControlClient = client;
-            CommandHandler = commandHandler;
+            FtpHandler = commandHandler;
             Logger = logger;
             CertificateFileName = certificateFilename;
 
@@ -394,7 +394,7 @@ namespace LanCloud.Servers.Ftp
 
         private string Password(string password)
         {
-            CurrentUser = CommandHandler.ValidateUser(UserName, password);
+            CurrentUser = FtpHandler.ValidateUser(UserName, password);
 
             if (CurrentUser != null)
             {
@@ -410,7 +410,7 @@ namespace LanCloud.Servers.Ftp
         {
             pathname = NormalizeFilename(pathname);
 
-            if (!CommandHandler.DirectoryExists(pathname))
+            if (!FtpHandler.DirectoryExists(pathname))
             {
                 return $"550 CWD failed. Directory '{pathname}' not found.";
             }
@@ -571,9 +571,9 @@ namespace LanCloud.Servers.Ftp
 
             if (pathname != null)
             {
-                if (CommandHandler.FileExists(pathname))
+                if (FtpHandler.FileExists(pathname))
                 {
-                    CommandHandler.FileDelete(pathname);
+                    FtpHandler.FileDelete(pathname);
                 }
                 else
                 {
@@ -592,9 +592,9 @@ namespace LanCloud.Servers.Ftp
 
             if (pathname != null)
             {
-                if (CommandHandler.DirectoryExists(pathname))
+                if (FtpHandler.DirectoryExists(pathname))
                 {
-                    CommandHandler.DeleteDirectory(pathname);
+                    FtpHandler.DeleteDirectory(pathname);
                 }
                 else
                 {
@@ -613,9 +613,9 @@ namespace LanCloud.Servers.Ftp
 
             if (pathname != null)
             {
-                if (!CommandHandler.DirectoryExists(pathname))
+                if (!FtpHandler.DirectoryExists(pathname))
                 {
-                    CommandHandler.CreateDirectory(pathname);
+                    FtpHandler.CreateDirectory(pathname);
                 }
                 else
                 {
@@ -634,9 +634,9 @@ namespace LanCloud.Servers.Ftp
 
             if (pathname != null)
             {
-                if (CommandHandler.FileExists(pathname))
+                if (FtpHandler.FileExists(pathname))
                 {
-                    return string.Format("213 {0}", CommandHandler.FileGetLastWriteTime(pathname).ToString("yyyyMMddHHmmss.fff"));
+                    return string.Format("213 {0}", FtpHandler.FileGetLastWriteTime(pathname).ToString("yyyyMMddHHmmss.fff"));
                 }
             }
 
@@ -649,11 +649,11 @@ namespace LanCloud.Servers.Ftp
 
             if (pathname != null)
             {
-                if (CommandHandler.FileExists(pathname))
+                if (FtpHandler.FileExists(pathname))
                 {
                     long length = 0;
 
-                    using (var fs = CommandHandler.FileOpenRead(pathname))
+                    using (var fs = FtpHandler.FileOpenRead(pathname))
                     {
                         length = fs.Length;
                     }
@@ -671,7 +671,7 @@ namespace LanCloud.Servers.Ftp
 
             if (pathname != null)
             {
-                if (CommandHandler.FileExists(pathname))
+                if (FtpHandler.FileExists(pathname))
                 {
                     var state = new DataConnectionOperation { Arguments = pathname, Operation = RetrieveOperation };
 
@@ -796,13 +796,13 @@ namespace LanCloud.Servers.Ftp
 
             if (renameFrom != null && renameTo != null)
             {
-                if (CommandHandler.FileExists(renameFrom))
+                if (FtpHandler.FileExists(renameFrom))
                 {
-                    CommandHandler.FileMove(renameFrom, renameTo);
+                    FtpHandler.FileMove(renameFrom, renameTo);
                 }
-                else if (CommandHandler.DirectoryExists(renameFrom))
+                else if (FtpHandler.DirectoryExists(renameFrom))
                 {
-                    CommandHandler.DirectoryMove(renameFrom, renameTo);
+                    FtpHandler.DirectoryMove(renameFrom, renameTo);
                 }
                 else
                 {
@@ -868,7 +868,7 @@ namespace LanCloud.Servers.Ftp
         {
             long bytes = 0;
 
-            using (var fs = CommandHandler.FileOpenRead(pathname))
+            using (var fs = FtpHandler.FileOpenRead(pathname))
             {
                 bytes = CopyStream(fs, dataStream);
             }
@@ -880,7 +880,7 @@ namespace LanCloud.Servers.Ftp
         {
             long bytes = 0;
 
-            using (var fs = CommandHandler.FileOpenWriteCreate(pathname))
+            using (var fs = FtpHandler.FileOpenWriteCreate(pathname))
             {
                 bytes = CopyStream(dataStream, fs);
             }
@@ -904,7 +904,7 @@ namespace LanCloud.Servers.Ftp
         {
             long bytes = 0;
 
-            using (var fs = CommandHandler.FileOpenWriteAppend(pathname))
+            using (var fs = FtpHandler.FileOpenWriteAppend(pathname))
             {
                 bytes = CopyStream(dataStream, fs);
             }
@@ -928,7 +928,7 @@ namespace LanCloud.Servers.Ftp
         {
             var dataWriter = new System.IO.StreamWriter(dataStream, Encoding.ASCII);
 
-            IEnumerable<IFtpDirectory> directories = CommandHandler.EnumerateDirectories(pathname);
+            IEnumerable<IFtpDirectory> directories = FtpHandler.EnumerateDirectories(pathname);
 
             foreach (var d in directories)
             {
@@ -939,7 +939,8 @@ namespace LanCloud.Servers.Ftp
                     d.LastWriteTime.ToString("MMM dd HH:mm");
 
                 string line = string.Format(
-                    "drwxr-xr-x    2 2003     2003     {0,8} {1} {2}", "4096",
+                    "drwxr-xr-x    2 2003     2003     {0,8} {1} {2}", 
+                    FtpHandler.BufferSize.ToString(),
                     date, 
                     d.Name);
 
@@ -947,7 +948,7 @@ namespace LanCloud.Servers.Ftp
                 dataWriter.Flush();
             }
 
-            IEnumerable<IFtpFile> files = CommandHandler.EnumerateFiles(pathname);
+            IEnumerable<IFtpFile> files = FtpHandler.EnumerateFiles(pathname);
 
             foreach (var f in files)
             {
@@ -1025,11 +1026,11 @@ namespace LanCloud.Servers.Ftp
 
             if (ConnectionType == TransferType.Image)
             {
-                return CopyStream(input, limitedStream, 4096);
+                return CopyStream(input, limitedStream, FtpHandler.BufferSize);
             }
             else
             {
-                return CopyStreamAscii(input, limitedStream, 4096);
+                return CopyStreamAscii(input, limitedStream, FtpHandler.BufferSize);
             }
         }
 

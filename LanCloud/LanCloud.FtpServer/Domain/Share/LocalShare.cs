@@ -3,6 +3,8 @@ using LanCloud.Servers.Wjp;
 using System;
 using System.Net;
 using LanCloud.Models.Configs;
+using LanCloud.Domain.IO;
+using System.Linq;
 
 namespace LanCloud.Domain.Share
 {
@@ -19,6 +21,10 @@ namespace LanCloud.Domain.Share
             Handler = new LocalShareHandler(Storage, Logger);
             Server = new WjpServer(ipAdress, port, Handler, Logger);
 
+            ShareParts = Config.Parts
+                .Select(part => new LocalSharePart(this, part))
+                .ToArray();
+
             Logger.Info($"Loaded");
         }
 
@@ -29,6 +35,7 @@ namespace LanCloud.Domain.Share
         public LocalShareStorage Storage { get; }
         public LocalShareHandler Handler { get; }
         public WjpServer Server { get; }
+        public LocalSharePart[] ShareParts { get; }
 
         public void Dispose()
         {

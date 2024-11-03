@@ -21,6 +21,8 @@ namespace LanCloud.Domain.VirtualFtp
         public ILogger Logger { get; }
         public LocalApplication Application { get; }
 
+        public int BufferSize => Constants.BufferSize;
+
         public IFtpUser ValidateUser(string userName, string password)
             => Application.Authentication.ValidateUser(userName, password);
 

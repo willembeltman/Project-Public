@@ -1,5 +1,4 @@
 ﻿using LanCloud.Domain.Application;
-using System;
 using System.IO;
 
 namespace LanCloud.Domain.IO

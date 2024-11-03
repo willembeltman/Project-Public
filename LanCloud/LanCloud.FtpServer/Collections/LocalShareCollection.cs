@@ -14,9 +14,11 @@ namespace LanCloud.Collections
         public LocalShareCollection(ApplicationConfig config, ILogger logger)
         {
             var port = config.StartPort;
+
             Shares = config.Shares
                 .Select(shareConfig => new LocalShare(IPAddress.Any, ++port, config, shareConfig, logger))
                 .ToArray();
+
             Logger = logger;
 
             Logger.Info("Loaded");

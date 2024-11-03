@@ -11,9 +11,7 @@ namespace LanCloud.Domain.IO
                 path = "/";
 
             path = path.Replace("/", "\\");
-            var rootInfo = new DirectoryInfo(application.Config.FileDatabaseDirectoryName);
-            if (!rootInfo.Exists ) { rootInfo.Create(); }
-            return rootInfo.FullName + path;
+            return application.RootDirectory + path;
         }
     }
 }
