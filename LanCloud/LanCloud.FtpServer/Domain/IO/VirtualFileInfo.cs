@@ -12,40 +12,75 @@ namespace LanCloud.Domain.IO
         {
             Application = application;
             Path = path;
-            var realFullName = PathToFullName.Translate(application, path);
-            FileRefInfo = new FileInfo(realFullName);
+            Name = PathTranslator.TranslatePathToName(application, path);
+            Extention = PathTranslator.TranslatePathToExtention(application, path);
+            var realFullName = PathTranslator.TranslatePathToFullName(application, path);
+            RealFileInfo = new FileInfo(realFullName);
         }
         public VirtualFileInfo(LocalApplication application, FileInfo realInfo)
         {
             Application = application;
-            FileRefInfo = realInfo;
-            Path = FullNameToPath.Translate(application, realInfo);
+            RealFileInfo = realInfo;
+            Path = PathTranslator.TranslateFullnameToPath(application, realInfo);
         }
 
         public LocalApplication Application { get; }
         public string Path { get; }
-        public FileInfo FileRefInfo { get; }
+        public string Name { get; }
+        public string Extention { get; }
+        private FileInfo RealFileInfo { get; }
 
         FileRef _FileRef { get; set; }
-        FileRef FileRef
+        public FileRef FileRef
         {
             get
             {
-                return _FileRef = _FileRef ?? FileRefService.Load(FileRefInfo);
+                return _FileRef = _FileRef ?? FileRefService.Load(RealFileInfo);
             }
             set
             {
-                _FileRef = FileRefService.Save(FileRefInfo, value);
+                _FileRef = FileRefService.Save(RealFileInfo, value);
             }
         }
 
-        public DateTime LastWriteTime => FileRefInfo.LastWriteTime;
-        public bool Exists => FileRefInfo.Exists;
-        public string Name => FileRef.Name;
-        public long Length => FileRef.Length;
+        public DateTime LastWriteTime => RealFileInfo.LastWriteTime;
+        public bool Exists => RealFileInfo.Exists;
+        public long? Length
+        {
+            get => FileRef?.Length;
+            set
+            {
+                var fileRef = new FileRef(this);
+                fileRef.Length = value;
+                FileRef = fileRef;
+            }
+        }
+        public string Hash
+        {
+            get => FileRef?.Hash;
+            set
+            {
+                var fileRef = new FileRef(this);
+                fileRef.Hash = value;
+                FileRef = fileRef;
+            }
+        }
+        public FileRefBit[] FileRefBits
+        {
+            get => FileRef?.FileRefBits;
+            set
+            {
+                var fileRef = new FileRef(this);
+                fileRef.FileRefBits = value;
+                FileRef = fileRef;
+            }
+        }
 
-        public VirtualStreamWriter Create() 
-            => new VirtualStreamWriter(this);
+        public VirtualStreamWriter Create()
+        {
+            FileRef = new FileRef(this);
+            return new VirtualStreamWriter(this);
+        }
         public VirtualStreamAppender OpenAppend()
             => new VirtualStreamAppender(this);
         public VirtualStreamReader OpenRead()
@@ -53,7 +88,7 @@ namespace LanCloud.Domain.IO
 
         public void Move(VirtualFileInfo to)
         {
-            throw new NotImplementedException();
+            File.Move(RealFileInfo.FullName, to.RealFileInfo.FullName);
         }
         public void Delete()
         {

@@ -12,14 +12,14 @@ namespace LanCloud.Domain.IO
         {
             Application = application;
             Path = path;
-            var realFullName = PathToFullName.Translate(application, path);
+            var realFullName = PathTranslator.TranslateDirectoryPathToFullName(application, path);
             RealInfo = new DirectoryInfo(realFullName);
         }
         public VirtualDirectoryInfo(LocalApplication application, DirectoryInfo realInfo)
         {
             Application = application;
             RealInfo = realInfo;
-            Path = FullNameToPath.Translate(application, realInfo);
+            Path = PathTranslator.TranslateDirectoryFullNameToPath(application, realInfo);
         }
 
         public LocalApplication Application { get; }
@@ -41,8 +41,8 @@ namespace LanCloud.Domain.IO
                 .ToArray();
         public VirtualFileInfo[] GetFiles() 
             => RealInfo
-                .GetFiles()
-                .Select(a => new VirtualFileInfo(Application, a))
+                .GetFiles("*.fileref")
+                .Select(realInfo => new VirtualFileInfo(Application, realInfo))
                 .ToArray();
     }
 }

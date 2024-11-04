@@ -7,17 +7,19 @@ namespace LanCloud.Domain.IO
     public class FileBitStreamReader : Stream, IDisposable
     {
         public FileInfo Info { get; }
-        public FileStream OuterStream { get; }
-        public ZipArchive Archive { get; }
-        public ZipArchiveEntry ReadmeEntry { get; }
+        //public FileStream OuterStream { get; }
+        //public ZipArchive Archive { get; }
+        //public ZipArchiveEntry ReadmeEntry { get; }
         public Stream Stream { get; }
 
         public FileBitStreamReader(FileInfo info)
         {
-            OuterStream = Info.OpenRead();
-            Archive = new ZipArchive(OuterStream, ZipArchiveMode.Read);
-            ReadmeEntry = Archive.GetEntry("data.bin");
-            Stream = ReadmeEntry.Open();
+            //OuterStream = Info.OpenRead();
+            //Archive = new ZipArchive(OuterStream, ZipArchiveMode.Read);
+            //ReadmeEntry = Archive.GetEntry("data.bin");
+            //Stream = ReadmeEntry.Open();
+
+            Stream = Info.OpenRead();
         }
 
         public override void Flush()
@@ -58,8 +60,8 @@ namespace LanCloud.Domain.IO
         public new void Dispose()
         {
             Stream.Dispose();
-            Archive.Dispose();
-            OuterStream.Dispose();
+            //Archive.Dispose();
+            //OuterStream.Dispose();
         }
     }
 }

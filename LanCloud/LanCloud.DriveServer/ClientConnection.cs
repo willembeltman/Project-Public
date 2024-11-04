@@ -290,6 +290,9 @@ namespace LanCloud.Servers.Ftp
                         ControlWriter.WriteLine(response);
                         ControlWriter.Flush();
 
+                        Logger.Info("FTP Received:  " + line);
+                        Logger.Info("FTP Responded: " + response);
+
                         if (response.StartsWith("221"))
                         {
                             break;

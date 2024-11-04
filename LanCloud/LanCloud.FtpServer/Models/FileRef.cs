@@ -2,12 +2,26 @@
 {
     public class FileRef
     {
-        public string FullName { get; set; }
+        public FileRef()
+        {
+
+        }
+
+        public FileRef(VirtualFileInfo virtualFileInfo)
+        {
+            Path = virtualFileInfo?.Path;
+            Name = virtualFileInfo?.Name;
+            Extention = virtualFileInfo?.Extention;
+            Length = virtualFileInfo.FileRef?.Length;
+            Hash = virtualFileInfo.FileRef?.Hash;
+            FileRefBits = virtualFileInfo.FileRef?.FileRefBits;
+        }
+
+        public string Path { get; set; }
         public string Name { get; set; }
-        public string Extention { get; }
-        public long Size { get; set; }
+        public string Extention { get; set; }
+        public long? Length { get; set; }
         public string Hash { get; set; }
-        public long Length { get; set; }
         public FileRefBit[] FileRefBits { get; set; }
     }
 }

@@ -3,6 +3,6 @@
     public class FileRefBit
     {
         public string HostName { get; set; }
-        public int Part { get; }
+        public int[] Parts { get; set; }
     }
 }

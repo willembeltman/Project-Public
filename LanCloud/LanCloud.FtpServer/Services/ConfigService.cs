@@ -29,7 +29,7 @@ namespace LanCloud.Services
                     {
                         new RemoteApplicationConfig()
                         {
-                            Hostname = "WJLAPTOP",
+                            HostName = "WJPC2",
                             Port = 8080,
                             IsThisComputer = true
                         }

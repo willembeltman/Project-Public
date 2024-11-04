@@ -4,7 +4,7 @@ namespace LanCloud.Models.Configs
 {
     public class RemoteApplicationConfig : IWjpProxyConfig
     {
-        public string Hostname { get; set; }
+        public string HostName { get; set; }
         public int Port { get; set; }
         public bool IsThisComputer { get; set; }
     }

@@ -2,7 +2,7 @@
 {
     public interface IWjpProxyConfig
     {
-        string Hostname { get; set; }
+        string HostName { get; set; }
         int Port { get; set; }
     }
 }

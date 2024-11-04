@@ -2,6 +2,7 @@
 using LanCloud.Models.Configs;
 using LanCloud.Services;
 using LanCloud.Shared.Log;
+using System;
 using System.IO;
 using System.Linq;
 
@@ -43,6 +44,21 @@ namespace LanCloud.Domain.Share
                 }
             }
         }
+        public FileBit CreateTempFileBit(string extention, int[] parts)
+        {
+            return new FileBit(Root, extention, parts);
+        }
+        public void AddFileBit(FileBit fileBit)
+        {
+            lock (_FileBits)
+            {
+                var newArray = new FileBit[_FileBits.Length + 1];
+                Array.Copy(_FileBits, newArray, _FileBits.Length);
+                newArray[newArray.Length - 1] = fileBit;
+                _FileBits = newArray;
+            }
+        }
+
         ////public FileBit AddFileBit(string path, long part, byte[] data, long originalSize)
         //{
         //    var extention = path.Split('.').Last();

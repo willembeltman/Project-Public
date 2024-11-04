@@ -27,7 +27,7 @@ namespace LanCloud.Servers.Wjp
         {
             while (!Stop)
             {
-                using (var client = new TcpClient(Config.Hostname, Config.Port))
+                using (var client = new TcpClient(Config.HostName, Config.Port))
                 using (var stream = client.GetStream())
                 using (var reader = new BinaryReader(stream))
                 using (var writer = new BinaryWriter(stream))

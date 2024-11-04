@@ -1,7 +1,7 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
+using System.Data;
 using System.IO;
-using System.IO.Compression;
+using System.Linq;
 
 namespace LanCloud.Domain.IO
 {
@@ -13,28 +13,49 @@ namespace LanCloud.Domain.IO
             FullName = info.FullName;
             var split = info.Name.Split('.');
             Extention = split[0];
-            Size = Convert.ToInt64(split[1]);
-            Part = Convert.ToInt32(split[2]);
+            Parts = split[1].Split('_').Select(a => Convert.ToInt32(a)).ToArray();
+            Size = Convert.ToInt64(split[2]);
             Hash = split[3];
         }
-        public FileBit(DirectoryInfo dirinfo, string extention, long size, int part, string hash)
+        public FileBit(DirectoryInfo dirinfo, string extention, int[] parts, long size, string hash)
         {
             Extention = extention;
             Size = size;
-            Part = part;
+            Parts = parts;
             Hash = hash;
-            var name = $"{Extention}.{Size}.{Part}.{Hash}";
+            var name = $"{extention}.{string.Join("_", parts)}.{size}.{hash}.filebit";
             FullName = Path.Combine(dirinfo.FullName, name);
             Info = new FileInfo(FullName);
         }
+        public FileBit(DirectoryInfo dirinfo, string extention, int[] parts)
+        {
+            Extention = extention;
+            Parts = parts;
+            var name = $"{extention}.{string.Join("_", parts)}.{Guid.NewGuid().ToString()}.tempbit";
+            FullName = Path.Combine(dirinfo.FullName, name);
+            Info = new FileInfo(FullName);
+            IsTemp = true;
+        }
 
-        public FileInfo Info { get; }
-        public string FullName { get; }
         public string Extention { get; }
-        public long Size { get; }
-        public int Part { get; }
-        public string Hash { get; }
-        
+        public int[] Parts { get; }
+        public FileInfo Info { get; private set; }
+        public bool IsTemp { get; private set; }
+        public string FullName { get; private set; }
+        public long Size { get; private set; }
+        public string Hash { get; private set; }
+
+        public void Update(long size, string hash)
+        {
+            Size = size;
+            Hash = hash;
+            var name = $"{Extention}.{string.Join("_", Parts)}.{size}.{hash}.filebit";
+            FullName = Path.Combine(Info.Directory.FullName, name);
+            File.Move(Info.FullName, FullName);
+            Info = new FileInfo(FullName);
+            IsTemp = false;
+        }
+
         public FileBitStreamReader OpenRead()
         {
             return new FileBitStreamReader(Info);
@@ -43,5 +64,6 @@ namespace LanCloud.Domain.IO
         {
             return new FileBitStreamWriter(Info);
         }
+
     }
 }

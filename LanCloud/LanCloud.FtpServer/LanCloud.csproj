@@ -71,11 +71,9 @@
     <Compile Include="Services\AuthenticationService.cs" />
     <Compile Include="Models\FileRefBit.cs" />
     <Compile Include="Models\User.cs" />
-    <Compile Include="Domain\IO\FullNameToPath.cs" />
     <Compile Include="Domain\IO\VirtualDirectoryInfo.cs" />
     <Compile Include="Domain\IO\VirtualFileInfo.cs" />
-    <Compile Include="Domain\IO\PathToFullName.cs" />
-    <Compile Include="Domain\IO\VirtualFileMode.cs" />
+    <Compile Include="Domain\IO\PathTranslator.cs" />
     <Compile Include="Domain\IO\VirtualStreamAppender.cs" />
     <Compile Include="Domain\IO\VirtualStreamWriter.cs" />
     <Compile Include="Domain\IO\VirtualStreamReader.cs" />

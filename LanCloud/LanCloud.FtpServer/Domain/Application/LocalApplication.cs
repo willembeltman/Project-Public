@@ -4,6 +4,7 @@ using LanCloud.Servers.Wjp;
 using LanCloud.Shared.Log;
 using System;
 using System.IO;
+using System.Linq;
 using System.Net;
 
 namespace LanCloud.Domain.Application
@@ -18,6 +19,7 @@ namespace LanCloud.Domain.Application
             ILogger logger)
         {
             Config = config;
+            ServerConfig = config.Servers.First(a => a.IsThisComputer);
             Shares = shares;
             RemoteApplications = remoteApplications;
             RemoteShares = remoteShares;
@@ -35,6 +37,7 @@ namespace LanCloud.Domain.Application
         }
 
         public ApplicationConfig Config { get; }
+        public RemoteApplicationConfig ServerConfig { get; }
         public LocalShareCollection Shares { get; }
         public RemoteApplicationProxyCollection RemoteApplications { get; }
         public RemoteShareCollection RemoteShares { get; }
