@@ -66,17 +66,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants.cs" />
-    <Compile Include="Domain\IO\VirtualStreamWriterSharePart.cs" />
+    <Compile Include="Domain\IO\FtpStreamReaderFileRefBit.cs" />
+    <Compile Include="Domain\IO\FtpStreamWriterSharePart.cs" />
+    <Compile Include="Domain\IO\DoubleBuffer.cs" />
     <Compile Include="Domain\Share\LocalSharePart.cs" />
     <Compile Include="Services\AuthenticationService.cs" />
     <Compile Include="Models\FileRefBit.cs" />
     <Compile Include="Models\User.cs" />
-    <Compile Include="Domain\IO\VirtualDirectoryInfo.cs" />
-    <Compile Include="Domain\IO\VirtualFileInfo.cs" />
-    <Compile Include="Domain\IO\PathTranslator.cs" />
-    <Compile Include="Domain\IO\VirtualStreamAppender.cs" />
-    <Compile Include="Domain\IO\VirtualStreamWriter.cs" />
-    <Compile Include="Domain\IO\VirtualStreamReader.cs" />
+    <Compile Include="Domain\IO\FtpDirectoryInfo.cs" />
+    <Compile Include="Domain\IO\FtpFileInfo.cs" />
+    <Compile Include="Domain\IO\FtpPathTranslator.cs" />
+    <Compile Include="Domain\IO\FtpStreamAppender.cs" />
+    <Compile Include="Domain\IO\FtpStreamWriter.cs" />
+    <Compile Include="Domain\IO\FtpStreamReader.cs" />
     <Compile Include="Domain\IO\FileBitStreamWriter.cs" />
     <Compile Include="Domain\IO\FileBitStreamReader.cs" />
     <Compile Include="Models\Dtos\ShareDto.cs" />

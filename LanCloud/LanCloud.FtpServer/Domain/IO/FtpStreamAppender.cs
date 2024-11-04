@@ -3,13 +3,13 @@ using System.IO;
 
 namespace LanCloud.Domain.IO
 {
-    public class VirtualStreamAppender : Stream
+    public class FtpStreamAppender : Stream
     {
-        public VirtualStreamAppender(VirtualFileInfo virtualFileInfo)
+        public FtpStreamAppender(FtpFileInfo virtualFileInfo)
         {
             VirtualFileInfo = virtualFileInfo;
         }
-        public VirtualFileInfo VirtualFileInfo { get; }
+        public FtpFileInfo VirtualFileInfo { get; }
 
         public override bool CanRead => false;
         public override bool CanSeek => false;

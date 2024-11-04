@@ -6,20 +6,20 @@ using System.Linq;
 
 namespace LanCloud.Domain.IO
 {
-    public class VirtualDirectoryInfo : IFtpDirectory
+    public class FtpDirectoryInfo : IFtpDirectory
     {
-        public VirtualDirectoryInfo(LocalApplication application, string path)
+        public FtpDirectoryInfo(LocalApplication application, string path)
         {
             Application = application;
             Path = path;
-            var realFullName = PathTranslator.TranslateDirectoryPathToFullName(application, path);
+            var realFullName = FtpPathTranslator.TranslateDirectoryPathToFullName(application, path);
             RealInfo = new DirectoryInfo(realFullName);
         }
-        public VirtualDirectoryInfo(LocalApplication application, DirectoryInfo realInfo)
+        public FtpDirectoryInfo(LocalApplication application, DirectoryInfo realInfo)
         {
             Application = application;
             RealInfo = realInfo;
-            Path = PathTranslator.TranslateDirectoryFullNameToPath(application, realInfo);
+            Path = FtpPathTranslator.TranslateDirectoryFullNameToPath(application, realInfo);
         }
 
         public LocalApplication Application { get; }
@@ -31,18 +31,18 @@ namespace LanCloud.Domain.IO
         public void Create() => RealInfo.Create();
         public void Delete() => RealInfo.Delete();
         public bool Exists => RealInfo.Exists;
-        public void MoveTo(VirtualDirectoryInfo to) 
+        public void MoveTo(FtpDirectoryInfo to) 
             => RealInfo.MoveTo(to.RealInfo.FullName);
 
-        public VirtualDirectoryInfo[] GetDirectories()
+        public FtpDirectoryInfo[] GetDirectories()
             => RealInfo
                 .GetDirectories()
-                .Select(dirinfo => new VirtualDirectoryInfo(Application, dirinfo))
+                .Select(dirinfo => new FtpDirectoryInfo(Application, dirinfo))
                 .ToArray();
-        public VirtualFileInfo[] GetFiles() 
+        public FtpFileInfo[] GetFiles() 
             => RealInfo
                 .GetFiles("*.fileref")
-                .Select(realInfo => new VirtualFileInfo(Application, realInfo))
+                .Select(realInfo => new FtpFileInfo(Application, realInfo))
                 .ToArray();
     }
 }

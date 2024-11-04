@@ -17,6 +17,7 @@ namespace LanCloud
 
         public IFtpUser ValidateUser(string userName, string password)
         {
+            //if (userName != "willem") return null;
             return new User(userName);
         }
     }

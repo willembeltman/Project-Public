@@ -7,7 +7,7 @@
 
         }
 
-        public FileRef(VirtualFileInfo virtualFileInfo)
+        public FileRef(FtpFileInfo virtualFileInfo)
         {
             Path = virtualFileInfo?.Path;
             Name = virtualFileInfo?.Name;

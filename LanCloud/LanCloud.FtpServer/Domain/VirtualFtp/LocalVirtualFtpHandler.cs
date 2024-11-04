@@ -27,41 +27,41 @@ namespace LanCloud.Domain.VirtualFtp
             => Application.Authentication.ValidateUser(userName, password);
 
         public IFtpDirectory[] EnumerateDirectories(string path) 
-            => new VirtualDirectoryInfo(Application, path).GetDirectories();
+            => new FtpDirectoryInfo(Application, path).GetDirectories();
         public IFtpFile[] EnumerateFiles(string path)
-            => new VirtualDirectoryInfo(Application, path).GetFiles();
+            => new FtpDirectoryInfo(Application, path).GetFiles();
 
         public void CreateDirectory(string path)
-            => new VirtualDirectoryInfo(Application, path).Create();
+            => new FtpDirectoryInfo(Application, path).Create();
         public void DeleteDirectory(string path) 
-            => new VirtualDirectoryInfo(Application, path).Delete();
+            => new FtpDirectoryInfo(Application, path).Delete();
         public bool DirectoryExists(string path) 
-            => new VirtualDirectoryInfo(Application, path).Exists;
+            => new FtpDirectoryInfo(Application, path).Exists;
         public void DirectoryMove(string renameFrom, string renameTo)
         {
-            var from = new VirtualDirectoryInfo(Application, renameFrom);
-            var to = new VirtualDirectoryInfo(Application, renameTo);
+            var from = new FtpDirectoryInfo(Application, renameFrom);
+            var to = new FtpDirectoryInfo(Application, renameTo);
             from.MoveTo(to);
         }
 
         public bool FileExists(string path) 
-            => new VirtualFileInfo(Application, path).Exists;
+            => new FtpFileInfo(Application, path).Exists;
         public void FileDelete(string path)
-            => new VirtualFileInfo(Application, path).Delete();
+            => new FtpFileInfo(Application, path).Delete();
         public void FileMove(string renameFrom, string renameTo)
         {
-            var from = new VirtualFileInfo(Application, renameFrom);
-            var to = new VirtualFileInfo(Application, renameTo);
+            var from = new FtpFileInfo(Application, renameFrom);
+            var to = new FtpFileInfo(Application, renameTo);
             from.Move(to);
         }
         public DateTime FileGetLastWriteTime(string path) 
-            => new VirtualFileInfo(Application, path).LastWriteTime;
+            => new FtpFileInfo(Application, path).LastWriteTime;
 
         public Stream FileOpenRead(string path)
-            => new VirtualFileInfo(Application, path).OpenRead();
+            => new FtpFileInfo(Application, path).OpenRead();
         public Stream FileOpenWriteCreate(string path)
-            => new VirtualFileInfo(Application, path).Create();
+            => new FtpFileInfo(Application, path).Create();
         public Stream FileOpenWriteAppend(string path) 
-            => new VirtualFileInfo(Application, path).OpenAppend();
+            => new FtpFileInfo(Application, path).OpenAppend();
     }
 }

@@ -931,21 +931,19 @@ namespace LanCloud.Servers.Ftp
         {
             var dataWriter = new System.IO.StreamWriter(dataStream, Encoding.ASCII);
 
-            IEnumerable<IFtpDirectory> directories = FtpHandler.EnumerateDirectories(pathname);
+            var directories = FtpHandler.EnumerateDirectories(pathname);
 
-            foreach (var d in directories)
+            foreach (var directory in directories)
             {
-                //DirectoryInfo d = new DirectoryInfo(dir);
-
-                string date = d.LastWriteTime < DateTime.Now - TimeSpan.FromDays(180) ?
-                    d.LastWriteTime.ToString("MMM dd  yyyy") :
-                    d.LastWriteTime.ToString("MMM dd HH:mm");
+                string date = directory.LastWriteTime < DateTime.Now - TimeSpan.FromDays(180) ?
+                    directory.LastWriteTime.ToString("MMM dd  yyyy") :
+                    directory.LastWriteTime.ToString("MMM dd HH:mm");
 
                 string line = string.Format(
                     "drwxr-xr-x    2 2003     2003     {0,8} {1} {2}", 
                     FtpHandler.BufferSize.ToString(),
                     date, 
-                    d.Name);
+                    directory.Name);
 
                 dataWriter.WriteLine(line);
                 dataWriter.Flush();
@@ -953,17 +951,17 @@ namespace LanCloud.Servers.Ftp
 
             IEnumerable<IFtpFile> files = FtpHandler.EnumerateFiles(pathname);
 
-            foreach (var f in files)
+            foreach (var file in files)
             {
-                string date = f.LastWriteTime < DateTime.Now - TimeSpan.FromDays(180) ?
-                    f.LastWriteTime.ToString("MMM dd  yyyy") :
-                    f.LastWriteTime.ToString("MMM dd HH:mm");
+                string date = file.LastWriteTime < DateTime.Now - TimeSpan.FromDays(180) ?
+                    file.LastWriteTime.ToString("MMM dd  yyyy") :
+                    file.LastWriteTime.ToString("MMM dd HH:mm");
 
                 string line = string.Format(
                     "-rw-r--r--    2 2003     2003     {0,8} {1} {2}", 
-                    f.Length, 
+                    file.Length.Value, 
                     date, 
-                    f.Name);
+                    file.Name);
 
                 dataWriter.WriteLine(line);
                 dataWriter.Flush();
