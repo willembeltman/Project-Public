@@ -1,15 +1,14 @@
 ﻿using System;
-using System.IO;
 
-namespace LanCloud.Domain.IO
+namespace LanCloud.Domain.VirtualFtp
 {
-    public class FtpStreamAppender : Stream
+    public class FtpStreamAppender : System.IO.Stream
     {
-        public FtpStreamAppender(FtpFileInfo virtualFileInfo, Shared.Log.ILogger logger)
+        public FtpStreamAppender(PathInfo virtualFileInfo, Shared.Log.ILogger logger)
         {
             VirtualFileInfo = virtualFileInfo;
         }
-        public FtpFileInfo VirtualFileInfo { get; }
+        public PathInfo VirtualFileInfo { get; }
 
         public override bool CanRead => false;
         public override bool CanSeek => false;
@@ -43,7 +42,7 @@ namespace LanCloud.Domain.IO
             throw new NotImplementedException();
         }
 
-        public override long Seek(long offset, SeekOrigin origin)
+        public override long Seek(long offset, System.IO.SeekOrigin origin)
         {
             throw new NotImplementedException();
         }

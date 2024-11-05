@@ -26,42 +26,40 @@ namespace LanCloud.Domain.VirtualFtp
         public IFtpUser ValidateUser(string userName, string password)
             => Application.Authentication.ValidateUser(userName, password);
 
-        public IFtpDirectory[] EnumerateDirectories(string path) 
-            => new FtpDirectoryInfo(Application, path, Logger).GetDirectories();
-        public IFtpFile[] EnumerateFiles(string path)
-            => new FtpDirectoryInfo(Application, path, Logger).GetFiles();
+        public IFtpDirectoryInfo[] EnumerateDirectories(string path) 
+            => new PathDirectoryInfo(Application, path, Logger).GetDirectories();
+        public IFtpFileInfo[] EnumerateFiles(string path)
+            => new PathDirectoryInfo(Application, path, Logger).GetFiles();
 
         public void CreateDirectory(string path)
-            => new FtpDirectoryInfo(Application, path, Logger).Create();
+            => new PathDirectoryInfo(Application, path, Logger).Create();
         public void DeleteDirectory(string path) 
-            => new FtpDirectoryInfo(Application, path, Logger).Delete();
+            => new PathDirectoryInfo(Application, path, Logger).Delete();
         public bool DirectoryExists(string path) 
-            => new FtpDirectoryInfo(Application, path, Logger).Exists;
+            => new PathDirectoryInfo(Application, path, Logger).Exists;
         public void DirectoryMove(string renameFrom, string renameTo)
         {
-            var from = new FtpDirectoryInfo(Application, renameFrom, Logger);
-            var to = new FtpDirectoryInfo(Application, renameTo, Logger);
-            from.MoveTo(to);
+            var from = new PathDirectoryInfo(Application, renameFrom, Logger);
+            from.MoveTo(renameTo);
         }
 
         public bool FileExists(string path) 
-            => new FtpFileInfo(Application, path, Logger).Exists;
+            => new PathInfo(Application, path, Logger).Exists;
         public void FileDelete(string path)
-            => new FtpFileInfo(Application, path, Logger).Delete();
+            => new PathInfo(Application, path, Logger).Delete();
         public void FileMove(string renameFrom, string renameTo)
         {
-            var from = new FtpFileInfo(Application, renameFrom, Logger);
-            var to = new FtpFileInfo(Application, renameTo, Logger);
-            from.Move(to);
+            var from = new PathInfo(Application, renameFrom, Logger);
+            from.MoveTo(renameTo);
         }
         public DateTime FileGetLastWriteTime(string path) 
-            => new FtpFileInfo(Application, path, Logger).LastWriteTime;
+            => new PathInfo(Application, path, Logger).LastWriteTime;
 
         public Stream FileOpenRead(string path)
-            => new FtpFileInfo(Application, path, Logger).OpenRead();
+            => new PathInfo(Application, path, Logger).OpenRead();
         public Stream FileOpenWriteCreate(string path)
-            => new FtpFileInfo(Application, path, Logger).Create();
+            => new PathInfo(Application, path, Logger).Create();
         public Stream FileOpenWriteAppend(string path) 
-            => new FtpFileInfo(Application, path, Logger).OpenAppend();
+            => new PathInfo(Application, path, Logger).OpenAppend();
     }
 }

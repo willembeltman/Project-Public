@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using LanCloud.Domain.VirtualFtp;
+using Newtonsoft.Json;
 
 namespace LanCloud.Domain.IO
 {
@@ -8,19 +9,23 @@ namespace LanCloud.Domain.IO
         {
         }
 
-        public FileRef(FtpFileInfo virtualFileInfo)
+        public FileRef(PathInfo pathInfo)
         {
-            Path = virtualFileInfo?.Path;
-            Length = virtualFileInfo.FileRef?.Length;
-            Hash = virtualFileInfo.FileRef?.Hash;
-            FileRefBits = virtualFileInfo.FileRef?.FileRefBits;
+            //Path = pathInfo?.Path;
+            //Extention = pathInfo.Extention;
+            Length = pathInfo.FileRef?.Length;
+            Hash = pathInfo.FileRef?.Hash;
+            FileRefBits = pathInfo.FileRef?.FileRefBits;
         }
 
-        public string Path { get; set; }
-        [JsonIgnore]
-        public string Name => FtpPathTranslator.TranslatePathToName(Path);
-        [JsonIgnore]
-        public string Extention => FtpPathTranslator.TranslatePathToExtention(Path);
+        //[JsonIgnore]
+        //public string Path { get; set; }
+        //[JsonIgnore]
+        //public string Name => PathTranslator.TranslatePathToName(Path);
+        //[JsonIgnore]
+        //public string Extention => PathTranslator.TranslatePathToExtention(Path);
+
+        //public string Extention { get; set; }
         public long? Length { get; set; }
         public string Hash { get; set; }
         public FileRefBit[] FileRefBits { get; set; }

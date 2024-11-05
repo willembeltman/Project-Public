@@ -5,8 +5,9 @@ using System.Linq;
 using LanCloud.Shared.Log;
 using LanCloud.Domain.Share;
 using LanCloud.Domain.Application;
+using LanCloud.Domain.IO;
 
-namespace LanCloud.Collections
+namespace LanCloud.Domain.Collections
 {
     public class LocalShareCollection : IEnumerable<LocalShare>, IDisposable
     {
@@ -28,6 +29,15 @@ namespace LanCloud.Collections
         public LocalApplication Application { get; }
         public LocalShare[] Shares { get; }
         public ILogger Logger { get; }
+
+        public FileBit[] FindFileBits(string extention, FileRef fileRef, FileRefBit fileRefBit)
+        {
+            var fileBits = Shares
+                .Select(a => a.FileBits.FindFileBit(extention, fileRef, fileRefBit))
+                .Where(a => a != null)
+                .ToArray();
+            return fileBits;
+        }
 
         public IEnumerator<LocalShare> GetEnumerator()
         {

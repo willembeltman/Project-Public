@@ -1,10 +1,9 @@
-﻿using LanCloud.Collections;
+﻿using LanCloud.Domain.Collections;
 using LanCloud.Domain.IO;
 using LanCloud.Models.Configs;
 using LanCloud.Servers.Wjp;
 using LanCloud.Shared.Log;
 using System;
-using System.IO;
 using System.Linq;
 using System.Net;
 
@@ -14,27 +13,24 @@ namespace LanCloud.Domain.Application
     {
         public LocalApplication(
             ApplicationConfig config,
-            RemoteApplicationCollection remoteApplications,
-            RemoteShareCollection remoteShares,
             ILogger logger)
         {
             Config = config;
-            RemoteApplications = remoteApplications;
-            RemoteShares = remoteShares;
             Logger = logger;
 
-            var rootInfo = new DirectoryInfo(config.RefDirectory);
-            if (!rootInfo.Exists) { rootInfo.Create(); }
-            RootDirectory = rootInfo.FullName.TrimEnd('\\');
+            Authentication = new AuthenticationService(this, logger);
+            FileRefs = new FileRefCollection(this, logger);
+            LocalShares = new LocalShareCollection(this, logger);
+            RemoteApplications = new RemoteApplicationCollection(this, logger);
+            RemoteShares = new RemoteShareCollection(this, logger);
 
             ServerConfig = config.Servers.FirstOrDefault(a => a.IsThisComputer);
             if (ServerConfig != null)
             {
-                LocalShares = new LocalShareCollection(this, logger);
-                Authentication = new AuthenticationService(this, logger);
                 ServerHandler = new LocalApplicationHandler(this, LocalShares, logger);
                 Server = new WjpServer(IPAddress.Any, config.StartPort, ServerHandler, logger);
-                // Logger.Info($"Loaded");
+                
+                Logger.Info($"Loaded");
             }
             else
             {
@@ -43,26 +39,17 @@ namespace LanCloud.Domain.Application
         }
 
         public ApplicationConfig Config { get; }
-        public RemoteApplicationConfig ServerConfig { get; }
+        public ILogger Logger { get; }
+
+        public AuthenticationService Authentication { get; }
+        public FileRefCollection FileRefs { get; }
         public LocalShareCollection LocalShares { get; }
         public RemoteApplicationCollection RemoteApplications { get; }
         public RemoteShareCollection RemoteShares { get; }
-        public ILogger Logger { get; }
-        public string RootDirectory { get; }
-        public AuthenticationService Authentication { get; }
+
+        public RemoteApplicationConfig ServerConfig { get; }        
         public LocalApplicationHandler ServerHandler { get; }
         public WjpServer Server { get; }
-        
-        public string HostName => ServerConfig.HostName;
-
-        public FileBit[] FindFileBits(FileRef fileRef, FileRefBit fileRefBit)
-        {
-            var fileBits = LocalShares
-                .Select(a => a.Storage.FindFileBit(fileRef, fileRefBit))
-                .Where(a => a != null)
-                .ToArray();
-            return fileBits;
-        }
 
         public void Dispose()
         {

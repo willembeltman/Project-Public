@@ -1,38 +1,35 @@
-﻿using LanCloud.Domain.Application;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 
-namespace LanCloud.Domain.IO
+namespace LanCloud.Domain.VirtualFtp
 {
-    public static class FtpPathTranslator
+    public static class PathTranslator
     {
-        public static string TranslateDirectoryPathToFullName(LocalApplication application, string directoryPath)
+        public static string TranslateDirectoryPathToFullName(DirectoryInfo rootInfo, string directoryPath)
         {
             if (directoryPath == null || directoryPath == "" || directoryPath == "//")
                 directoryPath = "/";
 
             directoryPath = directoryPath.Replace("/", "\\");
-            return application.RootDirectory + directoryPath;
+            return rootInfo.FullName + directoryPath;
         }
-        public static string TranslateDirectoryFullNameToPath(LocalApplication application, DirectoryInfo dirInfo)
+        public static string TranslateDirectoryFullNameToPath(DirectoryInfo rootInfo, DirectoryInfo dirInfo)
         {
-            var rootInfo = new DirectoryInfo(application.Config.RefDirectory);
             var pathFullname = dirInfo.FullName.Substring(rootInfo.FullName.Length);
             var path = pathFullname.Replace("\\", "/");
             return path;
         }
 
-        public static string TranslatePathToFullName(LocalApplication application, string path)
+        public static string TranslatePathToFullName(DirectoryInfo rootInfo, string path)
         {
             if (path == null || path == "" || path == "//")
                 path = "/";
 
             path = path.Replace("/", "\\");
-            return application.RootDirectory + path + ".fileref";
+            return rootInfo.FullName + path + ".fileref";
         }
-        public static string TranslateFullnameToPath(LocalApplication application, FileInfo fileInfo)
+        public static string TranslateFullnameToPath(DirectoryInfo rootInfo, FileInfo fileInfo)
         {
-            var rootInfo = new DirectoryInfo(application.Config.RefDirectory);
             var pathFullnameWithExtention = fileInfo.FullName.Substring(rootInfo.FullName.Length);
             var pathFullname = pathFullnameWithExtention.Substring(0, pathFullnameWithExtention.Length - ".fileref".Length);
             var path = pathFullname.Replace("\\", "/");

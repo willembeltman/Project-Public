@@ -1,18 +1,17 @@
-﻿using LanCloud.Domain.Application;
+﻿using LanCloud.Domain.VirtualFtp;
+using LanCloud.Models;
 using LanCloud.Shared.Log;
 using System;
-using System.IO;
-using System.Linq;
 using System.Threading;
 
 namespace LanCloud.Domain.IO
 {
     public class FileBitReader : IDisposable
     {
-        public FileBitReader(FtpStreamReader ftpStreamReader, FileRefBit fileRefBit, ILogger logger)
+        public FileBitReader(FtpStreamReader streamReader, FileBit fileBit, ILogger logger)
         {
-            FtpStreamReader = ftpStreamReader;
-            FileRefBit = fileRefBit;
+            StreamReader = streamReader;
+            FileBit = fileBit;
             Logger = logger;
 
             Buffer = new DoubleBuffer();
@@ -21,35 +20,39 @@ namespace LanCloud.Domain.IO
             Thread.Start();
         }
 
-        public FtpStreamReader FtpStreamReader { get; }
-        public FileRefBit FileRefBit { get; }
+        public FtpStreamReader StreamReader { get; }
+        public FileBit FileBit { get; }
         public ILogger Logger { get; }
         public DoubleBuffer Buffer { get; }
         private Thread Thread { get; }
         private AutoResetEvent StartNext { get; } = new AutoResetEvent(true);
         private AutoResetEvent BufferIsWritten { get; } = new AutoResetEvent(false);
-        public bool EndOfFile { get; private set; } = false;
+        private bool EndOfFile { get; set; } = false;
 
-        public int[] Indexes => FileRefBit.Indexes;
-        public FileRef FileRef => FtpStreamReader.FtpFileInfo.FileRef;
-        public LocalApplication Application => FtpStreamReader.FtpFileInfo.Application;
+        public int[] Indexes => FileBit.Indexes;
+
+        public bool KillSwitch { get; private set; }
 
         private void Start()
         {
-            var fileBit = Application
-                .FindFileBits(FileRef, FileRefBit)
-                .FirstOrDefault();
-            if (fileBit != null)
+            if (FileBit != null)
             {
-                using (var stream = fileBit.OpenRead())
+                using (var stream = FileBit.OpenRead())
                 {
-                    while (!EndOfFile)
+                    while (!KillSwitch)
                     {
                         if (StartNext.WaitOne(100))
                         {
-                            Buffer.WriteBufferPosition = stream.Read(Buffer.WriteBuffer, 0, Buffer.WriteBuffer.Length);
-                            if (Buffer.WriteBufferPosition <= 0)
-                                EndOfFile = true;
+                            if (!EndOfFile)
+                            {
+                                Buffer.WriteBufferPosition = stream.Read(Buffer.WriteBuffer, 0, Buffer.WriteBuffer.Length);
+                                if (Buffer.WriteBufferPosition <= 0)
+                                    EndOfFile = true;
+                            }
+                            else
+                            {
+                                Buffer.WriteBufferPosition = 0;
+                            }
 
                             BufferIsWritten.Set();
                         }
@@ -60,17 +63,16 @@ namespace LanCloud.Domain.IO
 
         public void FlipBuffer()
         {
-            if (!EndOfFile)
-            {
-                BufferIsWritten.WaitOne();
-                Buffer.Flip();
-                StartNext.Set();
-            }
+            BufferIsWritten.WaitOne();
+            
+            Buffer.Flip();
+
+            StartNext.Set();
         }
 
         public void Dispose()
         {
-            EndOfFile = true;
+            KillSwitch = true;
             if (Thread.CurrentThread != Thread)
                 Thread.Join();
         }

@@ -964,7 +964,7 @@ namespace LanCloud.Servers.Ftp
                 dataWriter.Flush();
             }
 
-            IEnumerable<IFtpFile> files = FtpHandler.EnumerateFiles(pathname);
+            IEnumerable<IFtpFileInfo> files = FtpHandler.EnumerateFiles(pathname);
 
             foreach (var file in files)
             {

@@ -5,9 +5,9 @@ using LanCloud.Models.Dtos;
 
 namespace LanCloud.Domain.Share
 {
-    public class LocalShareServerHandler : IWjpHandler
+    public class LocalShareHandler : IWjpHandler
     {
-        public LocalShareServerHandler(LocalShare localShare, ILogger logger)
+        public LocalShareHandler(LocalShare localShare, ILogger logger)
         {
             LocalShare = localShare;
             Logger = logger;

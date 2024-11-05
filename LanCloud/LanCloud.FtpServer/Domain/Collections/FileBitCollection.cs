@@ -1,18 +1,18 @@
 ﻿using LanCloud.Domain.IO;
+using LanCloud.Domain.Share;
 using LanCloud.Models.Configs;
 using LanCloud.Shared.Log;
 using System;
 using System.IO;
-using System.IO.Ports;
 using System.Linq;
 
-namespace LanCloud.Domain.Share
+namespace LanCloud.Domain.Collections
 {
-    public class LocalShareStorage
+    public class FileBitCollection
     {
-        public LocalShareStorage(LocalShareConfig config, ILogger logger)
+        public FileBitCollection(LocalShare localShare, ILogger logger)
         {
-            Config = config;
+            LocalShare = localShare;
             Logger = logger;
 
             Root = new DirectoryInfo(Config.DirectoryName);
@@ -26,15 +26,18 @@ namespace LanCloud.Domain.Share
             //Logger.Info($"Loaded");
         }
 
-        private LocalShareConfig Config { get; }
+        public LocalShare LocalShare { get; }
         private ILogger Logger { get; }
         public DirectoryInfo Root { get; }
         private FileBit[] FileBits { get; set; }
+
+        private LocalShareConfig Config => LocalShare.Config;
 
         public FileBit CreateTempFileBit(string extention, int[] indexes)
         {
             return new FileBit(Root, extention, indexes);
         }
+
         public void AddFileBit(FileBit fileBit)
         {
             lock (FileBits)
@@ -46,19 +49,17 @@ namespace LanCloud.Domain.Share
             }
         }
 
-        public FileBit FindFileBit(FileRef fileRef, FileRefBit fileRefBit)
+        public FileBit FindFileBit(string extention, FileRef fileRef, FileRefBit fileRefBit)
         {
             lock (FileBits)
             {
                 var fileBit = FileBits.FirstOrDefault(a =>
-                    a.Extention == fileRef.Extention &&
+                    a.Extention == extention &&
                     a.Indexes.Length == fileRefBit.Indexes.Length &&
                     a.Indexes.All(b => fileRefBit.Indexes.Any(c => b == c)) &&
                     a.Length == fileRef.Length.Value &&
                     a.Hash == fileRef.Hash);
                 return fileBit;
-
-                //return new FileBit(Root, fileRef.Extention, fileRefBit.Indexes, fileRef.Length.Value, fileRef.Hash);
             }
         }
     }

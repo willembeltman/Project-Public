@@ -13,7 +13,7 @@ namespace LanCloud.Domain.Share
 
         public LocalShare Share { get; }
         public LocalSharePartConfig Part { get; }
-        public DirectoryInfo Root => Share.Storage.Root;
+        public DirectoryInfo Root => Share.FileBits.Root;
         public int[] Indexes => Part.Indexes;
     }
 }

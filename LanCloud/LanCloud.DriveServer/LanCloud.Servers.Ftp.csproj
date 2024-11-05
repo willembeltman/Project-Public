@@ -52,8 +52,8 @@
     <Compile Include="Enums\FormatControlType.cs" />
     <Compile Include="Enums\TransferType.cs" />
     <Compile Include="Interfaces\IFtpHandler.cs" />
-    <Compile Include="Models\IFtpDirectory.cs" />
-    <Compile Include="Models\IFtpFile.cs" />
+    <Compile Include="Models\IFtpDirectoryInfo.cs" />
+    <Compile Include="Models\IFtpFileInfo.cs" />
     <Compile Include="Models\IFtpUser.cs" />
     <Compile Include="FtpServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

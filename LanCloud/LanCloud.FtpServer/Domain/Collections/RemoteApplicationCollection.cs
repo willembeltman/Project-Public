@@ -6,16 +6,16 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace LanCloud.Collections
+namespace LanCloud.Domain.Collections
 {
     public class RemoteApplicationCollection : IEnumerable<RemoteApplication>, IDisposable
     {
-        public RemoteApplicationCollection(ApplicationConfig config, ILogger logger)
+        public RemoteApplicationCollection(LocalApplication localApplication, ILogger logger)
         {
-            Config = config;
+            LocalApplication = localApplication;
             Logger = logger;
 
-            RemoteApplications = config.Servers
+            RemoteApplications = Config.Servers
                 .Where(a => a.IsThisComputer == false)
                 .Select(remoteconfig => new RemoteApplication(remoteconfig, logger))
                 .ToArray();
@@ -23,9 +23,12 @@ namespace LanCloud.Collections
             //Logger.Info("Loaded");
         }
 
-        public ApplicationConfig Config { get; }
+        public LocalApplication LocalApplication { get; }
         public ILogger Logger { get; }
+
         public RemoteApplication[] RemoteApplications { get; }
+
+        public ApplicationConfig Config => LocalApplication.Config;
 
         public void Dispose()
         {

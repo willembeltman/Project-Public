@@ -1,22 +1,29 @@
 ﻿using LanCloud.Domain.Application;
+using LanCloud.Domain.IO;
+using LanCloud.Models;
 using LanCloud.Shared.Log;
 using System;
 using System.IO;
 using System.Linq;
 using System.Threading;
 
-namespace LanCloud.Domain.IO
+namespace LanCloud.Domain.VirtualFtp
 {
     public class FtpStreamReader : Stream
     {
-        public FtpStreamReader(FtpFileInfo ftpFileInfo, ILogger logger)
+        public FtpStreamReader(PathInfo pathInfo, ILogger logger)
         {
-            FtpFileInfo = ftpFileInfo;
-            Logger = logger;            
+            PathInfo = pathInfo;
+            Logger = logger;
 
             FileBitReaders = FileRef.FileRefBits
-                //.SelectMany(bit => Application.FindFileBits(FileRef, bit))
-                .Select(fileRefBit => new FileBitReader(this, fileRefBit, Logger))
+                .Select(fileRefBit =>
+                {
+                    var fileBit = Application.LocalShares
+                        .FindFileBits(PathInfo.Extention, FileRef, fileRefBit)
+                        .FirstOrDefault();
+                    return new FileBitReader(this, fileBit, Logger);
+                })
                 .OrderBy(a => a.Indexes.Length)
                 .ThenBy(a => a.Indexes.OrderBy(b => b).First())
                 .ToArray();
@@ -32,7 +39,7 @@ namespace LanCloud.Domain.IO
             Thread.Start();
         }
 
-        public FtpFileInfo FtpFileInfo { get; }
+        public PathInfo PathInfo { get; }
         public ILogger Logger { get; }
         internal FileBitReader[] FileBitReaders { get; }
         public int[] AllIndexes { get; }
@@ -49,26 +56,27 @@ namespace LanCloud.Domain.IO
         public override bool CanRead => true;
         public override bool CanSeek => true;
         public override bool CanWrite => false;
-        public override long Length => FtpFileInfo.Length.Value;
-        public bool EndOfFile => FileBitReaders.All(a => a.EndOfFile);
+        public override long Length => PathInfo.Length.Value;
+        public bool EndOfFile => FileBitReaders.All(a => a.Buffer.ReadBufferPosition <= 0);
 
-        public LocalApplication Application => FtpFileInfo.Application;
-        public FileRef FileRef => FtpFileInfo.FileRef;
+        public LocalApplication Application => PathInfo.Application;
+        public FileRef FileRef => PathInfo.FileRef;
+        bool KillSwitch { get; set; }
 
         private void Start()
         {
-            while (!EndOfFile)
+            while (!KillSwitch)
             {
                 if (StartNext.WaitOne(100))
                 {
                     Buffer.WriteBufferPosition = 0;
+
                     foreach (var item in FileBitReaders)
                     {
                         item.FlipBuffer();
 
-                        if (item.Indexes.Length == 1)
+                        if (item.Indexes.Length == 1 && item.Buffer.ReadBufferPosition > 0)
                         {
-                            var index = item.Indexes[0];
                             var buffer = item.Buffer.ReadBuffer;
                             var read = item.Buffer.ReadBufferPosition;
 
@@ -98,7 +106,7 @@ namespace LanCloud.Domain.IO
             }
 
             var read = 0;
-            while (read < count && !EndOfFile)
+            while (read < count && BufferPosition < Buffer.ReadBufferPosition)
             {
                 var availableSpace = Buffer.ReadBufferPosition - BufferPosition;
                 int bytesToWrite = Math.Min(count - read, availableSpace);
@@ -122,6 +130,7 @@ namespace LanCloud.Domain.IO
         {
             if (!Disposed && disposing)
             {
+                KillSwitch = true;
                 Disposed = true;
 
                 foreach (var part in FileBitReaders)

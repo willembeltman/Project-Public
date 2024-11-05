@@ -1,18 +1,17 @@
 ﻿using LanCloud.Domain.Application;
 using LanCloud.Domain.Share;
-using LanCloud.Models.Configs;
 using LanCloud.Shared.Log;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace LanCloud.Collections
+namespace LanCloud.Domain.Collections
 {
     public class RemoteShareCollection : IEnumerable<RemoteShare>, IDisposable
     {
-        public RemoteShareCollection(RemoteApplicationCollection remoteApplications, ILogger logger)
+        public RemoteShareCollection(LocalApplication application, ILogger logger)
         {
-            RemoteApplications = remoteApplications;
+            Application = application;
             Logger = logger;
 
             RemoteShares = new RemoteShare[0];
@@ -20,9 +19,11 @@ namespace LanCloud.Collections
             //Logger.Info($"Loaded");
         }
 
-        public RemoteApplicationCollection RemoteApplications { get; }
-        public RemoteShare[] RemoteShares { get; }
+        public LocalApplication Application { get; }
         public ILogger Logger { get; }
+
+        public RemoteApplicationCollection RemoteApplications => Application.RemoteApplications;
+        public RemoteShare[] RemoteShares { get; }
 
         public void Dispose()
         {

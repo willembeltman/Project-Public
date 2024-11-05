@@ -2,7 +2,6 @@
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Security.Policy;
 
 namespace LanCloud.Domain.IO
 {
@@ -18,16 +17,6 @@ namespace LanCloud.Domain.IO
             Length = Convert.ToInt64(split[2]);
             Hash = split[3];
         }
-        public FileBit(DirectoryInfo dirinfo, string extention, int[] indexes, long length, string hash)
-        {
-            Extention = extention;
-            Length = length;
-            Indexes = indexes;
-            Hash = hash;
-            var name = $"{extention}.{string.Join("_", indexes)}.{length}.{hash}.filebit";
-            FullName = Path.Combine(dirinfo.FullName, name);
-            Info = new FileInfo(FullName);
-        }
         public FileBit(DirectoryInfo dirinfo, string extention, int[] indexes)
         {
             Extention = extention;
@@ -37,17 +26,27 @@ namespace LanCloud.Domain.IO
             Info = new FileInfo(FullName);
             IsTemp = true;
         }
-        public FileBit(DirectoryInfo dirinfo, FileRef fileRef, FileRefBit fileRefBit)
-        {
-            Extention = fileRef.Extention;
-            Indexes = fileRefBit.Indexes;
-            Length = fileRef.Length.Value;
-            Hash = fileRef.Hash;
+        //public FileBit(DirectoryInfo dirinfo, string extention, int[] indexes, long length, string hash)
+        //{
+        //    Extention = extention;
+        //    Length = length;
+        //    Indexes = indexes;
+        //    Hash = hash;
+        //    var name = $"{extention}.{string.Join("_", indexes)}.{length}.{hash}.filebit";
+        //    FullName = Path.Combine(dirinfo.FullName, name);
+        //    Info = new FileInfo(FullName);
+        //}
+        //public FileBit(DirectoryInfo dirinfo, FileRef fileRef, FileRefBit fileRefBit)
+        //{
+        //    Extention = fileRef.Extention;
+        //    Indexes = fileRefBit.Indexes;
+        //    Length = fileRef.Length.Value;
+        //    Hash = fileRef.Hash;
 
-            var name = $"{Extention}.{string.Join("_", Indexes)}.{Length}.{Hash}.filebit";
-            FullName = Path.Combine(dirinfo.FullName, name);
-            Info = new FileInfo(FullName);
-        }
+        //    var name = $"{Extention}.{string.Join("_", Indexes)}.{Length}.{Hash}.filebit";
+        //    FullName = Path.Combine(dirinfo.FullName, name);
+        //    Info = new FileInfo(FullName);
+        //}
 
         public string Extention { get; }
         public int[] Indexes { get; }

@@ -5,24 +5,24 @@ using System;
 using System.IO;
 using System.Linq;
 
-namespace LanCloud.Domain.IO
+namespace LanCloud.Domain.VirtualFtp
 {
-    public class FtpDirectoryInfo : IFtpDirectory
+    public class PathDirectoryInfo : IFtpDirectoryInfo
     {
-        public FtpDirectoryInfo(LocalApplication application, string path, ILogger logger)
+        public PathDirectoryInfo(LocalApplication application, string path, ILogger logger)
         {
             Application = application;
             Path = path;
             Logger = logger;
-            var realFullName = FtpPathTranslator.TranslateDirectoryPathToFullName(application, path);
+            var realFullName = PathTranslator.TranslateDirectoryPathToFullName(application.FileRefs.RootDirectoryInfo, path);
             RealInfo = new DirectoryInfo(realFullName);
         }
-        public FtpDirectoryInfo(LocalApplication application, DirectoryInfo realInfo, ILogger logger)
+        public PathDirectoryInfo(LocalApplication application, DirectoryInfo realInfo, ILogger logger)
         {
             Application = application;
             RealInfo = realInfo;
             Logger = logger;
-            Path = FtpPathTranslator.TranslateDirectoryFullNameToPath(application, realInfo);
+            Path = PathTranslator.TranslateDirectoryFullNameToPath(application.FileRefs.RootDirectoryInfo, realInfo);
         }
 
         public LocalApplication Application { get; }
@@ -35,18 +35,21 @@ namespace LanCloud.Domain.IO
         public void Create() => RealInfo.Create();
         public void Delete() => RealInfo.Delete();
         public bool Exists => RealInfo.Exists;
-        public void MoveTo(FtpDirectoryInfo to)
-            => RealInfo.MoveTo(to.RealInfo.FullName);
+        public void MoveTo(string pathTo)
+        {
+            var to = PathTranslator.TranslatePathToFullName(Application.FileRefs.RootDirectoryInfo, pathTo);
+            RealInfo.MoveTo(to);
+        }
 
-        public FtpDirectoryInfo[] GetDirectories()
+        public IFtpDirectoryInfo[] GetDirectories()
             => RealInfo
                 .GetDirectories()
-                .Select(dirinfo => new FtpDirectoryInfo(Application, dirinfo, Logger))
+                .Select(dirinfo => new PathDirectoryInfo(Application, dirinfo, Logger))
                 .ToArray();
-        public FtpFileInfo[] GetFiles()
+        public IFtpFileInfo[] GetFiles()
             => RealInfo
                 .GetFiles("*.fileref")
-                .Select(realInfo => new FtpFileInfo(Application, realInfo, Logger))
+                .Select(realInfo => new PathInfo(Application, realInfo, Logger))
                 .ToArray();
     }
 }

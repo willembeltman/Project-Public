@@ -1,6 +1,5 @@
 ﻿using System;
 using LanCloud.Services;
-using LanCloud.Collections;
 using LanCloud.Domain.Application;
 using LanCloud.Domain.VirtualFtp;
 using System.Diagnostics;
@@ -20,18 +19,28 @@ namespace LanCloud
                 var configService = new ConfigService(currentDirectory, logger);
                 var config = configService.Load();
 
-                using (var remoteApplications = new RemoteApplicationCollection(config, logger))
-                using (var remoteShares = new RemoteShareCollection(remoteApplications, logger))
-                using (var localApplication = new LocalApplication(config, remoteApplications, remoteShares, logger))
+                using (var localApplication = new LocalApplication(config, logger))
                 using (var virtualFtpServer = new VirtualFtpServer(localApplication, logger))
                 {
                     Thread.Sleep(100);
-                    
+
                     //DoTest(virtualFtpServer);
+
+                    //DoTest2(virtualFtpServer);
 
                     Console.WriteLine("Press any key to stop...");
                     Console.ReadKey(true);
                 }
+            }
+        }
+
+        private static void DoTest2(VirtualFtpServer virtualFtpServer)
+        {
+            using (var stream = virtualFtpServer.FtpHandler.FileOpenRead("/test.bin"))
+            using (var reader = new StreamReader(stream))
+            {
+                Console.WriteLine(reader.ReadToEnd());
+                Console.WriteLine();
             }
         }
 
@@ -40,7 +49,7 @@ namespace LanCloud
             Console.WriteLine("creating file");
 
             byte[] buffer = new byte[Constants.BufferSize * 2];
-            var aantal = 64 * 1024;
+            var aantal = 128* 1024;
             var size = aantal * buffer.Length;
 
             Stopwatch sw = Stopwatch.StartNew();

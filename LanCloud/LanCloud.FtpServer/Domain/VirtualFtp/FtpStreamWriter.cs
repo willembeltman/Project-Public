@@ -1,4 +1,6 @@
 ﻿using LanCloud.Domain.Application;
+using LanCloud.Domain.IO;
+using LanCloud.Models;
 using LanCloud.Shared.Log;
 using System;
 using System.IO;
@@ -6,13 +8,13 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace LanCloud.Domain.IO
+namespace LanCloud.Domain.VirtualFtp
 {
     public class FtpStreamWriter : Stream
     {
-        public FtpStreamWriter(FtpFileInfo ftpFileInfo, ILogger logger)
+        public FtpStreamWriter(PathInfo ftpFileInfo, ILogger logger)
         {
-            FtpFileInfo = ftpFileInfo;
+            PathInfo = ftpFileInfo;
             Logger = logger;
             FileBitWriters = Application.LocalShares
                 .SelectMany(share => share.Parts)
@@ -29,7 +31,7 @@ namespace LanCloud.Domain.IO
             //Logger.Info($"Opened virtual ftp file: {FtpFileInfo.Name}");
         }
 
-        public FtpFileInfo FtpFileInfo { get; }
+        public PathInfo PathInfo { get; }
         public ILogger Logger { get; }
         public FileBitWriter[] FileBitWriters { get; }
         public int[] AllIndexes { get; }
@@ -43,7 +45,7 @@ namespace LanCloud.Domain.IO
         public override bool CanSeek => false;
         public override bool CanWrite => true;
 
-        public LocalApplication Application => FtpFileInfo.Application;
+        public LocalApplication Application => PathInfo.Application;
 
         private void FlipBuffer()
         {
@@ -126,7 +128,8 @@ namespace LanCloud.Domain.IO
                     .ToArray();
 
                 // Waardes updaten
-                var fileRef = new FileRef(FtpFileInfo);
+                //FileRef fileRef = Application.FileRefs.GetFileRef(PathInfo);
+                var fileRef = new FileRef(PathInfo);
                 fileRef.Length = Position;
                 fileRef.Hash = GeneratedHash;
                 fileRef.FileRefBits = fileBits
@@ -136,7 +139,9 @@ namespace LanCloud.Domain.IO
                         Length = a.Info.Length
                     })
                     .ToArray();
-                FtpFileInfo.FileRef = fileRef;
+                PathInfo.FileRef = fileRef;
+
+                Application.FileRefs.Add(PathInfo);
             }
 
             base.Dispose(disposing);

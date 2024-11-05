@@ -1,4 +1,5 @@
 ﻿using LanCloud.Domain.Share;
+using LanCloud.Domain.VirtualFtp;
 using LanCloud.Shared.Log;
 using System;
 using System.IO;
@@ -15,7 +16,7 @@ namespace LanCloud.Domain.IO
             SharePart = sharePart;
             Logger = logger;
 
-            FileBit = Share.Storage.CreateTempFileBit(FtpStreamWriter.FtpFileInfo.Extention, Indexes);
+            FileBit = Share.FileBits.CreateTempFileBit(FtpStreamWriter.PathInfo.Extention, Indexes);
             Buffer = new byte[Constants.BufferSize];
 
             Thread = new Thread(new ThreadStart(Start));
@@ -42,7 +43,7 @@ namespace LanCloud.Domain.IO
         {
             WriteAllData();
             FileBit.Update(FtpStreamWriter.Position, FtpStreamWriter.GeneratedHash);
-            Share.Storage.AddFileBit(FileBit);
+            Share.FileBits.AddFileBit(FileBit);
         }
 
         private void WriteAllData()
