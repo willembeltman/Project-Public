@@ -63,7 +63,10 @@ namespace LanCloud.Domain.IO
             Hash = hash;
             var name = $"{Extention}.{string.Join("_", Indexes)}.{length}.{hash}.filebit";
             FullName = Path.Combine(Info.Directory.FullName, name);
-            File.Move(Info.FullName, FullName);
+            if (File.Exists(FullName))
+                File.Delete(Info.FullName);
+            else
+                File.Move(Info.FullName, FullName);
             Info = new FileInfo(FullName);
             IsTemp = false;
         }

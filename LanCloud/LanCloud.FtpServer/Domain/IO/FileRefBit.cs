@@ -3,6 +3,6 @@
     public class FileRefBit
     {
         public int[] Indexes { get; set; }
-        public long Length { get; internal set; }
+        public long Length { get; set; }
     }
 }

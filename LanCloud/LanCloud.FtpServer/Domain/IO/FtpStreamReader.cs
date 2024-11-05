@@ -1,4 +1,5 @@
 ﻿using LanCloud.Domain.Application;
+using LanCloud.Shared.Log;
 using System;
 using System.IO;
 using System.Linq;
@@ -8,15 +9,14 @@ namespace LanCloud.Domain.IO
 {
     public class FtpStreamReader : Stream
     {
-        public FtpStreamReader(FtpFileInfo ftpFileInfo)
+        public FtpStreamReader(FtpFileInfo ftpFileInfo, ILogger logger)
         {
             FtpFileInfo = ftpFileInfo;
-
-            
+            Logger = logger;            
 
             FileBitReaders = FileRef.FileRefBits
                 //.SelectMany(bit => Application.FindFileBits(FileRef, bit))
-                .Select(fileRefBit => new FileBitReader(this, fileRefBit))
+                .Select(fileRefBit => new FileBitReader(this, fileRefBit, Logger))
                 .OrderBy(a => a.Indexes.Length)
                 .ThenBy(a => a.Indexes.OrderBy(b => b).First())
                 .ToArray();
@@ -33,6 +33,7 @@ namespace LanCloud.Domain.IO
         }
 
         public FtpFileInfo FtpFileInfo { get; }
+        public ILogger Logger { get; }
         internal FileBitReader[] FileBitReaders { get; }
         public int[] AllIndexes { get; }
         public DoubleBuffer Buffer { get; }

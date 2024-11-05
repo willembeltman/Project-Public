@@ -1,25 +1,32 @@
 ﻿using LanCloud.Domain.Share;
+using LanCloud.Shared.Log;
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading;
 
 namespace LanCloud.Domain.IO
 {
     public class FileBitWriter
     {
-        public FileBitWriter(FtpStreamWriter ftpStreamWriter, LocalSharePart sharePart)
+        public FileBitWriter(FtpStreamWriter ftpStreamWriter, LocalSharePart sharePart, ILogger logger)
         {
             FtpStreamWriter = ftpStreamWriter;
             SharePart = sharePart;
-            
+            Logger = logger;
+
+            FileBit = Share.Storage.CreateTempFileBit(FtpStreamWriter.FtpFileInfo.Extention, Indexes);
+            Buffer = new byte[Constants.BufferSize];
+
             Thread = new Thread(new ThreadStart(Start));
             Thread.Start();
 
-            Buffer = new byte[Constants.BufferSize];
+            Logger.Info($"Opened {FileBit.Info.Name} as output for parts: {string.Join(" xor ", Indexes.Select(a => $"#{a}"))}");
         }
 
         public FtpStreamWriter FtpStreamWriter { get; }
         public LocalSharePart SharePart { get; }
+        public ILogger Logger { get; }
         public Thread Thread { get; }
         public AutoResetEvent ReadingIsDone { get; } = new AutoResetEvent(true);
         public AutoResetEvent StartNext { get; } = new AutoResetEvent(false);
@@ -33,7 +40,6 @@ namespace LanCloud.Domain.IO
 
         private void Start()
         {
-            FileBit = Share.Storage.CreateTempFileBit(FtpStreamWriter.FtpFileInfo.Extention, Indexes);
             WriteAllData();
             FileBit.Update(FtpStreamWriter.Position, FtpStreamWriter.GeneratedHash);
             Share.Storage.AddFileBit(FileBit);
@@ -73,25 +79,41 @@ namespace LanCloud.Domain.IO
             // bytes used in the buffers
             var maxlength = 0;
 
-            // Prepare own buffer
-            Array.Clear(Buffer, 0, Buffer.Length);
-
-            // XOR data from indexes on to own buffer
-            foreach (var index in Indexes)
+            if (Indexes.Length == 1)
             {
+                // Just write the data to the stream
+                var index = Indexes.First();
                 var start = Convert.ToInt32(sublength * index);
                 var end = Convert.ToInt32(sublength * (index + 1));
-                var length = end - start;
-                if (length > maxlength) maxlength = length;
-                for (var i = 0; i < length; i++)
+                maxlength = end - start;
+                stream.Write(data, start, maxlength);
+            }
+            else
+            {
+                // Prepare own buffer
+                Array.Clear(Buffer, 0, Buffer.Length);
+
+                // XOR data from indexes on to own buffer
+                foreach (var index in Indexes)
                 {
-                    Buffer[i] ^= data[start + i];
+                    var start = Convert.ToInt32(sublength * index);
+                    var end = Convert.ToInt32(sublength * (index + 1));
+                    var length = end - start;
+                    if (length > maxlength) maxlength = length;
+                    for (var i = 0; i < length; i++)
+                    {
+                        Buffer[i] ^= data[start + i];
+                    }
                 }
+
+                // Then write own buffer to disk
+                stream.Write(Buffer, 0, maxlength);
             }
 
-            // Then write own buffer to disk
-            stream.Write(Buffer, 0, maxlength);
             Position += maxlength;
+
+            Thread.Sleep(100);
+            Logger.Info($"Written {maxlength}b to {FileBit.Info.Name}");
         }
 
         public FileBit Stop()

@@ -1,4 +1,5 @@
 ﻿using LanCloud.Domain.Application;
+using LanCloud.Shared.Log;
 using System;
 using System.IO;
 using System.Linq;
@@ -8,10 +9,12 @@ namespace LanCloud.Domain.IO
 {
     public class FileBitReader : IDisposable
     {
-        public FileBitReader(FtpStreamReader ftpStreamReader, FileRefBit fileRefBit)
+        public FileBitReader(FtpStreamReader ftpStreamReader, FileRefBit fileRefBit, ILogger logger)
         {
             FtpStreamReader = ftpStreamReader;
             FileRefBit = fileRefBit;
+            Logger = logger;
+
             Buffer = new DoubleBuffer();
 
             Thread = new Thread(new ThreadStart(Start));
@@ -20,6 +23,7 @@ namespace LanCloud.Domain.IO
 
         public FtpStreamReader FtpStreamReader { get; }
         public FileRefBit FileRefBit { get; }
+        public ILogger Logger { get; }
         public DoubleBuffer Buffer { get; }
         private Thread Thread { get; }
         private AutoResetEvent StartNext { get; } = new AutoResetEvent(true);

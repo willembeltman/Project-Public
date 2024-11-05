@@ -1,4 +1,5 @@
 ﻿using LanCloud.Domain.Application;
+using LanCloud.Shared.Log;
 using System;
 using System.IO;
 using System.Linq;
@@ -9,12 +10,13 @@ namespace LanCloud.Domain.IO
 {
     public class FtpStreamWriter : Stream
     {
-        public FtpStreamWriter(FtpFileInfo ftpFileInfo)
+        public FtpStreamWriter(FtpFileInfo ftpFileInfo, ILogger logger)
         {
             FtpFileInfo = ftpFileInfo;
+            Logger = logger;
             FileBitWriters = Application.LocalShares
                 .SelectMany(share => share.Parts)
-                .Select(sharepart => new FileBitWriter(this, sharepart))
+                .Select(sharepart => new FileBitWriter(this, sharepart, Logger))
                 .ToArray();
             AllIndexes = FileBitWriters
                 .SelectMany(a => a.Indexes)
@@ -23,9 +25,12 @@ namespace LanCloud.Domain.IO
                 .OrderBy(a => a)
                 .ToArray();
             Buffer = new DoubleBuffer(AllIndexes.Length);
+
+            Logger.Info($"Opened virtual ftp file: {FtpFileInfo.Name}");
         }
 
         public FtpFileInfo FtpFileInfo { get; }
+        public ILogger Logger { get; }
         public FileBitWriter[] FileBitWriters { get; }
         public int[] AllIndexes { get; }
         public DoubleBuffer Buffer { get; }
@@ -42,12 +47,16 @@ namespace LanCloud.Domain.IO
 
         private void FlipBuffer()
         {
+            Logger.Info($"Start");
+
             WaitForDone();
 
             Buffer.Flip();
 
             foreach (var item in FileBitWriters)
                 item.StartNext.Set();
+
+            Logger.Info($"End");
         }
 
         private void WaitForDone()
@@ -59,6 +68,8 @@ namespace LanCloud.Domain.IO
 
         public override void Write(byte[] buffer, int offset, int count)
         {
+            Logger.Info($"Received {count}b");
+
             var bytesWritten = 0;
 
             while (bytesWritten < count)

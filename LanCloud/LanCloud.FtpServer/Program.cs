@@ -4,6 +4,7 @@ using LanCloud.Collections;
 using LanCloud.Domain.Application;
 using LanCloud.Domain.VirtualFtp;
 using System.Diagnostics;
+using System.Threading;
 
 namespace LanCloud
 {
@@ -23,10 +24,12 @@ namespace LanCloud
                 using (var localApplication = new LocalApplication(config, remoteApplications, remoteShares, logger))
                 using (var virtualFtpServer = new VirtualFtpServer(localApplication, logger))
                 {
+                    Thread.Sleep(100);
+                    Console.Write("");
                     Console.WriteLine("creating file");
 
                     byte[] buffer = new byte[Constants.BufferSize];
-                    var aantal = 512 * 1024L;
+                    var aantal = 8;
                     var size = aantal * buffer.Length;
 
                     Stopwatch sw = Stopwatch.StartNew();

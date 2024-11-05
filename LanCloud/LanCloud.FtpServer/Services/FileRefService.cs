@@ -26,7 +26,6 @@ namespace LanCloud.Services
                 var json = JsonConvert.SerializeObject(fileRef);
                 writer.Write(json);
             }
-
             return fileRef;
         }
     }
