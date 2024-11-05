@@ -39,16 +39,20 @@ namespace LanCloud.Domain.IO
             return path;
         }
 
-        public static string TranslatePathToExtention(LocalApplication application, string path)
+        public static string TranslatePathToExtention(string path)
         {
-            var name = TranslatePathToName(application, path);
+            if (path == null) return null;
+
+            var name = TranslatePathToName(path);
             var exts = name.Split('.');
             var ext = exts.Last();
             return ext;
         }
 
-        public static string TranslatePathToName(LocalApplication application, string path)
+        public static string TranslatePathToName(string path)
         {
+            if (path == null) return null;
+
             var dirs = path.Split('/');
             var name = dirs.Last();
             return name;

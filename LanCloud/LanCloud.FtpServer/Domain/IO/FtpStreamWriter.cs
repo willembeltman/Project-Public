@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LanCloud.Domain.Application;
+using System;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -11,8 +12,8 @@ namespace LanCloud.Domain.IO
         public FtpStreamWriter(FtpFileInfo ftpFileInfo)
         {
             FtpFileInfo = ftpFileInfo;
-            ShareParts = FtpFileInfo.Application.Shares
-                .SelectMany(share => share.ShareParts)
+            ShareParts = Application.LocalShares
+                .SelectMany(share => share.Parts)
                 .Select(sharepart => new FtpStreamWriterSharePart(this, sharepart))
                 .ToArray();
             AllIndexes = ShareParts
@@ -37,6 +38,8 @@ namespace LanCloud.Domain.IO
         public override bool CanSeek => false;
         public override bool CanWrite => true;
 
+        public LocalApplication Application => FtpFileInfo.Application;
+
         private void FlipBuffer()
         {
             WaitForDone();
@@ -59,25 +62,26 @@ namespace LanCloud.Domain.IO
 
             while (bytesWritten < count)
             {
-                var availableSpace = Buffer.WriteBuffer.Length - Buffer.WriteBufferWritten;
+                var availableSpace = Buffer.WriteBuffer.Length - Buffer.WriteBufferPosition;
                 int bytesToWrite = Math.Min(count - bytesWritten, availableSpace);
 
-                Array.Copy(buffer, offset + bytesWritten, Buffer.WriteBuffer, Buffer.WriteBufferWritten, bytesToWrite);
+                Array.Copy(buffer, offset + bytesWritten, Buffer.WriteBuffer, Buffer.WriteBufferPosition, bytesToWrite);
                 IncrementalHash.AppendData(buffer, offset + bytesWritten, bytesToWrite);
 
                 bytesWritten += bytesToWrite;
-                Buffer.WriteBufferWritten += bytesToWrite;
+                Buffer.WriteBufferPosition += bytesToWrite;
                 Position += bytesWritten;
 
-                if (Buffer.WriteBufferWritten >= Buffer.WriteBuffer.Length)
+                if (Buffer.WriteBufferPosition >= Buffer.WriteBuffer.Length)
                 {
                     FlipBuffer();
+                    Buffer.WriteBufferPosition = 0;
                 }
             }
         }
         public override void Flush()
         {
-            if (Buffer.WriteBufferWritten > 0)
+            if (Buffer.WriteBufferPosition > 0)
             {
                 FlipBuffer();
             }
@@ -90,7 +94,7 @@ namespace LanCloud.Domain.IO
             {
                 Disposed = true;
 
-                if (Buffer.WriteBufferWritten > 0)
+                if (Buffer.WriteBufferPosition > 0)
                 {
                     FlipBuffer();
                 }
@@ -113,8 +117,8 @@ namespace LanCloud.Domain.IO
                 fileRef.FileRefBits = fileBits
                     .Select(a => new FileRefBit()
                     {
-                        HostName = FtpFileInfo.Application.ServerConfig.HostName,
-                        Parts = a.Parts
+                        Indexes = a.Indexes,
+                        Length = a.Info.Length
                     })
                     .ToArray();
                 FtpFileInfo.FileRef = fileRef;

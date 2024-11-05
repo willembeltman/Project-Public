@@ -1,22 +1,66 @@
-﻿using System.Threading;
+﻿using LanCloud.Domain.Application;
+using System;
+using System.Linq;
+using System.Threading;
 
 namespace LanCloud.Domain.IO
 {
-    public class FtpStreamReaderFileRefBit
+    public class FtpStreamReaderFileRefBit : IDisposable
     {
         public FtpStreamReaderFileRefBit(FtpStreamReader ftpStreamReader, FileRefBit fileRefBit)
         {
             FtpStreamReader = ftpStreamReader;
             FileRefBit = fileRefBit;
+            Buffer = new DoubleBuffer();
+
+            Thread = new Thread(new ThreadStart(Start));
+            Thread.Start();
         }
+
         public FtpStreamReader FtpStreamReader { get; }
         public FileRefBit FileRefBit { get; }
-        public AutoResetEvent ReadingIsDone { get; } = new AutoResetEvent(false);
-        public AutoResetEvent StartNext { get; } = new AutoResetEvent(true);
-        private bool KillSwitch { get; set; } = false;
-        public FileRef FileRef => FtpStreamReader.FtpFileInfo.FileRef;
-        public int[] Indexes => FileRefBit.Parts;
+        public DoubleBuffer Buffer { get; }
+        private Thread Thread { get; }
+        private AutoResetEvent StartNext { get; } = new AutoResetEvent(true);
+        private AutoResetEvent BufferIsWritten { get; } = new AutoResetEvent(false);
+        public bool EndOfFile { get; private set; } = false;
 
+        public int[] Indexes => FileRefBit.Indexes;
+        public FileRef FileRef => FtpStreamReader.FtpFileInfo.FileRef;
+        public LocalApplication Application => FtpStreamReader.FtpFileInfo.Application;
+
+        private void Start()
+        {
+            var fileBit = Application.FindFileBit(FileRef, FileRefBit);
+            if (fileBit != null)
+            {
+                using (var stream = fileBit.OpenRead())
+                {
+                    while (!EndOfFile)
+                    {
+                        if (StartNext.WaitOne(100))
+                        {
+                            Buffer.WriteBufferPosition = stream.Read(Buffer.WriteBuffer, 0, Buffer.WriteBuffer.Length);
+                            if (Buffer.WriteBufferPosition <= 0) EndOfFile = true;
+                            BufferIsWritten.Set();
+                        }
+                    }
+                }
+            }
+        }
+        public void FlipBuffer()
+        {
+            BufferIsWritten.WaitOne();
+            Buffer.Flip();
+            StartNext.Set();
+        }
+
+        public void Dispose()
+        {
+            EndOfFile = true;
+            if (Thread.CurrentThread != Thread)
+                Thread.Join();
+        }
 
     }
 }

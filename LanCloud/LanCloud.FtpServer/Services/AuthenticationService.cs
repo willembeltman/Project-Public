@@ -8,11 +8,9 @@ namespace LanCloud
     {
         public AuthenticationService(LocalApplication localApplication, ILogger logger)
         {
-            LocalApplication = localApplication;
             Logger = logger;
         }
 
-        public LocalApplication LocalApplication { get; }
         public ILogger Logger { get; }
 
         public IFtpUser ValidateUser(string userName, string password)

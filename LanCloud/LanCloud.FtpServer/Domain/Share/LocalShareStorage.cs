@@ -1,14 +1,14 @@
 ﻿using LanCloud.Domain.IO;
 using LanCloud.Models.Configs;
-using LanCloud.Services;
 using LanCloud.Shared.Log;
 using System;
 using System.IO;
+using System.IO.Ports;
 using System.Linq;
 
 namespace LanCloud.Domain.Share
 {
-    public class LocalShareStorage //: IDisposable
+    public class LocalShareStorage
     {
         public LocalShareStorage(LocalShareConfig config, ILogger logger)
         {
@@ -18,7 +18,7 @@ namespace LanCloud.Domain.Share
             Root = new DirectoryInfo(Config.DirectoryName);
             if (!Root.Exists) Root.Create();
             
-            _FileBits = Root
+            FileBits = Root
                 .GetFiles("*.filebit")
                 .Select(fileRefInfo => new FileBit(fileRefInfo))
                 .ToArray();
@@ -29,87 +29,37 @@ namespace LanCloud.Domain.Share
         private LocalShareConfig Config { get; }
         private ILogger Logger { get; }
         public DirectoryInfo Root { get; }
-        private FileBit[] _FileBits { get; set; }
+        private FileBit[] FileBits { get; set; }
 
-        //public Thread Thread { get; }
-        //private bool KillSwitch { get; set; }
-
-        public FileBit[] FileBits
+        public FileBit CreateTempFileBit(string extention, int[] indexes)
         {
-            get
-            {
-                lock (_FileBits)
-                {
-                    return _FileBits.ToArray();
-                }
-            }
-        }
-        public FileBit CreateTempFileBit(string extention, int[] parts)
-        {
-            return new FileBit(Root, extention, parts);
+            return new FileBit(Root, extention, indexes);
         }
         public void AddFileBit(FileBit fileBit)
         {
-            lock (_FileBits)
+            lock (FileBits)
             {
-                var newArray = new FileBit[_FileBits.Length + 1];
-                Array.Copy(_FileBits, newArray, _FileBits.Length);
+                var newArray = new FileBit[FileBits.Length + 1];
+                Array.Copy(FileBits, newArray, FileBits.Length);
                 newArray[newArray.Length - 1] = fileBit;
-                _FileBits = newArray;
+                FileBits = newArray;
             }
         }
 
-        ////public FileBit AddFileBit(string path, long part, byte[] data, long originalSize)
-        //{
-        //    var extention = path.Split('.').Last();
-        //    string hash = HashService.CalculateHash(data);
+        public FileBit FindFileBit(FileRef fileRef, FileRefBit fileRefBit)
+        {
+            lock (FileBits)
+            {
+                var fileBit = FileBits.FirstOrDefault(a =>
+                    a.Extention == fileRef.Extention &&
+                    a.Indexes.Length == fileRefBit.Indexes.Length &&
+                    a.Indexes.All(b => fileRefBit.Indexes.Any(c => b == c)) &&
+                    a.Length == fileRef.Length.Value &&
+                    a.Hash == fileRef.Hash);
+                return fileBit;
 
-        //    var duplicate = FileBits.FirstOrDefault(a =>
-        //        a.Information.Extention == extention &&
-        //        a.Information.Part == part &&
-        //        a.Information.OriginalSize == originalSize &&
-        //        a.Information.Hash == hash);
-        //    if (duplicate != null)
-        //    {
-        //        var paths = duplicate.Information.Paths.ToList();
-        //        paths.Add(path);
-        //        duplicate.Information.Paths = paths.ToArray();
-        //        duplicate.SaveInformation();
-        //    }
-
-        //    var information = new FileBitInformation()
-        //    {
-        //        Paths = new string[] { path },
-        //        Part = part,
-        //        Size = data.Length,
-        //        Extention = extention,
-        //        OriginalSize = originalSize,
-        //        Hash = hash
-        //    };
-
-        //    var guid = Guid.NewGuid().ToString().Replace("-", "");
-        //    var jsonFullname = Path.Combine(Root.FullName, $"{guid}.json");
-        //    var jsonFileInfo = new FileInfo(jsonFullname);
-
-
-        //    //var jsonFile
-
-        //    var bit = new FileBit(jsonFileInfo, information, data);
-        //    lock (_FileBits)
-        //    {
-        //        _FileBits.Add(bit);
-        //    }
-        //    return bit;
-        //}
-
-
-        //public void Dispose()
-        //{
-        //    KillSwitch = true;
-        //    if (Thread != Thread.CurrentThread)
-        //    {
-        //        Thread.Join();
-        //    }
-        //}
+                //return new FileBit(Root, fileRef.Extention, fileRefBit.Indexes, fileRef.Length.Value, fileRef.Hash);
+            }
+        }
     }
 }

@@ -3,9 +3,9 @@ using LanCloud.Servers.Wjp;
 
 namespace LanCloud.Domain.Share
 {
-    public class RemoteShareProxy : WjpProxy
+    public class RemoteShare : WjpProxy, IShare
     {
-        public RemoteShareProxy(RemoteShareDto config) : base(config)
+        public RemoteShare(RemoteShareDto config) : base(config)
         {
         }
     }

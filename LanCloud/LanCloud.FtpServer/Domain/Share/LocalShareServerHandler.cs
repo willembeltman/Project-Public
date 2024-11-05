@@ -5,17 +5,17 @@ using LanCloud.Models.Dtos;
 
 namespace LanCloud.Domain.Share
 {
-    public class LocalShareHandler : IWjpHandler
+    public class LocalShareServerHandler : IWjpHandler
     {
-        public LocalShareHandler(LocalShareStorage storage, ILogger logger)
+        public LocalShareServerHandler(LocalShare localShare, ILogger logger)
         {
-            Storage = storage;
+            LocalShare = localShare;
             Logger = logger;
 
             Logger.Info($"Loaded");
         }
 
-        public LocalShareStorage Storage { get; }
+        public LocalShare LocalShare { get; }
         public ILogger Logger { get; }
 
         public WjpResponse ProcessRequest(WjpRequest request)

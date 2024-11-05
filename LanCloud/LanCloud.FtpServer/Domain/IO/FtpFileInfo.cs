@@ -3,7 +3,6 @@ using LanCloud.Models;
 using LanCloud.Services;
 using System;
 using System.IO;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace LanCloud.Domain.IO
 {
@@ -25,8 +24,8 @@ namespace LanCloud.Domain.IO
 
         public LocalApplication Application { get; }
         public string Path { get; }
-        public string Name => FtpPathTranslator.TranslatePathToName(Application, Path);
-        public string Extention => FtpPathTranslator.TranslatePathToExtention(Application, Path);
+        public string Name => FtpPathTranslator.TranslatePathToName(Path);
+        public string Extention => FtpPathTranslator.TranslatePathToExtention(Path);
         private FileInfo RealFileInfo { get; }
 
         FileRef _FileRef { get; set; }

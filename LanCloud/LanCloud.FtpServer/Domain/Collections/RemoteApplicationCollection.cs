@@ -8,15 +8,16 @@ using System.Linq;
 
 namespace LanCloud.Collections
 {
-    public class RemoteApplicationProxyCollection : IEnumerable<RemoteApplicationProxy>, IDisposable
+    public class RemoteApplicationCollection : IEnumerable<RemoteApplication>, IDisposable
     {
-        public RemoteApplicationProxyCollection(ApplicationConfig config, ILogger logger)
+        public RemoteApplicationCollection(ApplicationConfig config, ILogger logger)
         {
             Config = config;
             Logger = logger;
-            ApplicationProxies = config.Servers
+
+            RemoteApplications = config.Servers
                 .Where(a => a.IsThisComputer == false)
-                .Select(remoteconfig => new RemoteApplicationProxy(remoteconfig, logger))
+                .Select(remoteconfig => new RemoteApplication(remoteconfig, logger))
                 .ToArray();
 
             Logger.Info("Loaded");
@@ -24,23 +25,23 @@ namespace LanCloud.Collections
 
         public ApplicationConfig Config { get; }
         public ILogger Logger { get; }
-        public RemoteApplicationProxy[] ApplicationProxies { get; }
+        public RemoteApplication[] RemoteApplications { get; }
 
         public void Dispose()
         {
-            foreach (var externalApplication in ApplicationProxies)
+            foreach (var externalApplication in RemoteApplications)
             {
                 externalApplication.Dispose();
             };
         }
 
-        public IEnumerator<RemoteApplicationProxy> GetEnumerator()
+        public IEnumerator<RemoteApplication> GetEnumerator()
         {
-            return ((IEnumerable<RemoteApplicationProxy>)ApplicationProxies).GetEnumerator();
+            return ((IEnumerable<RemoteApplication>)RemoteApplications).GetEnumerator();
         }
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return ApplicationProxies.GetEnumerator();
+            return RemoteApplications.GetEnumerator();
         }
     }
 }

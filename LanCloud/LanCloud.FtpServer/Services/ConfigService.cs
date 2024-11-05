@@ -24,7 +24,7 @@ namespace LanCloud.Services
                 var config = new ApplicationConfig()
                 {
                     StartPort = 8080,
-                    FileDatabaseDirectoryName = "C:\\Test",
+                    FileDatabaseDirectoryName = "D:\\Test\\_db",
                     Servers = new RemoteApplicationConfig[]
                     {
                         new RemoteApplicationConfig()

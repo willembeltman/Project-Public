@@ -7,12 +7,12 @@ using LanCloud.Models.Configs;
 
 namespace LanCloud.Domain.Application
 {
-    public class RemoteApplicationProxy : WjpProxy
+    public class RemoteApplication : WjpProxy
     {
         public RemoteApplicationConfig Config { get; }
         public ILogger Logger { get; }
 
-        public RemoteApplicationProxy(RemoteApplicationConfig config, ILogger logger) : base(config)
+        public RemoteApplication(RemoteApplicationConfig config, ILogger logger) : base(config)
         {
             Config = config;
             Logger = logger;

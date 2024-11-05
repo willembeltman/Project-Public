@@ -2,6 +2,7 @@
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Security.Policy;
 
 namespace LanCloud.Domain.IO
 {
@@ -13,57 +14,67 @@ namespace LanCloud.Domain.IO
             FullName = info.FullName;
             var split = info.Name.Split('.');
             Extention = split[0];
-            Parts = split[1].Split('_').Select(a => Convert.ToInt32(a)).ToArray();
-            Size = Convert.ToInt64(split[2]);
+            Indexes = split[1].Split('_').Select(a => Convert.ToInt32(a)).ToArray();
+            Length = Convert.ToInt64(split[2]);
             Hash = split[3];
         }
-        public FileBit(DirectoryInfo dirinfo, string extention, int[] parts, long size, string hash)
+        public FileBit(DirectoryInfo dirinfo, string extention, int[] indexes, long length, string hash)
         {
             Extention = extention;
-            Size = size;
-            Parts = parts;
+            Length = length;
+            Indexes = indexes;
             Hash = hash;
-            var name = $"{extention}.{string.Join("_", parts)}.{size}.{hash}.filebit";
+            var name = $"{extention}.{string.Join("_", indexes)}.{length}.{hash}.filebit";
             FullName = Path.Combine(dirinfo.FullName, name);
             Info = new FileInfo(FullName);
         }
-        public FileBit(DirectoryInfo dirinfo, string extention, int[] parts)
+        public FileBit(DirectoryInfo dirinfo, string extention, int[] indexes)
         {
             Extention = extention;
-            Parts = parts;
-            var name = $"{extention}.{string.Join("_", parts)}.{Guid.NewGuid().ToString()}.tempbit";
+            Indexes = indexes;
+            var name = $"{extention}.{string.Join("_", indexes)}.{Guid.NewGuid().ToString()}.tempbit";
             FullName = Path.Combine(dirinfo.FullName, name);
             Info = new FileInfo(FullName);
             IsTemp = true;
         }
+        public FileBit(DirectoryInfo dirinfo, FileRef fileRef, FileRefBit fileRefBit)
+        {
+            Extention = fileRef.Extention;
+            Indexes = fileRefBit.Indexes;
+            Length = fileRef.Length.Value;
+            Hash = fileRef.Hash;
+
+            var name = $"{Extention}.{string.Join("_", Indexes)}.{Length}.{Hash}.filebit";
+            FullName = Path.Combine(dirinfo.FullName, name);
+            Info = new FileInfo(FullName);
+        }
 
         public string Extention { get; }
-        public int[] Parts { get; }
+        public int[] Indexes { get; }
         public FileInfo Info { get; private set; }
         public bool IsTemp { get; private set; }
         public string FullName { get; private set; }
-        public long Size { get; private set; }
+        public long Length { get; private set; }
         public string Hash { get; private set; }
 
-        public void Update(long size, string hash)
+        public void Update(long length, string hash)
         {
-            Size = size;
+            Length = length;
             Hash = hash;
-            var name = $"{Extention}.{string.Join("_", Parts)}.{size}.{hash}.filebit";
+            var name = $"{Extention}.{string.Join("_", Indexes)}.{length}.{hash}.filebit";
             FullName = Path.Combine(Info.Directory.FullName, name);
             File.Move(Info.FullName, FullName);
             Info = new FileInfo(FullName);
             IsTemp = false;
         }
 
-        public FileBitStreamReader OpenRead()
+        public FileStream OpenRead()
         {
-            return new FileBitStreamReader(Info);
+            return Info.OpenRead();
         }
-        public FileBitStreamWriter OpenWrite()
+        public FileStream OpenWrite()
         {
-            return new FileBitStreamWriter(Info);
+            return Info.OpenWrite();
         }
-
     }
 }

@@ -31,6 +31,7 @@ namespace LanCloud.Domain.IO
 
         public byte[] Buffer { get; }
         private FileBit FileBit { get; set; }
+        public int Position { get; private set; }
 
         private void Start()
         {
@@ -58,7 +59,7 @@ namespace LanCloud.Domain.IO
         private void WriteBuffer(Stream stream)
         {
             var data = FtpStreamWriter.Buffer.ReadBuffer;
-            var totallength = FtpStreamWriter.Buffer.ReadBufferWritten;
+            var totallength = FtpStreamWriter.Buffer.ReadBufferPosition;
             var width = FtpStreamWriter.Buffer.Width;
             var sublength = Convert.ToDouble(totallength) / width;
             var maxlength = 0;
@@ -77,6 +78,7 @@ namespace LanCloud.Domain.IO
             }
 
             stream.Write(Buffer, 0, maxlength);
+            Position += maxlength;
         }
 
         public FileBit Stop()

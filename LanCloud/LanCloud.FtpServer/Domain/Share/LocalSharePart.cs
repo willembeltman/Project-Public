@@ -1,4 +1,5 @@
 ﻿using LanCloud.Models.Configs;
+using System.IO;
 
 namespace LanCloud.Domain.Share
 {
@@ -9,7 +10,10 @@ namespace LanCloud.Domain.Share
             Share = localShare;
             Part = part;
         }
+
         public LocalShare Share { get; }
         public LocalSharePartConfig Part { get; }
+        public DirectoryInfo Root => Share.Storage.Root;
+        public int[] Indexes => Part.Indexes;
     }
 }
