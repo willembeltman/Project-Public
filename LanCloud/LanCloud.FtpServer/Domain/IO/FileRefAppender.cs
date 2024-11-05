@@ -2,9 +2,9 @@
 
 namespace LanCloud.Domain.VirtualFtp
 {
-    public class FtpStreamAppender : System.IO.Stream
+    public class FileRefAppender : System.IO.Stream
     {
-        public FtpStreamAppender(PathInfo virtualFileInfo, Shared.Log.ILogger logger)
+        public FileRefAppender(PathInfo virtualFileInfo, Shared.Log.ILogger logger)
         {
             VirtualFileInfo = virtualFileInfo;
         }

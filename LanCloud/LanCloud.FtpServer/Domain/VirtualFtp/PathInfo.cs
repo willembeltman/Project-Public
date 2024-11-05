@@ -16,12 +16,12 @@ namespace LanCloud.Domain.VirtualFtp
             Path = path;
             Logger = logger;
             var realFullName = PathTranslator.TranslatePathToFullName(application.FileRefs.RootDirectoryInfo, path);
-            FileRefInfo = new FileInfo(realFullName);
+            RealInfo = new FileInfo(realFullName);
         }
         public PathInfo(LocalApplication application, FileInfo realInfo, ILogger logger)
         {
             Application = application;
-            FileRefInfo = realInfo;
+            RealInfo = realInfo;
             Logger = logger;
             Path = PathTranslator.TranslateFullnameToPath(application.FileRefs.RootDirectoryInfo, realInfo);
         }
@@ -29,7 +29,7 @@ namespace LanCloud.Domain.VirtualFtp
         public LocalApplication Application { get; }
         public string Path { get; }
         public ILogger Logger { get; }
-        public FileInfo FileRefInfo { get; }
+        public FileInfo RealInfo { get; }
 
         public string Name => PathTranslator.TranslatePathToName(Path);
         public string Extention => PathTranslator.TranslatePathToExtention(Path);
@@ -39,43 +39,43 @@ namespace LanCloud.Domain.VirtualFtp
         {
             get
             {
-                return _FileRef = _FileRef ?? FileRefService.Load(FileRefInfo);
+                return _FileRef = _FileRef ?? Application.FileRefs.Load(Path, RealInfo);
             }
             set
             {
-                _FileRef = FileRefService.Save(FileRefInfo, value);
+                _FileRef = Application.FileRefs.Save(Path, RealInfo, value);
             }
         }
 
-        public DateTime LastWriteTime => FileRefInfo.LastWriteTime;
-        public bool Exists => FileRefInfo.Exists;
+        public DateTime LastWriteTime => RealInfo.LastWriteTime;
+        public bool Exists => RealInfo.Exists;
         public long? Length => FileRef?.Length;
 
         public Stream Create()
         {
             // FileRef aanmaken
             FileRef = new FileRef(this);
-            return new FtpStreamWriter(this, Logger);
+            return new FileRefWriter(this, Logger);
         }
 
         public Stream OpenRead()
         {
             // FileRef moet bestaan
             if (FileRef == null) return null;
-            return new FtpStreamReader(this, Logger);
+            return new FileRefReader(this, Logger);
         }
 
         public Stream OpenAppend()
         {
             // FileRef moet bestaan
             if (FileRef == null) return null;
-            return new FtpStreamAppender(this, Logger);
+            return new FileRefAppender(this, Logger);
         }
 
         public void MoveTo(string toPath)
         {
             var to = new PathInfo(Application, toPath, Logger);
-            File.Move(FileRefInfo.FullName, to.FileRefInfo.FullName);
+            File.Move(RealInfo.FullName, to.RealInfo.FullName);
         }
         public void Delete()
         {

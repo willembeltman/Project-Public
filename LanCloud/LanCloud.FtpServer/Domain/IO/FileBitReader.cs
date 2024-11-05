@@ -8,7 +8,7 @@ namespace LanCloud.Domain.IO
 {
     public class FileBitReader : IDisposable
     {
-        public FileBitReader(FtpStreamReader streamReader, FileBit fileBit, ILogger logger)
+        public FileBitReader(FileRefReader streamReader, FileBit fileBit, ILogger logger)
         {
             StreamReader = streamReader;
             FileBit = fileBit;
@@ -20,7 +20,7 @@ namespace LanCloud.Domain.IO
             Thread.Start();
         }
 
-        public FtpStreamReader StreamReader { get; }
+        public FileRefReader StreamReader { get; }
         public FileBit FileBit { get; }
         public ILogger Logger { get; }
         public DoubleBuffer Buffer { get; }

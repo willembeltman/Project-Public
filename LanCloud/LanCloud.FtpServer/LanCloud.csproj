@@ -83,9 +83,9 @@
     <Compile Include="Domain\VirtualFtp\PathDirectoryInfo.cs" />
     <Compile Include="Domain\VirtualFtp\PathInfo.cs" />
     <Compile Include="Domain\VirtualFtp\PathTranslator.cs" />
-    <Compile Include="Domain\VirtualFtp\FtpStreamAppender.cs" />
-    <Compile Include="Domain\VirtualFtp\FtpStreamWriter.cs" />
-    <Compile Include="Domain\VirtualFtp\FtpStreamReader.cs" />
+    <Compile Include="Domain\IO\FileRefAppender.cs" />
+    <Compile Include="Domain\IO\FileRefWriter.cs" />
+    <Compile Include="Domain\IO\FileRefReader.cs" />
     <Compile Include="Models\Dtos\ShareDto.cs" />
     <Compile Include="Models\Dtos\ShareRequestDto.cs" />
     <Compile Include="Models\Dtos\ShareResponseDto.cs" />

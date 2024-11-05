@@ -1,10 +1,8 @@
 ﻿using LanCloud.Domain.Application;
 using LanCloud.Domain.IO;
-using LanCloud.Domain.VirtualFtp;
+using LanCloud.Services;
 using LanCloud.Shared.Log;
-using System;
 using System.IO;
-using System.Linq;
 
 namespace LanCloud.Domain.Collections
 {
@@ -20,38 +18,32 @@ namespace LanCloud.Domain.Collections
             RootDirectory = rootInfo.FullName.TrimEnd('\\');
             RootDirectoryInfo = new DirectoryInfo(RootDirectory);
 
-            Root = new FileRefDirectory(this, RootDirectoryInfo, logger);
+            Reload();
+        }
+
+        private void Reload()
+        {
+            Root = new FileRefDirectory(this, RootDirectoryInfo, Logger);
         }
 
         public string RootDirectory { get; }
         public DirectoryInfo RootDirectoryInfo { get; }
-        public FileRefDirectory Root { get; }
+        public FileRefDirectory Root { get; private set; }
         public LocalApplication Application { get; }
         public ILogger Logger { get; }
 
-        public FileRefDirectory GetDirectory(string path)
+        public FileRef Load(string path, FileInfo realInfo)
         {
-            var split = path.Split('/');
-            var dir = Root;
-            for (int i = 0; i < split.Length; i++)
-            {
-                var name = split[i];
-                var subdir = dir.FileRefDirectories.FirstOrDefault(a => a.Name == name);
-                if (subdir != null)
-                {
-                    dir = subdir;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            return dir;
+            // Todo proberen uit cache te halen
+            return FileRefService.Load(realInfo);
         }
 
-        internal void Add(PathInfo pathInfo)
+        public FileRef Save(string path, FileInfo realInfo, FileRef value)
         {
-            //throw new NotImplementedException();
+            // Todo proberen uit cache te halen
+            var res = FileRefService.Save(realInfo, value);
+            Reload();
+            return res;
         }
     }
 }

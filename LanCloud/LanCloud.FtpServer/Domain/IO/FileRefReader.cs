@@ -9,9 +9,9 @@ using System.Threading;
 
 namespace LanCloud.Domain.VirtualFtp
 {
-    public class FtpStreamReader : Stream
+    public class FileRefReader : Stream
     {
-        public FtpStreamReader(PathInfo pathInfo, ILogger logger)
+        public FileRefReader(PathInfo pathInfo, ILogger logger)
         {
             PathInfo = pathInfo;
             Logger = logger;
@@ -57,7 +57,6 @@ namespace LanCloud.Domain.VirtualFtp
         public override bool CanSeek => true;
         public override bool CanWrite => false;
         public override long Length => PathInfo.Length.Value;
-        public bool EndOfFile => FileBitReaders.All(a => a.Buffer.ReadBufferPosition <= 0);
 
         public LocalApplication Application => PathInfo.Application;
         public FileRef FileRef => PathInfo.FileRef;
@@ -77,11 +76,11 @@ namespace LanCloud.Domain.VirtualFtp
 
                         if (item.Indexes.Length == 1 && item.Buffer.ReadBufferPosition > 0)
                         {
-                            var buffer = item.Buffer.ReadBuffer;
-                            var read = item.Buffer.ReadBufferPosition;
+                            var length = item.Buffer.ReadBufferPosition;
 
-                            Array.Copy(buffer, 0, Buffer.WriteBuffer, Buffer.WriteBufferPosition, read);
-                            Buffer.WriteBufferPosition += read;
+                            Array.Copy(item.Buffer.ReadBuffer, 0, Buffer.WriteBuffer, Buffer.WriteBufferPosition, length);
+
+                            Buffer.WriteBufferPosition += length;
                         }
                     }
 

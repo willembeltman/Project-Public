@@ -10,9 +10,9 @@ using System.Text;
 
 namespace LanCloud.Domain.VirtualFtp
 {
-    public class FtpStreamWriter : Stream
+    public class FileRefWriter : Stream
     {
-        public FtpStreamWriter(PathInfo ftpFileInfo, ILogger logger)
+        public FileRefWriter(PathInfo ftpFileInfo, ILogger logger)
         {
             PathInfo = ftpFileInfo;
             Logger = logger;
@@ -140,8 +140,6 @@ namespace LanCloud.Domain.VirtualFtp
                     })
                     .ToArray();
                 PathInfo.FileRef = fileRef;
-
-                Application.FileRefs.Add(PathInfo);
             }
 
             base.Dispose(disposing);

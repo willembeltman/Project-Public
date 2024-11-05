@@ -10,7 +10,7 @@ namespace LanCloud.Domain.IO
 {
     public class FileBitWriter
     {
-        public FileBitWriter(FtpStreamWriter ftpStreamWriter, LocalSharePart sharePart, ILogger logger)
+        public FileBitWriter(FileRefWriter ftpStreamWriter, LocalSharePart sharePart, ILogger logger)
         {
             FtpStreamWriter = ftpStreamWriter;
             SharePart = sharePart;
@@ -25,7 +25,7 @@ namespace LanCloud.Domain.IO
             //Logger.Info($"Opened {FileBit.Info.Name} as output for parts: {string.Join(" xor ", Indexes.Select(a => $"#{a}"))}");
         }
 
-        public FtpStreamWriter FtpStreamWriter { get; }
+        public FileRefWriter FtpStreamWriter { get; }
         public LocalSharePart SharePart { get; }
         public ILogger Logger { get; }
         public Thread Thread { get; }
@@ -56,7 +56,12 @@ namespace LanCloud.Domain.IO
                     {
                         if (!KillSwitch)
                         {
-                            WriteBuffer(stream);
+                            var data = FtpStreamWriter.Buffer.ReadBuffer;
+                            var datalength = FtpStreamWriter.Buffer.ReadBufferPosition;
+                            var width = FtpStreamWriter.Buffer.Width;
+
+                            WriteBufferToStream(stream, data, datalength, width);
+
                             ReadingIsDone.Set();
                         }
                     }
@@ -64,12 +69,8 @@ namespace LanCloud.Domain.IO
             }
         }
 
-        private void WriteBuffer(Stream stream)
+        private void WriteBufferToStream(Stream stream, byte[] data, int datalength, int width)
         {
-            var data = FtpStreamWriter.Buffer.ReadBuffer;
-            var datalength = FtpStreamWriter.Buffer.ReadBufferPosition;
-            var width = FtpStreamWriter.Buffer.Width;
-
             //Logger.Info($"Start writing to {FileBit.Info.Name}");
 
             // Use a floating point number to calculate the buffer size,
