@@ -47,31 +47,6 @@ namespace LanCloud.Domain.VirtualFtp
 
         public LocalApplication Application => PathInfo.Application;
 
-        private void FlipBuffer()
-        {
-            //Logger.Info($"FlipBuffer start");
-
-            WaitForDone();
-
-            Buffer.Flip();
-
-            foreach (var item in FileBitWriters)
-                item.StartNext.Set();
-
-            //Logger.Info($"FlipBuffer end");
-        }
-
-        private void WaitForDone()
-        {
-            //Logger.Info($"WaitForDone start");
-            
-            foreach (var item in FileBitWriters)
-                if (!item.ReadingIsDone.WaitOne(10000))
-                    throw new Exception("Timeout writing to: " + item.FileBit?.FullName);
-
-            //Logger.Info($"WaitForDone end");
-        }
-
         public override void Write(byte[] buffer, int offset, int count)
         {
             //Logger.Info($"Received {count}b");
@@ -103,6 +78,30 @@ namespace LanCloud.Domain.VirtualFtp
             {
                 FlipBuffer();
             }
+        }
+        private void FlipBuffer()
+        {
+            //Logger.Info($"FlipBuffer start");
+
+            WaitForDone();
+
+            Buffer.Flip();
+
+            foreach (var item in FileBitWriters)
+                item.StartNext.Set();
+
+            //Logger.Info($"FlipBuffer end");
+        }
+
+        private void WaitForDone()
+        {
+            //Logger.Info($"WaitForDone start");
+
+            foreach (var item in FileBitWriters)
+                if (!item.WritingIsDone.WaitOne(10000))
+                    throw new Exception("Timeout writing to: " + item.FileBit?.FullName);
+
+            //Logger.Info($"WaitForDone end");
         }
 
         protected override void Dispose(bool disposing)

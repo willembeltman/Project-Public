@@ -2,7 +2,6 @@
 using LanCloud.Models;
 using LanCloud.Servers.Ftp.Interfaces;
 using LanCloud.Domain.Application;
-using LanCloud.Domain.IO;
 using System;
 using System.IO;
 

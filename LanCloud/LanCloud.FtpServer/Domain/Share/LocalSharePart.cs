@@ -1,19 +1,19 @@
-﻿using LanCloud.Models.Configs;
-using System.IO;
+﻿using LanCloud.Domain.Collections;
+using LanCloud.Models.Configs;
 
 namespace LanCloud.Domain.Share
 {
     public class LocalSharePart
     {
-        public LocalSharePart(LocalShare localShare, LocalSharePartConfig part)
+        public LocalSharePart(LocalSharePartCollection localSharePartCollection, LocalSharePartConfig part)
         {
-            Share = localShare;
+            LocalSharePartCollection = localSharePartCollection;
             Part = part;
         }
 
-        public LocalShare Share { get; }
+        public LocalSharePartCollection LocalSharePartCollection { get; }
         public LocalSharePartConfig Part { get; }
-        public DirectoryInfo Root => Share.FileBits.Root;
-        public int[] Indexes => Part.Indexes;
+
+        public LocalShare Share => LocalSharePartCollection.Share;
     }
 }

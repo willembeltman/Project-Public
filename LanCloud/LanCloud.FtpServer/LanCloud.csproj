@@ -67,6 +67,7 @@
   <ItemGroup>
     <Compile Include="Constants.cs" />
     <Compile Include="Domain\Collections\FileRefCollection.cs" />
+    <Compile Include="Domain\Collections\LocalSharePartCollection.cs" />
     <Compile Include="Domain\FileRefDirectoryRepository.cs" />
     <Compile Include="Domain\FileRefRepository.cs" />
     <Compile Include="Domain\Repository.cs" />

@@ -22,13 +22,12 @@ namespace LanCloud.Domain.Collections
                 .Select(shareConfig => new LocalShare(this, ++port, config, shareConfig, logger))
                 .ToArray();
 
-
             //Logger.Info("Loaded");
         }
 
         public LocalApplication Application { get; }
-        public LocalShare[] Shares { get; }
         public ILogger Logger { get; }
+        public LocalShare[] Shares { get; }
 
         public FileBit[] FindFileBits(string extention, FileRef fileRef, FileRefBit fileRefBit)
         {

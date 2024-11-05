@@ -28,16 +28,18 @@ namespace LanCloud.Domain.IO
         public FileRefWriter FtpStreamWriter { get; }
         public LocalSharePart SharePart { get; }
         public ILogger Logger { get; }
+
+        public FileBit FileBit { get; }
+        public byte[] Buffer { get; }
         public Thread Thread { get; }
-        public AutoResetEvent ReadingIsDone { get; } = new AutoResetEvent(true);
+
+        public AutoResetEvent WritingIsDone { get; } = new AutoResetEvent(true);
         public AutoResetEvent StartNext { get; } = new AutoResetEvent(false);
+        public int Position { get; private set; } = 0;
         private bool KillSwitch { get; set; } = false;
+
         public LocalShare Share => SharePart.Share;
         public int[] Indexes => SharePart.Part.Indexes;
-
-        public byte[] Buffer { get; }
-        public FileBit FileBit { get; private set; }
-        public int Position { get; private set; }
 
         private void Start()
         {
@@ -54,16 +56,16 @@ namespace LanCloud.Domain.IO
                 {
                     if (StartNext.WaitOne(1000))
                     {
-                        if (!KillSwitch)
+                        if (!KillSwitch && FtpStreamWriter.Buffer.ReadBufferPosition > 0)
                         {
                             var data = FtpStreamWriter.Buffer.ReadBuffer;
                             var datalength = FtpStreamWriter.Buffer.ReadBufferPosition;
                             var width = FtpStreamWriter.Buffer.Width;
 
                             WriteBufferToStream(stream, data, datalength, width);
-
-                            ReadingIsDone.Set();
                         }
+
+                        WritingIsDone.Set();
                     }
                 }
             }
@@ -71,16 +73,7 @@ namespace LanCloud.Domain.IO
 
         private void WriteBufferToStream(Stream stream, byte[] data, int datalength, int width)
         {
-            //Logger.Info($"Start writing to {FileBit.Info.Name}");
-
-            // Use a floating point number to calculate the buffer size,
-            // This allows for half bytes which will be calculated to 
-            // real byte length when XOR is done
             var sublength = Convert.ToDouble(datalength) / width;
-
-            // In the foreach we calculate the real byte length, this can vary
-            // with half numbers so we need to calculate the maximum amount of
-            // bytes used in the buffers
             var maxlength = 0;
 
             if (Indexes.Length == 1)
@@ -104,6 +97,7 @@ namespace LanCloud.Domain.IO
                     var end = Convert.ToInt32(sublength * (index + 1));
                     var length = end - start;
                     if (length > maxlength) maxlength = length;
+
                     for (var i = 0; i < length; i++)
                     {
                         Buffer[i] ^= data[start + i];
@@ -115,9 +109,6 @@ namespace LanCloud.Domain.IO
             }
 
             Position += maxlength;
-
-            //Thread.Sleep(100);
-            //Logger.Info($"Written {maxlength}b to {FileBit.Info.Name}");
         }
 
         public FileBit Stop()
