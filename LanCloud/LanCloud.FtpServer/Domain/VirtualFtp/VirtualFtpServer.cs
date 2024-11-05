@@ -6,14 +6,14 @@ using System.Net;
 
 namespace LanCloud.Domain.VirtualFtp
 {
-    public class LocalVirtualFtp : IDisposable
+    public class VirtualFtpServer : IDisposable
     {
-        public LocalVirtualFtp(LocalApplication application, ILogger logger)
+        public VirtualFtpServer(LocalApplication application, ILogger logger)
         {
             Application = application;
             Logger = logger;
 
-            FtpHandler = new LocalVirtualFtpHandler(application, logger);
+            FtpHandler = new VirtualFtpHandler(application, logger);
             FtpServer = new FtpServer(IPAddress.Any, 21, FtpHandler, logger);
 
             Logger.Info($"Loaded");
@@ -21,7 +21,7 @@ namespace LanCloud.Domain.VirtualFtp
 
         public LocalApplication Application { get; }
         public ILogger Logger { get; }
-        public LocalVirtualFtpHandler FtpHandler { get; }
+        public VirtualFtpHandler FtpHandler { get; }
         public FtpServer FtpServer { get; }
 
         public void Dispose()

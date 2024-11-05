@@ -12,11 +12,11 @@ namespace LanCloud.Domain.IO
         public FtpStreamWriter(FtpFileInfo ftpFileInfo)
         {
             FtpFileInfo = ftpFileInfo;
-            ShareParts = Application.LocalShares
+            FileBitWriters = Application.LocalShares
                 .SelectMany(share => share.Parts)
-                .Select(sharepart => new FtpStreamWriterSharePart(this, sharepart))
+                .Select(sharepart => new FileBitWriter(this, sharepart))
                 .ToArray();
-            AllIndexes = ShareParts
+            AllIndexes = FileBitWriters
                 .SelectMany(a => a.Indexes)
                 .GroupBy(a => a)
                 .Select(a => a.Key)
@@ -26,7 +26,7 @@ namespace LanCloud.Domain.IO
         }
 
         public FtpFileInfo FtpFileInfo { get; }
-        public FtpStreamWriterSharePart[] ShareParts { get; }
+        public FileBitWriter[] FileBitWriters { get; }
         public int[] AllIndexes { get; }
         public DoubleBuffer Buffer { get; }
         private IncrementalHash IncrementalHash { get; } = IncrementalHash.CreateHash(HashAlgorithmName.MD5);
@@ -46,14 +46,15 @@ namespace LanCloud.Domain.IO
 
             Buffer.Flip();
 
-            foreach (var item in ShareParts)
+            foreach (var item in FileBitWriters)
                 item.StartNext.Set();
         }
 
         private void WaitForDone()
         {
-            foreach (var item in ShareParts)
-                item.ReadingIsDone.WaitOne();
+            foreach (var item in FileBitWriters)
+                if (!item.ReadingIsDone.WaitOne(10000))
+                    throw new Exception("Timeout writing to: " + item.FileBit?.FullName);
         }
 
         public override void Write(byte[] buffer, int offset, int count)
@@ -87,7 +88,6 @@ namespace LanCloud.Domain.IO
             }
         }
 
-        // Override de Dispose methode
         protected override void Dispose(bool disposing)
         {
             if (!Disposed && disposing)
@@ -106,7 +106,7 @@ namespace LanCloud.Domain.IO
                     hashString.Append(b.ToString("x2"));
                 GeneratedHash = hashString.ToString();
 
-                var fileBits = ShareParts
+                var fileBits = FileBitWriters
                     .Select(a => a.Stop())
                     .ToArray();
 

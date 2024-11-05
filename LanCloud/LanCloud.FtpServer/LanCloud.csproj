@@ -66,8 +66,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants.cs" />
-    <Compile Include="Domain\IO\FtpStreamReaderFileRefBit.cs" />
-    <Compile Include="Domain\IO\FtpStreamWriterSharePart.cs" />
+    <Compile Include="Domain\IO\FileBitReader.cs" />
+    <Compile Include="Domain\IO\FileBitWriter.cs" />
     <Compile Include="Domain\IO\DoubleBuffer.cs" />
     <Compile Include="Domain\Share\IShare.cs" />
     <Compile Include="Domain\Share\LocalSharePart.cs" />
@@ -97,7 +97,7 @@
     <Compile Include="Domain\Application\LocalApplication.cs" />
     <Compile Include="Domain\Collections\LocalShareCollection.cs" />
     <Compile Include="Domain\Collections\RemoteShareCollection.cs" />
-    <Compile Include="Domain\VirtualFtp\LocalVirtualFtpHandler.cs" />
+    <Compile Include="Domain\VirtualFtp\VirtualFtpHandler.cs" />
     <Compile Include="Models\Configs\LocalShareConfig.cs" />
     <Compile Include="Models\Configs\RemoteApplicationConfig.cs" />
     <Compile Include="Models\Requests\IApplicationRequest.cs" />
@@ -113,7 +113,7 @@
     <Compile Include="Domain\Share\LocalShareServerHandler.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Domain\VirtualFtp\LocalVirtualFtp.cs" />
+    <Compile Include="Domain\VirtualFtp\VirtualFtpServer.cs" />
     <Compile Include="Services\LogService.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -24,7 +24,7 @@ namespace LanCloud.Services
                 var config = new ApplicationConfig()
                 {
                     StartPort = 8080,
-                    FileDatabaseDirectoryName = "D:\\Test\\_db",
+                    FileDatabaseDirectoryName = "C:\\Test",
                     Servers = new RemoteApplicationConfig[]
                     {
                         new RemoteApplicationConfig()
@@ -46,7 +46,7 @@ namespace LanCloud.Services
                         },
                         new LocalShareConfig()
                         {
-                            DirectoryName = "D:\\Test\\1",
+                            DirectoryName = "E:\\Test\\1",
                             Parts = new LocalSharePartConfig[]
                             {
                                 new LocalSharePartConfig(1)
@@ -54,7 +54,7 @@ namespace LanCloud.Services
                         },
                         new LocalShareConfig()
                         {
-                            DirectoryName = "D:\\Test\\P",
+                            DirectoryName = "F:\\Test\\P",
                             Parts = new LocalSharePartConfig[]
                             {
                                 new LocalSharePartConfig(new [] { 0, 1 })

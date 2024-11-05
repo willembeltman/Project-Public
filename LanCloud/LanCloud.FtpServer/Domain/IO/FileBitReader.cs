@@ -1,13 +1,14 @@
 ﻿using LanCloud.Domain.Application;
 using System;
+using System.IO;
 using System.Linq;
 using System.Threading;
 
 namespace LanCloud.Domain.IO
 {
-    public class FtpStreamReaderFileRefBit : IDisposable
+    public class FileBitReader : IDisposable
     {
-        public FtpStreamReaderFileRefBit(FtpStreamReader ftpStreamReader, FileRefBit fileRefBit)
+        public FileBitReader(FtpStreamReader ftpStreamReader, FileRefBit fileRefBit)
         {
             FtpStreamReader = ftpStreamReader;
             FileRefBit = fileRefBit;
@@ -31,7 +32,9 @@ namespace LanCloud.Domain.IO
 
         private void Start()
         {
-            var fileBit = Application.FindFileBit(FileRef, FileRefBit);
+            var fileBit = Application
+                .FindFileBits(FileRef, FileRefBit)
+                .FirstOrDefault();
             if (fileBit != null)
             {
                 using (var stream = fileBit.OpenRead())
@@ -41,18 +44,24 @@ namespace LanCloud.Domain.IO
                         if (StartNext.WaitOne(100))
                         {
                             Buffer.WriteBufferPosition = stream.Read(Buffer.WriteBuffer, 0, Buffer.WriteBuffer.Length);
-                            if (Buffer.WriteBufferPosition <= 0) EndOfFile = true;
+                            if (Buffer.WriteBufferPosition <= 0)
+                                EndOfFile = true;
+
                             BufferIsWritten.Set();
                         }
                     }
                 }
             }
         }
+
         public void FlipBuffer()
         {
-            BufferIsWritten.WaitOne();
-            Buffer.Flip();
-            StartNext.Set();
+            if (!EndOfFile)
+            {
+                BufferIsWritten.WaitOne();
+                Buffer.Flip();
+                StartNext.Set();
+            }
         }
 
         public void Dispose()

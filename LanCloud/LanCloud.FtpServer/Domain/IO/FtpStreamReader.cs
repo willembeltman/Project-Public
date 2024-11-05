@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using LanCloud.Domain.Application;
+using System;
 using System.IO;
 using System.Linq;
-using System.Security.AccessControl;
 using System.Threading;
 
 namespace LanCloud.Domain.IO
@@ -12,12 +11,16 @@ namespace LanCloud.Domain.IO
         public FtpStreamReader(FtpFileInfo ftpFileInfo)
         {
             FtpFileInfo = ftpFileInfo;
-            ShareParts = FtpFileInfo.FileRef.FileRefBits
-                .Select(fileRefBit => new FtpStreamReaderFileRefBit(this, fileRefBit))
+
+            
+
+            FileBitReaders = FileRef.FileRefBits
+                //.SelectMany(bit => Application.FindFileBits(FileRef, bit))
+                .Select(fileRefBit => new FileBitReader(this, fileRefBit))
                 .OrderBy(a => a.Indexes.Length)
                 .ThenBy(a => a.Indexes.OrderBy(b => b).First())
                 .ToArray();
-            AllIndexes = ShareParts
+            AllIndexes = FileBitReaders
                 .SelectMany(a => a.Indexes)
                 .GroupBy(a => a)
                 .Select(a => a.Key)
@@ -30,7 +33,7 @@ namespace LanCloud.Domain.IO
         }
 
         public FtpFileInfo FtpFileInfo { get; }
-        internal FtpStreamReaderFileRefBit[] ShareParts { get; }
+        internal FileBitReader[] FileBitReaders { get; }
         public int[] AllIndexes { get; }
         public DoubleBuffer Buffer { get; }
         public Thread Thread { get; }
@@ -46,8 +49,10 @@ namespace LanCloud.Domain.IO
         public override bool CanSeek => true;
         public override bool CanWrite => false;
         public override long Length => FtpFileInfo.Length.Value;
+        public bool EndOfFile => FileBitReaders.All(a => a.EndOfFile);
 
-        public bool EndOfFile => ShareParts.Any(a => a.EndOfFile);
+        public LocalApplication Application => FtpFileInfo.Application;
+        public FileRef FileRef => FtpFileInfo.FileRef;
 
         private void Start()
         {
@@ -55,10 +60,8 @@ namespace LanCloud.Domain.IO
             {
                 if (StartNext.WaitOne(100))
                 {
-                    List<int> loadedIndexes = new List<int>();
-
                     Buffer.WriteBufferPosition = 0;
-                    foreach (var item in ShareParts)
+                    foreach (var item in FileBitReaders)
                     {
                         item.FlipBuffer();
 
@@ -113,14 +116,14 @@ namespace LanCloud.Domain.IO
             }
             return read;
         }
-        // Override de Dispose methode
+
         protected override void Dispose(bool disposing)
         {
             if (!Disposed && disposing)
             {
                 Disposed = true;
 
-                foreach (var part in ShareParts)
+                foreach (var part in FileBitReaders)
                 {
                     part.Dispose();
                 }

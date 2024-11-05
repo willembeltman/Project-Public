@@ -8,9 +8,9 @@ using System.IO;
 
 namespace LanCloud.Domain.VirtualFtp
 {
-    public class LocalVirtualFtpHandler : IFtpHandler
+    public class VirtualFtpHandler : IFtpHandler
     {
-        public LocalVirtualFtpHandler(LocalApplication application, ILogger logger)
+        public VirtualFtpHandler(LocalApplication application, ILogger logger)
         {
             Application = application;
             Logger = logger;

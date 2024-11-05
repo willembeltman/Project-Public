@@ -14,6 +14,23 @@ namespace LanCloud.Servers.Ftp
 {
     public class ClientConnection : IDisposable
     {
+        public ClientConnection(
+            TcpClient client,
+            IFtpHandler commandHandler,
+            ILogger logger,
+            string certificateFilename = null)
+        {
+            var RemoteEndPoint = (IPEndPoint)client.Client.RemoteEndPoint;
+            Name = RemoteEndPoint.Address.ToString();
+
+            ControlClient = client;
+            FtpHandler = commandHandler;
+            Logger = logger;
+            CertificateFileName = certificateFilename;
+
+            _validCommands = new List<string>();
+        }
+
         ILogger Logger { get; }
         string Name { get; }
         TcpClient ControlClient { get; }
@@ -39,23 +56,6 @@ namespace LanCloud.Servers.Ftp
         private IFtpUser CurrentUser;
 
         private List<string> _validCommands;
-
-        public ClientConnection(
-            TcpClient client,
-            IFtpHandler commandHandler, 
-            ILogger logger,
-            string certificateFilename = null)
-        {
-            var RemoteEndPoint = (IPEndPoint)client.Client.RemoteEndPoint;
-            Name = RemoteEndPoint.Address.ToString();
-            
-            ControlClient = client;
-            FtpHandler = commandHandler;
-            Logger = logger;
-            CertificateFileName = certificateFilename;
-
-            _validCommands = new List<string>();
-        }
 
         private string CheckUser()
         {

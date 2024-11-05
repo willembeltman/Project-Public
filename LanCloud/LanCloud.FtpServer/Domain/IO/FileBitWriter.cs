@@ -1,15 +1,13 @@
-﻿using LanCloud.Domain.Application;
-using LanCloud.Domain.Share;
-using LanCloud.Models.Configs;
+﻿using LanCloud.Domain.Share;
 using System;
 using System.IO;
 using System.Threading;
 
 namespace LanCloud.Domain.IO
 {
-    public class FtpStreamWriterSharePart
+    public class FileBitWriter
     {
-        public FtpStreamWriterSharePart(FtpStreamWriter ftpStreamWriter, LocalSharePart sharePart)
+        public FileBitWriter(FtpStreamWriter ftpStreamWriter, LocalSharePart sharePart)
         {
             FtpStreamWriter = ftpStreamWriter;
             SharePart = sharePart;
@@ -30,7 +28,7 @@ namespace LanCloud.Domain.IO
         public int[] Indexes => SharePart.Part.Indexes;
 
         public byte[] Buffer { get; }
-        private FileBit FileBit { get; set; }
+        public FileBit FileBit { get; private set; }
         public int Position { get; private set; }
 
         private void Start()
@@ -49,8 +47,11 @@ namespace LanCloud.Domain.IO
                 {
                     if (StartNext.WaitOne(100))
                     {
-                        WriteBuffer(stream);
-                        ReadingIsDone.Set();
+                        if (!KillSwitch)
+                        {
+                            WriteBuffer(stream);
+                            ReadingIsDone.Set();
+                        }
                     }
                 }
             }
@@ -59,12 +60,23 @@ namespace LanCloud.Domain.IO
         private void WriteBuffer(Stream stream)
         {
             var data = FtpStreamWriter.Buffer.ReadBuffer;
-            var totallength = FtpStreamWriter.Buffer.ReadBufferPosition;
+            var datalength = FtpStreamWriter.Buffer.ReadBufferPosition;
             var width = FtpStreamWriter.Buffer.Width;
-            var sublength = Convert.ToDouble(totallength) / width;
+
+            // Use a floating point number to calculate the buffer size,
+            // This allows for half bytes which will be calculated to 
+            // real byte length when XOR is done
+            var sublength = Convert.ToDouble(datalength) / width;
+
+            // In the foreach we calculate the real byte length, this can vary
+            // with half numbers so we need to calculate the maximum amount of
+            // bytes used in the buffers
             var maxlength = 0;
+
+            // Prepare own buffer
             Array.Clear(Buffer, 0, Buffer.Length);
 
+            // XOR data from indexes on to own buffer
             foreach (var index in Indexes)
             {
                 var start = Convert.ToInt32(sublength * index);
@@ -77,6 +89,7 @@ namespace LanCloud.Domain.IO
                 }
             }
 
+            // Then write own buffer to disk
             stream.Write(Buffer, 0, maxlength);
             Position += maxlength;
         }
@@ -84,6 +97,7 @@ namespace LanCloud.Domain.IO
         public FileBit Stop()
         {
             KillSwitch = true;
+            StartNext.Set();
             Thread.Join();
             return FileBit;
         }

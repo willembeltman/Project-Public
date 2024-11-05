@@ -55,14 +55,13 @@ namespace LanCloud.Domain.Application
         
         public string HostName => ServerConfig.HostName;
 
-        public FileBit FindFileBit(FileRef fileRef, FileRefBit fileRefBit)
+        public FileBit[] FindFileBits(FileRef fileRef, FileRefBit fileRefBit)
         {
             var fileBits = LocalShares
                 .Select(a => a.Storage.FindFileBit(fileRef, fileRefBit))
                 .Where(a => a != null)
                 .ToArray();
-            var fileBit = fileBits.FirstOrDefault();
-            return fileBit;
+            return fileBits;
         }
 
         public void Dispose()
