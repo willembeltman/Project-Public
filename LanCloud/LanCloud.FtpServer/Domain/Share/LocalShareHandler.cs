@@ -1,7 +1,9 @@
 ﻿using LanCloud.Shared.Log;
 using LanCloud.Servers.Wjp;
 using Newtonsoft.Json;
-using LanCloud.Models.Dtos;
+using LanCloud.Enums;
+using LanCloud.Models.Share.Responses;
+using System;
 
 namespace LanCloud.Domain.Share
 {
@@ -20,9 +22,23 @@ namespace LanCloud.Domain.Share
 
         public WjpResponse ProcessRequest(WjpRequest request)
         {
-            var requestDto = JsonConvert.DeserializeObject<ShareRequestDto>(request.Json);
+            switch (request.MessageType)
+            {
+                case (int)ShareMessageEnum.Ping:
+                    return Handle_Ping();
+                default:
+                    throw new NotImplementedException();
+            }
+        }
 
-            throw new System.NotImplementedException();
+        private WjpResponse Handle_Ping()
+        {
+            var model = new PingResponse()
+            {
+                Pong = true
+            };
+            var json = JsonConvert.SerializeObject(model);
+            return new WjpResponse(json, null);
         }
     }
 }

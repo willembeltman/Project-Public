@@ -82,12 +82,12 @@ namespace LanCloud.Servers.Wjp
                 throw new Exception("Timeout occured");
             return queueItem.Response;
         }
+
         public void Dispose()
         {
             Stop = true;
-            if (Thread.CurrentThread != Thread) // Kan dat?
+            if (Thread.CurrentThread != Thread)
                 Thread.Join();
         }
-
     }
 }
