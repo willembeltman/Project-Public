@@ -20,7 +20,7 @@ namespace LanCloud.Collections
                 .Select(remoteconfig => new RemoteApplication(remoteconfig, logger))
                 .ToArray();
 
-            Logger.Info("Loaded");
+            //Logger.Info("Loaded");
         }
 
         public ApplicationConfig Config { get; }

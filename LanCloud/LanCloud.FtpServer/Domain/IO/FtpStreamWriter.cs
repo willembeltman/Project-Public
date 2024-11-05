@@ -26,7 +26,7 @@ namespace LanCloud.Domain.IO
                 .ToArray();
             Buffer = new DoubleBuffer(AllIndexes.Length);
 
-            Logger.Info($"Opened virtual ftp file: {FtpFileInfo.Name}");
+            //Logger.Info($"Opened virtual ftp file: {FtpFileInfo.Name}");
         }
 
         public FtpFileInfo FtpFileInfo { get; }
@@ -47,7 +47,7 @@ namespace LanCloud.Domain.IO
 
         private void FlipBuffer()
         {
-            Logger.Info($"Start");
+            //Logger.Info($"FlipBuffer start");
 
             WaitForDone();
 
@@ -56,19 +56,23 @@ namespace LanCloud.Domain.IO
             foreach (var item in FileBitWriters)
                 item.StartNext.Set();
 
-            Logger.Info($"End");
+            //Logger.Info($"FlipBuffer end");
         }
 
         private void WaitForDone()
         {
+            //Logger.Info($"WaitForDone start");
+            
             foreach (var item in FileBitWriters)
                 if (!item.ReadingIsDone.WaitOne(10000))
                     throw new Exception("Timeout writing to: " + item.FileBit?.FullName);
+
+            //Logger.Info($"WaitForDone end");
         }
 
         public override void Write(byte[] buffer, int offset, int count)
         {
-            Logger.Info($"Received {count}b");
+            //Logger.Info($"Received {count}b");
 
             var bytesWritten = 0;
 

@@ -9,6 +9,7 @@ using System.Net.Security;
 using System.Net.Sockets;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Diagnostics;
 
 namespace LanCloud.Servers.Ftp
 {
@@ -419,7 +420,7 @@ namespace LanCloud.Servers.Ftp
             }
 
             CurrentPath = pathname;
-            return "250 Changed to new directory";
+            return $"250 Changed to directory '{pathname}'";
 
             //if (pathname == "/")
             //{
@@ -865,10 +866,13 @@ namespace LanCloud.Servers.Ftp
 
             ControlWriter.WriteLine(response);
             ControlWriter.Flush();
+
+            Logger.Info("FTP Responded: " + response);
         }
 
         private string RetrieveOperation(NetworkStream dataStream, string pathname)
         {
+            var stopWatch = Stopwatch.StartNew();
             long bytes = 0;
 
             using (var fs = FtpHandler.FileOpenRead(pathname))
@@ -876,17 +880,24 @@ namespace LanCloud.Servers.Ftp
                 bytes = CopyStream(fs, dataStream);
             }
 
-            return "226 Closing data connection, file transfer successful";
+            var sec = stopWatch.Elapsed.TotalSeconds;
+            var speed = Convert.ToInt64(bytes / sec);
+
+            return $"226 Closing data connection, file transfer successful ({speed}b/sec)";
         }
 
         private string StoreOperation(NetworkStream dataStream, string pathname)
         {
+            var stopWatch = Stopwatch.StartNew();
             long bytes = 0;
 
             using (var fs = FtpHandler.FileOpenWriteCreate(pathname))
             {
                 bytes = CopyStream(dataStream, fs);
             }
+
+            var sec = stopWatch.Elapsed.TotalSeconds;
+            var speed = Convert.ToInt64(bytes / sec);
 
             //LogEntry logEntry = new LogEntry
             //{
@@ -900,17 +911,21 @@ namespace LanCloud.Servers.Ftp
 
             //Logger.Info(logEntry);
 
-            return "226 Closing data connection, file transfer successful";
+            return $"226 Closing data connection, file transfer successful ({speed}b/sec)";
         }
 
         private string AppendOperation(NetworkStream dataStream, string pathname)
         {
+            var stopWatch = Stopwatch.StartNew();
             long bytes = 0;
 
             using (var fs = FtpHandler.FileOpenWriteAppend(pathname))
             {
                 bytes = CopyStream(dataStream, fs);
             }
+
+            var sec = stopWatch.Elapsed.TotalSeconds;
+            var speed = Convert.ToInt64(bytes / sec);
 
             //LogEntry logEntry = new LogEntry
             //{
@@ -924,7 +939,7 @@ namespace LanCloud.Servers.Ftp
 
             //Logger.Info(logEntry);
 
-            return "226 Closing data connection, file transfer successful";
+            return $"226 Closing data connection, file transfer successful ({speed}b/sec)";
         }
 
         private string ListOperation(NetworkStream dataStream, string pathname)

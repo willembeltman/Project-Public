@@ -24,7 +24,7 @@ namespace LanCloud.Domain.Share
             Parts = Config.Parts.Select(part => new LocalSharePart(this, part)).ToArray();
             Server = new WjpServer(IPAddress.Any, port, ServerHandler, Logger);
 
-            Logger.Info($"Loaded");
+            //Logger.Info($"Loaded");
         }
 
         public LocalShareCollection LocalShareCollection { get; }

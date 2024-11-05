@@ -23,7 +23,7 @@ namespace LanCloud.Domain.Share
                 .Select(fileRefInfo => new FileBit(fileRefInfo))
                 .ToArray();
 
-            Logger.Info($"Loaded");
+            //Logger.Info($"Loaded");
         }
 
         private LocalShareConfig Config { get; }

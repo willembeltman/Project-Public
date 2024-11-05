@@ -22,7 +22,7 @@ namespace LanCloud.Collections
                 .ToArray();
 
 
-            Logger.Info("Loaded");
+            //Logger.Info("Loaded");
         }
 
         public LocalApplication Application { get; }

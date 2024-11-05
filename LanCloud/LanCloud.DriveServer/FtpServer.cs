@@ -34,7 +34,7 @@ namespace LanCloud.Servers.Ftp
 
             Listener.BeginAcceptTcpClient(HandleAcceptTcpClient, Listener);
 
-            Logger.Info("Virtual Ftp Server started");
+            //Logger.Info("Virtual Ftp Server started");
         }
 
         private void HandleAcceptTcpClient(IAsyncResult result)

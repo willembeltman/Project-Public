@@ -21,7 +21,7 @@ namespace LanCloud.Domain.IO
             Thread = new Thread(new ThreadStart(Start));
             Thread.Start();
 
-            Logger.Info($"Opened {FileBit.Info.Name} as output for parts: {string.Join(" xor ", Indexes.Select(a => $"#{a}"))}");
+            //Logger.Info($"Opened {FileBit.Info.Name} as output for parts: {string.Join(" xor ", Indexes.Select(a => $"#{a}"))}");
         }
 
         public FtpStreamWriter FtpStreamWriter { get; }
@@ -51,7 +51,7 @@ namespace LanCloud.Domain.IO
             {
                 while (!KillSwitch)
                 {
-                    if (StartNext.WaitOne(100))
+                    if (StartNext.WaitOne(1000))
                     {
                         if (!KillSwitch)
                         {
@@ -68,6 +68,8 @@ namespace LanCloud.Domain.IO
             var data = FtpStreamWriter.Buffer.ReadBuffer;
             var datalength = FtpStreamWriter.Buffer.ReadBufferPosition;
             var width = FtpStreamWriter.Buffer.Width;
+
+            //Logger.Info($"Start writing to {FileBit.Info.Name}");
 
             // Use a floating point number to calculate the buffer size,
             // This allows for half bytes which will be calculated to 
@@ -112,8 +114,8 @@ namespace LanCloud.Domain.IO
 
             Position += maxlength;
 
-            Thread.Sleep(100);
-            Logger.Info($"Written {maxlength}b to {FileBit.Info.Name}");
+            //Thread.Sleep(100);
+            //Logger.Info($"Written {maxlength}b to {FileBit.Info.Name}");
         }
 
         public FileBit Stop()

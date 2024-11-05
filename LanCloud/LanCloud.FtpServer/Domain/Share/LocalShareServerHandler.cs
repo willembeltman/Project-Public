@@ -12,7 +12,7 @@ namespace LanCloud.Domain.Share
             LocalShare = localShare;
             Logger = logger;
 
-            Logger.Info($"Loaded");
+            //Logger.Info($"Loaded");
         }
 
         public LocalShare LocalShare { get; }

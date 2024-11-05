@@ -22,7 +22,7 @@ namespace LanCloud.Domain.Application
             Shares = shares;
             Logger = logger;
 
-            Logger.Info($"Loaded");
+            //Logger.Info($"Loaded");
         }
 
         public LocalApplication Application { get; }

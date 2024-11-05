@@ -16,7 +16,7 @@ namespace LanCloud.Domain.IO
         }
         public static string TranslateDirectoryFullNameToPath(LocalApplication application, DirectoryInfo dirInfo)
         {
-            var rootInfo = new DirectoryInfo(application.Config.FileDatabaseDirectoryName);
+            var rootInfo = new DirectoryInfo(application.Config.RefDirectory);
             var pathFullname = dirInfo.FullName.Substring(rootInfo.FullName.Length);
             var path = pathFullname.Replace("\\", "/");
             return path;
@@ -32,7 +32,7 @@ namespace LanCloud.Domain.IO
         }
         public static string TranslateFullnameToPath(LocalApplication application, FileInfo fileInfo)
         {
-            var rootInfo = new DirectoryInfo(application.Config.FileDatabaseDirectoryName);
+            var rootInfo = new DirectoryInfo(application.Config.RefDirectory);
             var pathFullnameWithExtention = fileInfo.FullName.Substring(rootInfo.FullName.Length);
             var pathFullname = pathFullnameWithExtention.Substring(0, pathFullnameWithExtention.Length - ".fileref".Length);
             var path = pathFullname.Replace("\\", "/");

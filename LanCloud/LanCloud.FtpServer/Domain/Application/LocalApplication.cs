@@ -23,7 +23,7 @@ namespace LanCloud.Domain.Application
             RemoteShares = remoteShares;
             Logger = logger;
 
-            var rootInfo = new DirectoryInfo(config.FileDatabaseDirectoryName);
+            var rootInfo = new DirectoryInfo(config.RefDirectory);
             if (!rootInfo.Exists) { rootInfo.Create(); }
             RootDirectory = rootInfo.FullName.TrimEnd('\\');
 
@@ -34,7 +34,7 @@ namespace LanCloud.Domain.Application
                 Authentication = new AuthenticationService(this, logger);
                 ServerHandler = new LocalApplicationHandler(this, LocalShares, logger);
                 Server = new WjpServer(IPAddress.Any, config.StartPort, ServerHandler, logger);
-                Logger.Info($"Loaded");
+                // Logger.Info($"Loaded");
             }
             else
             {

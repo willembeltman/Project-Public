@@ -17,7 +17,7 @@ namespace LanCloud.Domain.Application
             Config = config;
             Logger = logger;
 
-            Logger.Info($"Loaded");
+            //Logger.Info($"Loaded");
         }
 
         public PingResponse Ping()

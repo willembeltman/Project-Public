@@ -30,7 +30,7 @@ namespace LanCloud.Servers.Wjp
 
             Listener.BeginAcceptTcpClient(HandleAcceptTcpClient, Listener);
 
-            Logger.Info($"Loaded");
+            //Logger.Info($"Loaded");
         }
 
         private void HandleAcceptTcpClient(IAsyncResult result)

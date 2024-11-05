@@ -17,7 +17,7 @@ namespace LanCloud.Collections
 
             RemoteShares = new RemoteShare[0];
 
-            Logger.Info($"Loaded");
+            //Logger.Info($"Loaded");
         }
 
         public RemoteApplicationCollection RemoteApplications { get; }

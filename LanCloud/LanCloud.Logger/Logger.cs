@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -73,8 +74,25 @@ namespace LanCloud.Shared.Log
         private string GetLine(string message, bool error)
         {
             var caller = GetCallerName();
-            return $"{DateTime.Now.ToString("HH:mm:ss.fff")} {caller}: {(error ? "ERROR" : "")} {message}";
+            var callertext = $"{DateTime.Now.ToString("HH:mm:ss.fff")} {caller}: ";
+            return Format(callertext) + $"{(error ? "ERROR " : "")}{message}";
         }
+
+        int maxlength = 0;
+        private string Format(string callertext)
+        {
+            if (maxlength < callertext.Length)
+                maxlength = callertext.Length;
+
+            var verschil = maxlength - callertext.Length;
+            var res = callertext;
+            for (int i = 0; i < verschil; i++)
+            {
+                res += " ";
+            }
+            return res;
+        }
+
         static string GetCallerName()
         {
             StackTrace stackTrace = new StackTrace();
@@ -83,7 +101,8 @@ namespace LanCloud.Shared.Log
             var method = frame.GetMethod();
             var methodname = method.Name == ".ctor" ? method.Name : "." + method.Name;
 
-            return $"{method.DeclaringType.Namespace}.{method.DeclaringType.Name}{methodname}";
+            //return $"{method.DeclaringType.Namespace}.{method.DeclaringType.Name}{methodname}";
+            return $"{method.DeclaringType.Name}{methodname}";
         }
 
         public void Dispose()

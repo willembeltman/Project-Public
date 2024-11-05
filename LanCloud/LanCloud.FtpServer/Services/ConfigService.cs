@@ -24,7 +24,7 @@ namespace LanCloud.Services
                 var config = new ApplicationConfig()
                 {
                     StartPort = 8080,
-                    FileDatabaseDirectoryName = "E:\\Test\\Ref",
+                    RefDirectory = "E:\\Test\\Ref",
                     Servers = new RemoteApplicationConfig[]
                     {
                         new RemoteApplicationConfig()
@@ -67,7 +67,7 @@ namespace LanCloud.Services
                 return config;
             }
 
-            Logger.Info("Config found, reading config settings");
+            //Logger.Info("Config found, reading config settings");
             using (var reader = new StreamReader(Fullname))
             {
                 var json = reader.ReadToEnd();
