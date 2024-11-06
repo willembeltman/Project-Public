@@ -5,21 +5,53 @@ using Newtonsoft.Json;
 using LanCloud.Shared.Log;
 using LanCloud.Models.Configs;
 using LanCloud.Models.Dtos;
+using LanCloud.Domain.Collections;
+using System.Linq;
+using LanCloud.Domain.Share;
 
 namespace LanCloud.Domain.Application
 {
     public class RemoteApplication : WjpProxy
     {
-        public RemoteApplication(RemoteApplicationConfig config, ILogger logger) : base(config, logger)
+        public RemoteApplication(
+            RemoteApplicationCollection remoteApplicationCollection,
+            RemoteApplicationConfig config, 
+            ILogger logger) : base(config, logger)
         {
+            RemoteApplicationCollection = remoteApplicationCollection;
             Config = config;
             Logger = logger;
+
+            RemoteShares = new RemoteShare[0];
+
+            StateChanged += RemoteApplication_StateChanged;
 
             //Logger.Info($"Loaded");
         }
 
+        public RemoteApplicationCollection RemoteApplicationCollection { get; }
         public RemoteApplicationConfig Config { get; }
         public ILogger Logger { get; }
+
+        public RemoteShare[] RemoteShares { get; private set; }
+
+        private void RemoteApplication_StateChanged(object sender, System.EventArgs e)
+        {
+            if (Connected)
+            {
+                RemoteShares = GetShares()
+                    .Select(a => new RemoteShare(this, a, Logger))
+                    .ToArray();
+            }
+            else
+            {
+                foreach (var item in RemoteShares)
+                {
+                    item.Dispose();
+                }
+                RemoteShares = new RemoteShare[0];
+            }
+        }
 
         public PingResponse Ping()
         {

@@ -10,20 +10,20 @@ namespace LanCloud.Domain.Collections
 {
     public class RemoteApplicationCollection : IEnumerable<RemoteApplication>, IDisposable
     {
-        public RemoteApplicationCollection(LocalApplication localApplication, ILogger logger)
+        public RemoteApplicationCollection(LocalApplication application, ILogger logger)
         {
-            LocalApplication = localApplication;
+            Application = application;
             Logger = logger;
 
-            RemoteApplications = LocalApplication.Config.Servers
+            RemoteApplications = Application.Config.Servers
                 .Where(a => a.IsThisComputer == false)
-                .Select(remoteconfig => new RemoteApplication(remoteconfig, logger))
+                .Select(remoteconfig => new RemoteApplication(this, remoteconfig, logger))
                 .ToArray();
 
             //Logger.Info("Loaded");
         }
 
-        public LocalApplication LocalApplication { get; }
+        public LocalApplication Application { get; }
         public ILogger Logger { get; }
 
         public RemoteApplication[] RemoteApplications { get; }

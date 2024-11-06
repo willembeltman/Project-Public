@@ -8,32 +8,22 @@ using System.Linq;
 
 namespace LanCloud.Domain.Collections
 {
-    public class RemoteShareCollection : IEnumerable<RemoteShare>, IDisposable
+    public class RemoteShareCollection : IEnumerable<RemoteShare>
     {
         public RemoteShareCollection(LocalApplication application, ILogger logger)
         {
             Application = application;
             Logger = logger;
-
-            RemoteShares =
-                Application.RemoteApplications
-                    //.Where(a => a.Connected) // Hij is nog niet connected 
-                    .SelectMany(a => a.GetShares())
-                    .Select(a => new RemoteShare(this, a, Logger))
-                    .ToArray();
         }
 
         public LocalApplication Application { get; }
         public ILogger Logger { get; }
-        public RemoteShare[] RemoteShares { get; }
 
-        public void Dispose()
-        {
-            foreach(var item in RemoteShares)
-            {
-                item.Dispose();
-            }
-        }
+        public RemoteShare[] RemoteShares => 
+            Application.RemoteApplications
+                .Where(a => a.Connected)
+                .SelectMany(a => RemoteShares)
+                .ToArray();
 
         public IEnumerator<RemoteShare> GetEnumerator()
         {

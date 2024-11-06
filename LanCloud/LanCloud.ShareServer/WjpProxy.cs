@@ -30,42 +30,50 @@ namespace LanCloud.Servers.Wjp
         {
             while (!Stop)
             {
-                using (var client = new TcpClient(Config.HostName, Config.Port))
-                using (var stream = client.GetStream())
-                using (var reader = new BinaryReader(stream))
-                using (var writer = new BinaryWriter(stream))
+                try
                 {
-                    while (client.Connected && !Stop)
+                    using (var client = new TcpClient(Config.HostName, Config.Port))
+                    using (var stream = client.GetStream())
+                    using (var reader = new BinaryReader(stream))
+                    using (var writer = new BinaryWriter(stream))
                     {
-                        if (!Connected)
+                        while (client.Connected && !Stop)
                         {
-                            Connected = true;
-                            StateChanged?.Invoke(this, null);
-                        }
-                        if (Enqueued.WaitOne(100))
-                        {
-                            while (Queue.TryDequeue(out WjpProxyQueueItem requestItem))
+                            if (!Connected)
                             {
-                                writer.Write(requestItem.Request.MessageType);
-                                writer.Write(requestItem.Request.Json);
-                                writer.Write(Convert.ToInt32(requestItem.Request.Data?.Length ?? -1));
-                                if (requestItem.Request.Data != null)
+                                Connected = true;
+                                StateChanged?.Invoke(this, null);
+                            }
+
+                            if (Enqueued.WaitOne(100))
+                            {
+                                while (Queue.TryDequeue(out WjpProxyQueueItem requestItem))
                                 {
-                                    writer.Write(requestItem.Request.Data);
+                                    writer.Write(requestItem.Request.MessageType);
+                                    writer.Write(requestItem.Request.Json);
+                                    writer.Write(Convert.ToInt32(requestItem.Request.Data?.Length ?? -1));
+                                    if (requestItem.Request.Data != null)
+                                    {
+                                        writer.Write(requestItem.Request.Data);
+                                    }
+                                    var response = reader.ReadString();
+                                    var datalength = reader.ReadInt32();
+                                    byte[] data = null;
+                                    if (datalength >= 0)
+                                    {
+                                        data = reader.ReadBytes(datalength);
+                                    }
+                                    requestItem.Response = new WjpResponse(response, data);
+                                    requestItem.Done.Set();
                                 }
-                                var response = reader.ReadString();
-                                var datalength = reader.ReadInt32();
-                                byte[] data = null;
-                                if (datalength >= 0)
-                                {
-                                    data = reader.ReadBytes(datalength);
-                                }
-                                requestItem.Response = new WjpResponse(response, data);
-                                requestItem.Done.Set();
                             }
                         }
                     }
                 }
+                catch (SocketException ex)
+                {
+                }
+
                 if (Connected)
                 {
                     Connected = false;
@@ -87,8 +95,18 @@ namespace LanCloud.Servers.Wjp
         public void Dispose()
         {
             Stop = true;
-            if (Thread.CurrentThread != Thread)
-                Thread.Join();
+            if (Connected)
+            {
+                if (Thread.CurrentThread != Thread)
+                {
+                    Thread.Join();
+                }
+            }
+            else
+            {
+                // It is waiting on the connection to start, just kill the thread
+                Thread.Abort();
+            }
         }
     }
 }

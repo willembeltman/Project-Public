@@ -24,7 +24,7 @@ namespace LanCloud.Services
                 var config = new ApplicationConfig()
                 {
                     StartPort = 8080,
-                    RefDirectory = "E:\\Test\\Ref",
+                    RefDirectoryName = "E:\\Test\\Ref",
                     Servers = new RemoteApplicationConfig[]
                     {
                         new RemoteApplicationConfig()
@@ -32,6 +32,12 @@ namespace LanCloud.Services
                             HostName = "WJPC2",
                             Port = 8080,
                             IsThisComputer = true
+                        },
+                        new RemoteApplicationConfig()
+                        {
+                            HostName = "WJPC3",
+                            Port = 8080,
+                            IsThisComputer = false
                         }
                     },
                     Shares = new LocalShareConfig[]

@@ -13,7 +13,7 @@ namespace LanCloud.Domain.Collections
             Application = application;
             Logger = logger;
 
-            var rootInfo = new DirectoryInfo(Application.Config.RefDirectory);
+            var rootInfo = new DirectoryInfo(Application.Config.RefDirectoryName);
             if (!rootInfo.Exists) { rootInfo.Create(); }
             RootDirectory = rootInfo.FullName.TrimEnd('\\');
             RootDirectoryInfo = new DirectoryInfo(RootDirectory);
