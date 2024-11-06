@@ -108,7 +108,7 @@ namespace LanCloud.Servers.Wjp
                     new Thread(new ThreadStart(SendStateChanged)).Start();
                     Status = Logger.Info("Not connected");
 
-                    Thread.Sleep(10000);
+                    Thread.Sleep(1000);
                 }
             }
         }

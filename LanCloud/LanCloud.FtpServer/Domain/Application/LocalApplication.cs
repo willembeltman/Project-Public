@@ -72,6 +72,9 @@ namespace LanCloud.Domain.Application
             VirtualFtpServer = new VirtualFtpServer(this, logger);
         }
 
+        public string HostName => ServerConfig.HostName;
+        public int Port => ServerConfig.Port;
+
         public void Dispose()
         {
             Server.Dispose();

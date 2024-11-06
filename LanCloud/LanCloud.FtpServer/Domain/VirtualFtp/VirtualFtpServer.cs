@@ -24,6 +24,9 @@ namespace LanCloud.Domain.VirtualFtp
         public VirtualFtpHandler FtpHandler { get; }
         public FtpServer FtpServer { get; }
 
+        public string HostName => Application.HostName;
+        public int Port => 21;
+
         public void Dispose()
         {
             FtpServer.Dispose();

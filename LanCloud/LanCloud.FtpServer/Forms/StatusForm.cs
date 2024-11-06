@@ -51,8 +51,12 @@ namespace LanCloud.Forms
 
         private void ShowStatus()
         {
+            treeView1.Nodes.Clear();
+
             // Hoofdnode
-            var applicationNode = new TreeNode($"Application {Application.Status}");
+            var applicationNode = new TreeNode($"LocalApplication");
+            applicationNode.Nodes.Add(new TreeNode($"{Application.HostName}:{Application.Port}: {Application.Status}"));
+            treeView1.Nodes.Add(applicationNode);
 
             // Eerste laag
             if (Application.LocalShares.Any())
@@ -61,7 +65,7 @@ namespace LanCloud.Forms
                 foreach (var localShare in Application.LocalShares)
                 {
                     // Tweede laag onder Child 1
-                    localSharesNode.Nodes.Add(new TreeNode($"port {localShare.HostName}:{localShare.Port}: {localShare.Status}"));
+                    localSharesNode.Nodes.Add(new TreeNode($"{localShare.HostName}:{localShare.Port}: {localShare.Status}"));
                 }
                 applicationNode.Nodes.Add(localSharesNode);
             }
@@ -86,14 +90,14 @@ namespace LanCloud.Forms
 
                     remoteApplicationsNode.Nodes.Add(remoteApplicationNode);
                 }
-                applicationNode.Nodes.Add(remoteApplicationsNode);
+                treeView1.Nodes.Add(remoteApplicationsNode);
             }
 
-            applicationNode.Nodes.Add(new TreeNode($"VirtualFtpServer: {Application.VirtualFtpServer.FtpServer.Status}"));
+            var virtualFtpServerNode = new TreeNode($"VirtualFtpServer");
+            virtualFtpServerNode.Nodes.Add(new TreeNode($"{Application.VirtualFtpServer.HostName}:{Application.VirtualFtpServer.Port}: {Application.VirtualFtpServer.FtpServer.Status}"));
+            treeView1.Nodes.Add(virtualFtpServerNode);
 
-            // Voeg de hoofdnode toe aan de TreeView
-            treeView1.Nodes.Clear();
-            treeView1.Nodes.Add(applicationNode);
+
 
             // Open de boomstructuur
             treeView1.ExpandAll();
