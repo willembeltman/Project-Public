@@ -8,19 +8,32 @@ namespace LanCloud.Servers.Wjp
 {
     public class WjpServer : IDisposable
     {
+        private string _Status { get; set; }
+        public string Status
+        {
+            get => _Status;
+            set
+            {
+                _Status = value;
+                Application.StatusChanged();
+            }
+        }
+
         private bool Disposed = false;
         private bool Listening = false;
 
         private IPEndPoint LocalEndPoint { get; }
-        public IWjpHandler ShareHandler { get; }
+        public IWjpHandler Handler { get; }
+        public IWjpApplication Application { get; }
         public ILogger Logger { get; }
         private TcpListener Listener { get; }
-        private List<WjpClientConnection> ActiveConnections { get; } = new List<WjpClientConnection>();
+        private List<WjpClientConnection> _ActiveConnections { get; } = new List<WjpClientConnection>();
 
-        public WjpServer(IPAddress ipAddress, int port, IWjpHandler applicationHandler, ILogger logger)
+        public WjpServer(IPAddress ipAddress, int port, IWjpHandler handler, IWjpApplication application, ILogger logger)
         {
             LocalEndPoint = new IPEndPoint(ipAddress, port);
-            ShareHandler = applicationHandler;
+            Handler = handler;
+            Application = application;
             Logger = logger;
 
             Listener = new TcpListener(LocalEndPoint);
@@ -30,7 +43,7 @@ namespace LanCloud.Servers.Wjp
 
             Listener.BeginAcceptTcpClient(HandleAcceptTcpClient, Listener);
 
-            //Logger.Info($"Loaded");
+            Status = Logger.Info($"OK");
         }
 
         private void HandleAcceptTcpClient(IAsyncResult result)
@@ -41,19 +54,25 @@ namespace LanCloud.Servers.Wjp
 
                 var client = Listener.EndAcceptTcpClient(result);
 
-                var connection = new WjpClientConnection(this, client, ShareHandler);
-                connection.Start();
+                new WjpClientConnection(this, client, Handler, Logger);
             }
+        }
+        public WjpClientConnection[] GetActiveConnections()
+        {
+            WjpClientConnection[] res;
+            lock (this)
+                res = _ActiveConnections.ToArray();
+            return res;
         }
         public void AddConnection(WjpClientConnection connection)
         {
             lock(this)
-                ActiveConnections.Add(connection);
+                _ActiveConnections.Add(connection);
         }
         public void RemoveConnection(WjpClientConnection connection)
         {
             lock (this) 
-                ActiveConnections.Remove(connection);
+                _ActiveConnections.Remove(connection);
         }
 
         public void Dispose()
@@ -70,7 +89,7 @@ namespace LanCloud.Servers.Wjp
                     Listening = false;
                     Listener.Stop();
 
-                    var conns = ActiveConnections.ToArray();
+                    var conns = _ActiveConnections.ToArray();
 
                     foreach (WjpClientConnection conn in conns)
                     {

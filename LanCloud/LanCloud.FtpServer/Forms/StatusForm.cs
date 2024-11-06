@@ -55,7 +55,21 @@ namespace LanCloud.Forms
 
             // Hoofdnode
             var applicationNode = new TreeNode($"LocalApplication");
-            applicationNode.Nodes.Add(new TreeNode($"{Application.HostName}:{Application.Port}: {Application.Status}"));
+            var applicationInnerNode = new TreeNode($"{Application.HostName}:{Application.Port}: {Application.Status}");
+            applicationNode.Nodes.Add(applicationInnerNode);
+
+            var connections2 = Application.Server.GetActiveConnections();
+            if (connections2.Any())
+            {
+                var connectionsNode = new TreeNode("Connections");
+                foreach (var connection in connections2)
+                {
+                    // Tweede laag onder Child 1
+                    connectionsNode.Nodes.Add(new TreeNode($"{connection.Name}: {connection.Status}"));
+                }
+                applicationInnerNode.Nodes.Add(connectionsNode);
+            }
+
             treeView1.Nodes.Add(applicationNode);
 
             // Eerste laag
@@ -64,8 +78,21 @@ namespace LanCloud.Forms
                 var localSharesNode = new TreeNode("LocalShares");
                 foreach (var localShare in Application.LocalShares)
                 {
-                    // Tweede laag onder Child 1
-                    localSharesNode.Nodes.Add(new TreeNode($"{localShare.HostName}:{localShare.Port}: {localShare.Status}"));
+                    var localShareNode = new TreeNode($"{localShare.HostName}:{localShare.Port}: {localShare.Status}");
+
+                    var connections = localShare.Server.GetActiveConnections();
+                    if (connections.Any())
+                    {
+                        var connectionsNode = new TreeNode("Connections");
+                        foreach (var connection in connections)
+                        {
+                            // Tweede laag onder Child 1
+                            connectionsNode.Nodes.Add(new TreeNode($"{connection.Name}: {connection.Status}"));
+                        }
+                        localShareNode.Nodes.Add(connectionsNode);
+                    }
+
+                    localSharesNode.Nodes.Add(localShareNode);
                 }
                 applicationNode.Nodes.Add(localSharesNode);
             }

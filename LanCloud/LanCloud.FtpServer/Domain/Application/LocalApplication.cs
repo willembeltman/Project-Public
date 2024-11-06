@@ -60,7 +60,7 @@ namespace LanCloud.Domain.Application
             {
                 LocalShares = new LocalShareCollection(this, ServerConfig.HostName, logger);
                 ServerHandler = new LocalApplicationHandler(this, ServerConfig.HostName, logger);
-                Server = new WjpServer(IPAddress.Any, config.StartPort, ServerHandler, logger);
+                Server = new WjpServer(IPAddress.Any, config.StartPort, ServerHandler, this, logger);
 
                 Status = Logger.Info($"OK");
             }

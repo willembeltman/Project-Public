@@ -33,7 +33,7 @@ namespace LanCloud.Domain.Share
             FileBits = new FileBitCollection(this, Logger);
             Parts = new LocalSharePartCollection(this, Logger);
             ServerHandler = new LocalShareHandler(this, Logger);
-            Server = new WjpServer(IPAddress.Any, port, ServerHandler, Logger);
+            Server = new WjpServer(IPAddress.Any, port, ServerHandler, Application, Logger);
 
             Status = Logger.Info($"OK");
         }
