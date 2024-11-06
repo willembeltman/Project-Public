@@ -1,4 +1,5 @@
 ﻿using LanCloud.Domain.Application;
+using LanCloud.Domain.Share;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -54,33 +55,44 @@ namespace LanCloud.Forms
             var applicationNode = new TreeNode($"Application {Application.Status}");
 
             // Eerste laag
-            var localSharesNode = new TreeNode("LocalShares");
-            foreach (var localShare in Application.LocalShares)
+            if (Application.LocalShares.Any())
             {
-                // Tweede laag onder Child 1
-                localSharesNode.Nodes.Add(new TreeNode($"port {localShare.HostName}:{localShare.Port}: {localShare.Status}"));
-            }
-            applicationNode.Nodes.Add(localSharesNode);
-
-            var remoteApplicationsNode = new TreeNode("RemoteApplications");
-            foreach (var remoteApplication in Application.RemoteApplications)
-            {
-                var remoteApplicationNode = new TreeNode($"{remoteApplication.HostName}:{remoteApplication.Port}: {remoteApplication.Status}");
-
-                var remoteSharesNode = new TreeNode("RemoteShares");
-                foreach (var remoteShare in remoteApplication.RemoteShares)
+                var localSharesNode = new TreeNode("LocalShares");
+                foreach (var localShare in Application.LocalShares)
                 {
                     // Tweede laag onder Child 1
-                    remoteSharesNode.Nodes.Add(new TreeNode($"{remoteShare.HostName}:{remoteShare.Port}: {remoteShare.Status}"));
+                    localSharesNode.Nodes.Add(new TreeNode($"port {localShare.HostName}:{localShare.Port}: {localShare.Status}"));
                 }
-                remoteApplicationNode.Nodes.Add(remoteSharesNode);
-
-                remoteApplicationsNode.Nodes.Add(remoteApplicationNode);
+                applicationNode.Nodes.Add(localSharesNode);
             }
-            applicationNode.Nodes.Add(remoteApplicationsNode);
 
+            if (Application.RemoteApplications.Any())
+            {
+                var remoteApplicationsNode = new TreeNode("RemoteApplications");
+                foreach (var remoteApplication in Application.RemoteApplications)
+                {
+                    var remoteApplicationNode = new TreeNode($"{remoteApplication.HostName}:{remoteApplication.Port}: {remoteApplication.Status}");
+
+                    if (remoteApplication.RemoteShares.Any())
+                    {
+                        var remoteSharesNode = new TreeNode("RemoteShares");
+                        foreach (var remoteShare in remoteApplication.RemoteShares)
+                        {
+                            // Tweede laag onder Child 1
+                            remoteSharesNode.Nodes.Add(new TreeNode($"{remoteShare.HostName}:{remoteShare.Port}: {remoteShare.Status}"));
+                        }
+                        remoteApplicationNode.Nodes.Add(remoteSharesNode);
+                    }
+
+                    remoteApplicationsNode.Nodes.Add(remoteApplicationNode);
+                }
+                applicationNode.Nodes.Add(remoteApplicationsNode);
+            }
+
+            applicationNode.Nodes.Add(new TreeNode($"VirtualFtpServer: {Application.VirtualFtpServer.FtpServer.Status}"));
 
             // Voeg de hoofdnode toe aan de TreeView
+            treeView1.Nodes.Clear();
             treeView1.Nodes.Add(applicationNode);
 
             // Open de boomstructuur

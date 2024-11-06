@@ -1,4 +1,5 @@
 ﻿using LanCloud.Domain.Collections;
+using LanCloud.Domain.VirtualFtp;
 using LanCloud.Models.Configs;
 using LanCloud.Servers.Ftp;
 using LanCloud.Servers.Wjp;
@@ -38,6 +39,7 @@ namespace LanCloud.Domain.Application
         public RemoteApplicationConfig ServerConfig { get; }        
         public LocalApplicationHandler ServerHandler { get; }
         public WjpServer Server { get; }
+        public VirtualFtpServer VirtualFtpServer { get; }
 
         public LocalApplication(
             ApplicationConfig config,
@@ -66,6 +68,8 @@ namespace LanCloud.Domain.Application
             {
                 Status = Logger.Info($"OK without server");
             }
+
+            VirtualFtpServer = new VirtualFtpServer(this, logger);
         }
 
         public void Dispose()

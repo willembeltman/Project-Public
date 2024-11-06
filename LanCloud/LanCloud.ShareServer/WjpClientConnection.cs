@@ -45,19 +45,26 @@ namespace LanCloud.Servers.Wjp
                     while (Client.Connected)
                     {
                         requestMessageType = reader.ReadInt32();
-                        requestJson = reader.ReadString();
-                        requestDataLength = reader.ReadInt32();
-                        if (requestDataLength >= 0)
+                        if (requestMessageType == -1)
                         {
-                            requestData = reader.ReadBytes(requestDataLength);
+                            writer.Write(-1);
                         }
-                        var request = new WjpRequest(requestMessageType, requestJson, requestData);
-                        var response = ShareHandler.ProcessRequest(request);
-                        writer.Write(response.Json);
-                        writer.Write(Convert.ToInt32(response.Data?.Length ?? -1));
-                        if (requestDataLength >= 0)
+                        else
                         {
-                            writer.Write(response.Data);
+                            requestJson = reader.ReadString();
+                            requestDataLength = reader.ReadInt32();
+                            if (requestDataLength >= 0)
+                            {
+                                requestData = reader.ReadBytes(requestDataLength);
+                            }
+                            var request = new WjpRequest(requestMessageType, requestJson, requestData);
+                            var response = ShareHandler.ProcessRequest(request);
+                            writer.Write(response.Json);
+                            writer.Write(Convert.ToInt32(response.Data?.Length ?? -1));
+                            if (requestDataLength >= 0)
+                            {
+                                writer.Write(response.Data);
+                            }
                         }
                     }
                 }

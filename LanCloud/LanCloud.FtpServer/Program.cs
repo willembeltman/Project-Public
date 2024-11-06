@@ -21,9 +21,9 @@ namespace LanCloud
                 var config = configService.Load();
 
                 using (var application = new LocalApplication(config, logger))
-                using (var virtualFtpServer = new VirtualFtpServer(application, logger))
                 {
-                    Thread.Sleep(100);
+                    //Thread.Sleep(100);
+                    Console.WriteLine("Started");
 
                     StatusForm form = new StatusForm(application);
                     form.ShowDialog();

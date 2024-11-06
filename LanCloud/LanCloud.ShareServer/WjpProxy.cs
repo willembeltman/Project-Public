@@ -63,10 +63,15 @@ namespace LanCloud.Servers.Wjp
                                 new Thread(new ThreadStart(SendStateChanged)).Start();
                                 //StateChanged?.Invoke(this, null);
 
+                                writer.Write(-1);
+                                if (reader.ReadInt32() != -1)
+                                {
+                                    break;
+                                }
                                 Status = Logger.Info("Connected");
                             }
 
-                            if (Enqueued.WaitOne(100))
+                            if (Enqueued.WaitOne(10000))
                             {
                                 while (Queue.TryDequeue(out WjpProxyQueueItem requestItem))
                                 {
