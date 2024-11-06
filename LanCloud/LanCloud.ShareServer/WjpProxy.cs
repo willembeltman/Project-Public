@@ -110,7 +110,7 @@ namespace LanCloud.Servers.Wjp
 
                 }
                 Status = Logger.Info("Waiting to retry");
-                Thread.Sleep(1000);
+                Thread.Sleep(10000);
             }
         }
 

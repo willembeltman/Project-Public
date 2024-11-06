@@ -136,5 +136,10 @@ namespace LanCloud.Forms
             KillSwitch = true;
             this.Close();
         }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            Application.Logger.LogInfo = checkBox1.Checked;
+        }
     }
 }

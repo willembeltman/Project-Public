@@ -28,6 +28,8 @@ namespace LanCloud
                     StatusForm form = new StatusForm(application);
                     form.ShowDialog();
 
+                    Console.WriteLine("Started");
+
                     //var res = localApplication.RemoteApplications.First().Ping();
 
                     //DoTest(virtualFtpServer);

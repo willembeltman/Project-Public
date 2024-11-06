@@ -55,7 +55,7 @@ namespace LanCloud.Shared.Log
         public string Fullname { get; }
         public Thread Thread { get; }
         public ConcurrentQueue<string> Queue { get; } = new ConcurrentQueue<string>();
-        public bool LogInfo { get; private set; }
+        public bool LogInfo { get; set; }
 
         public void Error(string message)
         {
