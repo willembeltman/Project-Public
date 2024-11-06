@@ -15,7 +15,7 @@ namespace LanCloud.Domain.Collections
             LocalApplication = localApplication;
             Logger = logger;
 
-            RemoteApplications = Config.Servers
+            RemoteApplications = LocalApplication.Config.Servers
                 .Where(a => a.IsThisComputer == false)
                 .Select(remoteconfig => new RemoteApplication(remoteconfig, logger))
                 .ToArray();
@@ -27,8 +27,6 @@ namespace LanCloud.Domain.Collections
         public ILogger Logger { get; }
 
         public RemoteApplication[] RemoteApplications { get; }
-
-        public ApplicationConfig Config => LocalApplication.Config;
 
         public void Dispose()
         {

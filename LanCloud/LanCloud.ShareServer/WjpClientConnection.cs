@@ -40,23 +40,29 @@ namespace LanCloud.Servers.Wjp
                 var requestJson = string.Empty;
                 var requestDataLength = 0;
                 byte[] requestData = null;
-                while (Client.Connected)
+                try
                 {
-                    requestMessageType = reader.ReadInt32();
-                    requestJson = reader.ReadString();
-                    requestDataLength = reader.ReadInt32();
-                    if (requestDataLength >= 0)
+                    while (Client.Connected)
                     {
-                        requestData = reader.ReadBytes(requestDataLength);
+                        requestMessageType = reader.ReadInt32();
+                        requestJson = reader.ReadString();
+                        requestDataLength = reader.ReadInt32();
+                        if (requestDataLength >= 0)
+                        {
+                            requestData = reader.ReadBytes(requestDataLength);
+                        }
+                        var request = new WjpRequest(requestMessageType, requestJson, requestData);
+                        var response = ShareHandler.ProcessRequest(request);
+                        writer.Write(response.Json);
+                        writer.Write(Convert.ToInt32(response.Data?.Length ?? -1));
+                        if (requestDataLength >= 0)
+                        {
+                            writer.Write(response.Data);
+                        }
                     }
-                    var request = new WjpRequest(requestMessageType, requestJson, requestData);
-                    var response = ShareHandler.ProcessRequest(request);
-                    writer.Write(response.Json);
-                    writer.Write(Convert.ToInt32(response.Data?.Length ?? -1));
-                    if (requestDataLength >= 0)
-                    {
-                        writer.Write(response.Data);
-                    }
+                }
+                catch (Exception ex)
+                {
                 }
             }
 

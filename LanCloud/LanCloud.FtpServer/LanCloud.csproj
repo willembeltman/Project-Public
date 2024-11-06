@@ -86,7 +86,6 @@
     <Compile Include="Domain\IO\FileRefAppender.cs" />
     <Compile Include="Domain\IO\FileRefWriter.cs" />
     <Compile Include="Domain\IO\FileRefReader.cs" />
-    <Compile Include="Models\Dtos\ShareDto.cs" />
     <Compile Include="Models\Dtos\ShareRequestDto.cs" />
     <Compile Include="Models\Dtos\ShareResponseDto.cs" />
     <Compile Include="Models\Configs\LocalSharePartConfig.cs" />
@@ -112,7 +111,7 @@
     <Compile Include="Models\Application\Responses\GetExternalSharesResponse.cs" />
     <Compile Include="Domain\Collections\FileBitCollection.cs" />
     <Compile Include="Domain\Application\RemoteApplication.cs" />
-    <Compile Include="Models\Dtos\RemoteShareDto.cs" />
+    <Compile Include="Models\Dtos\ShareDto.cs" />
     <Compile Include="Domain\Share\RemoteShare.cs" />
     <Compile Include="Models\Application\Requests\PingRequest.cs" />
     <Compile Include="Services\ConfigService.cs" />

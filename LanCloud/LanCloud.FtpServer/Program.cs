@@ -5,6 +5,8 @@ using LanCloud.Domain.VirtualFtp;
 using System.Diagnostics;
 using System.Threading;
 using System.IO;
+using System.Linq;
+using LanCloud.Domain.Collections;
 
 namespace LanCloud
 {
@@ -23,6 +25,10 @@ namespace LanCloud
                 using (var virtualFtpServer = new VirtualFtpServer(localApplication, logger))
                 {
                     Thread.Sleep(100);
+
+                    var remoteshares = new RemoteShareCollection(localApplication, logger);
+
+                    //var res = localApplication.RemoteApplications.First().Ping();
 
                     //DoTest(virtualFtpServer);
 

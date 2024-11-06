@@ -11,7 +11,7 @@ namespace LanCloud.Domain.Collections
 {
     public class LocalShareCollection : IEnumerable<LocalShare>, IDisposable
     {
-        public LocalShareCollection(LocalApplication application, ILogger logger)
+        public LocalShareCollection(LocalApplication application, string hostName, ILogger logger)
         {
             Application = application;
             Logger = logger;
@@ -19,7 +19,7 @@ namespace LanCloud.Domain.Collections
             var config = application.Config;
             var port = config.StartPort;
             Shares = config.Shares
-                .Select(shareConfig => new LocalShare(this, ++port, config, shareConfig, logger))
+                .Select(shareConfig => new LocalShare(this, hostName, ++port, config, shareConfig, logger))
                 .ToArray();
 
             //Logger.Info("Loaded");

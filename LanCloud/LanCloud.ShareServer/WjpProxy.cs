@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LanCloud.Shared.Log;
+using System;
 using System.Collections.Concurrent;
 using System.IO;
 using System.Net.Sockets;
@@ -8,13 +9,15 @@ namespace LanCloud.Servers.Wjp
 {
     public class WjpProxy : IDisposable
     {
-        public WjpProxy(IWjpProxyConfig config)
+        public WjpProxy(IWjpProxyConfig config, ILogger logger)
         {
             Config = config;
+            Logger = logger;
             Thread = new Thread(new ThreadStart(Start));
             Thread.Start();
         }
         private IWjpProxyConfig Config { get; }
+        public ILogger Logger { get; }
         private Thread Thread { get; }
 
         ConcurrentQueue<WjpProxyQueueItem> Queue { get; } = new ConcurrentQueue<WjpProxyQueueItem>();
@@ -32,14 +35,14 @@ namespace LanCloud.Servers.Wjp
                 using (var reader = new BinaryReader(stream))
                 using (var writer = new BinaryWriter(stream))
                 {
-                    while (client.Connected)
+                    while (client.Connected && !Stop)
                     {
                         if (!Connected)
                         {
                             Connected = true;
                             StateChanged?.Invoke(this, null);
                         }
-                        if (Enqueued.WaitOne(1000))
+                        if (Enqueued.WaitOne(100))
                         {
                             while (Queue.TryDequeue(out WjpProxyQueueItem requestItem))
                             {
@@ -68,8 +71,6 @@ namespace LanCloud.Servers.Wjp
                     Connected = false;
                     StateChanged?.Invoke(this, null);
                 }
-
-                Thread.Sleep(5000);
             }
         }
 
@@ -78,7 +79,7 @@ namespace LanCloud.Servers.Wjp
             var queueItem = new WjpProxyQueueItem(request);
             Queue.Enqueue(queueItem);
             Enqueued.Set();
-            if (!queueItem.Done.WaitOne(10000))
+            if (!queueItem.Done.WaitOne(100000))
                 throw new Exception("Timeout occured");
             return queueItem.Response;
         }

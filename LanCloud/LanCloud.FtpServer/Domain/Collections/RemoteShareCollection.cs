@@ -4,6 +4,7 @@ using LanCloud.Shared.Log;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace LanCloud.Domain.Collections
 {
@@ -14,20 +15,24 @@ namespace LanCloud.Domain.Collections
             Application = application;
             Logger = logger;
 
-            RemoteShares = new RemoteShare[0];
-
-            //Logger.Info($"Loaded");
+            RemoteShares =
+                Application.RemoteApplications
+                    //.Where(a => a.Connected) // Hij is nog niet connected 
+                    .SelectMany(a => a.GetShares())
+                    .Select(a => new RemoteShare(this, a, Logger))
+                    .ToArray();
         }
 
         public LocalApplication Application { get; }
         public ILogger Logger { get; }
-
-        public RemoteApplicationCollection RemoteApplications => Application.RemoteApplications;
         public RemoteShare[] RemoteShares { get; }
 
         public void Dispose()
         {
-            RemoteApplications.Dispose();
+            foreach(var item in RemoteShares)
+            {
+                item.Dispose();
+            }
         }
 
         public IEnumerator<RemoteShare> GetEnumerator()

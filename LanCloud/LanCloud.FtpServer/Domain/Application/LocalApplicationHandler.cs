@@ -13,19 +13,18 @@ namespace LanCloud.Domain.Application
     public class LocalApplicationHandler : IWjpHandler
     {
         public LocalApplicationHandler(
-            LocalApplication application, 
-            LocalShareCollection shares, 
+            LocalApplication application,
+            string hostName,
             ILogger logger)
         {
             Application = application;
-            Shares = shares;
             Logger = logger;
 
             //Logger.Info($"Loaded");
         }
 
         public LocalApplication Application { get; }
-        private LocalShareCollection Shares { get; }
+        private LocalShareCollection Shares => Application.LocalShares;
         public ILogger Logger { get; }
 
         public WjpResponse ProcessRequest(WjpRequest request)
@@ -52,14 +51,14 @@ namespace LanCloud.Domain.Application
         }
         private WjpResponse Handle_GetExternalShareDtos()
         {
-            var list = Shares
+            var shareDtos = Shares
                 .Select(a => new ShareDto()
                 {
-                    Port = a.Port,
-                    FreeSpace = a.GetFreeSpace()
+                    HostName = a.HostName,
+                    Port = a.Port
                 })
                 .ToArray();
-            var json = JsonConvert.SerializeObject(list);
+            var json = JsonConvert.SerializeObject(shareDtos);
             return new WjpResponse(json, null);
         }
     }

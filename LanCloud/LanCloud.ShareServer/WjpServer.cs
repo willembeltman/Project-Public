@@ -70,7 +70,9 @@ namespace LanCloud.Servers.Wjp
                     Listening = false;
                     Listener.Stop();
 
-                    foreach (WjpClientConnection conn in ActiveConnections)
+                    var conns = ActiveConnections.ToArray();
+
+                    foreach (WjpClientConnection conn in conns)
                     {
                         conn.Dispose();
                     }
