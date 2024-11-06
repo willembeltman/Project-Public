@@ -51,6 +51,7 @@
     <Compile Include="Enums\FileStructureType.cs" />
     <Compile Include="Enums\FormatControlType.cs" />
     <Compile Include="Enums\TransferType.cs" />
+    <Compile Include="IFtpApplication.cs" />
     <Compile Include="Interfaces\IFtpHandler.cs" />
     <Compile Include="Models\IFtpDirectoryInfo.cs" />
     <Compile Include="Models\IFtpFileInfo.cs" />

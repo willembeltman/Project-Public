@@ -8,6 +8,7 @@ using LanCloud.Models.Dtos;
 using LanCloud.Domain.Collections;
 using System.Linq;
 using LanCloud.Domain.Share;
+using System;
 
 namespace LanCloud.Domain.Application
 {
@@ -16,7 +17,7 @@ namespace LanCloud.Domain.Application
         public RemoteApplication(
             RemoteApplicationCollection remoteApplicationCollection,
             RemoteApplicationConfig config, 
-            ILogger logger) : base(config, logger)
+            ILogger logger) : base(config, remoteApplicationCollection.Application, logger)
         {
             RemoteApplicationCollection = remoteApplicationCollection;
             Config = config;
@@ -25,8 +26,6 @@ namespace LanCloud.Domain.Application
             RemoteShares = new RemoteShare[0];
 
             StateChanged += RemoteApplication_StateChanged;
-
-            //Logger.Info($"Loaded");
         }
 
         public RemoteApplicationCollection RemoteApplicationCollection { get; }

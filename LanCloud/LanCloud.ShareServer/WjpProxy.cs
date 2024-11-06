@@ -9,14 +9,28 @@ namespace LanCloud.Servers.Wjp
 {
     public class WjpProxy : IDisposable
     {
-        public WjpProxy(IWjpProxyConfig config, ILogger logger)
+        private string _Status { get; set; }
+        public string Status
+        {
+            get => _Status;
+            set
+            {
+                _Status = value;
+                Application.StatusChanged();
+            }
+        }
+
+        public WjpProxy(IWjpProxyConfig config, IWjpApplication application, ILogger logger)
         {
             Config = config;
+            Application = application;
             Logger = logger;
+
             Thread = new Thread(new ThreadStart(Start));
             Thread.Start();
         }
         private IWjpProxyConfig Config { get; }
+        public IWjpApplication Application { get; }
         public ILogger Logger { get; }
         private Thread Thread { get; }
 
@@ -26,12 +40,16 @@ namespace LanCloud.Servers.Wjp
         public bool Connected { get; private set; }
         public event EventHandler<EventArgs> StateChanged;
 
+        public string HostName => Config.HostName;
+        public int Port => Config.Port;
+
         private void Start()
         {
             while (!Stop)
             {
                 try
                 {
+                    Status = Logger.Info("Trying to connect");
                     using (var client = new TcpClient(Config.HostName, Config.Port))
                     using (var stream = client.GetStream())
                     using (var reader = new BinaryReader(stream))
@@ -42,7 +60,10 @@ namespace LanCloud.Servers.Wjp
                             if (!Connected)
                             {
                                 Connected = true;
-                                StateChanged?.Invoke(this, null);
+                                new Thread(new ThreadStart(SendStateChanged)).Start();
+                                //StateChanged?.Invoke(this, null);
+
+                                Status = Logger.Info("Connected");
                             }
 
                             if (Enqueued.WaitOne(100))
@@ -77,9 +98,18 @@ namespace LanCloud.Servers.Wjp
                 if (Connected)
                 {
                     Connected = false;
-                    StateChanged?.Invoke(this, null);
+                    new Thread(new ThreadStart(SendStateChanged)).Start();
+                    //StateChanged?.Invoke(this, null);
+                    Status = Logger.Info("Not connected");
+
+                    Thread.Sleep(10000);
                 }
             }
+        }
+
+        private void SendStateChanged()
+        {
+            StateChanged?.Invoke(this, null);
         }
 
         public WjpResponse SendRequest(WjpRequest request)
@@ -107,6 +137,7 @@ namespace LanCloud.Servers.Wjp
                 // It is waiting on the connection to start, just kill the thread
                 Thread.Abort();
             }
+            Status = Logger.Info("Disposed");
         }
     }
 }

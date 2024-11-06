@@ -5,11 +5,23 @@ using System.Net;
 using LanCloud.Models.Configs;
 using System.Linq;
 using LanCloud.Domain.Collections;
+using LanCloud.Domain.Application;
 
 namespace LanCloud.Domain.Share
 {
     public class LocalShare : IDisposable, IShare
     {
+        private string _Status { get; set; }
+        public string Status
+        {
+            get => _Status;
+            set
+            {
+                _Status = value;
+                Application.StatusChanged();
+            }
+        }
+
         public LocalShare(LocalShareCollection localShareCollection, string hostName, int port, ApplicationConfig config, LocalShareConfig shareConfig, ILogger logger)
         {
             LocalShareCollection = localShareCollection;
@@ -23,7 +35,7 @@ namespace LanCloud.Domain.Share
             ServerHandler = new LocalShareHandler(this, Logger);
             Server = new WjpServer(IPAddress.Any, port, ServerHandler, Logger);
 
-            //Logger.Info($"Loaded");
+            Status = Logger.Info($"OK");
         }
 
         public LocalShareCollection LocalShareCollection { get; }
@@ -36,6 +48,8 @@ namespace LanCloud.Domain.Share
         public LocalSharePartCollection Parts { get; }
         public LocalShareHandler ServerHandler { get; }
         public WjpServer Server { get; }
+
+        public LocalApplication Application => LocalShareCollection.Application;
 
         public void Dispose()
         {

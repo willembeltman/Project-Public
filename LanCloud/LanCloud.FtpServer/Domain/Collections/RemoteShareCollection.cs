@@ -22,7 +22,7 @@ namespace LanCloud.Domain.Collections
         public RemoteShare[] RemoteShares => 
             Application.RemoteApplications
                 .Where(a => a.Connected)
-                .SelectMany(a => RemoteShares)
+                .SelectMany(a => a.RemoteShares)
                 .ToArray();
 
         public IEnumerator<RemoteShare> GetEnumerator()

@@ -1,6 +1,6 @@
 ﻿using LanCloud.Domain.Collections;
-using LanCloud.Domain.IO;
 using LanCloud.Models.Configs;
+using LanCloud.Servers.Ftp;
 using LanCloud.Servers.Wjp;
 using LanCloud.Shared.Log;
 using System;
@@ -9,33 +9,22 @@ using System.Net;
 
 namespace LanCloud.Domain.Application
 {
-    public class LocalApplication : IDisposable
+    public class LocalApplication : IDisposable, IWjpApplication, IFtpApplication
     {
-        public LocalApplication(
-            ApplicationConfig config,
-            ILogger logger)
+        public event EventHandler OnStateChanged;
+        private string _Status { get; set; }
+        public string Status
         {
-            Config = config;
-            Logger = logger;
-
-            Authentication = new AuthenticationService(this, logger);
-            FileRefs = new FileRefCollection(this, logger);
-
-            RemoteApplications = new RemoteApplicationCollection(this, logger);
-
-            ServerConfig = config.Servers.FirstOrDefault(a => a.IsThisComputer);
-            if (ServerConfig != null)
+            get => _Status; 
+            set
             {
-                LocalShares = new LocalShareCollection(this, ServerConfig.HostName, logger);
-                ServerHandler = new LocalApplicationHandler(this, ServerConfig.HostName, logger);
-                Server = new WjpServer(IPAddress.Any, config.StartPort, ServerHandler, logger);
-                
-                Logger.Info($"Loaded");
+                _Status = value; 
+                StatusChanged();
             }
-            else
-            {
-                Logger.Info($"Loaded without server");
-            }
+        }
+        public void StatusChanged()
+        {
+            OnStateChanged?.Invoke(this, EventArgs.Empty);
         }
 
         public ApplicationConfig Config { get; }
@@ -49,6 +38,35 @@ namespace LanCloud.Domain.Application
         public RemoteApplicationConfig ServerConfig { get; }        
         public LocalApplicationHandler ServerHandler { get; }
         public WjpServer Server { get; }
+
+        public LocalApplication(
+            ApplicationConfig config,
+            ILogger logger)
+        {
+            Config = config;
+            Logger = logger;
+
+            Status = Logger.Info($"Constructing");
+
+            Authentication = new AuthenticationService(this, logger);
+            FileRefs = new FileRefCollection(this, logger);
+
+            RemoteApplications = new RemoteApplicationCollection(this, logger);
+
+            ServerConfig = config.Servers.FirstOrDefault(a => a.IsThisComputer);
+            if (ServerConfig != null)
+            {
+                LocalShares = new LocalShareCollection(this, ServerConfig.HostName, logger);
+                ServerHandler = new LocalApplicationHandler(this, ServerConfig.HostName, logger);
+                Server = new WjpServer(IPAddress.Any, config.StartPort, ServerHandler, logger);
+
+                Status = Logger.Info($"OK");
+            }
+            else
+            {
+                Status = Logger.Info($"OK without server");
+            }
+        }
 
         public void Dispose()
         {

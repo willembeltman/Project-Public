@@ -1,4 +1,4 @@
-﻿using LanCloud.Domain.Collections;
+﻿using LanCloud.Domain.Application;
 using LanCloud.Models.Dtos;
 using LanCloud.Models.Share.Requests;
 using LanCloud.Models.Share.Responses;
@@ -10,7 +10,7 @@ namespace LanCloud.Domain.Share
 {
     public class RemoteShare : WjpProxy, IShare
     {
-        public RemoteShare(Application.RemoteApplication remoteApplication, ShareDto config, ILogger logger) : base(config, logger)
+        public RemoteShare(RemoteApplication remoteApplication, ShareDto config, ILogger logger) : base(config, remoteApplication.Application, logger)
         {
             Logger = logger;
         }

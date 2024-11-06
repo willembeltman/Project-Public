@@ -10,6 +10,17 @@ namespace LanCloud.Servers.Ftp
 {
     public class FtpServer : IDisposable
     {
+        private string _Status { get; set; }
+        public string Status
+        {
+            get => _Status;
+            set
+            {
+                _Status = value;
+                Application.StatusChanged();
+            }
+        }
+
         private bool Disposed = false;
         private bool Listening = false;
 
@@ -17,13 +28,15 @@ namespace LanCloud.Servers.Ftp
 
         private IPEndPoint LocalEndPoint { get; }
         public IFtpHandler CommandHandler { get; }
+        public IFtpApplication Application { get; }
         private TcpListener Listener { get; }
         public ILogger Logger { get; }
 
-        public FtpServer(IPAddress ipAddress, int port, IFtpHandler commandHandler, ILogger logger)
+        public FtpServer(IPAddress ipAddress, int port, IFtpHandler commandHandler, IFtpApplication application, ILogger logger)
         {
             LocalEndPoint = new IPEndPoint(ipAddress, port);
             CommandHandler = commandHandler;
+            Application = application;
             Logger = logger;
             Listener = new TcpListener(LocalEndPoint);
 
@@ -34,7 +47,7 @@ namespace LanCloud.Servers.Ftp
 
             Listener.BeginAcceptTcpClient(HandleAcceptTcpClient, Listener);
 
-            //Logger.Info("Virtual Ftp Server started");
+            Status = Logger.Info("OK");
         }
 
         private void HandleAcceptTcpClient(IAsyncResult result)

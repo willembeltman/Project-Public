@@ -7,6 +7,7 @@ using System.Threading;
 using System.IO;
 using System.Linq;
 using LanCloud.Domain.Collections;
+using LanCloud.Forms;
 
 namespace LanCloud
 {
@@ -21,12 +22,13 @@ namespace LanCloud
                 var configService = new ConfigService(currentDirectory, logger);
                 var config = configService.Load();
 
-                using (var localApplication = new LocalApplication(config, logger))
-                using (var virtualFtpServer = new VirtualFtpServer(localApplication, logger))
+                using (var application = new LocalApplication(config, logger))
+                using (var virtualFtpServer = new VirtualFtpServer(application, logger))
                 {
                     Thread.Sleep(100);
 
-                    var remoteshares = new RemoteShareCollection(localApplication, logger);
+                    StatusForm form = new StatusForm(application);
+                    form.Show();
 
                     //var res = localApplication.RemoteApplications.First().Ping();
 
@@ -36,6 +38,7 @@ namespace LanCloud
 
                     Console.WriteLine("Press any key to stop...");
                     Console.ReadKey(true);
+                    form.Close();
                 }
             }
         }
