@@ -34,8 +34,8 @@ namespace LanCloud
 
                     //DoTest2(virtualFtpServer);
 
-                    Console.WriteLine("Press any key to stop...");
-                    Console.ReadKey(true);
+                    //Console.WriteLine("Press any key to stop...");
+                    //Console.ReadKey(true);
                 }
             }
         }
