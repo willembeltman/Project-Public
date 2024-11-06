@@ -29,13 +29,13 @@ namespace LanCloud.Services
                     {
                         new RemoteApplicationConfig()
                         {
-                            HostName = "WJPC2",
+                            HostName = "192.168.178.67",
                             Port = 8080,
                             IsThisComputer = true
                         },
                         new RemoteApplicationConfig()
                         {
-                            HostName = "WJPC3",
+                            HostName = "192.168.178.32",
                             Port = 8080,
                             IsThisComputer = false
                         }

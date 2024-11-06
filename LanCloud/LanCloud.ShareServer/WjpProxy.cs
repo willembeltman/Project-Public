@@ -108,8 +108,9 @@ namespace LanCloud.Servers.Wjp
                     new Thread(new ThreadStart(SendStateChanged)).Start();
                     Status = Logger.Info("Not connected");
 
-                    Thread.Sleep(1000);
                 }
+                Status = Logger.Info("Waiting to retry");
+                Thread.Sleep(1000);
             }
         }
 
