@@ -18,6 +18,7 @@ namespace LanCloud.Domain.VirtualFtp
             FileBitWriters = Application.LocalShareParts
                 .Select(sharepart => new FileBitWriter(this, sharepart, Logger))
                 .ToArray();
+            HashWriter = new HashWriter(this, Logger);
             AllIndexes = FileBitWriters
                 .SelectMany(a => a.Indexes)
                 .GroupBy(a => a)
@@ -32,10 +33,10 @@ namespace LanCloud.Domain.VirtualFtp
         public PathFileInfo PathInfo { get; }
         public ILogger Logger { get; }
         public FileBitWriter[] FileBitWriters { get; }
+        internal HashWriter HashWriter { get; }
         public byte[] AllIndexes { get; }
         public DoubleBuffer Buffer { get; }
-        private IncrementalHash IncrementalHash { get; } = IncrementalHash.CreateHash(HashAlgorithmName.MD5);
-        public string GeneratedHash { get; private set; }
+        //public string GeneratedHash { get; private set; }
         public bool Disposed { get; private set; }
         public override long Position { get; set; }
 
@@ -55,7 +56,6 @@ namespace LanCloud.Domain.VirtualFtp
                 int bytesToWrite = Math.Min(count - bytesWritten, availableSpace);
 
                 Array.Copy(buffer, offset + bytesWritten, Buffer.WriteBuffer, Buffer.WriteBufferPosition, bytesToWrite);
-                IncrementalHash.AppendData(buffer, offset + bytesWritten, bytesToWrite);
 
                 bytesWritten += bytesToWrite;
                 Buffer.WriteBufferPosition += bytesToWrite;
@@ -83,6 +83,8 @@ namespace LanCloud.Domain.VirtualFtp
 
             foreach (var item in FileBitWriters)
                 item.StartNext.Set();
+
+            HashWriter.StartNext.Set();
         }
 
         private void WaitForDone()
@@ -90,6 +92,9 @@ namespace LanCloud.Domain.VirtualFtp
             foreach (var item in FileBitWriters)
                 if (!item.WritingIsDone.WaitOne(10000))
                     throw new Exception("Timeout writing to: " + item.FileBit?.FullName);
+
+            if (!HashWriter.WritingIsDone.WaitOne(10000))
+                throw new Exception("Timeout writing to HashWriter");
         }
 
         protected override void Dispose(bool disposing)
@@ -104,21 +109,16 @@ namespace LanCloud.Domain.VirtualFtp
                 }
                 WaitForDone();
 
-                var hashBytes = IncrementalHash.GetHashAndReset();
-                var hashString = new StringBuilder(hashBytes.Length * 2);
-                foreach (byte b in hashBytes)
-                    hashString.Append(b.ToString("x2"));
-                GeneratedHash = hashString.ToString();
-
+                var hash = HashWriter.Stop();
                 var fileBits = FileBitWriters
-                    .Select(a => a.Stop())
+                    .Select(a => a.Stop(Position, hash))
                     .ToArray();
 
                 // Waardes updaten
                 //FileRef fileRef = Application.FileRefs.GetFileRef(PathInfo);
                 var fileRef = new FileRef(PathInfo);
                 fileRef.Length = Position;
-                fileRef.Hash = GeneratedHash;
+                fileRef.Hash = hash;
                 fileRef.Bits = fileBits
                     .Select(a => new FileRefBit()
                     {

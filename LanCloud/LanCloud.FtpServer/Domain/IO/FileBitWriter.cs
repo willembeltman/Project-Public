@@ -42,13 +42,6 @@ namespace LanCloud.Domain.IO
 
         private void Start()
         {
-            WriteAllData();
-            FileBit.Update(FileRefWriter.Position, FileRefWriter.GeneratedHash);
-            LocalSharePart.FileBits.AddFileBit(FileBit);
-        }
-
-        private void WriteAllData()
-        {
             using (var stream = FileBit.OpenWrite())
             {
                 while (!KillSwitch)
@@ -110,11 +103,14 @@ namespace LanCloud.Domain.IO
             Position += maxlength;
         }
 
-        public FileBit Stop()
+        public FileBit Stop(long length, string hash)
         {
             KillSwitch = true;
             StartNext.Set();
             Thread.Join();
+
+            FileBit.Update(length, hash);
+            LocalSharePart.FileBits.AddFileBit(FileBit);
             return FileBit;
         }
     }

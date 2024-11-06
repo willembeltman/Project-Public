@@ -72,6 +72,7 @@
     <Compile Include="Domain\IO\FileBitReader.cs" />
     <Compile Include="Domain\IO\FileBitWriter.cs" />
     <Compile Include="Domain\IO\FileRefDirectory.cs" />
+    <Compile Include="Domain\IO\HashWriter.cs" />
     <Compile Include="Domain\IO\IFileBit.cs" />
     <Compile Include="Models\SingleBuffer.cs" />
     <Compile Include="Models\DoubleBuffer.cs" />
