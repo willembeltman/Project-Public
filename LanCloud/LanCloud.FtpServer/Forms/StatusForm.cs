@@ -1,14 +1,6 @@
 ﻿using LanCloud.Domain.Application;
-using LanCloud.Domain.Share;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Reflection.Emit;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace LanCloud.Forms
@@ -53,7 +45,6 @@ namespace LanCloud.Forms
         {
             treeView1.Nodes.Clear();
 
-            // Hoofdnode
             var applicationNode = new TreeNode($"LocalApplication");
             var applicationInnerNode = new TreeNode($"{Application.HostName}:{Application.Port}: {Application.Status}");
             applicationNode.Nodes.Add(applicationInnerNode);
@@ -72,7 +63,6 @@ namespace LanCloud.Forms
 
             treeView1.Nodes.Add(applicationNode);
 
-            // Eerste laag
             if (Application.LocalShares.Any())
             {
                 var localSharesNode = new TreeNode("LocalShares");
@@ -124,6 +114,17 @@ namespace LanCloud.Forms
             virtualFtpServerNode.Nodes.Add(new TreeNode($"{Application.VirtualFtpServer.HostName}:{Application.VirtualFtpServer.Port}: {Application.VirtualFtpServer.FtpServer.Status}"));
             treeView1.Nodes.Add(virtualFtpServerNode);
 
+            //var connections3 = Application.VirtualFtpServer.FtpServer.GetActiveConnections();
+            //if (connections3.Any())
+            //{
+            //    var connectionsNode = new TreeNode("Connections");
+            //    foreach (var connection in connections3)
+            //    {
+            //        // Tweede laag onder Child 1
+            //        connectionsNode.Nodes.Add(new TreeNode($"{connection.Name}: {connection.Status}"));
+            //    }
+            //    applicationInnerNode.Nodes.Add(connectionsNode);
+            //}
 
 
             // Open de boomstructuur
