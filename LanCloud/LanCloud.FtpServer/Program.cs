@@ -5,8 +5,6 @@ using LanCloud.Domain.VirtualFtp;
 using System.Diagnostics;
 using System.Threading;
 using System.IO;
-using System.Linq;
-using LanCloud.Domain.Collections;
 using LanCloud.Forms;
 
 namespace LanCloud
@@ -28,7 +26,7 @@ namespace LanCloud
                     Thread.Sleep(100);
 
                     StatusForm form = new StatusForm(application);
-                    form.Show();
+                    form.ShowDialog();
 
                     //var res = localApplication.RemoteApplications.First().Ping();
 
@@ -38,7 +36,6 @@ namespace LanCloud
 
                     Console.WriteLine("Press any key to stop...");
                     Console.ReadKey(true);
-                    form.Close();
                 }
             }
         }

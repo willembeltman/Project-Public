@@ -19,13 +19,19 @@ namespace LanCloud.Forms
             Application = application;
 
             Application.OnStateChanged += Application_OnStateChanged;
+            FormClosing += StatusForm_FormClosing;
 
             InitializeComponent();
         }
 
+        private void StatusForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            KillSwitch = true;
+        }
+
         private void Application_OnStateChanged(object sender, EventArgs e)
         {
-            if (!this.IsDisposed)
+            if (!KillSwitch)
             {
                 this.Invoke((MethodInvoker)delegate
                 {
@@ -35,6 +41,7 @@ namespace LanCloud.Forms
         }
 
         public LocalApplication Application { get; }
+        public bool KillSwitch { get; private set; }
 
         private void StatusForm_Load(object sender, EventArgs e)
         {
@@ -79,6 +86,11 @@ namespace LanCloud.Forms
             // Open de boomstructuur
             treeView1.ExpandAll();
 
+        }
+        public void Kill()
+        {
+            KillSwitch = true;
+            this.Close();
         }
     }
 }
