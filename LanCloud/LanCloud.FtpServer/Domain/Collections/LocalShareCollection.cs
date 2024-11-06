@@ -1,37 +1,33 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using LanCloud.Shared.Log;
-using LanCloud.Domain.Share;
 using LanCloud.Domain.Application;
 using LanCloud.Domain.IO;
+using LanCloud.Domain.Share;
+using LanCloud.Shared.Log;
 
 namespace LanCloud.Domain.Collections
 {
-    public class LocalShareCollection : IEnumerable<LocalShare>, IDisposable
+    public class LocalShareCollection : IEnumerable<LocalShare>
     {
-        public LocalShareCollection(LocalApplication application, string hostName, ILogger logger)
+        public LocalShareCollection(LocalApplication application, ILogger logger)
         {
             Application = application;
             Logger = logger;
-
-            var config = application.Config;
-            var port = config.StartPort;
-            Shares = config.Shares
-                .Select(shareConfig => new LocalShare(this, hostName, ++port, config, shareConfig, logger))
+            int port = application.Port;
+            LocalShares = Application.Config.Shares
+                .Select(share => new LocalShare(this, share, ref port, Logger))
                 .ToArray();
-
-            //Logger.Info("Loaded");
         }
 
         public LocalApplication Application { get; }
         public ILogger Logger { get; }
-        public LocalShare[] Shares { get; }
+
+        public LocalShare[] LocalShares { get; }
 
         public FileBit[] FindFileBits(string extention, FileRef fileRef, FileRefBit fileRefBit)
         {
-            var fileBits = Shares
+            var fileBits = LocalShares
                 .Select(a => a.FileBits.FindFileBit(extention, fileRef, fileRefBit))
                 .Where(a => a != null)
                 .ToArray();
@@ -40,17 +36,12 @@ namespace LanCloud.Domain.Collections
 
         public IEnumerator<LocalShare> GetEnumerator()
         {
-            return ((IEnumerable<LocalShare>)Shares).GetEnumerator();
-        }
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return Shares.GetEnumerator();
+            return ((IEnumerable<LocalShare>)LocalShares).GetEnumerator();
         }
 
-        public void Dispose()
+        IEnumerator IEnumerable.GetEnumerator()
         {
-            foreach (var item in Shares)
-                item.Dispose();
+            return GetEnumerator();
         }
     }
 }

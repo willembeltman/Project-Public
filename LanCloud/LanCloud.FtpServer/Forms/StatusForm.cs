@@ -63,12 +63,12 @@ namespace LanCloud.Forms
 
             treeView1.Nodes.Add(applicationNode);
 
-            if (Application.LocalShares.Any())
+            if (Application.LocalShareParts.Any())
             {
                 var localSharesNode = new TreeNode("LocalShares");
-                foreach (var localShare in Application.LocalShares)
+                foreach (var localShare in Application.LocalShareParts)
                 {
-                    var localShareNode = new TreeNode($"{localShare.HostName}:{localShare.Port}: {localShare.Status}");
+                    var localShareNode = new TreeNode($"{localShare.HostName}:{localShare.Port} {string.Join("^", localShare.Indexes)}: {localShare.Status}");
 
                     var connections = localShare.Server.GetActiveConnections();
                     if (connections.Any())

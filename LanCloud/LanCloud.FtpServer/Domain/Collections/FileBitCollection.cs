@@ -31,7 +31,7 @@ namespace LanCloud.Domain.Collections
         public DirectoryInfo Root { get; }
         private FileBit[] FileBits { get; set; }
 
-        private LocalShareConfig Config => LocalShare.Config;
+        private LocalShareConfig Config => LocalShare.ShareConfig;
 
         public FileBit CreateTempFileBit(string extention, int[] indexes)
         {

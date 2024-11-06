@@ -33,9 +33,9 @@ namespace LanCloud.Domain.Application
 
         public AuthenticationService Authentication { get; }
         public FileRefCollection FileRefs { get; }
-        public LocalShareCollection LocalShares { get; }
+        public LocalSharePartCollection LocalShareParts { get; }
         public RemoteApplicationCollection RemoteApplications { get; }
-
+        public LocalShareCollection LocalShares { get; }
         public RemoteApplicationConfig ServerConfig { get; }        
         public LocalApplicationHandler ServerHandler { get; }
         public WjpServer Server { get; }
@@ -58,7 +58,8 @@ namespace LanCloud.Domain.Application
             ServerConfig = config.Servers.FirstOrDefault(a => a.IsThisComputer);
             if (ServerConfig != null)
             {
-                LocalShares = new LocalShareCollection(this, ServerConfig.HostName, logger);
+                LocalShares = new LocalShareCollection(this, logger);
+                LocalShareParts = new LocalSharePartCollection(this, LocalShares, ServerConfig.HostName, logger);
                 ServerHandler = new LocalApplicationHandler(this, ServerConfig.HostName, logger);
                 Server = new WjpServer(IPAddress.Any, config.StartPort, ServerHandler, this, logger);
 
@@ -78,7 +79,7 @@ namespace LanCloud.Domain.Application
         public void Dispose()
         {
             Server.Dispose();
-            LocalShares.Dispose();
+            LocalShareParts.Dispose();
             RemoteApplications.Dispose();
         }
 

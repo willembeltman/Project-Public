@@ -10,13 +10,13 @@ namespace LanCloud.Domain.IO
 {
     public class FileBitWriter
     {
-        public FileBitWriter(FileRefWriter ftpStreamWriter, LocalSharePart sharePart, ILogger logger)
+        public FileBitWriter(FileRefWriter fileRefWriter, LocalSharePart localShare, ILogger logger)
         {
-            FtpStreamWriter = ftpStreamWriter;
-            SharePart = sharePart;
+            FileRefWriter = fileRefWriter;
+            LocalSharePart = localShare;
             Logger = logger;
 
-            FileBit = Share.FileBits.CreateTempFileBit(FtpStreamWriter.PathInfo.Extention, Indexes);
+            FileBit = LocalSharePart.LocalShare.FileBits.CreateTempFileBit(FileRefWriter.PathInfo.Extention, Indexes);
             Buffer = new byte[Constants.BufferSize];
 
             Thread = new Thread(new ThreadStart(Start));
@@ -25,8 +25,8 @@ namespace LanCloud.Domain.IO
             //Logger.Info($"Opened {FileBit.Info.Name} as output for parts: {string.Join(" xor ", Indexes.Select(a => $"#{a}"))}");
         }
 
-        public FileRefWriter FtpStreamWriter { get; }
-        public LocalSharePart SharePart { get; }
+        public FileRefWriter FileRefWriter { get; }
+        public LocalSharePart LocalSharePart { get; }
         public ILogger Logger { get; }
 
         public FileBit FileBit { get; }
@@ -38,14 +38,13 @@ namespace LanCloud.Domain.IO
         public int Position { get; private set; } = 0;
         private bool KillSwitch { get; set; } = false;
 
-        public LocalShare Share => SharePart.Share;
-        public int[] Indexes => SharePart.Part.Indexes;
+        public int[] Indexes => LocalSharePart.Indexes;
 
         private void Start()
         {
             WriteAllData();
-            FileBit.Update(FtpStreamWriter.Position, FtpStreamWriter.GeneratedHash);
-            Share.FileBits.AddFileBit(FileBit);
+            FileBit.Update(FileRefWriter.Position, FileRefWriter.GeneratedHash);
+            LocalSharePart.LocalShare.FileBits.AddFileBit(FileBit);
         }
 
         private void WriteAllData()
@@ -56,11 +55,11 @@ namespace LanCloud.Domain.IO
                 {
                     if (StartNext.WaitOne(1000))
                     {
-                        if (!KillSwitch && FtpStreamWriter.Buffer.ReadBufferPosition > 0)
+                        if (!KillSwitch && FileRefWriter.Buffer.ReadBufferPosition > 0)
                         {
-                            var data = FtpStreamWriter.Buffer.ReadBuffer;
-                            var datalength = FtpStreamWriter.Buffer.ReadBufferPosition;
-                            var width = FtpStreamWriter.Buffer.Width;
+                            var data = FileRefWriter.Buffer.ReadBuffer;
+                            var datalength = FileRefWriter.Buffer.ReadBufferPosition;
+                            var width = FileRefWriter.Buffer.Width;
 
                             WriteBufferToStream(stream, data, datalength, width);
                         }

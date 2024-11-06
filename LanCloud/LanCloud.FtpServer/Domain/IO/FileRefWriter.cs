@@ -16,8 +16,7 @@ namespace LanCloud.Domain.VirtualFtp
         {
             PathInfo = ftpFileInfo;
             Logger = logger;
-            FileBitWriters = Application.LocalShares
-                .SelectMany(share => share.Parts)
+            FileBitWriters = Application.LocalShareParts
                 .Select(sharepart => new FileBitWriter(this, sharepart, Logger))
                 .ToArray();
             AllIndexes = FileBitWriters

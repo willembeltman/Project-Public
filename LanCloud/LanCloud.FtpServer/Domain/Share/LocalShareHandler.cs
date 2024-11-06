@@ -9,7 +9,7 @@ namespace LanCloud.Domain.Share
 {
     public class LocalShareHandler : IWjpHandler
     {
-        public LocalShareHandler(LocalShare localShare, ILogger logger)
+        public LocalShareHandler(LocalSharePart localShare, ILogger logger)
         {
             LocalShare = localShare;
             Logger = logger;
@@ -17,7 +17,7 @@ namespace LanCloud.Domain.Share
             //Logger.Info($"Loaded");
         }
 
-        public LocalShare LocalShare { get; }
+        public LocalSharePart LocalShare { get; }
         public ILogger Logger { get; }
 
         public WjpResponse ProcessRequest(WjpRequest request)

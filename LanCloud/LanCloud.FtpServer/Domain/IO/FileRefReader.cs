@@ -19,7 +19,7 @@ namespace LanCloud.Domain.VirtualFtp
             FileBitReaders = FileRef.FileRefBits
                 .Select(fileRefBit =>
                 {
-                    var fileBit = Application.LocalShares
+                    var fileBit = Application.LocalShareParts
                         .FindFileBits(PathInfo.Extention, FileRef, fileRefBit)
                         .FirstOrDefault();
                     return new FileBitReader(this, fileBit, Logger);

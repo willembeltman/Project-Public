@@ -69,13 +69,14 @@
   <ItemGroup>
     <Compile Include="Constants.cs" />
     <Compile Include="Domain\Collections\FileRefCollection.cs" />
-    <Compile Include="Domain\Collections\LocalSharePartCollection.cs" />
+    <Compile Include="Domain\Collections\LocalShareCollection.cs" />
     <Compile Include="Domain\IO\FileBitReader.cs" />
     <Compile Include="Domain\IO\FileBitWriter.cs" />
     <Compile Include="Domain\IO\FileRefDirectory.cs" />
-    <Compile Include="Domain\IO\DoubleBuffer.cs" />
+    <Compile Include="Models\SingleBuffer.cs" />
+    <Compile Include="Models\DoubleBuffer.cs" />
     <Compile Include="Domain\Share\IShare.cs" />
-    <Compile Include="Domain\Share\LocalSharePart.cs" />
+    <Compile Include="Domain\Share\LocalShare.cs" />
     <Compile Include="Forms\StatusForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -104,11 +105,11 @@
     <Compile Include="Domain\IO\FileRef.cs" />
     <Compile Include="Services\FileRefService.cs" />
     <Compile Include="Services\HashService.cs" />
-    <Compile Include="Domain\Share\LocalShare.cs" />
+    <Compile Include="Domain\Share\LocalSharePart.cs" />
     <Compile Include="Domain\Application\LocalApplicationHandler.cs" />
     <Compile Include="Domain\Collections\RemoteApplicationCollection.cs" />
     <Compile Include="Domain\Application\LocalApplication.cs" />
-    <Compile Include="Domain\Collections\LocalShareCollection.cs" />
+    <Compile Include="Domain\Collections\LocalSharePartCollection.cs" />
     <Compile Include="Domain\Collections\RemoteShareCollection.cs" />
     <Compile Include="Domain\VirtualFtp\VirtualFtpHandler.cs" />
     <Compile Include="Models\Configs\LocalShareConfig.cs" />

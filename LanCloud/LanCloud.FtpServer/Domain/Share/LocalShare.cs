@@ -1,15 +1,13 @@
 ﻿using LanCloud.Shared.Log;
-using LanCloud.Servers.Wjp;
-using System;
-using System.Net;
 using LanCloud.Models.Configs;
-using System.Linq;
 using LanCloud.Domain.Collections;
 using LanCloud.Domain.Application;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace LanCloud.Domain.Share
 {
-    public class LocalShare : IDisposable, IShare
+    public class LocalShare
     {
         private string _Status { get; set; }
         public string Status
@@ -22,38 +20,33 @@ namespace LanCloud.Domain.Share
             }
         }
 
-        public LocalShare(LocalShareCollection localShareCollection, string hostName, int port, ApplicationConfig config, LocalShareConfig shareConfig, ILogger logger)
+        public LocalShare(LocalShareCollection localShares, LocalShareConfig shareConfig, ref int port, ILogger logger)
         {
-            LocalShareCollection = localShareCollection;
-            HostName = hostName;
-            Port = port;
-            Config = shareConfig;
+            LocalShares = localShares;
+            ShareConfig = shareConfig;
             Logger = logger;
 
+            var list = new List<LocalSharePart>();
+            foreach (var part in shareConfig.Parts)
+            {
+                port = port + 1;
+                list.Add(new LocalSharePart(this, part, HostName, port, logger));
+            }
+            LocalShareParts = list.ToArray();
+
             FileBits = new FileBitCollection(this, Logger);
-            Parts = new LocalSharePartCollection(this, Logger);
-            ServerHandler = new LocalShareHandler(this, Logger);
-            Server = new WjpServer(IPAddress.Any, port, ServerHandler, Application, Logger);
 
             Status = Logger.Info($"OK");
         }
 
-        public LocalShareCollection LocalShareCollection { get; }
-        public string HostName { get; }
-        public int Port { get; }
-        public LocalShareConfig Config { get; }
+        public LocalShareCollection LocalShares { get; }
+        public LocalShareConfig ShareConfig { get; }
         public ILogger Logger { get; }
-
+        public LocalSharePart[] LocalShareParts { get; }
         public FileBitCollection FileBits { get; }
-        public LocalSharePartCollection Parts { get; }
-        public LocalShareHandler ServerHandler { get; }
-        public WjpServer Server { get; }
 
-        public LocalApplication Application => LocalShareCollection.Application;
+        public LocalApplication Application => LocalShares.Application;
+        public string HostName => Application.HostName;
 
-        public void Dispose()
-        {
-            Server.Dispose();
-        }
     }
 }

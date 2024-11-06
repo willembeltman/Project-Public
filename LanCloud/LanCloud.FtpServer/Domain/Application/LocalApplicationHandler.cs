@@ -24,7 +24,7 @@ namespace LanCloud.Domain.Application
         }
 
         public LocalApplication Application { get; }
-        private LocalShareCollection Shares => Application.LocalShares;
+        private LocalSharePartCollection Shares => Application.LocalShareParts;
         public ILogger Logger { get; }
 
         public WjpResponse ProcessRequest(WjpRequest request)
