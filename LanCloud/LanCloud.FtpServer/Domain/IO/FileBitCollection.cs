@@ -1,5 +1,5 @@
 ﻿using LanCloud.Domain.Share;
-using LanCloud.Models.Configs;
+using LanCloud.Services;
 using LanCloud.Shared.Log;
 using System;
 using System.IO;
@@ -9,36 +9,37 @@ namespace LanCloud.Domain.IO
 {
     public class FileBitCollection
     {
-        public FileBitCollection(LocalShare localShare, ILogger logger)
+        public FileBitCollection(LocalSharePart localSharePart, ILogger logger)
         {
-            LocalShare = localShare;
+            LocalSharePart = localSharePart;
             Logger = logger;
 
-            Root = new DirectoryInfo(Config.DirectoryName);
             if (!Root.Exists) Root.Create();
-            
+
             FileBits = Root
-                .GetFiles("*.filebit")
+                .GetFiles($"*.{string.Join("_", Indexes)}.filebit")
                 .Select(fileRefInfo => new FileBit(fileRefInfo))
                 .ToArray();
 
             Logger.Info($"Loaded");
         }
 
-        public LocalShare LocalShare { get; }
+        public LocalSharePart LocalSharePart { get; }
         private ILogger Logger { get; }
-        public DirectoryInfo Root { get; }
         private FileBit[] FileBits { get; set; }
 
-        private LocalShareConfig Config => LocalShare.ShareConfig;
+        public int[] Indexes => LocalSharePart.Indexes;
+        public DirectoryInfo Root => LocalSharePart.LocalShare.Root;
 
-        public FileBit CreateTempFileBit(string extention, int[] indexes)
+        public FileBit CreateTempFileBit(string extention)
         {
-            return new FileBit(Root, extention, indexes);
+            return new FileBit(LocalSharePart, extention, Indexes);
         }
 
         public void AddFileBit(FileBit fileBit)
         {
+            if (!fileBit.Indexes.Matches(Indexes)) throw new Exception("Indexes do not match");
+
             lock (FileBits)
             {
                 var newArray = new FileBit[FileBits.Length + 1];
@@ -50,12 +51,12 @@ namespace LanCloud.Domain.IO
 
         public FileBit FindFileBit(string extention, FileRef fileRef, FileRefBit fileRefBit)
         {
+            if (!fileRefBit.Indexes.Matches(Indexes)) return null;
+
             lock (FileBits)
             {
                 var fileBit = FileBits.FirstOrDefault(a =>
                     a.Extention == extention &&
-                    a.Indexes.Length == fileRefBit.Indexes.Length &&
-                    a.Indexes.All(b => fileRefBit.Indexes.Any(c => b == c)) &&
                     a.Length == fileRef.Length.Value &&
                     a.Hash == fileRef.Hash);
                 return fileBit;

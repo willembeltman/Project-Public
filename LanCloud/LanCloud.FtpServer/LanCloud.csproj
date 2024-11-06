@@ -72,6 +72,7 @@
     <Compile Include="Domain\IO\FileBitReader.cs" />
     <Compile Include="Domain\IO\FileBitWriter.cs" />
     <Compile Include="Domain\IO\FileRefDirectory.cs" />
+    <Compile Include="Domain\IO\IFileBit.cs" />
     <Compile Include="Models\SingleBuffer.cs" />
     <Compile Include="Models\DoubleBuffer.cs" />
     <Compile Include="Domain\Share\IShare.cs" />
@@ -89,7 +90,7 @@
     <Compile Include="Domain\IO\FileRefBit.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Domain\VirtualFtp\PathDirectoryInfo.cs" />
-    <Compile Include="Domain\VirtualFtp\PathInfo.cs" />
+    <Compile Include="Domain\VirtualFtp\PathFileInfo.cs" />
     <Compile Include="Domain\VirtualFtp\PathTranslator.cs" />
     <Compile Include="Domain\IO\FileRefAppender.cs" />
     <Compile Include="Domain\IO\FileRefWriter.cs" />
@@ -124,6 +125,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Domain\VirtualFtp\VirtualFtpServer.cs" />
+    <Compile Include="Services\IndexesService.cs" />
     <Compile Include="Services\LogService.cs" />
   </ItemGroup>
   <ItemGroup>

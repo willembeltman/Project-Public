@@ -16,7 +16,7 @@ namespace LanCloud.Domain.IO
             LocalSharePart = localShare;
             Logger = logger;
 
-            FileBit = LocalSharePart.LocalShare.FileBits.CreateTempFileBit(FileRefWriter.PathInfo.Extention, Indexes);
+            FileBit = LocalSharePart.FileBits.CreateTempFileBit(FileRefWriter.PathInfo.Extention);
             Buffer = new byte[Constants.BufferSize];
 
             Thread = new Thread(new ThreadStart(Start));
@@ -44,7 +44,7 @@ namespace LanCloud.Domain.IO
         {
             WriteAllData();
             FileBit.Update(FileRefWriter.Position, FileRefWriter.GeneratedHash);
-            LocalSharePart.LocalShare.FileBits.AddFileBit(FileBit);
+            LocalSharePart.FileBits.AddFileBit(FileBit);
         }
 
         private void WriteAllData()

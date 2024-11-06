@@ -49,7 +49,7 @@ namespace LanCloud.Domain.VirtualFtp
         public IFtpFileInfo[] GetFiles()
             => RealInfo
                 .GetFiles("*.fileref")
-                .Select(realInfo => new PathInfo(Application, realInfo, Logger))
+                .Select(realInfo => new PathFileInfo(Application, realInfo, Logger))
                 .ToArray();
     }
 }

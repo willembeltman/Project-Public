@@ -3,7 +3,7 @@ using LanCloud.Models.Configs;
 using LanCloud.Domain.Application;
 using System.Collections.Generic;
 using System;
-using LanCloud.Domain.IO;
+using System.IO;
 
 namespace LanCloud.Domain.Share
 {
@@ -16,14 +16,14 @@ namespace LanCloud.Domain.Share
             set
             {
                 _Status = value;
-                Application.StatusChanged();
+                LocalApplication.StatusChanged();
             }
         }
 
         public LocalShare(LocalApplication application, LocalShareConfig shareConfig, ref int port, ILogger logger)
         {
-            Application = application;
-            ShareConfig = shareConfig;
+            LocalApplication = application;
+            LocalShareConfig = shareConfig;
             Logger = logger;
 
             var list = new List<LocalSharePart>();
@@ -34,17 +34,17 @@ namespace LanCloud.Domain.Share
             }
             LocalShareParts = list.ToArray();
 
-            FileBits = new FileBitCollection(this, Logger);
-
             Status = Logger.Info($"OK");
         }
 
-        public LocalApplication Application { get; }
-        public LocalShareConfig ShareConfig { get; }
+        public LocalApplication LocalApplication { get; }
+        public LocalShareConfig LocalShareConfig { get; }
         public ILogger Logger { get; }
-        public LocalSharePart[] LocalShareParts { get; }
-        public FileBitCollection FileBits { get; }
 
+        public LocalSharePart[] LocalShareParts { get; }
+
+        public string RootFullName => LocalShareConfig.DirectoryName;
+        public DirectoryInfo Root => new DirectoryInfo(RootFullName);
 
         public void Dispose()
         {

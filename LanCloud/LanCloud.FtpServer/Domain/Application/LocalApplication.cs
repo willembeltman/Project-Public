@@ -4,6 +4,7 @@ using LanCloud.Domain.VirtualFtp;
 using LanCloud.Models.Configs;
 using LanCloud.Servers.Ftp;
 using LanCloud.Servers.Wjp;
+using LanCloud.Services;
 using LanCloud.Shared.Log;
 using System;
 using System.Linq;
@@ -90,7 +91,8 @@ namespace LanCloud.Domain.Application
 
         public FileBit[] FindFileBits(string extention, FileRef fileRef, FileRefBit fileRefBit)
         {
-            var fileBits = LocalShares
+            var fileBits = LocalShareParts
+                .Where(a => a.Indexes.Matches(fileRefBit.Indexes))
                 .Select(a => a.FileBits.FindFileBit(extention, fileRef, fileRefBit))
                 .Where(a => a != null)
                 .ToArray();

@@ -11,7 +11,7 @@ namespace LanCloud.Domain.VirtualFtp
 {
     public class FileRefReader : Stream
     {
-        public FileRefReader(PathInfo pathInfo, ILogger logger)
+        public FileRefReader(PathFileInfo pathInfo, ILogger logger)
         {
             PathInfo = pathInfo;
             Logger = logger;
@@ -39,7 +39,7 @@ namespace LanCloud.Domain.VirtualFtp
             Thread.Start();
         }
 
-        public PathInfo PathInfo { get; }
+        public PathFileInfo PathInfo { get; }
         public ILogger Logger { get; }
         internal FileBitReader[] FileBitReaders { get; }
         public int[] AllIndexes { get; }

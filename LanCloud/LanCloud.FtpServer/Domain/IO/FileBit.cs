@@ -1,11 +1,12 @@
-﻿using System;
+﻿using LanCloud.Domain.Share;
+using System;
 using System.Data;
 using System.IO;
 using System.Linq;
 
 namespace LanCloud.Domain.IO
 {
-    public class FileBit
+    public class FileBit : IFileBit
     {
         public FileBit(FileInfo info)
         {
@@ -13,16 +14,16 @@ namespace LanCloud.Domain.IO
             FullName = info.FullName;
             var split = info.Name.Split('.');
             Extention = split[0];
-            Indexes = split[1].Split('_').Select(a => Convert.ToInt32(a)).ToArray();
+            Hash = split[1];
             Length = Convert.ToInt64(split[2]);
-            Hash = split[3];
+            Indexes = split[3].Split('_').Select(a => Convert.ToInt32(a)).ToArray();
         }
-        public FileBit(DirectoryInfo dirinfo, string extention, int[] indexes)
+        public FileBit(LocalSharePart dirinfo, string extention, int[] indexes)
         {
             Extention = extention;
             Indexes = indexes;
-            var name = $"{extention}.{string.Join("_", indexes)}.{Guid.NewGuid().ToString()}.tempbit";
-            FullName = Path.Combine(dirinfo.FullName, name);
+            var name = $"{extention}.{Guid.NewGuid().ToString()}.{string.Join("_", indexes)}.tempbit";
+            FullName = Path.Combine(dirinfo.FileBits.Root.FullName, name);
             Info = new FileInfo(FullName);
             IsTemp = true;
         }
@@ -39,7 +40,7 @@ namespace LanCloud.Domain.IO
         {
             Length = length;
             Hash = hash;
-            var name = $"{Extention}.{string.Join("_", Indexes)}.{length}.{hash}.filebit";
+            var name = $"{Extention}.{hash}.{length}.{string.Join("_", Indexes)}.filebit";
             FullName = Path.Combine(Info.Directory.FullName, name);
             if (File.Exists(FullName))
                 File.Delete(Info.FullName);

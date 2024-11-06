@@ -11,7 +11,7 @@ namespace LanCloud.Domain.VirtualFtp
 {
     public class FileRefWriter : Stream
     {
-        public FileRefWriter(PathInfo pathInfo, ILogger logger)
+        public FileRefWriter(PathFileInfo pathInfo, ILogger logger)
         {
             PathInfo = pathInfo;
             Logger = logger;
@@ -29,7 +29,7 @@ namespace LanCloud.Domain.VirtualFtp
             Logger.Info($"Opened virtual ftp file: {pathInfo.Name}");
         }
 
-        public PathInfo PathInfo { get; }
+        public PathFileInfo PathInfo { get; }
         public ILogger Logger { get; }
         public FileBitWriter[] FileBitWriters { get; }
         public int[] AllIndexes { get; }

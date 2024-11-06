@@ -43,22 +43,22 @@ namespace LanCloud.Domain.VirtualFtp
         }
 
         public bool FileExists(string path) 
-            => new PathInfo(Application, path, Logger).Exists;
+            => new PathFileInfo(Application, path, Logger).Exists;
         public void FileDelete(string path)
-            => new PathInfo(Application, path, Logger).Delete();
+            => new PathFileInfo(Application, path, Logger).Delete();
         public void FileMove(string renameFrom, string renameTo)
         {
-            var from = new PathInfo(Application, renameFrom, Logger);
+            var from = new PathFileInfo(Application, renameFrom, Logger);
             from.MoveTo(renameTo);
         }
         public DateTime FileGetLastWriteTime(string path) 
-            => new PathInfo(Application, path, Logger).LastWriteTime;
+            => new PathFileInfo(Application, path, Logger).LastWriteTime;
 
         public Stream FileOpenRead(string path)
-            => new PathInfo(Application, path, Logger).OpenRead();
+            => new PathFileInfo(Application, path, Logger).OpenRead();
         public Stream FileOpenWriteCreate(string path)
-            => new PathInfo(Application, path, Logger).Create();
+            => new PathFileInfo(Application, path, Logger).Create();
         public Stream FileOpenWriteAppend(string path) 
-            => new PathInfo(Application, path, Logger).OpenAppend();
+            => new PathFileInfo(Application, path, Logger).OpenAppend();
     }
 }

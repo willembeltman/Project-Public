@@ -77,7 +77,7 @@ namespace LanCloud.Forms
                 {
                     var name2 = localShare.Server == null ?
                         " " : $" {localShare.HostName}:{localShare.Port} ";
-                    var localShareNode = new TreeNode($"{localShare.LocalShare.FileBits.Root.FullName}{name2}{string.Join("^", localShare.Indexes)} {localShare.Status}");
+                    var localShareNode = new TreeNode($"{localShare.FileBits.Root.FullName}{name2}{string.Join("^", localShare.Indexes)} {localShare.Status}");
 
                     var connections = localShare.Server?.GetActiveConnections();
                     if (connections?.Any() == true)

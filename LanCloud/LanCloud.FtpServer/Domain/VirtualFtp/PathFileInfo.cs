@@ -4,12 +4,13 @@ using LanCloud.Models;
 using LanCloud.Shared.Log;
 using System;
 using System.IO;
+using System.Linq;
 
 namespace LanCloud.Domain.VirtualFtp
 {
-    public class PathInfo : IFtpFileInfo
+    public class PathFileInfo : IFtpFileInfo
     {
-        public PathInfo(LocalApplication application, string path, ILogger logger)
+        public PathFileInfo(LocalApplication application, string path, ILogger logger)
         {
             Application = application;
             Path = path;
@@ -17,7 +18,7 @@ namespace LanCloud.Domain.VirtualFtp
             var realFullName = PathTranslator.TranslatePathToFullName(application.FileRefs.RootDirectoryInfo, path);
             RealInfo = new FileInfo(realFullName);
         }
-        public PathInfo(LocalApplication application, FileInfo realInfo, ILogger logger)
+        public PathFileInfo(LocalApplication application, FileInfo realInfo, ILogger logger)
         {
             Application = application;
             RealInfo = realInfo;
@@ -73,12 +74,20 @@ namespace LanCloud.Domain.VirtualFtp
 
         public void MoveTo(string toPath)
         {
-            var to = new PathInfo(Application, toPath, Logger);
+            var to = new PathFileInfo(Application, toPath, Logger);
             File.Move(RealInfo.FullName, to.RealInfo.FullName);
         }
         public void Delete()
         {
-            throw new NotImplementedException();
+            if (FileRef == null) return;
+
+            var fileBits = FileRef.FileRefBits
+                .SelectMany(a => Application.FindFileBits(Extention, FileRef, a)).ToArray();
+            foreach (var fileBit in fileBits)
+            {
+                fileBit.Info.Delete();
+            }
+            RealInfo.Delete();
         }
     }
 }

@@ -4,11 +4,11 @@ namespace LanCloud.Domain.VirtualFtp
 {
     public class FileRefAppender : System.IO.Stream
     {
-        public FileRefAppender(PathInfo virtualFileInfo, Shared.Log.ILogger logger)
+        public FileRefAppender(PathFileInfo virtualFileInfo, Shared.Log.ILogger logger)
         {
             VirtualFileInfo = virtualFileInfo;
         }
-        public PathInfo VirtualFileInfo { get; }
+        public PathFileInfo VirtualFileInfo { get; }
 
         public override bool CanRead => false;
         public override bool CanSeek => false;

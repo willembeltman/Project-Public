@@ -9,7 +9,7 @@ namespace LanCloud.Domain.IO
         {
         }
 
-        public FileRef(PathInfo pathInfo)
+        public FileRef(PathFileInfo pathInfo)
         {
             //Path = pathInfo?.Path;
             //Extention = pathInfo.Extention;

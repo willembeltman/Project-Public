@@ -26,11 +26,13 @@ namespace LanCloud.Domain.Share
         public LocalSharePart(LocalShare localShare, LocalSharePartConfig partConfig, int port, ILogger logger)
         {
             LocalShare = localShare;
-            Port = port;
             PartConfig = partConfig;
+            Port = port;
             Logger = logger;
 
-            if (localShare.Application.ApplicationServerConfig != null)
+            FileBits = new FileBitCollection(this, Logger);
+
+            if (localShare.LocalApplication.ApplicationServerConfig != null)
             {
                 ServerHandler = new LocalShareHandler(this, Logger);
                 Server = new WjpServer(IPAddress.Any, port, ServerHandler, Application, Logger);
@@ -44,10 +46,11 @@ namespace LanCloud.Domain.Share
         public int Port { get; }
         public ILogger Logger { get; }
 
+        public FileBitCollection FileBits { get; }
         public LocalShareHandler ServerHandler { get; }
         public WjpServer Server { get; }
 
-        public LocalApplication Application => LocalShare.Application;
+        public LocalApplication Application => LocalShare.LocalApplication;
         public string HostName => Application.ApplicationServerConfig?.HostName;
         public int[] Indexes => PartConfig.Indexes;
 
@@ -68,12 +71,12 @@ namespace LanCloud.Domain.Share
         }
         public IEnumerable<SingleBuffer> LoadFile(string path)
         {
-            var fileinfo = new PathInfo(Application, path, Logger);
+            var fileinfo = new PathFileInfo(Application, path, Logger);
             if (!fileinfo.Exists) return null;
             return LoadFileYield(fileinfo);
         }
 
-        private IEnumerable<SingleBuffer> LoadFileYield(PathInfo fileinfo)
+        private IEnumerable<SingleBuffer> LoadFileYield(PathFileInfo fileinfo)
         {
             SingleBuffer buffer = new SingleBuffer();
             using (var stream = fileinfo.OpenRead())
