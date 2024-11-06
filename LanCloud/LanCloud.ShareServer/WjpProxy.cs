@@ -61,17 +61,16 @@ namespace LanCloud.Servers.Wjp
                             {
                                 Connected = true;
                                 new Thread(new ThreadStart(SendStateChanged)).Start();
-                                //StateChanged?.Invoke(this, null);
-
-                                writer.Write(-1);
-                                if (reader.ReadInt32() != -1)
-                                {
-                                    break;
-                                }
                                 Status = Logger.Info("Connected");
                             }
 
-                            if (Enqueued.WaitOne(10000))
+                            writer.Write(-1);
+                            if (reader.ReadInt32() != -1)
+                            {
+                                break;
+                            }
+
+                            if (Enqueued.WaitOne(1000))
                             {
                                 while (Queue.TryDequeue(out WjpProxyQueueItem requestItem))
                                 {
@@ -99,12 +98,14 @@ namespace LanCloud.Servers.Wjp
                 catch (SocketException ex)
                 {
                 }
+                catch (EndOfStreamException ex)
+                {
+                }
 
                 if (Connected)
                 {
                     Connected = false;
                     new Thread(new ThreadStart(SendStateChanged)).Start();
-                    //StateChanged?.Invoke(this, null);
                     Status = Logger.Info("Not connected");
 
                     Thread.Sleep(10000);
