@@ -28,12 +28,12 @@ namespace LanCloud.Domain.IO
         private ILogger Logger { get; }
         private FileBit[] FileBits { get; set; }
 
-        public int[] Indexes => LocalSharePart.Indexes;
+        public byte[] Indexes => LocalSharePart.Indexes;
         public DirectoryInfo Root => LocalSharePart.LocalShare.Root;
 
         public FileBit CreateTempFileBit(string extention)
         {
-            return new FileBit(LocalSharePart, extention, Indexes);
+            return new FileBit(Root, extention, Indexes);
         }
 
         public void AddFileBit(FileBit fileBit)

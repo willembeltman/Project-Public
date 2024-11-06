@@ -1,8 +1,10 @@
-﻿namespace LanCloud.Domain.IO
+﻿using Newtonsoft.Json;
+
+namespace LanCloud.Domain.IO
 {
     public class FileRefBit
     {
-        public int[] Indexes { get; set; }
-        public long Length { get; set; }
+        public byte[] Indexes { get; set; }
+        //public long Length { get; set; }
     }
 }

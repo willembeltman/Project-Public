@@ -6,16 +6,16 @@ namespace LanCloud.Models.Configs
     public class LocalSharePartConfig
     {
         public LocalSharePartConfig() { }
-        public LocalSharePartConfig(int index)
+        public LocalSharePartConfig(byte index)
         {
-            Indexes = new int[] { index };
+            Indexes = new byte[] { index };
         }
-        public LocalSharePartConfig(int[] indexes)
+        public LocalSharePartConfig(byte[] indexes)
         {
             Indexes = indexes;
         }
 
-        public int[] Indexes { get; set; }
+        public byte[] Indexes { get; set; }
         [JsonIgnore]
         public bool IsPartity => Indexes.Length > 1;
         [JsonIgnore]

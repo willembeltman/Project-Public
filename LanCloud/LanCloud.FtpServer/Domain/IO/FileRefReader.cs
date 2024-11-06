@@ -16,7 +16,7 @@ namespace LanCloud.Domain.VirtualFtp
             PathInfo = pathInfo;
             Logger = logger;
 
-            FileBitReaders = FileRef.FileRefBits
+            FileBitReaders = FileRef.Bits
                 .Select(fileRefBit =>
                 {
                     var fileBit = Application
@@ -42,7 +42,7 @@ namespace LanCloud.Domain.VirtualFtp
         public PathFileInfo PathInfo { get; }
         public ILogger Logger { get; }
         internal FileBitReader[] FileBitReaders { get; }
-        public int[] AllIndexes { get; }
+        public byte[] AllIndexes { get; }
         public DoubleBuffer Buffer { get; }
         public Thread Thread { get; }
         public bool Disposed { get; private set; }

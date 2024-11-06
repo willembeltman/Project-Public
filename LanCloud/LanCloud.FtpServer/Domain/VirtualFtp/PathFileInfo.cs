@@ -15,7 +15,7 @@ namespace LanCloud.Domain.VirtualFtp
             Application = application;
             Path = path;
             Logger = logger;
-            var realFullName = PathTranslator.TranslatePathToFullName(application.FileRefs.RootDirectoryInfo, path);
+            var realFullName = PathTranslator.TranslatePathToFullName(application.FileRefs.Root, path);
             RealInfo = new FileInfo(realFullName);
         }
         public PathFileInfo(LocalApplication application, FileInfo realInfo, ILogger logger)
@@ -23,7 +23,7 @@ namespace LanCloud.Domain.VirtualFtp
             Application = application;
             RealInfo = realInfo;
             Logger = logger;
-            Path = PathTranslator.TranslateFullnameToPath(application.FileRefs.RootDirectoryInfo, realInfo);
+            Path = PathTranslator.TranslateFullnameToPath(application.FileRefs.Root, realInfo);
         }
 
         public LocalApplication Application { get; }
@@ -53,41 +53,32 @@ namespace LanCloud.Domain.VirtualFtp
 
         public Stream Create()
         {
-            // FileRef aanmaken
             FileRef = new FileRef(this);
             return new FileRefWriter(this, Logger);
         }
 
         public Stream OpenRead()
         {
-            // FileRef moet bestaan
             if (FileRef == null) return null;
             return new FileRefReader(this, Logger);
         }
 
         public Stream OpenAppend()
         {
-            // FileRef moet bestaan
             if (FileRef == null) return null;
             return new FileRefAppender(this, Logger);
         }
 
         public void MoveTo(string toPath)
         {
+            if (FileRef == null) return;
             var to = new PathFileInfo(Application, toPath, Logger);
-            File.Move(RealInfo.FullName, to.RealInfo.FullName);
+            Application.FileRefs.Move(RealInfo, Extention, FileRef, to.RealInfo, to.Extention);
         }
         public void Delete()
         {
             if (FileRef == null) return;
-
-            var fileBits = FileRef.FileRefBits
-                .SelectMany(a => Application.FindFileBits(Extention, FileRef, a)).ToArray();
-            foreach (var fileBit in fileBits)
-            {
-                fileBit.Info.Delete();
-            }
-            RealInfo.Delete();
+            Application.FileRefs.Delete(RealInfo, Extention, FileRef);
         }
     }
 }

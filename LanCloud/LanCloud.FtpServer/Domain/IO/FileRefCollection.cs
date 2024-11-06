@@ -1,7 +1,9 @@
 ﻿using LanCloud.Domain.Application;
 using LanCloud.Services;
 using LanCloud.Shared.Log;
+using System;
 using System.IO;
+using System.Linq;
 
 namespace LanCloud.Domain.IO
 {
@@ -14,23 +16,24 @@ namespace LanCloud.Domain.IO
 
             var rootInfo = new DirectoryInfo(Application.Config.RefDirectoryName);
             if (!rootInfo.Exists) { rootInfo.Create(); }
-            RootDirectory = rootInfo.FullName.TrimEnd('\\');
-            RootDirectoryInfo = new DirectoryInfo(RootDirectory);
+
+            RootFullName = rootInfo.FullName.TrimEnd('\\');
+            Root = new DirectoryInfo(RootFullName);
 
             Reload();
         }
 
-        private void Reload()
-        {
-            Root = new FileRefDirectory(this, RootDirectoryInfo, Logger);
-        }
-
-        public string RootDirectory { get; }
-        public DirectoryInfo RootDirectoryInfo { get; }
+        public string RootFullName { get; }
+        public DirectoryInfo Root { get; }
         public LocalApplication Application { get; }
         public ILogger Logger { get; }
 
-        public FileRefDirectory Root { get; private set; }
+        public FileRefDirectory FileRefRoot { get; private set; }
+
+        private void Reload()
+        {
+            FileRefRoot = new FileRefDirectory(this, Root, Logger);
+        }
 
         public FileRef Load(string path, FileInfo realInfo)
         {
@@ -44,6 +47,44 @@ namespace LanCloud.Domain.IO
             var res = FileRefService.Save(realInfo, value);
             Reload();
             return res;
+        }
+
+        public void Delete(FileInfo realInfo, string extention, FileRef fileRef)
+        {
+            var fileBits = fileRef.Bits
+                .SelectMany(a => Application.FindFileBits(extention, fileRef, a)).ToArray();
+
+            foreach (var fileBit in fileBits)
+            {
+                fileBit.Info.Delete();
+            }
+
+            realInfo.Delete();
+            Reload();
+        }
+
+        public void DeleteDirectory(DirectoryInfo realInfo)
+        {
+            realInfo.Delete();
+            Reload();
+        }
+
+        public void Move(FileInfo realInfo, string extention, FileRef fileRef, FileInfo toRealInfo, string toExtention)
+        {
+            if (extention != toExtention)
+            {
+                var fileBits = fileRef.Bits
+                    .SelectMany(a => Application.FindFileBits(extention, fileRef, a))
+                    .Select(a => new { OldFileBit = a, NewFileBit = new FileBit(a.Info.Directory, toExtention, a.Indexes, a.Length, a.Hash)})                    
+                    .ToArray();
+
+                foreach (var fileBit in fileBits)
+                {
+                    fileBit.OldFileBit.Info.MoveTo(fileBit.NewFileBit.Info.FullName);
+                }
+            }
+
+            File.Move(realInfo.FullName, toRealInfo.FullName);
         }
     }
 }

@@ -38,7 +38,7 @@ namespace LanCloud.Domain.IO
         public int Position { get; private set; } = 0;
         private bool KillSwitch { get; set; } = false;
 
-        public int[] Indexes => LocalSharePart.Indexes;
+        public byte[] Indexes => LocalSharePart.Indexes;
 
         private void Start()
         {

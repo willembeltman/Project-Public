@@ -1,4 +1,5 @@
 ﻿using LanCloud.Domain.Application;
+using LanCloud.Domain.IO;
 using LanCloud.Models;
 using LanCloud.Shared.Log;
 using System;
@@ -14,7 +15,7 @@ namespace LanCloud.Domain.VirtualFtp
             Application = application;
             Path = path;
             Logger = logger;
-            var realFullName = PathTranslator.TranslateDirectoryPathToFullName(application.FileRefs.RootDirectoryInfo, path);
+            var realFullName = PathTranslator.TranslateDirectoryPathToFullName(application.FileRefs.Root, path);
             RealInfo = new DirectoryInfo(realFullName);
         }
         public PathDirectoryInfo(LocalApplication application, DirectoryInfo realInfo, ILogger logger)
@@ -22,7 +23,7 @@ namespace LanCloud.Domain.VirtualFtp
             Application = application;
             RealInfo = realInfo;
             Logger = logger;
-            Path = PathTranslator.TranslateDirectoryFullNameToPath(application.FileRefs.RootDirectoryInfo, realInfo);
+            Path = PathTranslator.TranslateDirectoryFullNameToPath(application.FileRefs.Root, realInfo);
         }
 
         public LocalApplication Application { get; }
@@ -33,11 +34,10 @@ namespace LanCloud.Domain.VirtualFtp
         public string Name => RealInfo.Name;
         public DateTime LastWriteTime => RealInfo.LastWriteTime;
         public void Create() => RealInfo.Create();
-        public void Delete() => RealInfo.Delete();
         public bool Exists => RealInfo.Exists;
         public void MoveTo(string pathTo)
         {
-            var to = PathTranslator.TranslatePathToFullName(Application.FileRefs.RootDirectoryInfo, pathTo);
+            var to = PathTranslator.TranslatePathToFullName(Application.FileRefs.Root, pathTo);
             RealInfo.MoveTo(to);
         }
 
@@ -51,5 +51,14 @@ namespace LanCloud.Domain.VirtualFtp
                 .GetFiles("*.fileref")
                 .Select(realInfo => new PathFileInfo(Application, realInfo, Logger))
                 .ToArray();
+
+        public void Delete()
+        {
+            RealInfo.Delete(false);
+
+            Application.FileRefs.DeleteDirectory(RealInfo);
+
+            //Application.FileRefs.Reload();
+        }
     }
 }

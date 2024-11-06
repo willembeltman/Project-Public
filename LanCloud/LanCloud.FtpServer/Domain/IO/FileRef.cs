@@ -15,7 +15,7 @@ namespace LanCloud.Domain.IO
             //Extention = pathInfo.Extention;
             Length = pathInfo.FileRef?.Length;
             Hash = pathInfo.FileRef?.Hash;
-            FileRefBits = pathInfo.FileRef?.FileRefBits;
+            Bits = pathInfo.FileRef?.Bits;
         }
 
         //[JsonIgnore]
@@ -26,8 +26,11 @@ namespace LanCloud.Domain.IO
         //public string Extention => PathTranslator.TranslatePathToExtention(Path);
 
         //public string Extention { get; set; }
+        [JsonProperty("l")]
         public long? Length { get; set; }
+        [JsonProperty("h")]
         public string Hash { get; set; }
-        public FileRefBit[] FileRefBits { get; set; }
+        [JsonProperty("b")]
+        public FileRefBit[] Bits { get; set; }
     }
 }

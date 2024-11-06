@@ -52,7 +52,7 @@ namespace LanCloud.Domain.Share
 
         public LocalApplication Application => LocalShare.LocalApplication;
         public string HostName => Application.ApplicationServerConfig?.HostName;
-        public int[] Indexes => PartConfig.Indexes;
+        public byte[] Indexes => PartConfig.Indexes;
 
 
         public bool SaveFile(FileBit bit, IEnumerable<SingleBuffer> datareader)

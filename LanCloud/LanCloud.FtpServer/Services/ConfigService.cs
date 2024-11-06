@@ -63,7 +63,7 @@ namespace LanCloud.Services
                             DirectoryName = "E:\\Test\\P",
                             Parts = new LocalSharePartConfig[]
                             {
-                                new LocalSharePartConfig(new [] { 0, 1 })
+                                new LocalSharePartConfig(new byte[] { 0, 1 })
                             }
                         }
                     },

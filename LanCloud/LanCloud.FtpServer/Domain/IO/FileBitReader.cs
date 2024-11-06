@@ -29,7 +29,7 @@ namespace LanCloud.Domain.IO
         private AutoResetEvent BufferIsWritten { get; } = new AutoResetEvent(false);
         private bool EndOfFile { get; set; } = false;
 
-        public int[] Indexes => FileBit.Indexes;
+        public byte[] Indexes => FileBit.Indexes;
 
         public bool KillSwitch { get; private set; }
 

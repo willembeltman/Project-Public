@@ -32,7 +32,7 @@ namespace LanCloud.Domain.VirtualFtp
         public PathFileInfo PathInfo { get; }
         public ILogger Logger { get; }
         public FileBitWriter[] FileBitWriters { get; }
-        public int[] AllIndexes { get; }
+        public byte[] AllIndexes { get; }
         public DoubleBuffer Buffer { get; }
         private IncrementalHash IncrementalHash { get; } = IncrementalHash.CreateHash(HashAlgorithmName.MD5);
         public string GeneratedHash { get; private set; }
@@ -47,8 +47,6 @@ namespace LanCloud.Domain.VirtualFtp
 
         public override void Write(byte[] buffer, int offset, int count)
         {
-            Logger.Info($"Received {count}b");
-
             var bytesWritten = 0;
 
             while (bytesWritten < count)
@@ -79,27 +77,19 @@ namespace LanCloud.Domain.VirtualFtp
         }
         private void FlipBuffer()
         {
-            Logger.Info($"FlipBuffer start");
-
             WaitForDone();
 
             Buffer.Flip();
 
             foreach (var item in FileBitWriters)
                 item.StartNext.Set();
-
-            Logger.Info($"FlipBuffer end");
         }
 
         private void WaitForDone()
         {
-            Logger.Info($"WaitForDone start");
-
             foreach (var item in FileBitWriters)
                 if (!item.WritingIsDone.WaitOne(10000))
                     throw new Exception("Timeout writing to: " + item.FileBit?.FullName);
-
-            Logger.Info($"WaitForDone end");
         }
 
         protected override void Dispose(bool disposing)
@@ -129,11 +119,11 @@ namespace LanCloud.Domain.VirtualFtp
                 var fileRef = new FileRef(PathInfo);
                 fileRef.Length = Position;
                 fileRef.Hash = GeneratedHash;
-                fileRef.FileRefBits = fileBits
+                fileRef.Bits = fileBits
                     .Select(a => new FileRefBit()
                     {
                         Indexes = a.Indexes,
-                        Length = a.Info.Length
+                        //Length = a.Info.Length
                     })
                     .ToArray();
                 PathInfo.FileRef = fileRef;

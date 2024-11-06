@@ -14,7 +14,7 @@ namespace LanCloud.Domain.IO
             RealInfo = realInfo;
             Logger = logger;
 
-            Path = PathTranslator.TranslateDirectoryFullNameToPath(fileRefCollection.RootDirectoryInfo, realInfo);
+            Path = PathTranslator.TranslateDirectoryFullNameToPath(fileRefCollection.Root, realInfo);
             FileRefs = realInfo
                 .GetFiles("*.fileref")
                 .Select(file => FileRefService.Load(file))
