@@ -23,15 +23,14 @@ namespace LanCloud.Domain.Share
             }
         }
 
-        public LocalSharePart(LocalShare localShare, LocalSharePartConfig partConfig, string hostName, int port, ILogger logger)
+        public LocalSharePart(LocalShare localShare, LocalSharePartConfig partConfig, int port, ILogger logger)
         {
             LocalShare = localShare;
-            HostName = hostName;
             Port = port;
             PartConfig = partConfig;
             Logger = logger;
 
-            if (localShare.Application.RemoteApplicationConfig != null)
+            if (localShare.Application.ApplicationServerConfig != null)
             {
                 ServerHandler = new LocalShareHandler(this, Logger);
                 Server = new WjpServer(IPAddress.Any, port, ServerHandler, Application, Logger);
@@ -42,7 +41,6 @@ namespace LanCloud.Domain.Share
 
         public LocalShare LocalShare { get; }
         public LocalSharePartConfig PartConfig { get; }
-        public string HostName { get; }
         public int Port { get; }
         public ILogger Logger { get; }
 
@@ -50,6 +48,7 @@ namespace LanCloud.Domain.Share
         public WjpServer Server { get; }
 
         public LocalApplication Application => LocalShare.Application;
+        public string HostName => Application.ApplicationServerConfig?.HostName;
         public int[] Indexes => PartConfig.Indexes;
 
 

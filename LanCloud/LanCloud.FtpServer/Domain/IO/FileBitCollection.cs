@@ -1,5 +1,4 @@
-﻿using LanCloud.Domain.IO;
-using LanCloud.Domain.Share;
+﻿using LanCloud.Domain.Share;
 using LanCloud.Models.Configs;
 using LanCloud.Shared.Log;
 using System;
@@ -23,7 +22,7 @@ namespace LanCloud.Domain.IO
                 .Select(fileRefInfo => new FileBit(fileRefInfo))
                 .ToArray();
 
-            //Logger.Info($"Loaded");
+            Logger.Info($"Loaded");
         }
 
         public LocalShare LocalShare { get; }

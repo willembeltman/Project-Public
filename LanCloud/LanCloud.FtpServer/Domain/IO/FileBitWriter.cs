@@ -22,7 +22,7 @@ namespace LanCloud.Domain.IO
             Thread = new Thread(new ThreadStart(Start));
             Thread.Start();
 
-            //Logger.Info($"Opened {FileBit.Info.Name} as output for parts: {string.Join(" xor ", Indexes.Select(a => $"#{a}"))}");
+            Logger.Info($"Opened {FileBit.Info.Name} as output for parts: {string.Join(" xor ", Indexes.Select(a => $"#{a}"))}");
         }
 
         public FileRefWriter FileRefWriter { get; }

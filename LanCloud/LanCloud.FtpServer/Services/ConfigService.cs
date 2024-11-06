@@ -73,7 +73,7 @@ namespace LanCloud.Services
                 return config;
             }
 
-            //Logger.Info("Config found, reading config settings");
+            Logger.Info("Config found, reading config settings");
             using (var reader = new StreamReader(Fullname))
             {
                 var json = reader.ReadToEnd();

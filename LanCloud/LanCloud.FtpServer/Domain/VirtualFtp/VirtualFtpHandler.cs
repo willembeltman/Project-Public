@@ -14,7 +14,7 @@ namespace LanCloud.Domain.VirtualFtp
             Application = application;
             Logger = logger;
 
-            //Logger.Info($"Loaded");
+            Logger.Info($"Loaded");
         }
 
         public ILogger Logger { get; }

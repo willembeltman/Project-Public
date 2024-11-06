@@ -25,8 +25,9 @@ namespace LanCloud.Domain.Application
             Authentication = new AuthenticationService(this, logger);
             FileRefs = new FileRefCollection(this, logger);
 
-            RemoteApplicationConfig = config.Servers.FirstOrDefault(a => a.IsThisComputer);
-            int port = RemoteApplicationConfig?.Port ?? 8080;
+            ApplicationServerConfig = config.Servers.FirstOrDefault(a => a.IsThisComputer);
+            
+            int port = ApplicationServerConfig?.Port ?? 8080;
             LocalShares = Config.Shares
                 .Select(share => new LocalShare(this, share, ref port, Logger))
                 .ToArray();
@@ -36,21 +37,21 @@ namespace LanCloud.Domain.Application
                 .Select(remoteconfig => new RemoteApplication(this, remoteconfig, logger))
                 .ToArray();
 
-            if (RemoteApplicationConfig != null)
+            if (ApplicationServerConfig != null)
             {
-                ServerHandler = new LocalApplicationHandler(this, RemoteApplicationConfig.HostName, logger);
-                Server = new WjpServer(IPAddress.Any, RemoteApplicationConfig.Port, ServerHandler, this, logger);
+                ServerHandler = new LocalApplicationHandler(this, ApplicationServerConfig.HostName, logger);
+                Server = new WjpServer(IPAddress.Any, ApplicationServerConfig.Port, ServerHandler, this, logger);
             }
 
             VirtualFtpServer = new VirtualFtpServer(this, logger);
 
-            if (RemoteApplicationConfig != null)
+            if (ApplicationServerConfig != null)
             {
                 Status = Logger.Info($"OK");
             }
             else
             {
-                Status = Logger.Info($"OK without server");
+                Status = Logger.Info($"OK without sharing");
             }
         }
 
@@ -60,7 +61,7 @@ namespace LanCloud.Domain.Application
         public AuthenticationService Authentication { get; }
         public FileRefCollection FileRefs { get; }
         public RemoteApplication[] RemoteApplications { get; }
-        public RemoteApplicationConfig RemoteApplicationConfig { get; }
+        public RemoteApplicationConfig ApplicationServerConfig { get; }
         public LocalShare[] LocalShares { get; }
         public LocalApplicationHandler ServerHandler { get; }
         public WjpServer Server { get; }
@@ -68,7 +69,7 @@ namespace LanCloud.Domain.Application
         private string _Status { get; set; }
 
         public string HostName => Config.HostName;
-        public int? Port => RemoteApplicationConfig?.Port;
+        public int? Port => ApplicationServerConfig?.Port;
         public LocalSharePart[] LocalShareParts => LocalShares?
             .SelectMany(localShare => localShare.LocalShareParts)
             .ToArray();

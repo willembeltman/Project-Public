@@ -45,12 +45,12 @@ namespace LanCloud.Forms
         {
             treeView1.Nodes.Clear();
 
-            var applicationNode = new TreeNode($"LocalApplication");
+            var applicationNode = new TreeNode($"Local Application");
 
             var name = "";
-            if (Application.RemoteApplicationConfig != null)
+            if (Application.ApplicationServerConfig != null)
             {
-                name = $"{Application.RemoteApplicationConfig.HostName}:{Application.RemoteApplicationConfig.Port} ";
+                name = $"{Application.ApplicationServerConfig.HostName}:{Application.ApplicationServerConfig.Port} ";
             }
 
             var applicationInnerNode = new TreeNode($"{Application.HostName} {name}{Application.Status}");
@@ -72,7 +72,7 @@ namespace LanCloud.Forms
 
             if (Application.LocalShareParts?.Any() == true)
             {
-                var localSharesNode = new TreeNode("LocalShares");
+                var localSharesNode = new TreeNode("Local Shares");
                 foreach (var localShare in Application.LocalShareParts)
                 {
                     var name2 = localShare.Server == null ?
@@ -98,14 +98,14 @@ namespace LanCloud.Forms
 
             if (Application.RemoteApplications?.Any() == true)
             {
-                var remoteApplicationsNode = new TreeNode("RemoteApplications");
+                var remoteApplicationsNode = new TreeNode("Remote Applications");
                 foreach (var remoteApplication in Application.RemoteApplications)
                 {
                     var remoteApplicationNode = new TreeNode($"{remoteApplication.HostName}:{remoteApplication.Port} {remoteApplication.Status}");
 
                     if (remoteApplication.RemoteShares.Any())
                     {
-                        var remoteSharesNode = new TreeNode("RemoteShares");
+                        var remoteSharesNode = new TreeNode("Remote Shares");
                         foreach (var remoteShare in remoteApplication.RemoteShares)
                         {
                             // Tweede laag onder Child 1
@@ -119,7 +119,7 @@ namespace LanCloud.Forms
                 treeView1.Nodes.Add(remoteApplicationsNode);
             }
 
-            var virtualFtpServerNode = new TreeNode($"VirtualFtpServer");
+            var virtualFtpServerNode = new TreeNode($"Virtual Ftp Server");
             virtualFtpServerNode.Nodes.Add(new TreeNode($"{Application.VirtualFtpServer.HostName}:{Application.VirtualFtpServer.Port} {Application.VirtualFtpServer.FtpServer.Status}"));
             treeView1.Nodes.Add(virtualFtpServerNode);
 

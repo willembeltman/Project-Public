@@ -37,13 +37,14 @@
             this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.treeView1.Location = new System.Drawing.Point(0, 0);
             this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(533, 648);
+            this.treeView1.Size = new System.Drawing.Size(668, 648);
             this.treeView1.TabIndex = 0;
             // 
             // checkBox1
             // 
+            this.checkBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(301, 12);
+            this.checkBox1.Location = new System.Drawing.Point(436, 12);
             this.checkBox1.Name = "checkBox1";
             this.checkBox1.Size = new System.Drawing.Size(220, 24);
             this.checkBox1.TabIndex = 1;
@@ -55,7 +56,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(533, 648);
+            this.ClientSize = new System.Drawing.Size(668, 648);
             this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.treeView1);
             this.Name = "StatusForm";

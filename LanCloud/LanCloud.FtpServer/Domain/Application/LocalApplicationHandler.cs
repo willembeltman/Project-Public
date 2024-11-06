@@ -6,7 +6,6 @@ using LanCloud.Enums;
 using System;
 using LanCloud.Models.Application.Responses;
 using LanCloud.Models.Dtos;
-using LanCloud.Domain.Share;
 
 namespace LanCloud.Domain.Application
 {
@@ -20,7 +19,7 @@ namespace LanCloud.Domain.Application
             Application = application;
             Logger = logger;
 
-            //Logger.Info($"Loaded");
+            Logger.Info($"Loaded");
         }
 
         public LocalApplication Application { get; }

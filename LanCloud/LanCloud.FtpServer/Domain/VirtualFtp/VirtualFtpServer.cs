@@ -16,7 +16,7 @@ namespace LanCloud.Domain.VirtualFtp
             FtpHandler = new VirtualFtpHandler(application, logger);
             FtpServer = new FtpServer(IPAddress.Any, 21, FtpHandler, application, logger);
 
-            //Logger.Info($"Loaded");
+            Logger.Info($"Loaded");
         }
 
         public LocalApplication Application { get; }

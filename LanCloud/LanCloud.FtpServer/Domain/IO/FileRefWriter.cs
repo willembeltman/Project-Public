@@ -1,6 +1,5 @@
 ﻿using LanCloud.Domain.Application;
 using LanCloud.Domain.IO;
-using LanCloud.Models;
 using LanCloud.Shared.Log;
 using System;
 using System.IO;
@@ -12,9 +11,9 @@ namespace LanCloud.Domain.VirtualFtp
 {
     public class FileRefWriter : Stream
     {
-        public FileRefWriter(PathInfo ftpFileInfo, ILogger logger)
+        public FileRefWriter(PathInfo pathInfo, ILogger logger)
         {
-            PathInfo = ftpFileInfo;
+            PathInfo = pathInfo;
             Logger = logger;
             FileBitWriters = Application.LocalShareParts
                 .Select(sharepart => new FileBitWriter(this, sharepart, Logger))
@@ -27,7 +26,7 @@ namespace LanCloud.Domain.VirtualFtp
                 .ToArray();
             Buffer = new DoubleBuffer(AllIndexes.Length);
 
-            //Logger.Info($"Opened virtual ftp file: {FtpFileInfo.Name}");
+            Logger.Info($"Opened virtual ftp file: {pathInfo.Name}");
         }
 
         public PathInfo PathInfo { get; }
@@ -48,7 +47,7 @@ namespace LanCloud.Domain.VirtualFtp
 
         public override void Write(byte[] buffer, int offset, int count)
         {
-            //Logger.Info($"Received {count}b");
+            Logger.Info($"Received {count}b");
 
             var bytesWritten = 0;
 
@@ -80,7 +79,7 @@ namespace LanCloud.Domain.VirtualFtp
         }
         private void FlipBuffer()
         {
-            //Logger.Info($"FlipBuffer start");
+            Logger.Info($"FlipBuffer start");
 
             WaitForDone();
 
@@ -89,18 +88,18 @@ namespace LanCloud.Domain.VirtualFtp
             foreach (var item in FileBitWriters)
                 item.StartNext.Set();
 
-            //Logger.Info($"FlipBuffer end");
+            Logger.Info($"FlipBuffer end");
         }
 
         private void WaitForDone()
         {
-            //Logger.Info($"WaitForDone start");
+            Logger.Info($"WaitForDone start");
 
             foreach (var item in FileBitWriters)
                 if (!item.WritingIsDone.WaitOne(10000))
                     throw new Exception("Timeout writing to: " + item.FileBit?.FullName);
 
-            //Logger.Info($"WaitForDone end");
+            Logger.Info($"WaitForDone end");
         }
 
         protected override void Dispose(bool disposing)

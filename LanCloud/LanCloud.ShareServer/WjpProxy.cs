@@ -1,6 +1,7 @@
 ﻿using LanCloud.Shared.Log;
 using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.IO;
 using System.Net.Sockets;
 using System.Threading;
@@ -43,13 +44,15 @@ namespace LanCloud.Servers.Wjp
         public string HostName => Config.HostName;
         public int Port => Config.Port;
 
+        public long ResponseTime { get; private set; }
+
         private void Start()
         {
             while (!Stop)
             {
                 try
                 {
-                    Status = Logger.Info("Trying to connect");
+                    Status = Logger.Info($"Trying to connect to {Config.HostName}:{Config.Port}");
                     using (var client = new TcpClient(Config.HostName, Config.Port))
                     using (var stream = client.GetStream())
                     using (var reader = new BinaryReader(stream))
@@ -61,14 +64,16 @@ namespace LanCloud.Servers.Wjp
                             {
                                 Connected = true;
                                 new Thread(new ThreadStart(SendStateChanged)).Start();
-                                Status = Logger.Info("Connected");
+                                Status = Logger.Info($"Connected to {Config.HostName}:{Config.Port}");
                             }
 
+                            Stopwatch sw = Stopwatch.StartNew();
                             writer.Write(-1);
                             if (reader.ReadInt32() != -1)
                             {
                                 break;
                             }
+                            ResponseTime = sw.ElapsedMilliseconds;
 
                             if (Enqueued.WaitOne(1000))
                             {
@@ -97,19 +102,20 @@ namespace LanCloud.Servers.Wjp
                 }
                 catch (SocketException ex)
                 {
+                    Status = Logger.Info($"Connection failed to {Config.HostName}:{Config.Port}");
                 }
                 catch (EndOfStreamException ex)
                 {
+                    Status = Logger.Info($"Connection failed to {Config.HostName}:{Config.Port}");
                 }
 
                 if (Connected)
                 {
                     Connected = false;
                     new Thread(new ThreadStart(SendStateChanged)).Start();
-                    Status = Logger.Info("Not connected");
-
+                    Status = Logger.Info($"Not connected to {Config.HostName}:{Config.Port}");
                 }
-                Status = Logger.Info("Waiting to retry");
+                Status = Logger.Info($"Waiting to retry to {Config.HostName}:{Config.Port}");
                 Thread.Sleep(10000);
             }
         }

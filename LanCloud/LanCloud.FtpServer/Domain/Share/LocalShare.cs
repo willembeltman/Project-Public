@@ -30,7 +30,7 @@ namespace LanCloud.Domain.Share
             foreach (var part in shareConfig.Parts)
             {
                 port = port + 1;
-                list.Add(new LocalSharePart(this, part, HostName, port, logger));
+                list.Add(new LocalSharePart(this, part, port, logger));
             }
             LocalShareParts = list.ToArray();
 
@@ -45,7 +45,6 @@ namespace LanCloud.Domain.Share
         public LocalSharePart[] LocalShareParts { get; }
         public FileBitCollection FileBits { get; }
 
-        public string HostName => Application.RemoteApplicationConfig?.HostName;
 
         public void Dispose()
         {
