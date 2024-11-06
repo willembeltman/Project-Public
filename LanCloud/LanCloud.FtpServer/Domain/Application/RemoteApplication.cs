@@ -5,21 +5,19 @@ using Newtonsoft.Json;
 using LanCloud.Shared.Log;
 using LanCloud.Models.Configs;
 using LanCloud.Models.Dtos;
-using LanCloud.Domain.Collections;
 using System.Linq;
 using LanCloud.Domain.Share;
-using System;
 
 namespace LanCloud.Domain.Application
 {
     public class RemoteApplication : WjpProxy
     {
         public RemoteApplication(
-            RemoteApplicationCollection remoteApplicationCollection,
+            LocalApplication localApplication,
             RemoteApplicationConfig config, 
-            ILogger logger) : base(config, remoteApplicationCollection.Application, logger)
+            ILogger logger) : base(config, localApplication, logger)
         {
-            RemoteApplicationCollection = remoteApplicationCollection;
+            LocalApplication = localApplication;
             Config = config;
             Logger = logger;
 
@@ -28,7 +26,7 @@ namespace LanCloud.Domain.Application
             StateChanged += RemoteApplication_StateChanged;
         }
 
-        public RemoteApplicationCollection RemoteApplicationCollection { get; }
+        public LocalApplication LocalApplication { get; }
         public RemoteApplicationConfig Config { get; }
         public ILogger Logger { get; }
 

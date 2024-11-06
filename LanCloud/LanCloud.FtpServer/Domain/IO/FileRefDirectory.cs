@@ -1,5 +1,4 @@
-﻿using LanCloud.Domain.Collections;
-using LanCloud.Domain.VirtualFtp;
+﻿using LanCloud.Domain.VirtualFtp;
 using LanCloud.Services;
 using LanCloud.Shared.Log;
 using System.IO;

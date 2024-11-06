@@ -1,10 +1,9 @@
 ﻿using LanCloud.Domain.Application;
-using LanCloud.Domain.IO;
 using LanCloud.Services;
 using LanCloud.Shared.Log;
 using System.IO;
 
-namespace LanCloud.Domain.Collections
+namespace LanCloud.Domain.IO
 {
     public class FileRefCollection
     {
@@ -28,9 +27,10 @@ namespace LanCloud.Domain.Collections
 
         public string RootDirectory { get; }
         public DirectoryInfo RootDirectoryInfo { get; }
-        public FileRefDirectory Root { get; private set; }
         public LocalApplication Application { get; }
         public ILogger Logger { get; }
+
+        public FileRefDirectory Root { get; private set; }
 
         public FileRef Load(string path, FileInfo realInfo)
         {

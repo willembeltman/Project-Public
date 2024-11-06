@@ -23,7 +23,7 @@ namespace LanCloud.Services
                 Logger.Info("No config found, creating dummy config");
                 var config = new ApplicationConfig()
                 {
-                    StartPort = 8080,
+                    HostName = "WJPC2",
                     RefDirectoryName = "E:\\Test\\Ref",
                     Servers = new RemoteApplicationConfig[]
                     {

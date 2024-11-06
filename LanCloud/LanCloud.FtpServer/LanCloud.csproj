@@ -68,8 +68,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants.cs" />
-    <Compile Include="Domain\Collections\FileRefCollection.cs" />
-    <Compile Include="Domain\Collections\LocalShareCollection.cs" />
+    <Compile Include="Domain\IO\FileRefCollection.cs" />
     <Compile Include="Domain\IO\FileBitReader.cs" />
     <Compile Include="Domain\IO\FileBitWriter.cs" />
     <Compile Include="Domain\IO\FileRefDirectory.cs" />
@@ -107,10 +106,7 @@
     <Compile Include="Services\HashService.cs" />
     <Compile Include="Domain\Share\LocalSharePart.cs" />
     <Compile Include="Domain\Application\LocalApplicationHandler.cs" />
-    <Compile Include="Domain\Collections\RemoteApplicationCollection.cs" />
     <Compile Include="Domain\Application\LocalApplication.cs" />
-    <Compile Include="Domain\Collections\LocalSharePartCollection.cs" />
-    <Compile Include="Domain\Collections\RemoteShareCollection.cs" />
     <Compile Include="Domain\VirtualFtp\VirtualFtpHandler.cs" />
     <Compile Include="Models\Configs\LocalShareConfig.cs" />
     <Compile Include="Models\Configs\RemoteApplicationConfig.cs" />
@@ -118,7 +114,7 @@
     <Compile Include="Models\Application\Responses\PingResponse.cs" />
     <Compile Include="Models\Application\Requests\GetExternalSharesRequest.cs" />
     <Compile Include="Models\Application\Responses\GetExternalSharesResponse.cs" />
-    <Compile Include="Domain\Collections\FileBitCollection.cs" />
+    <Compile Include="Domain\IO\FileBitCollection.cs" />
     <Compile Include="Domain\Application\RemoteApplication.cs" />
     <Compile Include="Models\Dtos\ShareDto.cs" />
     <Compile Include="Domain\Share\RemoteShare.cs" />

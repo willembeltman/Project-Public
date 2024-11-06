@@ -6,7 +6,7 @@ using LanCloud.Enums;
 using System;
 using LanCloud.Models.Application.Responses;
 using LanCloud.Models.Dtos;
-using LanCloud.Domain.Collections;
+using LanCloud.Domain.Share;
 
 namespace LanCloud.Domain.Application
 {
@@ -24,7 +24,6 @@ namespace LanCloud.Domain.Application
         }
 
         public LocalApplication Application { get; }
-        private LocalSharePartCollection Shares => Application.LocalShareParts;
         public ILogger Logger { get; }
 
         public WjpResponse ProcessRequest(WjpRequest request)
@@ -51,7 +50,7 @@ namespace LanCloud.Domain.Application
         }
         private WjpResponse Handle_GetExternalShareDtos()
         {
-            var shareDtos = Shares
+            var shareDtos = Application.LocalShareParts
                 .Select(a => new ShareDto()
                 {
                     HostName = a.HostName,

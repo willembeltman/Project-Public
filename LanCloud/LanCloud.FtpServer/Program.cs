@@ -3,7 +3,6 @@ using LanCloud.Services;
 using LanCloud.Domain.Application;
 using LanCloud.Domain.VirtualFtp;
 using System.Diagnostics;
-using System.Threading;
 using System.IO;
 using LanCloud.Forms;
 
@@ -28,7 +27,7 @@ namespace LanCloud
                     StatusForm form = new StatusForm(application);
                     form.ShowDialog();
 
-                    Console.WriteLine("Started");
+                    Console.WriteLine("Shutting down please wait...");
 
                     //var res = localApplication.RemoteApplications.First().Ping();
 

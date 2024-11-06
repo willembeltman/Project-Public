@@ -3,8 +3,6 @@ using LanCloud.Servers.Wjp;
 using System;
 using System.Net;
 using LanCloud.Models.Configs;
-using System.Linq;
-using LanCloud.Domain.Collections;
 using LanCloud.Domain.Application;
 using System.Collections.Generic;
 using LanCloud.Domain.VirtualFtp;
@@ -33,8 +31,11 @@ namespace LanCloud.Domain.Share
             PartConfig = partConfig;
             Logger = logger;
 
-            ServerHandler = new LocalShareHandler(this, Logger);
-            Server = new WjpServer(IPAddress.Any, port, ServerHandler, Application, Logger);
+            if (localShare.Application.RemoteApplicationConfig != null)
+            {
+                ServerHandler = new LocalShareHandler(this, Logger);
+                Server = new WjpServer(IPAddress.Any, port, ServerHandler, Application, Logger);
+            }
 
             Status = Logger.Info($"OK");
         }
@@ -87,7 +88,7 @@ namespace LanCloud.Domain.Share
 
         public void Dispose()
         {
-            Server.Dispose();
+            Server?.Dispose();
         }
     }
 }

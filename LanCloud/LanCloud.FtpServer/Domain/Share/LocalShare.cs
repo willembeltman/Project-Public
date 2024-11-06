@@ -1,13 +1,13 @@
 ﻿using LanCloud.Shared.Log;
 using LanCloud.Models.Configs;
-using LanCloud.Domain.Collections;
 using LanCloud.Domain.Application;
-using System.Linq;
 using System.Collections.Generic;
+using System;
+using LanCloud.Domain.IO;
 
 namespace LanCloud.Domain.Share
 {
-    public class LocalShare
+    public class LocalShare : IDisposable
     {
         private string _Status { get; set; }
         public string Status
@@ -20,9 +20,9 @@ namespace LanCloud.Domain.Share
             }
         }
 
-        public LocalShare(LocalShareCollection localShares, LocalShareConfig shareConfig, ref int port, ILogger logger)
+        public LocalShare(LocalApplication application, LocalShareConfig shareConfig, ref int port, ILogger logger)
         {
-            LocalShares = localShares;
+            Application = application;
             ShareConfig = shareConfig;
             Logger = logger;
 
@@ -39,14 +39,20 @@ namespace LanCloud.Domain.Share
             Status = Logger.Info($"OK");
         }
 
-        public LocalShareCollection LocalShares { get; }
+        public LocalApplication Application { get; }
         public LocalShareConfig ShareConfig { get; }
         public ILogger Logger { get; }
         public LocalSharePart[] LocalShareParts { get; }
         public FileBitCollection FileBits { get; }
 
-        public LocalApplication Application => LocalShares.Application;
-        public string HostName => Application.HostName;
+        public string HostName => Application.RemoteApplicationConfig?.HostName;
 
+        public void Dispose()
+        {
+            foreach (var part in LocalShareParts)
+            {
+                part.Dispose();
+            }
+        }
     }
 }

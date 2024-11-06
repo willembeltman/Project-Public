@@ -10,7 +10,7 @@ namespace LanCloud.Domain.Share
 {
     public class RemoteShare : WjpProxy, IShare
     {
-        public RemoteShare(RemoteApplication remoteApplication, ShareDto config, ILogger logger) : base(config, remoteApplication.Application, logger)
+        public RemoteShare(RemoteApplication remoteApplication, ShareDto config, ILogger logger) : base(config, remoteApplication.LocalApplication, logger)
         {
             Logger = logger;
         }

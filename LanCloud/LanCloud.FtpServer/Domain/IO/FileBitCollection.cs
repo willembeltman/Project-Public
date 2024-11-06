@@ -6,7 +6,7 @@ using System;
 using System.IO;
 using System.Linq;
 
-namespace LanCloud.Domain.Collections
+namespace LanCloud.Domain.IO
 {
     public class FileBitCollection
     {
