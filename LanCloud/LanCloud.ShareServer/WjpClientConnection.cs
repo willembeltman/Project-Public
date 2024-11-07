@@ -89,6 +89,7 @@ namespace LanCloud.Servers.Wjp
                 }
                 catch (Exception ex)
                 {
+                    Logger.Error(ex);
                 }
             }
 

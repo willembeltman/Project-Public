@@ -57,11 +57,19 @@ namespace LanCloud.Shared.Log
         public ConcurrentQueue<string> Queue { get; } = new ConcurrentQueue<string>();
         public bool LogInfo { get; set; }
 
-        public void Error(string message)
+        public string Error(string message)
         {
             var line = GetLine(message, true);
             Queue.Enqueue(line);
             LogReceived.Set();
+            return message;
+        }
+        public string Error(Exception ex)
+        {
+            var line = GetLine(ex.Message, true);
+            Queue.Enqueue(line);
+            LogReceived.Set();
+            return ex.Message;
         }
 
         public string Info(string message)

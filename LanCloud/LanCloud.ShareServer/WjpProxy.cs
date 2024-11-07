@@ -102,11 +102,11 @@ namespace LanCloud.Servers.Wjp
                 }
                 catch (SocketException ex)
                 {
-                    Status = Logger.Info($"Connection failed to {Config.HostName}:{Config.Port}");
+                    Status = Logger.Error(ex);
                 }
                 catch (EndOfStreamException ex)
                 {
-                    Status = Logger.Info($"Connection failed to {Config.HostName}:{Config.Port}");
+                    Status =Logger.Error(ex);
                 }
 
                 if (Connected)

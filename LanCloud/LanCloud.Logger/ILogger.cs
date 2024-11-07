@@ -6,7 +6,8 @@ namespace LanCloud.Shared.Log
     {
         bool LogInfo { get; set; }
 
-        void Error(string message);
+        string Error(string message);
+        string Error(Exception ex);
         string Info(string message);
     }
 }
