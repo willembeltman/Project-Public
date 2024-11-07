@@ -68,12 +68,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants.cs" />
+    <Compile Include="Domain\IO\DataBitWriter.cs" />
     <Compile Include="Domain\IO\FileRefCollection.cs" />
     <Compile Include="Domain\IO\FileBitReader.cs" />
     <Compile Include="Domain\IO\FileBitWriter.cs" />
     <Compile Include="Domain\IO\FileRefDirectory.cs" />
     <Compile Include="Domain\IO\HashWriter.cs" />
-    <Compile Include="Domain\IO\IFileBit.cs" />
+    <Compile Include="Domain\IO\ParityBitWriter.cs" />
     <Compile Include="Models\SingleBuffer.cs" />
     <Compile Include="Models\DoubleBuffer.cs" />
     <Compile Include="Domain\Share\IShare.cs" />

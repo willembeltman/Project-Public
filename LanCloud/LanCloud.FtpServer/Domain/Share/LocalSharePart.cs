@@ -7,6 +7,7 @@ using LanCloud.Domain.Application;
 using System.Collections.Generic;
 using LanCloud.Domain.VirtualFtp;
 using LanCloud.Domain.IO;
+using System.Linq;
 
 namespace LanCloud.Domain.Share
 {
@@ -30,6 +31,7 @@ namespace LanCloud.Domain.Share
             Port = port;
             Logger = logger;
 
+            Indexes = PartConfig.Indexes.Select(a => Convert.ToByte(a)).ToArray();
             FileBits = new FileBitCollection(this, Logger);
 
             if (localShare.LocalApplication.ApplicationServerConfig != null)
@@ -52,8 +54,7 @@ namespace LanCloud.Domain.Share
 
         public LocalApplication Application => LocalShare.LocalApplication;
         public string HostName => Application.ApplicationServerConfig?.HostName;
-        public byte[] Indexes => PartConfig.Indexes;
-
+        public byte[] Indexes { get; }
 
         public bool SaveFile(FileBit bit, IEnumerable<SingleBuffer> datareader)
         {

@@ -2,6 +2,7 @@
 using System.Security.Cryptography;
 using System.Threading;
 using System.Text;
+using System;
 
 namespace LanCloud.Domain.VirtualFtp
 {
@@ -46,6 +47,8 @@ namespace LanCloud.Domain.VirtualFtp
 
         public string Stop()
         {
+            if (Thread.CurrentThread == Thread) throw new Exception("Cannot wait for own thread");
+
             KillSwitch = true;
             StartNext.Set();
             Thread.Join();

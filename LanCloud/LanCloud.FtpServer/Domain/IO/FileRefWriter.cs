@@ -4,8 +4,6 @@ using LanCloud.Shared.Log;
 using System;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace LanCloud.Domain.VirtualFtp
 {
@@ -15,11 +13,20 @@ namespace LanCloud.Domain.VirtualFtp
         {
             PathInfo = pathInfo;
             Logger = logger;
-            FileBitWriters = Application.LocalShareParts
-                .Select(sharepart => new FileBitWriter(this, sharepart, Logger))
-                .ToArray();
+
             HashWriter = new HashWriter(this, Logger);
-            AllIndexes = FileBitWriters
+            DataBitWriters = Application.LocalShareParts
+                .Where(a => a.Indexes.Length == 1)
+                .GroupBy(a => a.Indexes.First())
+                .Select(sharepart => new DataBitWriter(this, sharepart.Key, sharepart.ToArray(), Logger))
+                .ToArray();
+            ParityBitWriters = Application.LocalShareParts
+                .Where(a => a.Indexes.Length > 1)
+                .GroupBy(a => string.Join("_", a.Indexes.OrderBy(b => b)))
+                .Select(sharepart => new ParityBitWriter(this, sharepart.ToArray(), Logger))
+                .ToArray();
+
+            AllIndexes = Application.LocalShareParts
                 .SelectMany(a => a.Indexes)
                 .GroupBy(a => a)
                 .Select(a => a.Key)
@@ -32,11 +39,11 @@ namespace LanCloud.Domain.VirtualFtp
 
         public PathFileInfo PathInfo { get; }
         public ILogger Logger { get; }
-        public FileBitWriter[] FileBitWriters { get; }
-        internal HashWriter HashWriter { get; }
+        public DataBitWriter[] DataBitWriters { get; }
+        public ParityBitWriter[] ParityBitWriters { get; }
+        public HashWriter HashWriter { get; }
         public byte[] AllIndexes { get; }
         public DoubleBuffer Buffer { get; }
-        //public string GeneratedHash { get; private set; }
         public bool Disposed { get; private set; }
         public override long Position { get; set; }
 
@@ -81,20 +88,27 @@ namespace LanCloud.Domain.VirtualFtp
 
             Buffer.Flip();
 
-            foreach (var item in FileBitWriters)
+            HashWriter.StartNext.Set();
+
+            foreach (var item in DataBitWriters)
                 item.StartNext.Set();
 
-            HashWriter.StartNext.Set();
+            foreach (var item in ParityBitWriters)
+                item.StartNext.Set();
         }
 
         private void WaitForDone()
         {
-            foreach (var item in FileBitWriters)
-                if (!item.WritingIsDone.WaitOne(10000))
-                    throw new Exception("Timeout writing to: " + item.FileBit?.FullName);
-
-            if (!HashWriter.WritingIsDone.WaitOne(10000))
+            if (!HashWriter.WritingIsDone.WaitOne(100000))
                 throw new Exception("Timeout writing to HashWriter");
+
+            foreach (var item in DataBitWriters)
+                if (!item.WritingIsDone.WaitOne(100000))
+                    throw new Exception("Timeout writing to DataBitWriters");
+
+            foreach (var item in ParityBitWriters)
+                if (!item.WritingIsDone.WaitOne(100000))
+                    throw new Exception("Timeout writing to ParityBitWriters");
         }
 
         protected override void Dispose(bool disposing)
@@ -110,20 +124,22 @@ namespace LanCloud.Domain.VirtualFtp
                 WaitForDone();
 
                 var hash = HashWriter.Stop();
-                var fileBits = FileBitWriters
-                    .Select(a => a.Stop(Position, hash))
+                var fileBits = DataBitWriters
+                    .SelectMany(a => a.Stop(Position, hash))
+                    .ToArray();
+                var fileBits2 = ParityBitWriters
+                    .SelectMany(a => a.Stop(Position, hash))
                     .ToArray();
 
                 // Waardes updaten
-                //FileRef fileRef = Application.FileRefs.GetFileRef(PathInfo);
                 var fileRef = new FileRef(PathInfo);
                 fileRef.Length = Position;
                 fileRef.Hash = hash;
                 fileRef.Bits = fileBits
+                    .Concat(fileBits2)
                     .Select(a => new FileRefBit()
                     {
-                        Indexes = a.Indexes,
-                        //Length = a.Info.Length
+                        Indexes = a.Indexes
                     })
                     .ToArray();
                 PathInfo.FileRef = fileRef;

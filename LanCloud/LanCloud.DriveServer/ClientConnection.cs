@@ -327,7 +327,7 @@ namespace LanCloud.Servers.Ftp
             {
                 path = string.Empty;
             }
-            
+
             if (!path.StartsWith("/")) // = bestand zonder directory
             {
                 path = CombineWithCurrentPath(path);
@@ -722,7 +722,7 @@ namespace LanCloud.Servers.Ftp
 
         private string StoreUnique()
         {
-            string pathname =  NormalizeFilename(new Guid().ToString());
+            string pathname = NormalizeFilename(new Guid().ToString());
 
             var state = new DataConnectionOperation { Arguments = pathname, Operation = StoreOperation };
 
@@ -872,74 +872,94 @@ namespace LanCloud.Servers.Ftp
 
         private string RetrieveOperation(NetworkStream dataStream, string pathname)
         {
-            var stopWatch = Stopwatch.StartNew();
-            long bytes = 0;
-
-            using (var fs = FtpHandler.FileOpenRead(pathname))
+            try
             {
-                bytes = CopyStream(fs, dataStream);
+                var stopWatch = Stopwatch.StartNew();
+                long bytes = 0;
+
+                using (var fs = FtpHandler.FileOpenRead(pathname))
+                {
+                    bytes = CopyStream(fs, dataStream);
+                }
+
+                var sec = stopWatch.Elapsed.TotalSeconds;
+                var speed = Convert.ToInt64(bytes / sec);
+                return $"226 Closing data connection, file transfer successful ({speed}b/sec)";
             }
-
-            var sec = stopWatch.Elapsed.TotalSeconds;
-            var speed = Convert.ToInt64(bytes / sec);
-
-            return $"226 Closing data connection, file transfer successful ({speed}b/sec)";
+            catch (Exception ex)
+            {
+                return $"502 Error while retreiving data";
+            }
         }
 
         private string StoreOperation(NetworkStream dataStream, string pathname)
         {
-            var stopWatch = Stopwatch.StartNew();
-            long bytes = 0;
-
-            using (var fs = FtpHandler.FileOpenWriteCreate(pathname))
+            try
             {
-                bytes = CopyStream(dataStream, fs);
+                var stopWatch = Stopwatch.StartNew();
+                long bytes = 0;
+
+                using (var fs = FtpHandler.FileOpenWriteCreate(pathname))
+                {
+                    bytes = CopyStream(dataStream, fs);
+                }
+
+                var sec = stopWatch.Elapsed.TotalSeconds;
+                var speed = Convert.ToInt64(bytes / sec);
+
+                //LogEntry logEntry = new LogEntry
+                //{
+                //    Date = DateTime.Now,
+                //    CIP = ClientIP,
+                //    CSMethod = "STOR",
+                //    CSUsername = UserName,
+                //    SCStatus = "226",
+                //    CSBytes = bytes.ToString()
+                //};
+
+                //Logger.Info(logEntry);
+
+                return $"226 Closing data connection, file transfer successful ({speed}b/sec)";
             }
-
-            var sec = stopWatch.Elapsed.TotalSeconds;
-            var speed = Convert.ToInt64(bytes / sec);
-
-            //LogEntry logEntry = new LogEntry
-            //{
-            //    Date = DateTime.Now,
-            //    CIP = ClientIP,
-            //    CSMethod = "STOR",
-            //    CSUsername = UserName,
-            //    SCStatus = "226",
-            //    CSBytes = bytes.ToString()
-            //};
-
-            //Logger.Info(logEntry);
-
-            return $"226 Closing data connection, file transfer successful ({speed}b/sec)";
+            catch (Exception ex)
+            {
+                return $"502 Error while storing data";
+            }
         }
 
         private string AppendOperation(NetworkStream dataStream, string pathname)
         {
-            var stopWatch = Stopwatch.StartNew();
-            long bytes = 0;
-
-            using (var fs = FtpHandler.FileOpenWriteAppend(pathname))
+            try
             {
-                bytes = CopyStream(dataStream, fs);
+                var stopWatch = Stopwatch.StartNew();
+                long bytes = 0;
+
+                using (var fs = FtpHandler.FileOpenWriteAppend(pathname))
+                {
+                    bytes = CopyStream(dataStream, fs);
+                }
+
+                var sec = stopWatch.Elapsed.TotalSeconds;
+                var speed = Convert.ToInt64(bytes / sec);
+
+                //LogEntry logEntry = new LogEntry
+                //{
+                //    Date = DateTime.Now,
+                //    CIP = ClientIP,
+                //    CSMethod = "APPE",
+                //    CSUsername = UserName,
+                //    SCStatus = "226",
+                //    CSBytes = bytes.ToString()
+                //};
+
+                //Logger.Info(logEntry);
+
+                return $"226 Closing data connection, file transfer successful ({speed}b/sec)";
             }
-
-            var sec = stopWatch.Elapsed.TotalSeconds;
-            var speed = Convert.ToInt64(bytes / sec);
-
-            //LogEntry logEntry = new LogEntry
-            //{
-            //    Date = DateTime.Now,
-            //    CIP = ClientIP,
-            //    CSMethod = "APPE",
-            //    CSUsername = UserName,
-            //    SCStatus = "226",
-            //    CSBytes = bytes.ToString()
-            //};
-
-            //Logger.Info(logEntry);
-
-            return $"226 Closing data connection, file transfer successful ({speed}b/sec)";
+            catch (Exception ex)
+            {
+                return $"502 Error while appending data";
+            }
         }
 
         private string ListOperation(NetworkStream dataStream, string pathname)
@@ -955,9 +975,9 @@ namespace LanCloud.Servers.Ftp
                     directory.LastWriteTime.ToString("MMM dd HH:mm");
 
                 string line = string.Format(
-                    "drwxr-xr-x    2 2003     2003     {0,8} {1} {2}", 
+                    "drwxr-xr-x    2 2003     2003     {0,8} {1} {2}",
                     FtpHandler.BufferSize.ToString(),
-                    date, 
+                    date,
                     directory.Name);
 
                 dataWriter.WriteLine(line);
@@ -973,9 +993,9 @@ namespace LanCloud.Servers.Ftp
                     file.LastWriteTime.ToString("MMM dd HH:mm");
 
                 string line = string.Format(
-                    "-rw-r--r--    2 2003     2003     {0,8} {1} {2}", 
-                    file.Length.Value, 
-                    date, 
+                    "-rw-r--r--    2 2003     2003     {0,8} {1} {2}",
+                    file.Length.Value,
+                    date,
                     file.Name);
 
                 dataWriter.WriteLine(line);

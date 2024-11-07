@@ -1,13 +1,11 @@
-﻿using LanCloud.Domain.Share;
-using System;
+﻿using System;
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Security.Policy;
 
 namespace LanCloud.Domain.IO
 {
-    public class FileBit : IFileBit
+    public class FileBit 
     {
         public FileBit(FileInfo info)
         {
