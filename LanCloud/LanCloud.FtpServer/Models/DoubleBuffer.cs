@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace LanCloud.Domain.IO
+namespace LanCloud.Models
 {
     public class DoubleBuffer
     {

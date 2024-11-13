@@ -1,6 +1,6 @@
 ﻿using LanCloud.Domain.VirtualFtp;
 
-namespace LanCloud.Domain.IO
+namespace LanCloud.Models
 {
     public class FileRef
     {

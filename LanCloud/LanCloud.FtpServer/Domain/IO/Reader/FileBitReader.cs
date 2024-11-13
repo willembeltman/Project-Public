@@ -1,4 +1,5 @@
-﻿using LanCloud.Shared.Log;
+﻿using LanCloud.Models;
+using LanCloud.Shared.Log;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

@@ -1,6 +1,4 @@
-﻿using LanCloud.Models;
-
-namespace LanCloud.Domain.Application
+﻿namespace LanCloud.Models
 {
     public class User : IFtpUser
     {

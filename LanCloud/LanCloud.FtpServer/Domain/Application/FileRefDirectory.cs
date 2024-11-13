@@ -1,10 +1,11 @@
 ﻿using LanCloud.Domain.VirtualFtp;
+using LanCloud.Models;
 using LanCloud.Services;
 using LanCloud.Shared.Log;
 using System.IO;
 using System.Linq;
 
-namespace LanCloud.Domain.IO
+namespace LanCloud.Domain.Application
 {
     public class FileRefDirectory
     {

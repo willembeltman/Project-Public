@@ -68,9 +68,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants.cs" />
+    <Compile Include="Domain\Application\FileRefCollection.cs" />
+    <Compile Include="Domain\Application\FileRefDirectory.cs" />
     <Compile Include="Domain\IO\Appender\FileRefAppender.cs" />
-    <Compile Include="Domain\IO\FileRefCollection.cs" />
-    <Compile Include="Domain\IO\FileRefDirectory.cs" />
     <Compile Include="Domain\IO\Reader\FileBitReader.cs" />
     <Compile Include="Domain\IO\Reader\FileBitsBuffer.cs" />
     <Compile Include="Domain\IO\Reader\FileRefReader.cs" />
@@ -79,6 +79,10 @@
     <Compile Include="Domain\IO\Writer\FileRefWriter.cs" />
     <Compile Include="Domain\IO\Writer\HashBuffer.cs" />
     <Compile Include="Domain\IO\Writer\ParityBitBuffer.cs" />
+    <Compile Include="Domain\Share\FileBitCollection.cs" />
+    <Compile Include="Models\FileBit.cs" />
+    <Compile Include="Models\FileRef.cs" />
+    <Compile Include="Models\FileRefBit.cs" />
     <Compile Include="Models\SingleBuffer.cs" />
     <Compile Include="Models\DoubleBuffer.cs" />
     <Compile Include="Domain\Share\IShare.cs" />
@@ -93,7 +97,6 @@
     <Compile Include="Models\Share\Requests\PingRequest.cs" />
     <Compile Include="Models\Share\Responses\PingResponse.cs" />
     <Compile Include="Services\AuthenticationService.cs" />
-    <Compile Include="Domain\IO\FileRefBit.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Domain\VirtualFtp\PathDirectoryInfo.cs" />
     <Compile Include="Domain\VirtualFtp\PathFileInfo.cs" />
@@ -104,8 +107,6 @@
     <Compile Include="Enums\ApplicationMessageEnum.cs" />
     <Compile Include="Enums\ShareMessageEnum.cs" />
     <Compile Include="Models\Configs\ApplicationConfig.cs" />
-    <Compile Include="Domain\IO\FileBit.cs" />
-    <Compile Include="Domain\IO\FileRef.cs" />
     <Compile Include="Services\FileRefService.cs" />
     <Compile Include="Services\HashService.cs" />
     <Compile Include="Domain\Share\LocalSharePart.cs" />
@@ -118,7 +119,6 @@
     <Compile Include="Models\Application\Responses\PingResponse.cs" />
     <Compile Include="Models\Application\Requests\GetExternalSharesRequest.cs" />
     <Compile Include="Models\Application\Responses\GetExternalSharesResponse.cs" />
-    <Compile Include="Domain\IO\FileBitCollection.cs" />
     <Compile Include="Domain\Application\RemoteApplication.cs" />
     <Compile Include="Models\Dtos\ShareDto.cs" />
     <Compile Include="Domain\Share\RemoteShare.cs" />

@@ -1,5 +1,4 @@
-﻿
-namespace LanCloud.Domain.IO
+﻿namespace LanCloud.Models
 {
     public class FileRefBit
     {

@@ -6,8 +6,8 @@ using LanCloud.Models.Configs;
 using LanCloud.Domain.Application;
 using System.Collections.Generic;
 using LanCloud.Domain.VirtualFtp;
-using LanCloud.Domain.IO;
 using System.Linq;
+using LanCloud.Models;
 
 namespace LanCloud.Domain.Share
 {

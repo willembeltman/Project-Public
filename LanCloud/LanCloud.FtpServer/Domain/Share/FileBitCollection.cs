@@ -1,11 +1,11 @@
-﻿using LanCloud.Domain.Share;
+﻿using LanCloud.Models;
 using LanCloud.Services;
 using LanCloud.Shared.Log;
 using System;
 using System.IO;
 using System.Linq;
 
-namespace LanCloud.Domain.IO
+namespace LanCloud.Domain.Share
 {
     public class FileBitCollection
     {

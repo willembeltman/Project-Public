@@ -3,7 +3,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 
-namespace LanCloud.Domain.IO
+namespace LanCloud.Models
 {
     public class FileBit 
     {

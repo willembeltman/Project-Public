@@ -1,6 +1,6 @@
-﻿using LanCloud.Domain.IO;
-using LanCloud.Domain.Share;
+﻿using LanCloud.Domain.Share;
 using LanCloud.Domain.VirtualFtp;
+using LanCloud.Models;
 using LanCloud.Models.Configs;
 using LanCloud.Servers.Ftp;
 using LanCloud.Servers.Wjp;

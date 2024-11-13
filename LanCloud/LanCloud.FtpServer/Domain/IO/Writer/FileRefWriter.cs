@@ -1,5 +1,6 @@
 ﻿using LanCloud.Domain.Application;
 using LanCloud.Domain.VirtualFtp;
+using LanCloud.Models;
 using LanCloud.Shared.Log;
 using System;
 using System.IO;
