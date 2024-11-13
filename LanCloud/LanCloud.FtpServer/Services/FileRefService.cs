@@ -19,7 +19,6 @@ namespace LanCloud.Services
                 {
                     foreach (var bit in fileRef.Bits)
                     {
-                        //writer.Write(bit.Length);
                         writer.Write(Convert.ToByte(bit.Indexes.Length));
                         foreach (var index in bit.Indexes)
                         {
@@ -37,22 +36,20 @@ namespace LanCloud.Services
             using (var stream = fileInfo.OpenRead())
             using (var reader = new BinaryReader(stream))
             {
-                var res = new FileRef();
-                res.Length = reader.ReadInt64();
-                if (res.Length == -1) res.Length = null;
-                res.Hash = reader.ReadString();
-                res.Bits = new FileRefBit[reader.ReadByte()];
-                for (int i = 0; i < res.Bits.Length; i++)
+                long? Length = reader.ReadInt64();
+                if (Length == -1) Length = null;
+                var Hash = reader.ReadString();
+                var Bits = new FileRefBit[reader.ReadByte()];
+                for (int i = 0; i < Bits.Length; i++)
                 {
-                    res.Bits[i] = new FileRefBit();
-                    //res.Bits[i].Length = reader.ReadInt64();
-                    res.Bits[i].Indexes = new byte[reader.ReadByte()];
-                    for (int j = 0; j < res.Bits[i].Indexes.Length; j++)
+                    var Indexes = new byte[reader.ReadByte()];
+                    for (int j = 0; j < Indexes.Length; j++)
                     {
-                        res.Bits[i].Indexes[j] = reader.ReadByte();
+                        Indexes[j] = reader.ReadByte();
                     }
+                    Bits[i] = new FileRefBit(Indexes);
                 }
-                return res;
+                return new FileRef(Length, Hash, Bits);
             }
         }
 

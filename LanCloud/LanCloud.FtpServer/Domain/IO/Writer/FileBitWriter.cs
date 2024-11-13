@@ -4,7 +4,7 @@ using System;
 using System.Linq;
 using System.Threading;
 
-namespace LanCloud.Domain.IO.Writers
+namespace LanCloud.Domain.IO.Writer
 {
     public class FileBitWriter
     {

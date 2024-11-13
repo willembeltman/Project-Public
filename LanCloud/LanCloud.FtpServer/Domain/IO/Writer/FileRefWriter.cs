@@ -5,7 +5,7 @@ using System;
 using System.IO;
 using System.Linq;
 
-namespace LanCloud.Domain.IO.Writers
+namespace LanCloud.Domain.IO.Writer
 {
     public class FileRefWriter : Stream
     {
@@ -123,26 +123,21 @@ namespace LanCloud.Domain.IO.Writers
                 }
                 WaitForDone();
 
+                // Waardes ophalen
                 var hash = HashWriter.Stop();
-                var fileBits = DataBitWriters
+                var dataBits = DataBitWriters
                     .SelectMany(a => a.Stop(Position, hash))
                     .ToArray();
-                var fileBits2 = ParityBitWriters
+                var parityBits = ParityBitWriters
                     .SelectMany(a => a.Stop(Position, hash))
                     .ToArray();
 
                 // Waardes updaten
-                var fileRef = new FileRef(PathInfo);
-                fileRef.Length = Position;
-                fileRef.Hash = hash;
-                fileRef.Bits = fileBits
-                    .Concat(fileBits2)
-                    .Select(a => new FileRefBit()
-                    {
-                        Indexes = a.Indexes
-                    })
+                var bits = dataBits
+                    .Concat(parityBits)
+                    .Select(a => new FileRefBit(a.Indexes))
                     .ToArray();
-                PathInfo.FileRef = fileRef;
+                PathInfo.FileRef = new FileRef(Position, hash, bits);
             }
 
             base.Dispose(disposing);

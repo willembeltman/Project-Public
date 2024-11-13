@@ -4,7 +4,7 @@ using System.Threading;
 using System.Text;
 using System;
 
-namespace LanCloud.Domain.IO.Writers
+namespace LanCloud.Domain.IO.Writer
 {
     public class HashBuffer
     {

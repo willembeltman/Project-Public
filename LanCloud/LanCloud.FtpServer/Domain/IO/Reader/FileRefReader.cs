@@ -3,7 +3,7 @@ using LanCloud.Shared.Log;
 using System;
 using System.IO;
 
-namespace LanCloud.Domain.IO.Readers
+namespace LanCloud.Domain.IO.Reader
 {
     public class FileRefReader : Stream
     {

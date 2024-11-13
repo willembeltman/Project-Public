@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 
-namespace LanCloud.Domain.IO.Readers
+namespace LanCloud.Domain.IO.Reader
 {
     public class FileBitReader : IDisposable
     {

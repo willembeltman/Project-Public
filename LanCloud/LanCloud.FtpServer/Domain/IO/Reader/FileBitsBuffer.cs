@@ -5,7 +5,7 @@ using System;
 using System.Linq;
 using System.Threading;
 
-namespace LanCloud.Domain.IO.Readers
+namespace LanCloud.Domain.IO.Reader
 {
     public class FileBitsBuffer :  IDisposable
     {

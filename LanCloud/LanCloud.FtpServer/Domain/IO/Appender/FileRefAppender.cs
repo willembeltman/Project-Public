@@ -1,6 +1,7 @@
-﻿using System;
+﻿using LanCloud.Domain.VirtualFtp;
+using System;
 
-namespace LanCloud.Domain.VirtualFtp
+namespace LanCloud.Domain.IO.Appender
 {
     public class FileRefAppender : System.IO.Stream
     {
