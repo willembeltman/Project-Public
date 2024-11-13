@@ -1,12 +1,10 @@
 ﻿using LanCloud.Domain.Share;
-using LanCloud.Domain.VirtualFtp;
 using LanCloud.Shared.Log;
 using System;
-using System.IO;
 using System.Linq;
 using System.Threading;
 
-namespace LanCloud.Domain.IO
+namespace LanCloud.Domain.IO.Writers
 {
     public class FileBitWriter
     {

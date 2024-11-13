@@ -4,11 +4,11 @@ using System.Threading;
 using System.Text;
 using System;
 
-namespace LanCloud.Domain.VirtualFtp
+namespace LanCloud.Domain.IO.Writers
 {
-    public class HashWriter
+    public class HashBuffer
     {
-        public HashWriter(FileRefWriter fileRefWriter, ILogger logger)
+        public HashBuffer(FileRefWriter fileRefWriter, ILogger logger)
         {
             FileRefWriter = fileRefWriter;
             Logger = logger;

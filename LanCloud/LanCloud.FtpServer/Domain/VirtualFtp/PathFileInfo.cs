@@ -1,10 +1,11 @@
 ﻿using LanCloud.Domain.Application;
 using LanCloud.Domain.IO;
+using LanCloud.Domain.IO.Readers;
+using LanCloud.Domain.IO.Writers;
 using LanCloud.Models;
 using LanCloud.Shared.Log;
 using System;
 using System.IO;
-using System.Linq;
 
 namespace LanCloud.Domain.VirtualFtp
 {

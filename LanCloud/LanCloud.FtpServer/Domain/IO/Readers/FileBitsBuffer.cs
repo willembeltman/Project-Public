@@ -1,19 +1,17 @@
 ﻿using LanCloud.Domain.Application;
-using LanCloud.Domain.IO;
-using LanCloud.Models;
+using LanCloud.Domain.VirtualFtp;
 using LanCloud.Shared.Log;
 using System;
-using System.IO;
 using System.Linq;
 using System.Threading;
 
-namespace LanCloud.Domain.VirtualFtp
+namespace LanCloud.Domain.IO.Readers
 {
-    public class FileRefReader : Stream
+    public class FileBitsBuffer :  IDisposable
     {
-        public FileRefReader(PathFileInfo pathInfo, ILogger logger)
+        public FileBitsBuffer(FileRefReader fileRefReader, ILogger logger)
         {
-            PathInfo = pathInfo;
+            FileRefReader = fileRefReader;
             Logger = logger;
 
             FileBitReaders = FileRef.Bits
@@ -40,29 +38,29 @@ namespace LanCloud.Domain.VirtualFtp
             Thread.Start();
         }
 
-        public PathFileInfo PathInfo { get; }
+        public FileRefReader FileRefReader { get; }
         public ILogger Logger { get; }
         internal FileBitReader[] FileBitReaders { get; }
         public byte[] AllIndexes { get; }
         public DoubleBuffer Buffer { get; }
         public Thread Thread { get; }
         public bool Disposed { get; private set; }
-        public override long Position { get; set; }
-        private bool BufferInitialized { get; set; }
-        private int BufferPosition { get; set; }
-        private int BufferCounter { get; set; }
+        private int BufferReadCounter { get; set; }
 
         private AutoResetEvent StartNext { get; } = new AutoResetEvent(true);
         private AutoResetEvent BufferIsWritten { get; } = new AutoResetEvent(false);
 
-        public override bool CanRead => true;
-        public override bool CanSeek => true;
-        public override bool CanWrite => false;
-        public override long Length => PathInfo.Length.Value;
-
+        public PathFileInfo PathInfo => FileRefReader.PathInfo;
         public LocalApplication Application => PathInfo.Application;
         public FileRef FileRef => PathInfo.FileRef;
         bool KillSwitch { get; set; }
+
+        public void FlipBuffer()
+        {
+            BufferIsWritten.WaitOne();
+            Buffer.Flip();
+            StartNext.Set();
+        }
 
         private void Start()
         {
@@ -82,7 +80,7 @@ namespace LanCloud.Domain.VirtualFtp
                         ReadAll(goodReaders);
                     }
 
-                    BufferCounter++;
+                    BufferReadCounter++;
                     BufferIsWritten.Set();
                 }
             }
@@ -91,7 +89,7 @@ namespace LanCloud.Domain.VirtualFtp
         {
             foreach (var item in goodReaders)
             {
-                item.FlipBuffer(BufferCounter);
+                item.FlipBuffer(BufferReadCounter);
             }
             goodReaders = goodReaders.Where(a => a.Exception == null).ToArray();
 
@@ -225,42 +223,6 @@ namespace LanCloud.Domain.VirtualFtp
             }
         }
 
-        private void FlipBuffer()
-        {
-            BufferIsWritten.WaitOne();
-            Buffer.Flip();
-            StartNext.Set();
-        }
-
-        public override int Read(byte[] buffer, int offset, int count)
-        {
-            if (!BufferInitialized)
-            {
-                FlipBuffer();
-                BufferInitialized = true;
-            }
-
-            var read = 0;
-            while (read < count && BufferPosition < Buffer.ReadBufferPosition)
-            {
-                var availableSpace = Buffer.ReadBufferPosition - BufferPosition;
-                int bytesToWrite = Math.Min(count - read, availableSpace);
-
-                Array.Copy(Buffer.ReadBuffer, BufferPosition, buffer, offset + read, bytesToWrite);
-
-                read += bytesToWrite;
-                BufferPosition += bytesToWrite;
-                Position += bytesToWrite;
-
-                if (BufferPosition == Buffer.ReadBuffer.Length)
-                {
-                    FlipBuffer();
-                    BufferPosition = 0;
-                }
-            }
-            return read;
-        }
-
         private Exception GeneralException()
         {
             var badReaders = FileBitReaders.Where(a => a.Exception != null).ToArray();
@@ -277,41 +239,15 @@ namespace LanCloud.Domain.VirtualFtp
             return new Exception(message);
         }
 
-        protected override void Dispose(bool disposing)
+        public void Dispose()
         {
-            if (!Disposed && disposing)
+            KillSwitch = true;
+            Disposed = true;
+
+            foreach (var part in FileBitReaders)
             {
-                KillSwitch = true;
-                Disposed = true;
-
-                foreach (var part in FileBitReaders)
-                {
-                    part.Dispose();
-                }
+                part.Dispose();
             }
-
-            base.Dispose(disposing);
         }
-
-        #region Not implemented
-
-        public override long Seek(long offset, SeekOrigin origin)
-        {
-            throw new NotImplementedException();
-        }
-        public override void Write(byte[] buffer, int offset, int count)
-        {
-            throw new NotImplementedException();
-        }
-        public override void Flush()
-        {
-            throw new NotImplementedException();
-        }
-        public override void SetLength(long value)
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion
     }
 }

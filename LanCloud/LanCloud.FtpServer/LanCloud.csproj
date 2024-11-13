@@ -68,13 +68,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants.cs" />
-    <Compile Include="Domain\IO\DataBitWriter.cs" />
     <Compile Include="Domain\IO\FileRefCollection.cs" />
-    <Compile Include="Domain\IO\FileBitReader.cs" />
-    <Compile Include="Domain\IO\FileBitWriter.cs" />
     <Compile Include="Domain\IO\FileRefDirectory.cs" />
-    <Compile Include="Domain\IO\HashWriter.cs" />
-    <Compile Include="Domain\IO\ParityBitWriter.cs" />
+    <Compile Include="Domain\IO\Readers\FileBitReader.cs" />
+    <Compile Include="Domain\IO\Readers\FileBitsBuffer.cs" />
+    <Compile Include="Domain\IO\Readers\FileRefReader.cs" />
+    <Compile Include="Domain\IO\Writers\DataBitBuffer.cs" />
+    <Compile Include="Domain\IO\Writers\FileBitWriter.cs" />
+    <Compile Include="Domain\IO\Writers\FileRefWriter.cs" />
+    <Compile Include="Domain\IO\Writers\HashBuffer.cs" />
+    <Compile Include="Domain\IO\Writers\ParityBitBuffer.cs" />
     <Compile Include="Models\SingleBuffer.cs" />
     <Compile Include="Models\DoubleBuffer.cs" />
     <Compile Include="Domain\Share\IShare.cs" />
@@ -95,8 +98,6 @@
     <Compile Include="Domain\VirtualFtp\PathFileInfo.cs" />
     <Compile Include="Domain\VirtualFtp\PathTranslator.cs" />
     <Compile Include="Domain\IO\FileRefAppender.cs" />
-    <Compile Include="Domain\IO\FileRefWriter.cs" />
-    <Compile Include="Domain\IO\FileRefReader.cs" />
     <Compile Include="Models\Dtos\ShareRequestDto.cs" />
     <Compile Include="Models\Dtos\ShareResponseDto.cs" />
     <Compile Include="Models\Configs\LocalSharePartConfig.cs" />

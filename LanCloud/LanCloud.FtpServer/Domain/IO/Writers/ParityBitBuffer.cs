@@ -1,22 +1,21 @@
-﻿using LanCloud.Domain.IO;
-using LanCloud.Domain.Share;
+﻿using LanCloud.Domain.Share;
 using LanCloud.Shared.Log;
 using System;
 using System.Linq;
 using System.Threading;
 
-namespace LanCloud.Domain.VirtualFtp
+namespace LanCloud.Domain.IO.Writers
 {
-    public class DataBitWriter
+    public class ParityBitBuffer
     {
-        public DataBitWriter(FileRefWriter fileRefWriter, byte index, LocalSharePart[] localShareParts, ILogger logger)
+        public ParityBitBuffer(FileRefWriter fileRefWriter, LocalSharePart[] localShareParts, ILogger logger)
         {
             FileRefWriter = fileRefWriter;
-            Index = index;
             LocalShareParts = localShareParts;
             Logger = logger;
 
             Buffer = new DoubleBuffer(1);
+            Indexes = localShareParts.First().Indexes;
             FileBitWriters = localShareParts
                 .Select(localSharePart => new FileBitWriter(Buffer, fileRefWriter, localSharePart, logger))
                 .ToArray();
@@ -26,11 +25,10 @@ namespace LanCloud.Domain.VirtualFtp
         }
 
         public FileRefWriter FileRefWriter { get; }
-        public byte Index { get; }
         public LocalSharePart[] LocalShareParts { get; }
         public ILogger Logger { get; }
-
         public DoubleBuffer Buffer { get; }
+        public byte[] Indexes { get; }
         public FileBitWriter[] FileBitWriters { get; }
 
         public Thread Thread { get; }
@@ -64,12 +62,28 @@ namespace LanCloud.Domain.VirtualFtp
         private void WriteBufferToStream(byte[] data, int datalength, int width)
         {
             var sublength = Convert.ToDouble(datalength) / width;
-            var start = Convert.ToInt32(sublength * Index);
-            var end = Convert.ToInt32(sublength * (Index + 1));
-            var length = end - start;
+            var maxlength = 0;
+            var buffer = Buffer.WriteBuffer;
 
-            Array.Copy(data, start, Buffer.WriteBuffer, 0, length);
-            Buffer.WriteBufferPosition = length;
+            // Prepare buffer
+            Array.Clear(buffer, 0, buffer.Length);
+
+            // XOR data from indexes on to own buffer
+            foreach (var index in Indexes)
+            {
+                var start = Convert.ToInt32(sublength * index);
+                var end = Convert.ToInt32(sublength * (index + 1));
+                var length = end - start;
+                if (length > maxlength) maxlength = length;
+
+                for (var i = 0; i < length; i++)
+                {
+                    buffer[i] ^= data[start + i];
+                }
+            }
+
+            // Set position
+            Buffer.WriteBufferPosition = maxlength;
 
             FlipBuffer();
         }
@@ -85,6 +99,7 @@ namespace LanCloud.Domain.VirtualFtp
             foreach (var fileBitWriter in FileBitWriters)
                 fileBitWriter.StartNext.Set();
         }
+
 
         public FileBit[] Stop(long length, string hash)
         {

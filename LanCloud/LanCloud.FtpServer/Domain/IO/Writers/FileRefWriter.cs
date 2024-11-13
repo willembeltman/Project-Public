@@ -1,11 +1,11 @@
 ﻿using LanCloud.Domain.Application;
-using LanCloud.Domain.IO;
+using LanCloud.Domain.VirtualFtp;
 using LanCloud.Shared.Log;
 using System;
 using System.IO;
 using System.Linq;
 
-namespace LanCloud.Domain.VirtualFtp
+namespace LanCloud.Domain.IO.Writers
 {
     public class FileRefWriter : Stream
     {
@@ -14,16 +14,16 @@ namespace LanCloud.Domain.VirtualFtp
             PathInfo = pathInfo;
             Logger = logger;
 
-            HashWriter = new HashWriter(this, Logger);
+            HashWriter = new HashBuffer(this, Logger);
             DataBitWriters = Application.LocalShareParts
                 .Where(a => a.Indexes.Length == 1)
                 .GroupBy(a => a.Indexes.First())
-                .Select(sharepart => new DataBitWriter(this, sharepart.Key, sharepart.ToArray(), Logger))
+                .Select(sharepart => new DataBitBuffer(this, sharepart.Key, sharepart.ToArray(), Logger))
                 .ToArray();
             ParityBitWriters = Application.LocalShareParts
                 .Where(a => a.Indexes.Length > 1)
                 .GroupBy(a => string.Join("_", a.Indexes.OrderBy(b => b)))
-                .Select(sharepart => new ParityBitWriter(this, sharepart.ToArray(), Logger))
+                .Select(sharepart => new ParityBitBuffer(this, sharepart.ToArray(), Logger))
                 .ToArray();
 
             AllIndexes = Application.LocalShareParts
@@ -39,9 +39,9 @@ namespace LanCloud.Domain.VirtualFtp
 
         public PathFileInfo PathInfo { get; }
         public ILogger Logger { get; }
-        public DataBitWriter[] DataBitWriters { get; }
-        public ParityBitWriter[] ParityBitWriters { get; }
-        public HashWriter HashWriter { get; }
+        public DataBitBuffer[] DataBitWriters { get; }
+        public ParityBitBuffer[] ParityBitWriters { get; }
+        public HashBuffer HashWriter { get; }
         public byte[] AllIndexes { get; }
         public DoubleBuffer Buffer { get; }
         public bool Disposed { get; private set; }
