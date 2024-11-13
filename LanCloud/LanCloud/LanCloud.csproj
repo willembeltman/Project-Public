@@ -148,15 +148,15 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\LanCloud.DriveServer\LanCloud.Servers.Ftp.csproj">
+    <ProjectReference Include="..\LanCloud.Servers.Ftp\LanCloud.Servers.Ftp.csproj">
       <Project>{c0e5fc5b-aa67-437f-a704-c0e34638c5d4}</Project>
       <Name>LanCloud.Servers.Ftp</Name>
     </ProjectReference>
-    <ProjectReference Include="..\LanCloud.Logger\LanCloud.Shared.Log.csproj">
+    <ProjectReference Include="..\LanCloud.Shared.Log\LanCloud.Shared.Log.csproj">
       <Project>{02268493-F812-4EDA-A386-DDCB2E787152}</Project>
       <Name>LanCloud.Shared.Log</Name>
     </ProjectReference>
-    <ProjectReference Include="..\LanCloud.ShareServer\LanCloud.Servers.Wjp.csproj">
+    <ProjectReference Include="..\LanCloud.Servers.Wjp\LanCloud.Servers.Wjp.csproj">
       <Project>{B1C7D4D1-82B0-4F35-BDE2-0ED0744B4910}</Project>
       <Name>LanCloud.Servers.Wjp</Name>
     </ProjectReference>

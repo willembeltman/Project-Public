@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35327.3
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LanCloud", "LanCloud.FtpServer\LanCloud.csproj", "{EA31F646-F757-4436-B3D2-D54AE82DB920}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LanCloud", "LanCloud\LanCloud.csproj", "{EA31F646-F757-4436-B3D2-D54AE82DB920}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LanCloud.Shared.Log", "LanCloud.Logger\LanCloud.Shared.Log.csproj", "{02268493-F812-4EDA-A386-DDCB2E787152}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LanCloud.Shared.Log", "LanCloud.Shared.Log\LanCloud.Shared.Log.csproj", "{02268493-F812-4EDA-A386-DDCB2E787152}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LanCloud.Servers.Ftp", "LanCloud.DriveServer\LanCloud.Servers.Ftp.csproj", "{C0E5FC5B-AA67-437F-A704-C0E34638C5D4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LanCloud.Servers.Ftp", "LanCloud.Servers.Ftp\LanCloud.Servers.Ftp.csproj", "{C0E5FC5B-AA67-437F-A704-C0E34638C5D4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LanCloud.Servers.Wjp", "LanCloud.ShareServer\LanCloud.Servers.Wjp.csproj", "{B1C7D4D1-82B0-4F35-BDE2-0ED0744B4910}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LanCloud.Servers.Wjp", "LanCloud.Servers.Wjp\LanCloud.Servers.Wjp.csproj", "{B1C7D4D1-82B0-4F35-BDE2-0ED0744B4910}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
