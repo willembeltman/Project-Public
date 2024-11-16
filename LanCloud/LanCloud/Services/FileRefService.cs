@@ -39,7 +39,7 @@ namespace LanCloud.Services
                 long? Length = reader.ReadInt64();
                 if (Length == -1) Length = null;
                 var Hash = reader.ReadString();
-                var Bits = new FileRefBit[reader.ReadByte()];
+                var Bits = new FileRefStripe[reader.ReadByte()];
                 for (int i = 0; i < Bits.Length; i++)
                 {
                     var Indexes = new byte[reader.ReadByte()];
@@ -47,7 +47,7 @@ namespace LanCloud.Services
                     {
                         Indexes[j] = reader.ReadByte();
                     }
-                    Bits[i] = new FileRefBit(Indexes);
+                    Bits[i] = new FileRefStripe(Indexes);
                 }
                 return new FileRef(Length, Hash, Bits);
             }

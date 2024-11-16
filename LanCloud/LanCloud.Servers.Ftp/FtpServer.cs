@@ -27,7 +27,7 @@ namespace LanCloud.Servers.Ftp
         private List<ClientConnection> ActiveConnections;
 
         private IPEndPoint LocalEndPoint { get; }
-        public IFtpHandler CommandHandler { get; }
+        public IFtpHandler FtpHandler { get; }
         public IFtpApplication Application { get; }
         private TcpListener Listener { get; }
         public ILogger Logger { get; }
@@ -35,7 +35,7 @@ namespace LanCloud.Servers.Ftp
         public FtpServer(IPAddress ipAddress, int port, IFtpHandler commandHandler, IFtpApplication application, ILogger logger)
         {
             LocalEndPoint = new IPEndPoint(ipAddress, port);
-            CommandHandler = commandHandler;
+            FtpHandler = commandHandler;
             Application = application;
             Logger = logger;
             Listener = new TcpListener(LocalEndPoint);
@@ -58,7 +58,7 @@ namespace LanCloud.Servers.Ftp
 
                 TcpClient client = Listener.EndAcceptTcpClient(result);
 
-                ClientConnection connection = new ClientConnection(client, CommandHandler, Logger);
+                ClientConnection connection = new ClientConnection(client, FtpHandler, Application, Logger);
 
                 ActiveConnections.Add(connection);
 

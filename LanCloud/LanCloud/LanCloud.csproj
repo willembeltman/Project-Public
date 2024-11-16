@@ -67,22 +67,37 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Constants.cs" />
-    <Compile Include="Domain\Application\FileRefCollection.cs" />
-    <Compile Include="Domain\Application\FileRefDirectory.cs" />
+    <Compile Include="Domain\FileRef\FileRef.cs" />
+    <Compile Include="Domain\FileRef\FileRefCollection.cs" />
+    <Compile Include="Domain\FileRef\FileRefDirectory.cs" />
+    <Compile Include="Domain\FileRef\FileRefStripe.cs" />
+    <Compile Include="Domain\FileRef\FileRefDirectoryInfo.cs" />
+    <Compile Include="Domain\FileRef\FileRefInfo.cs" />
+    <Compile Include="Domain\FileRef\PathTranslator.cs" />
+    <Compile Include="Domain\FileStripe\FileStripe.cs" />
+    <Compile Include="Domain\FileStripe\FileStripeCollection.cs" />
+    <Compile Include="Domain\FileStripe\FileStripeDto.cs" />
     <Compile Include="Domain\IO\Appender\FileRefAppender.cs" />
-    <Compile Include="Domain\IO\Reader\FileBitReader.cs" />
-    <Compile Include="Domain\IO\Reader\FileBitsBuffer.cs" />
+    <Compile Include="Domain\IO\Reader\FileStripeReader.cs" />
+    <Compile Include="Domain\IO\Reader\ReconstructBuffer.cs" />
     <Compile Include="Domain\IO\Reader\FileRefReader.cs" />
-    <Compile Include="Domain\IO\Writer\DataBitBuffer.cs" />
-    <Compile Include="Domain\IO\Writer\FileBitWriter.cs" />
+    <Compile Include="Domain\IO\Writer\DataBuffer.cs" />
+    <Compile Include="Domain\IO\Writer\FileStripeWriter.cs" />
     <Compile Include="Domain\IO\Writer\FileRefWriter.cs" />
     <Compile Include="Domain\IO\Writer\HashBuffer.cs" />
-    <Compile Include="Domain\IO\Writer\ParityBitBuffer.cs" />
-    <Compile Include="Domain\Share\FileBitCollection.cs" />
-    <Compile Include="Models\FileBit.cs" />
-    <Compile Include="Models\FileRef.cs" />
-    <Compile Include="Models\FileRefBit.cs" />
+    <Compile Include="Domain\IO\Writer\ParityBuffer.cs" />
+    <Compile Include="Domain\Share\IShareStripe.cs" />
+    <Compile Include="Domain\Share\RemoteShareStripe.cs" />
+    <Compile Include="Domain\Share\ShareDto.cs" />
+    <Compile Include="Domain\Share\ShareStripeDto.cs" />
+    <Compile Include="Domain\User\User.cs" />
+    <Compile Include="Domain\User\UserCollection.cs" />
+    <Compile Include="Models\Share\Requests\CloseFileBitSessionRequest.cs" />
+    <Compile Include="Models\Share\Requests\CreateFileBitSessionRequest.cs" />
+    <Compile Include="Models\Share\Requests\StoreFileBitPartRequest.cs" />
+    <Compile Include="Models\Share\Responses\CloseFileBitSessionResponse.cs" />
+    <Compile Include="Models\Share\Responses\CreateFileBitSessionResponse.cs" />
+    <Compile Include="Models\Share\Responses\StoreFileBitPartResponse.cs" />
     <Compile Include="Models\SingleBuffer.cs" />
     <Compile Include="Models\DoubleBuffer.cs" />
     <Compile Include="Domain\Share\IShare.cs" />
@@ -93,41 +108,24 @@
     <Compile Include="Forms\StatusForm.Designer.cs">
       <DependentUpon>StatusForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Models\Share\Requests\IShareRequest.cs" />
-    <Compile Include="Models\Share\Requests\PingRequest.cs" />
-    <Compile Include="Models\Share\Responses\PingResponse.cs" />
     <Compile Include="Services\AuthenticationService.cs" />
-    <Compile Include="Models\User.cs" />
-    <Compile Include="Domain\VirtualFtp\PathDirectoryInfo.cs" />
-    <Compile Include="Domain\VirtualFtp\PathFileInfo.cs" />
-    <Compile Include="Domain\VirtualFtp\PathTranslator.cs" />
-    <Compile Include="Models\Dtos\ShareRequestDto.cs" />
-    <Compile Include="Models\Dtos\ShareResponseDto.cs" />
-    <Compile Include="Models\Configs\LocalSharePartConfig.cs" />
+    <Compile Include="Models\Configs\LocalShareBitConfig.cs" />
     <Compile Include="Enums\ApplicationMessageEnum.cs" />
     <Compile Include="Enums\ShareMessageEnum.cs" />
     <Compile Include="Models\Configs\ApplicationConfig.cs" />
     <Compile Include="Services\FileRefService.cs" />
     <Compile Include="Services\HashService.cs" />
-    <Compile Include="Domain\Share\LocalSharePart.cs" />
-    <Compile Include="Domain\Application\LocalApplicationHandler.cs" />
+    <Compile Include="Domain\Share\LocalShareStripe.cs" />
     <Compile Include="Domain\Application\LocalApplication.cs" />
-    <Compile Include="Domain\VirtualFtp\VirtualFtpHandler.cs" />
     <Compile Include="Models\Configs\LocalShareConfig.cs" />
     <Compile Include="Models\Configs\RemoteApplicationConfig.cs" />
-    <Compile Include="Models\Application\Requests\IApplicationRequest.cs" />
-    <Compile Include="Models\Application\Responses\PingResponse.cs" />
-    <Compile Include="Models\Application\Requests\GetExternalSharesRequest.cs" />
     <Compile Include="Models\Application\Responses\GetExternalSharesResponse.cs" />
     <Compile Include="Domain\Application\RemoteApplication.cs" />
-    <Compile Include="Models\Dtos\ShareDto.cs" />
     <Compile Include="Domain\Share\RemoteShare.cs" />
-    <Compile Include="Models\Application\Requests\PingRequest.cs" />
     <Compile Include="Services\ConfigService.cs" />
-    <Compile Include="Domain\Share\LocalShareHandler.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Domain\VirtualFtp\VirtualFtpServer.cs" />
+    <Compile Include="Domain\VirtualFtp\VirtualFtp.cs" />
     <Compile Include="Services\IndexesService.cs" />
     <Compile Include="Services\LogService.cs" />
   </ItemGroup>
@@ -165,6 +163,9 @@
     <EmbeddedResource Include="Forms\StatusForm.resx">
       <DependentUpon>StatusForm.cs</DependentUpon>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Models\Application\Requests\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

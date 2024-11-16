@@ -25,6 +25,9 @@ namespace LanCloud.Services
                 {
                     HostName = "WJPC2",
                     RefDirectoryName = "E:\\Test\\Ref",
+                    FileBitBufferSize = 1024 * 4,
+                    FtpBufferSize = 1024 * 4,
+                    WjpBufferSize = 1024 * 16,
                     Servers = new RemoteApplicationConfig[]
                     {
                         new RemoteApplicationConfig()
@@ -45,25 +48,25 @@ namespace LanCloud.Services
                         new LocalShareConfig()
                         {
                             DirectoryName = "E:\\Test\\0",
-                            Parts = new LocalSharePartConfig[]
+                            Parts = new LocalShareBitConfig[]
                             {
-                                new LocalSharePartConfig(0)
+                                new LocalShareBitConfig(0)
                             }
                         },
                         new LocalShareConfig()
                         {
                             DirectoryName = "E:\\Test\\1",
-                            Parts = new LocalSharePartConfig[]
+                            Parts = new LocalShareBitConfig[]
                             {
-                                new LocalSharePartConfig(1)
+                                new LocalShareBitConfig(1)
                             }
                         },
                         new LocalShareConfig()
                         {
                             DirectoryName = "E:\\Test\\P",
-                            Parts = new LocalSharePartConfig[]
+                            Parts = new LocalShareBitConfig[]
                             {
-                                new LocalSharePartConfig(new int[] { 0, 1 })
+                                new LocalShareBitConfig(new int[] { 0, 1 })
                             }
                         }
                     },

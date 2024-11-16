@@ -79,21 +79,19 @@ namespace LanCloud.Servers.Wjp
                             {
                                 while (Queue.TryDequeue(out WjpProxyQueueItem requestItem))
                                 {
-                                    writer.Write(requestItem.Request.MessageType);
-                                    writer.Write(requestItem.Request.Json);
-                                    writer.Write(Convert.ToInt32(requestItem.Request.Data?.Length ?? -1));
-                                    if (requestItem.Request.Data != null)
+                                    writer.Write(requestItem.RequestMessageType);
+                                    writer.Write(requestItem.RequestJson);
+                                    writer.Write(requestItem.RequestDataLength);
+                                    if (requestItem.RequestDataLength > 0)
                                     {
-                                        writer.Write(requestItem.Request.Data);
+                                        writer.Write(requestItem.RequestData, 0, requestItem.RequestDataLength);
                                     }
-                                    var response = reader.ReadString();
-                                    var datalength = reader.ReadInt32();
-                                    byte[] data = null;
-                                    if (datalength >= 0)
+                                    requestItem.ResponseJson = reader.ReadString();
+                                    requestItem.ResponseDataLength = reader.ReadInt32();
+                                    if (requestItem.ResponseDataLength > 0)
                                     {
-                                        data = reader.ReadBytes(datalength);
+                                        reader.Read(requestItem.ResponseData, 0, requestItem.ResponseDataLength);
                                     }
-                                    requestItem.Response = new WjpResponse(response, data);
                                     requestItem.Done.Set();
                                 }
                             }
@@ -125,14 +123,16 @@ namespace LanCloud.Servers.Wjp
             StateChanged?.Invoke(this, null);
         }
 
-        public WjpResponse SendRequest(WjpRequest request)
+        public void SendRequest(int requestMessageType, string requestJson, byte[] requestData, int requestDataLength, out string responseJson, byte[] responseData, out int responseDataLength)
         {
-            var queueItem = new WjpProxyQueueItem(request);
+            var queueItem = new WjpProxyQueueItem(requestMessageType, requestJson, requestData, requestDataLength, responseData);
             Queue.Enqueue(queueItem);
             Enqueued.Set();
             if (!queueItem.Done.WaitOne(100000))
                 throw new Exception("Timeout occured");
-            return queueItem.Response;
+
+            responseJson = queueItem.ResponseJson;
+            responseDataLength = queueItem.ResponseDataLength;
         }
 
         public void Dispose()

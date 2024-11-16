@@ -4,12 +4,23 @@ namespace LanCloud.Servers.Wjp
 {
     public class WjpProxyQueueItem
     {
-        public WjpProxyQueueItem(WjpRequest request)
+        public WjpProxyQueueItem(int requestMessageType, string requestJson, byte[] requestData, int requestDataLength, byte[] responseData)
         {
-            Request = request;
+            RequestMessageType = requestMessageType;
+            RequestJson = requestJson;
+            RequestDataLength = requestDataLength;
+            ResponseData = responseData;
         }
-        public WjpRequest Request { get; set; }
-        public WjpResponse Response { get; set; }
+
+        public int RequestMessageType { get; set; }
+        public string RequestJson { get; set; }
+        public byte[] RequestData { get; set; }
+        public int RequestDataLength { get; set; }
+
+        public string ResponseJson { get; set; }
+        public byte[] ResponseData { get; set; }
+        public int ResponseDataLength { get; set; }
+
         public AutoResetEvent Done { get; } = new AutoResetEvent(false);
     }
 }

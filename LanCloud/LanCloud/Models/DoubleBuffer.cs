@@ -4,17 +4,19 @@ namespace LanCloud.Models
 {
     public class DoubleBuffer
     {
-        public DoubleBuffer(int width = 1)
+        public DoubleBuffer(int bufferSizeForOne, int width = 1)
         {
+            BufferSizeForOne = bufferSizeForOne;
             Width = width;
-            Buffer1 = new byte[width * Constants.BufferSize];
+            Buffer1 = new byte[width * bufferSizeForOne];
             Array.Clear(Buffer1, 0, Buffer1.Length);
             BufferPosition1 = 0;
-            Buffer2 = new byte[width * Constants.BufferSize];
+            Buffer2 = new byte[width * bufferSizeForOne];
             Array.Clear(Buffer2, 0, Buffer2.Length);
             BufferPosition2 = 0;
         }
 
+        public int BufferSizeForOne { get; }
         public int Width { get; }
         private byte[] Buffer1 { get; }
         private byte[] Buffer2 { get; }

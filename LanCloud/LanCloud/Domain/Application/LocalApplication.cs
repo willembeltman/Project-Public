@@ -1,18 +1,19 @@
 ﻿using LanCloud.Domain.Share;
-using LanCloud.Domain.VirtualFtp;
+using LanCloud.Enums;
 using LanCloud.Models;
 using LanCloud.Models.Configs;
+using LanCloud.Models.Dtos;
 using LanCloud.Servers.Ftp;
 using LanCloud.Servers.Wjp;
-using LanCloud.Services;
 using LanCloud.Shared.Log;
+using Newtonsoft.Json;
 using System;
 using System.Linq;
 using System.Net;
 
 namespace LanCloud.Domain.Application
 {
-    public class LocalApplication : IDisposable, IWjpApplication, IFtpApplication
+    public class LocalApplication : IDisposable, IWjpApplication, IFtpApplication, IWjpHandler
     {
         public event EventHandler OnStateChanged;
 
@@ -30,7 +31,7 @@ namespace LanCloud.Domain.Application
             
             int port = ApplicationServerConfig?.Port ?? 8080;
             LocalShares = Config.Shares
-                .Select(share => new LocalShare(this, share, ref port, Logger))
+                .Select(share => new LocalShare(this, share, ++port, Logger))
                 .ToArray();
 
             RemoteApplications = Config.Servers
@@ -40,11 +41,10 @@ namespace LanCloud.Domain.Application
 
             if (ApplicationServerConfig != null)
             {
-                ServerHandler = new LocalApplicationHandler(this, ApplicationServerConfig.HostName, logger);
-                Server = new WjpServer(IPAddress.Any, ApplicationServerConfig.Port, ServerHandler, this, logger);
+                Server = new WjpServer(IPAddress.Any, ApplicationServerConfig.Port, this, this, logger);
             }
 
-            VirtualFtpServer = new VirtualFtpServer(this, logger);
+            VirtualFtpServer = new VirtualFtp.VirtualFtp(this, logger);
 
             if (ApplicationServerConfig != null)
             {
@@ -64,15 +64,17 @@ namespace LanCloud.Domain.Application
         public RemoteApplication[] RemoteApplications { get; }
         public RemoteApplicationConfig ApplicationServerConfig { get; }
         public LocalShare[] LocalShares { get; }
-        public LocalApplicationHandler ServerHandler { get; }
         public WjpServer Server { get; }
-        public VirtualFtpServer VirtualFtpServer { get; }
+        public VirtualFtp.VirtualFtp VirtualFtpServer { get; }
         private string _Status { get; set; }
 
         public string HostName => Config.HostName;
+        public int FileBitBufferSize => Config.FileBitBufferSize;
+        public int WjpBufferSize => Config.WjpBufferSize;
+        public int FtpBufferSize => Config.FtpBufferSize;
         public int? Port => ApplicationServerConfig?.Port;
-        public LocalSharePart[] LocalShareParts => LocalShares?
-            .SelectMany(localShare => localShare.LocalShareParts)
+        public LocalShareStripe[] LocalShareBits => LocalShares?
+            .SelectMany(a => a.ShareStripes)
             .ToArray();
 
         public string Status
@@ -84,19 +86,46 @@ namespace LanCloud.Domain.Application
                 StatusChanged();
             }
         }
+
         public void StatusChanged()
         {
             OnStateChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        public FileBit[] FindFileBits(string extention, FileRef fileRef, FileRefBit fileRefBit)
+        public FileStripe[] FindFileBits(string extention, FileRef fileRef, FileRefStripe fileRefBit)
         {
-            var fileBits = LocalShareParts
-                .Where(a => a.Indexes.Matches(fileRefBit.Indexes))
+            var fileBits = LocalShares
                 .Select(a => a.FileBits.FindFileBit(extention, fileRef, fileRefBit))
                 .Where(a => a != null)
                 .ToArray();
             return fileBits;
+        }
+
+        public void ProcessRequest(
+            int requestMessageType, string requestJson, byte[] requestData, int requestDataLength,
+            out string responseJson, byte[] responseData, out int responseDataLength)
+        {
+            switch (requestMessageType)
+            {
+                case (int)ApplicationMessageEnum.GetExternalShares:
+                    Handle_GetExternalShareDtos(out responseJson, out responseDataLength);
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
+        private void Handle_GetExternalShareDtos(out string responseJson, out int responseDataLength)
+        {
+            var shareDtos = LocalShares
+                .Select(a => new ShareDto()
+                {
+                    HostName = a.HostName,
+                    Port = a.Port
+                })
+                .ToArray();
+            responseJson = JsonConvert.SerializeObject(shareDtos);
+            responseDataLength = 0;
         }
 
         public void Dispose()

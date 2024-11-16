@@ -56,7 +56,10 @@ namespace LanCloud.Servers.Wjp
                 var requestMessageType = 0;
                 var requestJson = string.Empty;
                 var requestDataLength = 0;
-                byte[] requestData = null;
+                byte[] requestData = new byte[Server.Application.WjpBufferSize];
+                var responseJson = string.Empty;
+                var responseDataLength = 0;
+                byte[] responseData = new byte[Server.Application.WjpBufferSize];
                 try
                 {
                     Status = Logger.Info($"Connected");
@@ -74,15 +77,14 @@ namespace LanCloud.Servers.Wjp
                             requestDataLength = reader.ReadInt32();
                             if (requestDataLength >= 0)
                             {
-                                requestData = reader.ReadBytes(requestDataLength);
+                                reader.Read(requestData, 0, requestDataLength);
                             }
-                            var request = new WjpRequest(requestMessageType, requestJson, requestData);
-                            var response = Handler.ProcessRequest(request);
-                            writer.Write(response.Json);
-                            writer.Write(Convert.ToInt32(response.Data?.Length ?? -1));
-                            if (requestDataLength >= 0)
+                            Handler.ProcessRequest(requestMessageType, requestJson, requestData, requestDataLength, out responseJson, responseData, out responseDataLength);
+                            writer.Write(responseJson);
+                            writer.Write(responseDataLength);
+                            if (responseDataLength >= 0)
                             {
-                                writer.Write(response.Data);
+                                writer.Write(responseData, 0, responseDataLength);
                             }
                         }
                     }

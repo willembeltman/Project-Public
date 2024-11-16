@@ -7,17 +7,17 @@ namespace LanCloud.Domain.IO.Reader
 {
     public class FileRefReader : Stream
     {
-        public FileRefReader(PathFileInfo pathInfo, ILogger logger)
+        public FileRefReader(FileRefInfo pathInfo, ILogger logger)
         {
             PathInfo = pathInfo;
             Logger = logger;
 
-            FileBitJoiner = new FileBitsBuffer(this, logger);
+            FileBitJoiner = new ReconstructBuffer(this, logger);
         }
 
-        public PathFileInfo PathInfo { get; }
+        public FileRefInfo PathInfo { get; }
         public ILogger Logger { get; }
-        public FileBitsBuffer FileBitJoiner { get; }
+        public ReconstructBuffer FileBitJoiner { get; }
 
         public override long Position { get; set; }
         private bool BufferInitialized { get; set; }

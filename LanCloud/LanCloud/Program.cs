@@ -41,9 +41,9 @@ namespace LanCloud
             }
         }
 
-        private static void DoTest2(VirtualFtpServer virtualFtpServer)
+        private static void DoTest2(VirtualFtp virtualFtpServer)
         {
-            using (var stream = virtualFtpServer.FtpHandler.FileOpenRead("/test.bin"))
+            using (var stream = virtualFtpServer.FileOpenRead("/test.bin"))
             using (var reader = new StreamReader(stream))
             {
                 Console.WriteLine(reader.ReadToEnd());
@@ -51,16 +51,16 @@ namespace LanCloud
             }
         }
 
-        private static void DoTest(VirtualFtpServer virtualFtpServer)
+        private static void DoTest(VirtualFtp virtualFtpServer)
         {
             Console.WriteLine("creating file");
 
-            byte[] buffer = new byte[Constants.BufferSize * 2];
+            byte[] buffer = new byte[1024 * 8];
             var aantal = 128* 1024;
             var size = aantal * buffer.Length;
 
             Stopwatch sw = Stopwatch.StartNew();
-            using (var stream = virtualFtpServer.FtpHandler.FileOpenWriteCreate("/test.bin"))
+            using (var stream = virtualFtpServer.FileOpenWriteCreate("/test.bin"))
             {
                 for (long i = 0; i < aantal; i++)
                 {

@@ -4,6 +4,6 @@
     {
         public string DirectoryName { get; set; }
         public int MaxSpeed { get; set; }
-        public LocalSharePartConfig[] Parts { get; set; }
+        public LocalShareBitConfig[] Parts { get; set; }
     }
 }

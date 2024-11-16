@@ -2,6 +2,9 @@
 {
     public enum ShareMessageEnum
     {
-        Ping,
+        ListFileBits,
+        CreateFileBitSession,
+        StoreFileBitPart,
+        CloseFileBitSession,
     }
 }

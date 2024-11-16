@@ -49,8 +49,6 @@
     <Compile Include="Logger.cs" />
     <Compile Include="LogManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Repository\FileRefDirectoryRepository.cs" />
-    <Compile Include="Repository\FileRefRepository.cs" />
     <Compile Include="Repository\IEntity.cs" />
     <Compile Include="Repository\Repository.cs" />
   </ItemGroup>

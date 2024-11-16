@@ -10,24 +10,24 @@ namespace LanCloud.Domain.IO.Writer
 {
     public class FileRefWriter : Stream
     {
-        public FileRefWriter(PathFileInfo pathInfo, ILogger logger)
+        public FileRefWriter(FileRefInfo pathInfo, ILogger logger)
         {
             PathInfo = pathInfo;
             Logger = logger;
 
             HashWriter = new HashBuffer(this, Logger);
-            DataBitWriters = Application.LocalShareParts
+            DataStripeWriters = Application.LocalShareBits
                 .Where(a => a.Indexes.Length == 1)
                 .GroupBy(a => a.Indexes.First())
-                .Select(sharepart => new DataBitBuffer(this, sharepart.Key, sharepart.ToArray(), Logger))
+                .Select(sharepart => new DataBuffer(this, sharepart.Key, sharepart.ToArray(), Logger))
                 .ToArray();
-            ParityBitWriters = Application.LocalShareParts
+            ParityStripeWriters = Application.LocalShareBits
                 .Where(a => a.Indexes.Length > 1)
                 .GroupBy(a => string.Join("_", a.Indexes.OrderBy(b => b)))
-                .Select(sharepart => new ParityBitBuffer(this, sharepart.ToArray(), Logger))
+                .Select(sharepart => new ParityBuffer(this, sharepart.ToArray(), Logger))
                 .ToArray();
 
-            AllIndexes = Application.LocalShareParts
+            AllIndexes = Application.LocalShareBits
                 .SelectMany(a => a.Indexes)
                 .GroupBy(a => a)
                 .Select(a => a.Key)
@@ -38,10 +38,10 @@ namespace LanCloud.Domain.IO.Writer
             Logger.Info($"Opened virtual ftp file: {pathInfo.Name}");
         }
 
-        public PathFileInfo PathInfo { get; }
+        public FileRefInfo PathInfo { get; }
         public ILogger Logger { get; }
-        public DataBitBuffer[] DataBitWriters { get; }
-        public ParityBitBuffer[] ParityBitWriters { get; }
+        public DataBuffer[] DataStripeWriters { get; }
+        public ParityBuffer[] ParityStripeWriters { get; }
         public HashBuffer HashWriter { get; }
         public byte[] AllIndexes { get; }
         public DoubleBuffer Buffer { get; }
@@ -91,10 +91,10 @@ namespace LanCloud.Domain.IO.Writer
 
             HashWriter.StartNext.Set();
 
-            foreach (var item in DataBitWriters)
+            foreach (var item in DataStripeWriters)
                 item.StartNext.Set();
 
-            foreach (var item in ParityBitWriters)
+            foreach (var item in ParityStripeWriters)
                 item.StartNext.Set();
         }
 
@@ -103,11 +103,11 @@ namespace LanCloud.Domain.IO.Writer
             if (!HashWriter.WritingIsDone.WaitOne(100000))
                 throw new Exception("Timeout writing to HashWriter");
 
-            foreach (var item in DataBitWriters)
+            foreach (var item in DataStripeWriters)
                 if (!item.WritingIsDone.WaitOne(100000))
                     throw new Exception("Timeout writing to DataBitWriters");
 
-            foreach (var item in ParityBitWriters)
+            foreach (var item in ParityStripeWriters)
                 if (!item.WritingIsDone.WaitOne(100000))
                     throw new Exception("Timeout writing to ParityBitWriters");
         }
@@ -118,6 +118,7 @@ namespace LanCloud.Domain.IO.Writer
             {
                 Disposed = true;
 
+                // Eventueel de laatste buffer wegschrijven
                 if (Buffer.WriteBufferPosition > 0)
                 {
                     FlipBuffer();
@@ -126,17 +127,17 @@ namespace LanCloud.Domain.IO.Writer
 
                 // Waardes ophalen
                 var hash = HashWriter.Stop();
-                var dataBits = DataBitWriters
+                var dataStripes = DataStripeWriters
                     .SelectMany(a => a.Stop(Position, hash))
                     .ToArray();
-                var parityBits = ParityBitWriters
+                var parityStripes = ParityStripeWriters
                     .SelectMany(a => a.Stop(Position, hash))
                     .ToArray();
 
                 // Waardes updaten
-                var bits = dataBits
-                    .Concat(parityBits)
-                    .Select(a => new FileRefBit(a.Indexes))
+                var bits = dataStripes
+                    .Concat(parityStripes)
+                    .Select(a => new FileRefStripe(a.Indexes))
                     .ToArray();
                 PathInfo.FileRef = new FileRef(Position, hash, bits);
             }

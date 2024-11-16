@@ -5,11 +5,11 @@ namespace LanCloud.Domain.IO.Appender
 {
     public class FileRefAppender : System.IO.Stream
     {
-        public FileRefAppender(PathFileInfo virtualFileInfo, Shared.Log.ILogger logger)
+        public FileRefAppender(FileRefInfo virtualFileInfo, Shared.Log.ILogger logger)
         {
             VirtualFileInfo = virtualFileInfo;
         }
-        public PathFileInfo VirtualFileInfo { get; }
+        public FileRefInfo VirtualFileInfo { get; }
 
         public override bool CanRead => false;
         public override bool CanSeek => false;

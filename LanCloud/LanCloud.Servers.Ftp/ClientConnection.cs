@@ -18,16 +18,20 @@ namespace LanCloud.Servers.Ftp
         public ClientConnection(
             TcpClient client,
             IFtpHandler commandHandler,
+            IFtpApplication application,
             ILogger logger,
             string certificateFilename = null)
         {
-            var RemoteEndPoint = (IPEndPoint)client.Client.RemoteEndPoint;
-            Name = RemoteEndPoint.Address.ToString();
 
             ControlClient = client;
             FtpHandler = commandHandler;
+            Application = application;
             Logger = logger;
             CertificateFileName = certificateFilename;
+
+
+            var RemoteEndPoint = (IPEndPoint)client.Client.RemoteEndPoint;
+            Name = RemoteEndPoint.Address.ToString();
 
             _validCommands = new List<string>();
         }
@@ -36,6 +40,7 @@ namespace LanCloud.Servers.Ftp
         string Name { get; }
         TcpClient ControlClient { get; }
         public IFtpHandler FtpHandler { get; }
+        public IFtpApplication Application { get; }
         TcpClient DataClient { get; set; }
         TcpListener PassiveListener { get; set; }
         NetworkStream ControlStream { get; set; }
@@ -979,7 +984,7 @@ namespace LanCloud.Servers.Ftp
 
                 string line = string.Format(
                     "drwxr-xr-x    2 2003     2003     {0,8} {1} {2}",
-                    FtpHandler.BufferSize.ToString(),
+                    Application.FtpBufferSize.ToString(),
                     date,
                     directory.Name);
 
@@ -1065,11 +1070,11 @@ namespace LanCloud.Servers.Ftp
 
             if (ConnectionType == TransferType.Image)
             {
-                return CopyStream(input, limitedStream, FtpHandler.BufferSize);
+                return CopyStream(input, limitedStream, Application.FtpBufferSize);
             }
             else
             {
-                return CopyStreamAscii(input, limitedStream, FtpHandler.BufferSize);
+                return CopyStreamAscii(input, limitedStream, Application.FtpBufferSize);
             }
         }
 
