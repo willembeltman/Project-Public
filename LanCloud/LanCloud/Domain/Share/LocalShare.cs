@@ -11,6 +11,8 @@ using System.Net;
 using System.Linq;
 using LanCloud.Domain.FileStripe;
 using System.Collections.Generic;
+using LanCloud.Services;
+using LanCloud.Models.Share.Responses;
 
 namespace LanCloud.Domain.Share
 {
@@ -36,12 +38,12 @@ namespace LanCloud.Domain.Share
 
             if (!Root.Exists) Root.Create();
 
-            FileStripeInfos = Root
+            LocalFileStripeInfos = Root
                 .GetFiles($"*.filestripe")
                 .Select(fileRefInfo => new LocalFileStripe(fileRefInfo))
                 .ToDictionary(a => a.Name);
 
-            ShareStripes = config.Parts
+            LocalShareStripes = config.Parts
                 .Select(part => new LocalShareStripe(this, part, logger))
                 .ToArray();
 
@@ -57,8 +59,8 @@ namespace LanCloud.Domain.Share
         public LocalShareConfig Config { get; }
         public int Port { get; }
         public ILogger Logger { get; }
-        private Dictionary<string, LocalFileStripe> FileStripeInfos { get; }
-        public LocalShareStripe[] ShareStripes { get; }
+        private Dictionary<string, LocalFileStripe> LocalFileStripeInfos { get; }
+        public LocalShareStripe[] LocalShareStripes { get; }
 
         public string HostName => Application.LocalApplicationServerConfig?.HostName;
         public string RootFullName => Config.DirectoryName;
@@ -66,39 +68,27 @@ namespace LanCloud.Domain.Share
 
         public WjpServer Server { get; private set; }
 
-        #region IShare interface
-        IShareStripe[] IShare.ShareStripes => ShareStripes;
-        IFileStripe IShare.FindFileStripe(string extention, string hash, long length, byte[] indexes)
+        public LocalFileStripe FindFileStripe(string extention, string hash, long length, int[] indexes)
         {
-            return FindFileStripe(extention, hash, length, indexes);
-        }
-        #endregion
-
-        public LocalFileStripe CreateTempFileStripe(string extention, byte[] indexes)
-        {
-            return new LocalFileStripe(Root, extention, indexes);
+            lock (LocalFileStripeInfos)
+            {
+                var name = LocalFileStripe.CreateFileName(extention, hash, length, indexes);
+                if (LocalFileStripeInfos.TryGetValue(name, out var file)) return file;
+                return null;
+            }
         }
         public void AddFileStripe(LocalFileStripe fileStripe)
         {
-            lock (FileStripeInfos)
+            lock (LocalFileStripeInfos)
             {
-                FileStripeInfos.Add(fileStripe.Name, fileStripe);
+                LocalFileStripeInfos.Add(fileStripe.Name, fileStripe);
             }
         }
         public void RemoveFileStripe(LocalFileStripe fileStripe)
         {
-            lock (FileStripeInfos)
+            lock (LocalFileStripeInfos)
             {
-                FileStripeInfos.Remove(fileStripe.Name);
-            }
-        }
-        public LocalFileStripe FindFileStripe(string extention, string hash, long length, byte[] indexes)
-        {
-            lock (FileStripeInfos)
-            {
-                var name = LocalFileStripe.CreateFileName(extention, hash, length, indexes);
-                if (FileStripeInfos.TryGetValue(name, out var file)) return file;
-                return null;
+                LocalFileStripeInfos.Remove(fileStripe.Name);
             }
         }
 
@@ -107,23 +97,23 @@ namespace LanCloud.Domain.Share
             switch (requestMessageType)
             {
                 case (int)ShareMessageEnum.FindFileStripes:
-                    Handle_FindFileStripe(requestJson, out responseJson, responseData, out responseDataLength);
+                    Handle_FindFileStripe(requestJson, requestData, requestDataLength, out responseJson, responseData, out responseDataLength);
                     break;
                 case (int)ShareMessageEnum.CreateFileStripeSession:
-                    Handle_CreateFileStripeSession(requestJson, out responseJson, responseData, out responseDataLength);
+                    Handle_CreateFileStripeSession(requestJson, requestData, requestDataLength, out responseJson, responseData, out responseDataLength);
                     break;
                 case (int)ShareMessageEnum.StoreFileStripePart:
-                    Handle_StoreFileStripeChunk(requestJson, out responseJson, responseData, out responseDataLength);
+                    Handle_StoreFileStripeChunk(requestJson, requestData, requestDataLength, out responseJson, responseData, out responseDataLength);
                     break;
                 case (int)ShareMessageEnum.CloseFileStripeSession:
-                    Handle_CloseFileStripeSession(requestJson, out responseJson, responseData, out responseDataLength);
+                    Handle_CloseFileStripeSession(requestJson, requestData, requestDataLength, out responseJson, responseData, out responseDataLength);
                     break;
                 default:
                     throw new NotImplementedException();
             }
         }
 
-        private void Handle_FindFileStripe(string requestJson, out string responseJson, byte[] responseData, out int responseDataLength)
+        private void Handle_FindFileStripe(string requestJson, byte[] requestData, int requestDataLength, out string responseJson, byte[] responseData, out int responseDataLength)
         {
             var request = JsonConvert.DeserializeObject<FindFileStripesRequest>(requestJson);
             var localFileStripe = FindFileStripe(request.Extention, request.Hash, request.Length, request.Indexes);
@@ -132,19 +122,61 @@ namespace LanCloud.Domain.Share
             responseDataLength = 0;
         }
 
-        private void Handle_CreateFileStripeSession(string requestJson, out string responseJson, byte[] responseData, out int responseDataLength)
+        private void Handle_CreateFileStripeSession(string requestJson, byte[] requestData, int requestDataLength, out string responseJson, byte[] responseData, out int responseDataLength)
         {
-            throw new NotImplementedException();
-        }
-        private void Handle_StoreFileStripeChunk(string requestJson, out string responseJson, byte[] responseData, out int responseDataLength)
-        {
-            StoreFileStripeChunkRequest wjpRequest = JsonConvert.DeserializeObject<StoreFileStripeChunkRequest>(requestJson);
-            responseJson = null;
+            var request = JsonConvert.DeserializeObject<CreateFileStripeSessionRequest>(requestJson);
+
+            var shareStripe = LocalShareStripes.FirstOrDefault(a => a.Indexes.Matches(request.Indexes));
+            if (shareStripe == null)
+            {
+                responseJson = null;
+                responseDataLength = 0;
+                return;
+            }
+
+            var localFileStripe = shareStripe.CreateFileStripeSession(request.Extention);
+            var fileStripeDto = new FileStripeDto(localFileStripe);
+
+            var response = new CreateFileStripeSessionResponse(fileStripeDto);
+            responseJson = JsonConvert.SerializeObject(response);
             responseDataLength = 0;
         }
-        private void Handle_CloseFileStripeSession(string requestJson, out string responseJson, byte[] responseData, out int responseDataLength)
+        private void Handle_StoreFileStripeChunk(string requestJson, byte[] requestData, int requestDataLength, out string responseJson, byte[] responseData, out int responseDataLength)
         {
-            throw new NotImplementedException();
+            var request = JsonConvert.DeserializeObject<StoreFileStripeChunkRequest>(requestJson);
+
+            var shareStripe = LocalShareStripes.FirstOrDefault(a => a.Indexes.Matches(request.Indexes));
+            if (shareStripe == null)
+            {
+                responseJson = null;
+                responseDataLength = 0;
+                return;
+            }
+
+            var succes = shareStripe.StoreFileStripeChunk(request.Extention, request.Index, requestData, requestDataLength);
+
+            var response = new StoreFileStripeChunkResponse(succes);
+            responseJson = JsonConvert.SerializeObject(response);
+            responseDataLength = 0;
+        }
+        private void Handle_CloseFileStripeSession(string requestJson, byte[] requestData, int requestDataLength, out string responseJson, byte[] responseData, out int responseDataLength)
+        {
+            var request = JsonConvert.DeserializeObject<CloseFileStripeSessionRequest>(requestJson);
+
+            var shareStripe = LocalShareStripes.FirstOrDefault(a => a.Indexes.Matches(request.Indexes));
+            if (shareStripe == null)
+            {
+                responseJson = null;
+                responseDataLength = 0;
+                return;
+            }
+
+            LocalFileStripe localFileStripe = shareStripe.CloseFileStripeSession(request.Extention);
+            var fileStripeDto = new FileStripeDto(localFileStripe);
+
+            var response = new CloseFileStripeSessionResponse(fileStripeDto);
+            responseJson = JsonConvert.SerializeObject(response);
+            responseDataLength = 0;
         }
 
         public void Dispose()
@@ -152,5 +184,13 @@ namespace LanCloud.Domain.Share
             Server.Dispose();
         }
 
+
+        #region IShare interface
+        IShareStripe[] IShare.ShareStripes => LocalShareStripes;
+        IFileStripe IShare.FindFileStripe(string extention, string hash, long length, int[] indexes)
+        {
+            return FindFileStripe(extention, hash, length, indexes);
+        }
+        #endregion
     }
 }

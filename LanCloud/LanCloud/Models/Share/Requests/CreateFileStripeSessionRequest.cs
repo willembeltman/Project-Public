@@ -3,11 +3,13 @@
     public class CreateFileStripeSessionRequest
     {
         public CreateFileStripeSessionRequest() { }
-        public CreateFileStripeSessionRequest(string path)
+        public CreateFileStripeSessionRequest(string extention, int[] indexes)
         {
-            Path = path;
+            Extention = extention;
+            Indexes = Indexes;
         }
 
-        public string Path { get; }
+        public string Extention { get; }
+        public int[] Indexes { get; set; }
     }
 }

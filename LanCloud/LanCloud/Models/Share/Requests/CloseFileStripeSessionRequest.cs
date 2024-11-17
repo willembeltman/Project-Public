@@ -3,13 +3,13 @@
     public class CloseFileStripeSessionRequest
     {
         public CloseFileStripeSessionRequest() { }
-        public CloseFileStripeSessionRequest(string path, long index)
+        public CloseFileStripeSessionRequest(string extention, int[] indexes)
         {
-            Path = path;
-            Index = index;
+            Extention = extention;
+            Indexes = indexes;
         }
 
-        public string Path { get; }
-        public long Index { get; }
+        public string Extention { get; set; }
+        public int[] Indexes { get; set; }
     }
 }

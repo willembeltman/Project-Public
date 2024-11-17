@@ -17,9 +17,9 @@ namespace LanCloud.Domain.FileStripe
             Extention = split[0];
             Hash = split[1];
             Length = Convert.ToInt64(split[2]);
-            Indexes = split[3].Split('_').Select(a => Convert.ToByte(a)).ToArray();
+            Indexes = split[3].Split('_').Select(a => Convert.ToInt32(a)).ToArray();
         }
-        public LocalFileStripe(DirectoryInfo dirinfo, string extention, byte[] indexes)
+        public LocalFileStripe(DirectoryInfo dirinfo, string extention, int[] indexes)
         {
             Extention = extention;
             Indexes = indexes;
@@ -28,7 +28,7 @@ namespace LanCloud.Domain.FileStripe
             Info = new FileInfo(FullName);
             IsTemp = true;
         }
-        public LocalFileStripe(DirectoryInfo dirinfo, string extention, byte[] indexes, long length, string hash)
+        public LocalFileStripe(DirectoryInfo dirinfo, string extention, int[] indexes, long length, string hash)
         {
             Extention = extention;
             Indexes = indexes;
@@ -41,7 +41,7 @@ namespace LanCloud.Domain.FileStripe
         }
 
         public string Extention { get; }
-        public byte[] Indexes { get; }
+        public int[] Indexes { get; }
         public string Name { get; }
         public FileInfo Info { get; private set; }
         public string FullName { get; private set; }
@@ -72,11 +72,11 @@ namespace LanCloud.Domain.FileStripe
             return Info.OpenWrite();
         }
 
-        public static string CreateFileName(string extention, string hash, long length, byte[] indexes)
+        public static string CreateFileName(string extention, string hash, long length, int[] indexes)
         {
             return $"{extention}.{hash}.{length}.{indexes.ToUniqueKey()}.filestripe";
         }
-        public static string CreateTempFileName(string extention, byte[] indexes)
+        public static string CreateTempFileName(string extention, int[] indexes)
         {
             return $"{extention}.{Guid.NewGuid().ToString()}.{indexes.ToUniqueKey()}.tempbit";
         }

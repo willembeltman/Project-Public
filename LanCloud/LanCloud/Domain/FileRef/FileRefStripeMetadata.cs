@@ -4,12 +4,12 @@ namespace LanCloud.Domain.FileRef
 {
     public class FileRefStripeMetadata
     {
-        public FileRefStripeMetadata(byte[] indexes)
+        public FileRefStripeMetadata(int[] indexes)
         {
             Indexes = indexes;
         }
 
-        public byte[] Indexes { get; }
+        public int[] Indexes { get; }
 
         public string GetUniqueIdentifier()
         {

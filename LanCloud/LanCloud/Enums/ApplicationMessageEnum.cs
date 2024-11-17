@@ -3,6 +3,6 @@
     public enum ApplicationMessageEnum
     {
         Ping,
-        GetExternalShares
+        GetShares
     }
 }

@@ -6,6 +6,6 @@ namespace LanCloud.Domain.Share
     {
         IShareStripe[] ShareStripes { get; }
 
-        IFileStripe FindFileStripe(string extention, string hash, long length, byte[] indexes);
+        IFileStripe FindFileStripe(string extention, string hash, long length, int[] indexes);
     }
 }

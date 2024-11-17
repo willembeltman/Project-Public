@@ -20,7 +20,7 @@ namespace LanCloud.Domain.Share
 
         public long Length => ((IFileStripe)FileStripeDto).Length;
 
-        public byte[] Indexes => ((IFileStripe)FileStripeDto).Indexes;
+        public int[] Indexes => ((IFileStripe)FileStripeDto).Indexes;
 
         public bool IsTemp => ((IFileStripe)FileStripeDto).IsTemp;
 

@@ -30,7 +30,7 @@ namespace LanCloud.Domain.IO.Writer
         public LocalShareStripe[] LocalShareParts { get; }
         public ILogger Logger { get; }
         public DoubleBuffer Buffer { get; }
-        public byte[] Indexes { get; }
+        public int[] Indexes { get; }
         public FileStripeWriter[] FileStripeWriters { get; }
 
         public Thread Thread { get; }

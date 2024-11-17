@@ -15,7 +15,7 @@
         public string Extention { get; set; }
         public string Hash { get; set; }
         public long Length { get; set; }
-        public byte[] Indexes { get; set; }
+        public int[] Indexes { get; set; }
         public bool IsTemp { get; set; }
     }
 }

@@ -43,7 +43,7 @@ namespace LanCloud.Domain.IO.Reader
         public FileRefReader FileRefReader { get; }
         public ILogger Logger { get; }
         internal FileStripeReader[] FileStripeReaders { get; }
-        public byte[] AllIndexes { get; }
+        public int[] AllIndexes { get; }
         public DoubleBuffer Buffer { get; }
         public Thread Thread { get; }
         public bool Disposed { get; private set; }

@@ -44,7 +44,7 @@ namespace LanCloud.Domain.IO.Writer
         public DataBuffer[] DataStripeWriters { get; }
         public ParityBuffer[] ParityStripeWriters { get; }
         public HashBuffer HashWriter { get; }
-        public byte[] AllIndexes { get; }
+        public int[] AllIndexes { get; }
         public DoubleBuffer Buffer { get; }
         public bool Disposed { get; private set; }
         public override long Position { get; set; }

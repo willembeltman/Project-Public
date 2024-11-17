@@ -22,7 +22,7 @@ namespace LanCloud.Services
                         writer.Write(Convert.ToByte(bit.Indexes.Length));
                         foreach (var index in bit.Indexes)
                         {
-                            writer.Write(index);
+                            writer.Write(Convert.ToByte(index));
                         }
                     }
                 }
@@ -42,7 +42,7 @@ namespace LanCloud.Services
                 var Bits = new FileRefStripeMetadata[reader.ReadByte()];
                 for (int i = 0; i < Bits.Length; i++)
                 {
-                    var Indexes = new byte[reader.ReadByte()];
+                    var Indexes = new int[reader.ReadByte()];
                     for (int j = 0; j < Indexes.Length; j++)
                     {
                         Indexes[j] = reader.ReadByte();

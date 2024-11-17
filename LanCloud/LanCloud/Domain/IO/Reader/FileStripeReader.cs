@@ -62,7 +62,7 @@ namespace LanCloud.Domain.IO.Reader
             Speed = Speeds.Sum() / Speeds.Count;
         }
 
-        public byte[] Indexes => FileStripe.Indexes;
+        public int[] Indexes => FileStripe.Indexes;
 
         private void Start()
         {

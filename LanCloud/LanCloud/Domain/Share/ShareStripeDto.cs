@@ -1,7 +1,15 @@
-﻿namespace LanCloud.Models.Dtos
+﻿using LanCloud.Domain.Share;
+
+namespace LanCloud.Models.Dtos
 {
     public class ShareStripeDto
     {
-        public byte[] Indexes { get; set; }
+        public ShareStripeDto() { }
+        public ShareStripeDto(LocalShareStripe localShareStripe)
+        {
+            Indexes = localShareStripe.Indexes;
+        }
+
+        public int[] Indexes { get; set; }
     }
 }

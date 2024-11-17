@@ -3,7 +3,7 @@
     internal class FindFileStripesRequest
     {
         public FindFileStripesRequest() { } 
-        public FindFileStripesRequest(string extention, string hash, long length, byte[] indexes)
+        public FindFileStripesRequest(string extention, string hash, long length, int[] indexes)
         {
             Extention = extention;
             Hash = hash;
@@ -14,6 +14,6 @@
         public string Extention { get; set; }
         public string Hash { get; set; }
         public long Length { get; set; }
-        public byte[] Indexes { get; set; }
+        public int[] Indexes { get; set; }
     }
 }

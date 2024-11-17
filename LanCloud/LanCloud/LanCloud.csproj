@@ -103,7 +103,7 @@
     <Compile Include="Models\Share\Requests\StoreFileStripeChunkRequest.cs" />
     <Compile Include="Models\Share\Responses\CloseFileStripeSessionResponse.cs" />
     <Compile Include="Models\Share\Responses\CreateFileStripeSessionResponse.cs" />
-    <Compile Include="Models\Share\Responses\StoreFileStripePartResponse.cs" />
+    <Compile Include="Models\Share\Responses\StoreFileStripeChunkResponse.cs" />
     <Compile Include="Models\SingleBuffer.cs" />
     <Compile Include="Models\DoubleBuffer.cs" />
     <Compile Include="Domain\Share\IShare.cs" />

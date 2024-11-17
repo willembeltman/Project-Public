@@ -92,7 +92,7 @@ namespace LanCloud.Domain.Application
         public int FtpBufferSize => Config.FtpBufferSize;
         public int? Port => LocalApplicationServerConfig?.Port;
         public LocalShareStripe[] LocalShareStripes => LocalShares?
-            .SelectMany(a => a.ShareStripes)
+            .SelectMany(a => a.LocalShareStripes)
             .ToArray();
 
 
@@ -117,22 +117,18 @@ namespace LanCloud.Domain.Application
         {
             switch (requestMessageType)
             {
-                case (int)ApplicationMessageEnum.GetExternalShares:
-                    Handle_GetExternalShareDtos(out responseJson, out responseDataLength);
+                case (int)ApplicationMessageEnum.GetShares:
+                    Handle_GetShareDtos(out responseJson, out responseDataLength);
                     break;
                 default:
                     throw new NotImplementedException();
             }
         }
 
-        private void Handle_GetExternalShareDtos(out string responseJson, out int responseDataLength)
+        private void Handle_GetShareDtos(out string responseJson, out int responseDataLength)
         {
             var shareDtos = LocalShares
-                .Select(a => new ShareDto()
-                {
-                    HostName = a.HostName,
-                    Port = a.Port
-                })
+                .Select(localShare => new ShareDto(localShare))
                 .ToArray();
             responseJson = JsonConvert.SerializeObject(shareDtos);
             responseDataLength = 0;

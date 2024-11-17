@@ -53,7 +53,7 @@ namespace LanCloud.Domain.Application
         {
             string responseJson = "";
             int responseDataLength = 0;
-            SendRequest((int)ApplicationMessageEnum.GetExternalShares, null, null, 0, out responseJson, null, out responseDataLength);
+            SendRequest((int)ApplicationMessageEnum.GetShares, null, null, 0, out responseJson, null, out responseDataLength);
             var response = JsonConvert.DeserializeObject<ShareDto[]>(responseJson);
             return response;
         }

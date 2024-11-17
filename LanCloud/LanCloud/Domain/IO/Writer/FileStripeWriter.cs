@@ -17,7 +17,7 @@ namespace LanCloud.Domain.IO.Writer
             LocalShareStripe = localSharePart;
             Logger = logger;
 
-            FileStripe = LocalShareStripe.LocalShare.CreateTempFileStripe(FileRefWriter.PathInfo.Extention, localSharePart.Indexes);
+            FileStripe = LocalShareStripe.CreateFileStripeSession(FileRefWriter.PathInfo.Extention);
 
             Thread = new Thread(new ThreadStart(Start));
             Thread.Start();
@@ -39,7 +39,7 @@ namespace LanCloud.Domain.IO.Writer
         public int Position { get; private set; } = 0;
         private bool KillSwitch { get; set; } = false;
 
-        public byte[] Indexes => LocalShareStripe.Indexes;
+        public int[] Indexes => LocalShareStripe.Indexes;
 
         private void Start()
         {

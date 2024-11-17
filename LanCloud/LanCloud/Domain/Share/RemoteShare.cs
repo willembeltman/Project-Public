@@ -26,7 +26,7 @@ namespace LanCloud.Domain.Share
 
         IShareStripe[] IShare.ShareStripes => ShareStripes;
 
-        public IFileStripe FindFileStripe(string extention, string hash, long length, byte[] indexes)
+        public IFileStripe FindFileStripe(string extention, string hash, long length, int[] indexes)
         {
             var request = new FindFileStripesRequest(extention, hash, length, indexes);
             var requestJson = JsonConvert.SerializeObject(request);
@@ -39,39 +39,6 @@ namespace LanCloud.Domain.Share
 
             var remoteFileStripe = new RemoteFileStripe(this, fileStripeDto);
             return remoteFileStripe;
-        }
-        public CreateFileStripeSessionResponse CreateFileStripeSession(string path)
-        {
-            var request = new CreateFileStripeSessionRequest(path);
-            var requestJson = JsonConvert.SerializeObject(request);
-
-            string responseJson = "";
-            int responseDataLength = 0;
-            SendRequest((int)ShareMessageEnum.CreateFileStripeSession, null, null, 0, out responseJson, null, out responseDataLength);
-            var response = JsonConvert.DeserializeObject<CreateFileStripeSessionResponse>(responseJson);
-            return response;
-        }
-        public StoreFileStripePartResponse StoreFileStripeChunk(string path, long index, byte[] data, int datalength)
-        {
-            var request = new StoreFileStripeChunkRequest(path, index);
-            var requestJson = JsonConvert.SerializeObject(request);
-
-            string responseJson = "";
-            int responseDataLength = 0;
-            SendRequest((int)ShareMessageEnum.StoreFileStripePart, requestJson, data, datalength, out responseJson, null, out responseDataLength);
-            var response = JsonConvert.DeserializeObject<StoreFileStripePartResponse>(responseJson);
-            return response;
-        }
-        public CloseFileStripeSessionResponse CloseFileStripeSession(string path, long index)
-        {
-            var request = new CloseFileStripeSessionRequest(path, index);
-            var requestJson = JsonConvert.SerializeObject(request);
-
-            string responseJson = "";
-            int responseDataLength = 0;
-            SendRequest((int)ShareMessageEnum.CloseFileStripeSession, null, null, 0, out responseJson, null, out responseDataLength);
-            var response = JsonConvert.DeserializeObject<CloseFileStripeSessionResponse>(responseJson);
-            return response;
         }
     }
 }

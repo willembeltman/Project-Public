@@ -21,7 +21,42 @@ namespace LanCloud.Domain.Share
         public ILogger Logger { get; }
 
         public IShare Share => RemoteShare;
-        public byte[] Indexes => Config.Indexes;
+        public int[] Indexes => Config.Indexes;
+
+
+        public CreateFileStripeSessionResponse CreateFileStripeSession(string extention)
+        {
+            var request = new CreateFileStripeSessionRequest(extention, Indexes);
+            var requestJson = JsonConvert.SerializeObject(request);
+
+            string responseJson = "";
+            int responseDataLength = 0;
+            RemoteShare.SendRequest((int)ShareMessageEnum.CreateFileStripeSession, null, null, 0, out responseJson, null, out responseDataLength);
+            var response = JsonConvert.DeserializeObject<CreateFileStripeSessionResponse>(responseJson);
+            return response;
+        }
+        public StoreFileStripeChunkResponse StoreFileStripeChunk(string extention, long index, byte[] data, int datalength)
+        {
+            var request = new StoreFileStripeChunkRequest(extention, Indexes, index);
+            var requestJson = JsonConvert.SerializeObject(request);
+
+            string responseJson = "";
+            int responseDataLength = 0;
+            RemoteShare.SendRequest((int)ShareMessageEnum.StoreFileStripePart, requestJson, data, datalength, out responseJson, null, out responseDataLength);
+            var response = JsonConvert.DeserializeObject<StoreFileStripeChunkResponse>(responseJson);
+            return response;
+        }
+        public CloseFileStripeSessionResponse CloseFileStripeSession(string extention)
+        {
+            var request = new CloseFileStripeSessionRequest(extention, Indexes);
+            var requestJson = JsonConvert.SerializeObject(request);
+
+            string responseJson = "";
+            int responseDataLength = 0;
+            RemoteShare.SendRequest((int)ShareMessageEnum.CloseFileStripeSession, null, null, 0, out responseJson, null, out responseDataLength);
+            var response = JsonConvert.DeserializeObject<CloseFileStripeSessionResponse>(responseJson);
+            return response;
+        }
 
         //public CreateFileStripeSessionResponse CreateFileStripeSession(string path)
         //{

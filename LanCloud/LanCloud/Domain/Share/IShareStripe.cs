@@ -3,6 +3,6 @@
     public interface IShareStripe
     {
         IShare Share { get; }
-        byte[] Indexes { get; }
+        int[] Indexes { get; }
     }
 }

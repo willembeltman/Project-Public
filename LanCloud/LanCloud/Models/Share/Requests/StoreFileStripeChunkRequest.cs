@@ -3,13 +3,15 @@
     public class StoreFileStripeChunkRequest
     {
         public StoreFileStripeChunkRequest() { }
-        public StoreFileStripeChunkRequest(string path, long index)
+        public StoreFileStripeChunkRequest(string extention, int[] indexes, long index)
         {
-            Path = path;
+            Extention = extention;
+            Indexes = indexes;
             Index = index;
         }
 
-        public string Path { get; }
-        public long Index { get; }
+        public string Extention { get; set; }
+        public int[] Indexes { get; set; }
+        public long Index { get; set; }
     }
 }

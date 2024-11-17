@@ -10,7 +10,7 @@ namespace LanCloud.Domain.IO.Writer
 {
     public class DataBuffer
     {
-        public DataBuffer(FileRefWriter fileRefWriter, byte index, LocalShareStripe[] localShareStripes, ILogger logger)
+        public DataBuffer(FileRefWriter fileRefWriter, int index, LocalShareStripe[] localShareStripes, ILogger logger)
         {
             FileRefWriter = fileRefWriter;
             Index = index;
@@ -27,7 +27,7 @@ namespace LanCloud.Domain.IO.Writer
         }
 
         public FileRefWriter FileRefWriter { get; }
-        public byte Index { get; }
+        public int Index { get; }
         public LocalShareStripe[] LocalShareStripes { get; }
         public ILogger Logger { get; }
 
