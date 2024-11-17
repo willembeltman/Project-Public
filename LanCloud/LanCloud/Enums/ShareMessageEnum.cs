@@ -2,9 +2,9 @@
 {
     public enum ShareMessageEnum
     {
-        ListFileBits,
-        CreateFileBitSession,
-        StoreFileBitPart,
-        CloseFileBitSession,
+        FindFileStripes,
+        CreateFileStripeSession,
+        StoreFileStripePart,
+        CloseFileStripeSession,
     }
 }

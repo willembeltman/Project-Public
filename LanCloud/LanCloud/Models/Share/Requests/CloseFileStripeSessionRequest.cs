@@ -1,9 +1,9 @@
 ﻿namespace LanCloud.Models.Share.Requests
 {
-    public class StoreFileBitPartRequest
+    public class CloseFileStripeSessionRequest
     {
-        public StoreFileBitPartRequest() { }
-        public StoreFileBitPartRequest(string path, long index)
+        public CloseFileStripeSessionRequest() { }
+        public CloseFileStripeSessionRequest(string path, long index)
         {
             Path = path;
             Index = index;

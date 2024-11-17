@@ -1,4 +1,6 @@
-﻿namespace LanCloud.Models
+﻿using LanCloud.Models;
+
+namespace LanCloud.Domain.Authentication
 {
     public class User : IFtpUser
     {

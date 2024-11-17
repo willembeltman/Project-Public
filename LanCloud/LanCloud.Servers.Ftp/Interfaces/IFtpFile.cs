@@ -3,7 +3,7 @@ using System.IO;
 
 namespace LanCloud.Models
 {
-    public interface IFtpFileInfo
+    public interface IFtpFile
     {
         string Path { get; }
         string Name { get; }

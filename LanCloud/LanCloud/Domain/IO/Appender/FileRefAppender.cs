@@ -1,15 +1,15 @@
-﻿using LanCloud.Domain.VirtualFtp;
+﻿using LanCloud.Domain.FileRef;
 using System;
 
 namespace LanCloud.Domain.IO.Appender
 {
     public class FileRefAppender : System.IO.Stream
     {
-        public FileRefAppender(FileRefInfo virtualFileInfo, Shared.Log.ILogger logger)
+        public FileRefAppender(LocalFileRef virtualFileInfo, Shared.Log.ILogger logger)
         {
             VirtualFileInfo = virtualFileInfo;
         }
-        public FileRefInfo VirtualFileInfo { get; }
+        public LocalFileRef VirtualFileInfo { get; }
 
         public override bool CanRead => false;
         public override bool CanSeek => false;

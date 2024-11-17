@@ -11,7 +11,7 @@ namespace LanCloud.Forms
         {
             Application = application;
 
-            Application.OnStateChanged += Application_OnStateChanged;
+            Application.OnStatusChanged += Application_OnStateChanged;
             FormClosing += StatusForm_FormClosing;
 
             InitializeComponent();
@@ -48,15 +48,15 @@ namespace LanCloud.Forms
             var applicationNode = new TreeNode($"Local Application");
 
             var name = "";
-            if (Application.ApplicationServerConfig != null)
+            if (Application.LocalApplicationServerConfig != null)
             {
-                name = $"{Application.ApplicationServerConfig.HostName}:{Application.ApplicationServerConfig.Port} ";
+                name = $"{Application.LocalApplicationServerConfig.HostName}:{Application.LocalApplicationServerConfig.Port} ";
             }
 
             var applicationInnerNode = new TreeNode($"{Application.HostName} {name}{Application.Status}");
             applicationNode.Nodes.Add(applicationInnerNode);
 
-            var connections2 = Application.Server?.GetActiveConnections();
+            var connections2 = Application.LocalApplicationServer?.GetActiveConnections();
             if (connections2?.Any() == true)
             {
                 var connectionsNode = new TreeNode("Connections");
@@ -70,14 +70,14 @@ namespace LanCloud.Forms
 
             treeView1.Nodes.Add(applicationNode);
 
-            if (Application.LocalShareBits?.Any() == true)
+            if (Application.LocalShareStripes?.Any() == true)
             {
                 var localSharesNode = new TreeNode("Local Shares");
                 foreach (var localShare in Application.LocalShares)
                 {
                     var name2 = localShare.Server == null ?
                         " " : $" {localShare.HostName}:{localShare.Port} ";
-                    var localShareNode = new TreeNode($"{localShare.FileBits.Root.FullName}{name2} {localShare.Status}");
+                    var localShareNode = new TreeNode($"{localShare.Root.FullName}{name2} {localShare.Status}");
 
                     var connections = localShare.Server?.GetActiveConnections();
                     if (connections?.Any() == true)

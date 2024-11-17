@@ -23,38 +23,38 @@ namespace LanCloud.Domain.Share
         public IShare Share => RemoteShare;
         public byte[] Indexes => Config.Indexes;
 
-        public CreateFileBitSessionResponse CreateFileBitSession(string path)
-        {
-            var request = new CreateFileBitSessionRequest(path);
-            var requestJson = JsonConvert.SerializeObject(request);
+        //public CreateFileStripeSessionResponse CreateFileStripeSession(string path)
+        //{
+        //    var request = new CreateFileStripeSessionRequest(path);
+        //    var requestJson = JsonConvert.SerializeObject(request);
 
-            string responseJson = "";
-            int responseDataLength = 0;
-            RemoteShare.SendRequest((int)ShareMessageEnum.CreateFileBitSession, null, null, 0, out responseJson, null, out responseDataLength);
-            var response = JsonConvert.DeserializeObject<CreateFileBitSessionResponse>(responseJson);
-            return response;
-        }
-        public StoreFileBitPartResponse StoreFileBitPart(string path, long index, byte[] data, int datalength)
-        {
-            var request = new StoreFileBitPartRequest(path, index);
-            var requestJson = JsonConvert.SerializeObject(request);
+        //    string responseJson = "";
+        //    int responseDataLength = 0;
+        //    RemoteShare.SendRequest((int)ShareMessageEnum.CreateFileStripeSession, null, null, 0, out responseJson, null, out responseDataLength);
+        //    var response = JsonConvert.DeserializeObject<CreateFileStripeSessionResponse>(responseJson);
+        //    return response;
+        //}
+        //public StoreFileStripePartResponse StoreFileStripeChunk(string path, long index, byte[] data, int datalength)
+        //{
+        //    var request = new StoreFileStripeChunkRequest(path, index);
+        //    var requestJson = JsonConvert.SerializeObject(request);
 
-            string responseJson = "";
-            int responseDataLength = 0;
-            RemoteShare.SendRequest((int)ShareMessageEnum.StoreFileBitPart, null, null, 0, out responseJson, null, out responseDataLength);
-            var response = JsonConvert.DeserializeObject<StoreFileBitPartResponse>(responseJson);
-            return response;
-        }
-        public CloseFileBitSessionResponse CloseFileBitSession(string path, long index, byte[] data, int datalength)
-        {
-            var request = new CloseFileBitSessionRequest(path, index);
-            var requestJson = JsonConvert.SerializeObject(request);
+        //    string responseJson = "";
+        //    int responseDataLength = 0;
+        //    RemoteShare.SendRequest((int)ShareMessageEnum.StoreFileStripePart, null, null, 0, out responseJson, null, out responseDataLength);
+        //    var response = JsonConvert.DeserializeObject<StoreFileStripePartResponse>(responseJson);
+        //    return response;
+        //}
+        //public CloseFileStripeSessionResponse CloseFileStripeSession(string path, long index, byte[] data, int datalength)
+        //{
+        //    var request = new CloseFileStripeSessionRequest(path, index);
+        //    var requestJson = JsonConvert.SerializeObject(request);
 
-            string responseJson = "";
-            int responseDataLength = 0;
-            RemoteShare.SendRequest((int)ShareMessageEnum.CloseFileBitSession, null, null, 0, out responseJson, null, out responseDataLength);
-            var response = JsonConvert.DeserializeObject<CloseFileBitSessionResponse>(responseJson);
-            return response;
-        }
+        //    string responseJson = "";
+        //    int responseDataLength = 0;
+        //    RemoteShare.SendRequest((int)ShareMessageEnum.CloseFileStripeSession, null, null, 0, out responseJson, null, out responseDataLength);
+        //    var response = JsonConvert.DeserializeObject<CloseFileStripeSessionResponse>(responseJson);
+        //    return response;
+        //}
     }
 }

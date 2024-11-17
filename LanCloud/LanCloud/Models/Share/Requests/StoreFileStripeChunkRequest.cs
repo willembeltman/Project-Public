@@ -1,9 +1,9 @@
 ﻿namespace LanCloud.Models.Share.Requests
 {
-    public class CloseFileBitSessionRequest
+    public class StoreFileStripeChunkRequest
     {
-        public CloseFileBitSessionRequest() { }
-        public CloseFileBitSessionRequest(string path, long index)
+        public StoreFileStripeChunkRequest() { }
+        public StoreFileStripeChunkRequest(string path, long index)
         {
             Path = path;
             Index = index;

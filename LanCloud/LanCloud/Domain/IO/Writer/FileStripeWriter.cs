@@ -1,4 +1,5 @@
-﻿using LanCloud.Domain.Share;
+﻿using LanCloud.Domain.FileStripe;
+using LanCloud.Domain.Share;
 using LanCloud.Models;
 using LanCloud.Shared.Log;
 using System;
@@ -13,23 +14,23 @@ namespace LanCloud.Domain.IO.Writer
         {
             Buffer = buffer;
             FileRefWriter = fileRefWriter;
-            LocalShareBit = localSharePart;
+            LocalShareStripe = localSharePart;
             Logger = logger;
-            
-            FileBit = LocalShareBit.LocalShare.FileBits.CreateTempFileBit(FileRefWriter.PathInfo.Extention, localSharePart.Indexes);
-            
+
+            FileStripe = LocalShareStripe.LocalShare.CreateTempFileStripe(FileRefWriter.PathInfo.Extention, localSharePart.Indexes);
+
             Thread = new Thread(new ThreadStart(Start));
             Thread.Start();
 
-            Logger.Info($"Opened {FileBit.Info.Name} as output for parts: {string.Join(" xor ", Indexes.Select(a => $"#{a}"))}");
+            Logger.Info($"Opened {FileStripe.Info.Name} as output for parts: {string.Join(" xor ", Indexes.OrderBy(a => a).Select(a => $"#{a}"))}");
         }
 
         public FileRefWriter FileRefWriter { get; }
-        public LocalShareStripe LocalShareBit { get; }
+        public LocalShareStripe LocalShareStripe { get; }
         public ILogger Logger { get; }
 
         public DoubleBuffer Buffer { get; }
-        public FileStripe FileBit { get; }
+        public LocalFileStripe FileStripe { get; }
 
         public Thread Thread { get; }
 
@@ -38,11 +39,11 @@ namespace LanCloud.Domain.IO.Writer
         public int Position { get; private set; } = 0;
         private bool KillSwitch { get; set; } = false;
 
-        public byte[] Indexes => LocalShareBit.Indexes;
+        public byte[] Indexes => LocalShareStripe.Indexes;
 
         private void Start()
         {
-            using (var stream = FileBit.OpenWrite())
+            using (var stream = FileStripe.OpenWrite())
             {
                 while (!KillSwitch)
                 {
@@ -63,7 +64,7 @@ namespace LanCloud.Domain.IO.Writer
             }
         }
 
-        public FileStripe Stop(long length, string hash)
+        public LocalFileStripe Stop(long length, string hash)
         {
             if (Thread.CurrentThread == Thread) throw new Exception("Cannot wait for own thread");
 
@@ -71,9 +72,9 @@ namespace LanCloud.Domain.IO.Writer
             StartNext.Set();
             Thread.Join();
 
-            FileBit.Update(length, hash);
-            LocalShareBit.LocalShare.FileBits.AddFileBit(FileBit);
-            return FileBit;
+            FileStripe.Update(length, hash);
+            LocalShareStripe.LocalShare.AddFileStripe(FileStripe);
+            return FileStripe;
         }
 
     }

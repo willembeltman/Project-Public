@@ -67,16 +67,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Domain\FileRef\FileRef.cs" />
-    <Compile Include="Domain\FileRef\FileRefCollection.cs" />
-    <Compile Include="Domain\FileRef\FileRefDirectory.cs" />
-    <Compile Include="Domain\FileRef\FileRefStripe.cs" />
-    <Compile Include="Domain\FileRef\FileRefDirectoryInfo.cs" />
-    <Compile Include="Domain\FileRef\FileRefInfo.cs" />
+    <Compile Include="Domain\FileRef\FileRefDirectoryDto.cs" />
+    <Compile Include="Domain\FileRef\FileRefDto.cs" />
+    <Compile Include="Domain\FileRef\FileRefMetadata.cs" />
+    <Compile Include="Domain\FileRef\FileRefStripeMetadata.cs" />
+    <Compile Include="Domain\FileRef\IFileRef.cs" />
+    <Compile Include="Domain\FileRef\IFileRefDirectory.cs" />
+    <Compile Include="Domain\FileRef\LocalFileRefDirectory.cs" />
+    <Compile Include="Domain\FileRef\LocalFileRef.cs" />
     <Compile Include="Domain\FileRef\PathTranslator.cs" />
-    <Compile Include="Domain\FileStripe\FileStripe.cs" />
-    <Compile Include="Domain\FileStripe\FileStripeCollection.cs" />
+    <Compile Include="Domain\FileRef\RemoteFileRef.cs" />
+    <Compile Include="Domain\FileRef\RemoteFileRefDirectory.cs" />
+    <Compile Include="Domain\FileStripe\LocalFileStripe.cs" />
     <Compile Include="Domain\FileStripe\FileStripeDto.cs" />
+    <Compile Include="Domain\FileStripe\IFileStripe.cs" />
+    <Compile Include="Domain\FileStripe\RemoteFileStripe.cs" />
     <Compile Include="Domain\IO\Appender\FileRefAppender.cs" />
     <Compile Include="Domain\IO\Reader\FileStripeReader.cs" />
     <Compile Include="Domain\IO\Reader\ReconstructBuffer.cs" />
@@ -90,14 +95,15 @@
     <Compile Include="Domain\Share\RemoteShareStripe.cs" />
     <Compile Include="Domain\Share\ShareDto.cs" />
     <Compile Include="Domain\Share\ShareStripeDto.cs" />
-    <Compile Include="Domain\User\User.cs" />
-    <Compile Include="Domain\User\UserCollection.cs" />
-    <Compile Include="Models\Share\Requests\CloseFileBitSessionRequest.cs" />
-    <Compile Include="Models\Share\Requests\CreateFileBitSessionRequest.cs" />
-    <Compile Include="Models\Share\Requests\StoreFileBitPartRequest.cs" />
-    <Compile Include="Models\Share\Responses\CloseFileBitSessionResponse.cs" />
-    <Compile Include="Models\Share\Responses\CreateFileBitSessionResponse.cs" />
-    <Compile Include="Models\Share\Responses\StoreFileBitPartResponse.cs" />
+    <Compile Include="Domain\Authentication\User.cs" />
+    <Compile Include="Domain\Authentication\UserCollection.cs" />
+    <Compile Include="Models\Share\Requests\CloseFileStripeSessionRequest.cs" />
+    <Compile Include="Models\Share\Requests\CreateFileStripeSessionRequest.cs" />
+    <Compile Include="Models\Share\Requests\FindFileStripesRequest.cs" />
+    <Compile Include="Models\Share\Requests\StoreFileStripeChunkRequest.cs" />
+    <Compile Include="Models\Share\Responses\CloseFileStripeSessionResponse.cs" />
+    <Compile Include="Models\Share\Responses\CreateFileStripeSessionResponse.cs" />
+    <Compile Include="Models\Share\Responses\StoreFileStripePartResponse.cs" />
     <Compile Include="Models\SingleBuffer.cs" />
     <Compile Include="Models\DoubleBuffer.cs" />
     <Compile Include="Domain\Share\IShare.cs" />
@@ -119,13 +125,12 @@
     <Compile Include="Domain\Application\LocalApplication.cs" />
     <Compile Include="Models\Configs\LocalShareConfig.cs" />
     <Compile Include="Models\Configs\RemoteApplicationConfig.cs" />
-    <Compile Include="Models\Application\Responses\GetExternalSharesResponse.cs" />
     <Compile Include="Domain\Application\RemoteApplication.cs" />
     <Compile Include="Domain\Share\RemoteShare.cs" />
     <Compile Include="Services\ConfigService.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Domain\VirtualFtp\VirtualFtp.cs" />
+    <Compile Include="Domain\VirtualFtp\VirtualFtpServer.cs" />
     <Compile Include="Services\IndexesService.cs" />
     <Compile Include="Services\LogService.cs" />
   </ItemGroup>
@@ -166,6 +171,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Models\Application\Requests\" />
+    <Folder Include="Models\Application\Responses\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

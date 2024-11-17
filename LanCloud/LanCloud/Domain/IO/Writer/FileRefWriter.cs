@@ -1,6 +1,7 @@
 ﻿using LanCloud.Domain.Application;
-using LanCloud.Domain.VirtualFtp;
+using LanCloud.Domain.FileRef;
 using LanCloud.Models;
+using LanCloud.Services;
 using LanCloud.Shared.Log;
 using System;
 using System.IO;
@@ -10,24 +11,24 @@ namespace LanCloud.Domain.IO.Writer
 {
     public class FileRefWriter : Stream
     {
-        public FileRefWriter(FileRefInfo pathInfo, ILogger logger)
+        public FileRefWriter(LocalFileRef pathInfo, ILogger logger)
         {
             PathInfo = pathInfo;
             Logger = logger;
 
             HashWriter = new HashBuffer(this, Logger);
-            DataStripeWriters = Application.LocalShareBits
+            DataStripeWriters = Application.LocalShareStripes
                 .Where(a => a.Indexes.Length == 1)
                 .GroupBy(a => a.Indexes.First())
                 .Select(sharepart => new DataBuffer(this, sharepart.Key, sharepart.ToArray(), Logger))
                 .ToArray();
-            ParityStripeWriters = Application.LocalShareBits
+            ParityStripeWriters = Application.LocalShareStripes
                 .Where(a => a.Indexes.Length > 1)
-                .GroupBy(a => string.Join("_", a.Indexes.OrderBy(b => b)))
+                .GroupBy(a => a.Indexes.ToUniqueKey())
                 .Select(sharepart => new ParityBuffer(this, sharepart.ToArray(), Logger))
                 .ToArray();
 
-            AllIndexes = Application.LocalShareBits
+            AllIndexes = Application.LocalShareStripes
                 .SelectMany(a => a.Indexes)
                 .GroupBy(a => a)
                 .Select(a => a.Key)
@@ -38,7 +39,7 @@ namespace LanCloud.Domain.IO.Writer
             Logger.Info($"Opened virtual ftp file: {pathInfo.Name}");
         }
 
-        public FileRefInfo PathInfo { get; }
+        public LocalFileRef PathInfo { get; }
         public ILogger Logger { get; }
         public DataBuffer[] DataStripeWriters { get; }
         public ParityBuffer[] ParityStripeWriters { get; }
@@ -126,20 +127,25 @@ namespace LanCloud.Domain.IO.Writer
                 WaitForDone();
 
                 // Waardes ophalen
+                var length = Position;
                 var hash = HashWriter.Stop();
                 var dataStripes = DataStripeWriters
-                    .SelectMany(a => a.Stop(Position, hash))
+                    .SelectMany(a => a.Stop(length, hash))
                     .ToArray();
                 var parityStripes = ParityStripeWriters
-                    .SelectMany(a => a.Stop(Position, hash))
+                    .SelectMany(a => a.Stop(length, hash))
                     .ToArray();
 
-                // Waardes updaten
-                var bits = dataStripes
+                // Stripes samenstellen
+                var stripes = dataStripes
                     .Concat(parityStripes)
-                    .Select(a => new FileRefStripe(a.Indexes))
+                    .Select(a => new FileRefStripeMetadata(a.Indexes))
+                    .GroupBy(a => a.GetUniqueIdentifier())
+                    .Select(a => a.First())
                     .ToArray();
-                PathInfo.FileRef = new FileRef(Position, hash, bits);
+
+                // En dan de waardes updaten
+                PathInfo.Metadata = new FileRefMetadata(length, hash, stripes);
             }
 
             base.Dispose(disposing);

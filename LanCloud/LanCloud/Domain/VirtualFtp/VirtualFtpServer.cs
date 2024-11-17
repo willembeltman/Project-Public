@@ -1,4 +1,5 @@
 ﻿using LanCloud.Domain.Application;
+using LanCloud.Domain.FileRef;
 using LanCloud.Models;
 using LanCloud.Servers.Ftp;
 using LanCloud.Servers.Ftp.Interfaces;
@@ -9,14 +10,13 @@ using System.Net;
 
 namespace LanCloud.Domain.VirtualFtp
 {
-    public class VirtualFtp : IFtpHandler, IDisposable
+    public class VirtualFtpServer : IFtpHandler, IDisposable
     {
-        public VirtualFtp(LocalApplication application, ILogger logger)
+        public VirtualFtpServer(LocalApplication application, ILogger logger)
         {
             Application = application;
             Logger = logger;
 
-            //FtpHandler = new VirtualFtpHandler(application, logger);
             FtpServer = new FtpServer(IPAddress.Any, 21, this, application, logger);
 
             Logger.Info($"Loaded");
@@ -24,7 +24,6 @@ namespace LanCloud.Domain.VirtualFtp
 
         public LocalApplication Application { get; }
         public ILogger Logger { get; }
-        //public VirtualFtpHandler FtpHandler { get; }
         public FtpServer FtpServer { get; }
 
         public string HostName => Application.HostName;
@@ -33,41 +32,41 @@ namespace LanCloud.Domain.VirtualFtp
         public IFtpUser ValidateUser(string userName, string password)
             => Application.Authentication.ValidateUser(userName, password);
 
-        public IFtpDirectoryInfo[] EnumerateDirectories(string path)
-            => new FileRefDirectoryInfo(Application, path, Logger).GetDirectories();
-        public IFtpFileInfo[] EnumerateFiles(string path)
-            => new FileRefDirectoryInfo(Application, path, Logger).GetFiles();
+        public IFtpDirectory[] EnumerateDirectories(string path)
+            => new LocalFileRefDirectory(Application, path, Logger).GetDirectories();
+        public IFtpFile[] EnumerateFiles(string path)
+            => new LocalFileRefDirectory(Application, path, Logger).GetFiles();
 
         public void CreateDirectory(string path)
-            => new FileRefDirectoryInfo(Application, path, Logger).Create();
+            => new LocalFileRefDirectory(Application, path, Logger).Create();
         public void DeleteDirectory(string path)
-            => new FileRefDirectoryInfo(Application, path, Logger).Delete();
+            => new LocalFileRefDirectory(Application, path, Logger).Delete();
         public bool DirectoryExists(string path)
-            => new FileRefDirectoryInfo(Application, path, Logger).Exists;
+            => new LocalFileRefDirectory(Application, path, Logger).Exists;
         public void DirectoryMove(string renameFrom, string renameTo)
         {
-            var from = new FileRefDirectoryInfo(Application, renameFrom, Logger);
+            var from = new LocalFileRefDirectory(Application, renameFrom, Logger);
             from.MoveTo(renameTo);
         }
 
         public bool FileExists(string path)
-            => new FileRefInfo(Application, path, Logger).Exists;
+            => new LocalFileRef(Application, path, Logger).Exists;
         public void FileDelete(string path)
-            => new FileRefInfo(Application, path, Logger).Delete();
+            => new LocalFileRef(Application, path, Logger).Delete();
         public void FileMove(string renameFrom, string renameTo)
         {
-            var from = new FileRefInfo(Application, renameFrom, Logger);
+            var from = new LocalFileRef(Application, renameFrom, Logger);
             from.MoveTo(renameTo);
         }
         public DateTime FileGetLastWriteTime(string path)
-            => new FileRefInfo(Application, path, Logger).LastWriteTime;
+            => new LocalFileRef(Application, path, Logger).LastWriteTime;
 
         public Stream FileOpenRead(string path)
-            => new FileRefInfo(Application, path, Logger).OpenRead();
+            => new LocalFileRef(Application, path, Logger).OpenRead();
         public Stream FileOpenWriteCreate(string path)
-            => new FileRefInfo(Application, path, Logger).Create();
+            => new LocalFileRef(Application, path, Logger).Create();
         public Stream FileOpenWriteAppend(string path)
-            => new FileRefInfo(Application, path, Logger).OpenAppend();
+            => new LocalFileRef(Application, path, Logger).OpenAppend();
 
         public void Dispose()
         {

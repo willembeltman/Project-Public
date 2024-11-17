@@ -9,5 +9,9 @@ namespace LanCloud.Services
             return thisOne.Length == compareTo.Length &&
                 thisOne.All(a => compareTo.Any(b => a == b));
         }
+        public static string ToUniqueKey(this byte[] thisOne)
+        {
+            return string.Join("_", thisOne.OrderBy(a => a));
+        }
     }
 }

@@ -3,7 +3,7 @@
     public interface IWjpApplication
     {
         void StatusChanged();
-        int FileBitBufferSize { get; }
+        int FileStripeBufferSize { get; }
         int WjpBufferSize { get; }
     }
 }

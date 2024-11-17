@@ -25,7 +25,7 @@ namespace LanCloud.Services
                 {
                     HostName = "WJPC2",
                     RefDirectoryName = "E:\\Test\\Ref",
-                    FileBitBufferSize = 1024 * 4,
+                    FileStripeBufferSize = 1024 * 4,
                     FtpBufferSize = 1024 * 4,
                     WjpBufferSize = 1024 * 16,
                     Servers = new RemoteApplicationConfig[]

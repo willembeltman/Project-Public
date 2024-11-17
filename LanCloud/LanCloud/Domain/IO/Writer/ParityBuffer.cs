@@ -1,4 +1,5 @@
-﻿using LanCloud.Domain.Share;
+﻿using LanCloud.Domain.FileStripe;
+using LanCloud.Domain.Share;
 using LanCloud.Models;
 using LanCloud.Shared.Log;
 using System;
@@ -17,7 +18,7 @@ namespace LanCloud.Domain.IO.Writer
 
             Buffer = new DoubleBuffer(1);
             Indexes = localShareParts.First().Indexes;
-            FileBitWriters = localShareParts
+            FileStripeWriters = localShareParts
                 .Select(localSharePart => new FileStripeWriter(Buffer, fileRefWriter, localSharePart, logger))
                 .ToArray();
 
@@ -30,15 +31,13 @@ namespace LanCloud.Domain.IO.Writer
         public ILogger Logger { get; }
         public DoubleBuffer Buffer { get; }
         public byte[] Indexes { get; }
-        public FileStripeWriter[] FileBitWriters { get; }
+        public FileStripeWriter[] FileStripeWriters { get; }
 
         public Thread Thread { get; }
 
         public AutoResetEvent WritingIsDone { get; } = new AutoResetEvent(true);
         public AutoResetEvent StartNext { get; } = new AutoResetEvent(false);
         private bool KillSwitch { get; set; } = false;
-
-        //public FileBit FileBit => FileBitWriter.FileBit;
 
         private void Start()
         {
@@ -91,18 +90,18 @@ namespace LanCloud.Domain.IO.Writer
 
         public void FlipBuffer()
         {
-            foreach (var fileBitWriter in FileBitWriters)
-                if (!fileBitWriter.WritingIsDone.WaitOne(100000))
-                    throw new Exception("Timeout writing to FileBitWriter");
+            foreach (var fileStripeWriter in FileStripeWriters)
+                if (!fileStripeWriter.WritingIsDone.WaitOne(100000))
+                    throw new Exception("Timeout writing to FileStripeWriter");
 
             Buffer.Flip();
 
-            foreach (var fileBitWriter in FileBitWriters)
-                fileBitWriter.StartNext.Set();
+            foreach (var fileStripeWriter in FileStripeWriters)
+                fileStripeWriter.StartNext.Set();
         }
 
 
-        public FileStripe[] Stop(long length, string hash)
+        public LocalFileStripe[] Stop(long length, string hash)
         {
             if (Thread.CurrentThread == Thread) throw new Exception("Cannot wait for own thread");
 
@@ -110,7 +109,7 @@ namespace LanCloud.Domain.IO.Writer
             StartNext.Set();
             Thread.Join();
 
-            return FileBitWriters.Select(a => a.Stop(length, hash)).ToArray();
+            return FileStripeWriters.Select(a => a.Stop(length, hash)).ToArray();
         }
     }
 }

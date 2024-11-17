@@ -1,4 +1,5 @@
 ﻿using LanCloud.Domain.Application;
+using LanCloud.Domain.Authentication;
 using LanCloud.Models;
 using LanCloud.Shared.Log;
 

@@ -9,7 +9,8 @@ using Newtonsoft.Json;
 using LanCloud.Servers.Wjp;
 using System.Net;
 using System.Linq;
-using LanCloud.Models.Dtos;
+using LanCloud.Domain.FileStripe;
+using System.Collections.Generic;
 
 namespace LanCloud.Domain.Share
 {
@@ -33,12 +34,18 @@ namespace LanCloud.Domain.Share
             Port = port;
             Logger = logger;
 
+            if (!Root.Exists) Root.Create();
+
+            FileStripeInfos = Root
+                .GetFiles($"*.filestripe")
+                .Select(fileRefInfo => new LocalFileStripe(fileRefInfo))
+                .ToDictionary(a => a.Name);
+
             ShareStripes = config.Parts
                 .Select(part => new LocalShareStripe(this, part, logger))
                 .ToArray();
-            FileBits = new FileStripeCollection(this, Logger);
 
-            if (Application.ApplicationServerConfig != null)
+            if (Application.LocalApplicationServerConfig != null)
             {
                 Server = new WjpServer(IPAddress.Any, Port, this, Application, Logger);
             }
@@ -50,68 +57,94 @@ namespace LanCloud.Domain.Share
         public LocalShareConfig Config { get; }
         public int Port { get; }
         public ILogger Logger { get; }
-
+        private Dictionary<string, LocalFileStripe> FileStripeInfos { get; }
         public LocalShareStripe[] ShareStripes { get; }
-        public FileStripeCollection FileBits { get; }
 
-        public string HostName => Application.ApplicationServerConfig?.HostName;
+        public string HostName => Application.LocalApplicationServerConfig?.HostName;
         public string RootFullName => Config.DirectoryName;
         public DirectoryInfo Root => new DirectoryInfo(RootFullName);
 
         public WjpServer Server { get; private set; }
 
+        #region IShare interface
         IShareStripe[] IShare.ShareStripes => ShareStripes;
-
-
-        public FileStripeDto[] ListFileBits()
+        IFileStripe IShare.FindFileStripe(string extention, string hash, long length, byte[] indexes)
         {
-            return FileBits.List()
-                .Select(fileStripe => new FileStripeDto(fileStripe))
-                .ToArray();
+            return FindFileStripe(extention, hash, length, indexes);
+        }
+        #endregion
+
+        public LocalFileStripe CreateTempFileStripe(string extention, byte[] indexes)
+        {
+            return new LocalFileStripe(Root, extention, indexes);
+        }
+        public void AddFileStripe(LocalFileStripe fileStripe)
+        {
+            lock (FileStripeInfos)
+            {
+                FileStripeInfos.Add(fileStripe.Name, fileStripe);
+            }
+        }
+        public void RemoveFileStripe(LocalFileStripe fileStripe)
+        {
+            lock (FileStripeInfos)
+            {
+                FileStripeInfos.Remove(fileStripe.Name);
+            }
+        }
+        public LocalFileStripe FindFileStripe(string extention, string hash, long length, byte[] indexes)
+        {
+            lock (FileStripeInfos)
+            {
+                var name = LocalFileStripe.CreateFileName(extention, hash, length, indexes);
+                if (FileStripeInfos.TryGetValue(name, out var file)) return file;
+                return null;
+            }
         }
 
         public void ProcessRequest(int requestMessageType, string requestJson, byte[] requestData, int requestDataLength, out string responseJson, byte[] responseData, out int responseDataLength)
         {
             switch (requestMessageType)
             {
-                case (int)ShareMessageEnum.ListFileBits:
-                    Handle_ListFileBits(requestJson, out responseJson, responseData, out responseDataLength);
+                case (int)ShareMessageEnum.FindFileStripes:
+                    Handle_FindFileStripe(requestJson, out responseJson, responseData, out responseDataLength);
                     break;
-                case (int)ShareMessageEnum.CreateFileBitSession:
-                    Handle_CreateFileBitSession(requestJson, out responseJson, responseData, out responseDataLength);
+                case (int)ShareMessageEnum.CreateFileStripeSession:
+                    Handle_CreateFileStripeSession(requestJson, out responseJson, responseData, out responseDataLength);
                     break;
-                case (int)ShareMessageEnum.StoreFileBitPart:
-                    Handle_StoreFileBitPart(requestJson, out responseJson, responseData, out responseDataLength);
+                case (int)ShareMessageEnum.StoreFileStripePart:
+                    Handle_StoreFileStripeChunk(requestJson, out responseJson, responseData, out responseDataLength);
                     break;
-                case (int)ShareMessageEnum.CloseFileBitSession:
-                    Handle_CloseFileBitSession(requestJson, out responseJson, responseData, out responseDataLength);
+                case (int)ShareMessageEnum.CloseFileStripeSession:
+                    Handle_CloseFileStripeSession(requestJson, out responseJson, responseData, out responseDataLength);
                     break;
                 default:
                     throw new NotImplementedException();
             }
         }
 
-        private void Handle_ListFileBits(string requestJson, out string responseJson, byte[] responseData, out int responseDataLength)
+        private void Handle_FindFileStripe(string requestJson, out string responseJson, byte[] responseData, out int responseDataLength)
         {
-            responseJson = JsonConvert.SerializeObject(ListFileBits());
+            var request = JsonConvert.DeserializeObject<FindFileStripesRequest>(requestJson);
+            var localFileStripe = FindFileStripe(request.Extention, request.Hash, request.Length, request.Indexes);
+            var remoteFileStripe = new FileStripeDto(localFileStripe);
+            responseJson = JsonConvert.SerializeObject(remoteFileStripe);
             responseDataLength = 0;
         }
 
-        private void Handle_CloseFileBitSession(string requestJson, out string responseJson, byte[] responseData, out int responseDataLength)
+        private void Handle_CreateFileStripeSession(string requestJson, out string responseJson, byte[] responseData, out int responseDataLength)
         {
             throw new NotImplementedException();
         }
-
-        private void Handle_CreateFileBitSession(string requestJson, out string responseJson, byte[] responseData, out int responseDataLength)
+        private void Handle_StoreFileStripeChunk(string requestJson, out string responseJson, byte[] responseData, out int responseDataLength)
         {
-            throw new NotImplementedException();
-        }
-
-        private void Handle_StoreFileBitPart(string requestJson, out string responseJson, byte[] responseData, out int responseDataLength)
-        {
-            StoreFileBitPartRequest wjpRequest = JsonConvert.DeserializeObject<StoreFileBitPartRequest>(requestJson);
+            StoreFileStripeChunkRequest wjpRequest = JsonConvert.DeserializeObject<StoreFileStripeChunkRequest>(requestJson);
             responseJson = null;
             responseDataLength = 0;
+        }
+        private void Handle_CloseFileStripeSession(string requestJson, out string responseJson, byte[] responseData, out int responseDataLength)
+        {
+            throw new NotImplementedException();
         }
 
         public void Dispose()

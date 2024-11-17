@@ -8,13 +8,13 @@ namespace LanCloud.Servers.Ftp.Interfaces
     {
         IFtpUser ValidateUser(string userName, string password);
 
-        IFtpDirectoryInfo[] EnumerateDirectories(string pathname);
+        IFtpDirectory[] EnumerateDirectories(string pathname);
         void CreateDirectory(string pathname);
         void DeleteDirectory(string pathname);
         bool DirectoryExists(string pathname);
         void DirectoryMove(string renameFrom, string renameTo);
 
-        IFtpFileInfo[] EnumerateFiles(string pathname);
+        IFtpFile[] EnumerateFiles(string pathname);
         Stream FileOpenRead(string pathname);
         Stream FileOpenWriteCreate(string pathname);
         Stream FileOpenWriteAppend(string pathname);

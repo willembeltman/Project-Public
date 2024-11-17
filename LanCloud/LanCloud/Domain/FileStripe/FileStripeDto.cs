@@ -1,21 +1,21 @@
-﻿namespace LanCloud.Models.Dtos
+﻿namespace LanCloud.Domain.FileStripe
 {
     public class FileStripeDto
     {
         public FileStripeDto() { }
-        public FileStripeDto(FileStripe fileStripe)
+        public FileStripeDto(IFileStripe fileStripe)
         {
-            IsTemp = fileStripe.IsTemp;
-            Length = fileStripe.Length;
-            Hash = fileStripe.Hash;
             Extention = fileStripe.Extention;
+            Hash = fileStripe.Hash;
+            Length = fileStripe.Length;
             Indexes = fileStripe.Indexes;
+            IsTemp = fileStripe.IsTemp;
         }
 
-        public bool IsTemp { get; set; }
-        public long Length { get; set; }
-        public string Hash { get; set; }
         public string Extention { get; set; }
+        public string Hash { get; set; }
+        public long Length { get; set; }
         public byte[] Indexes { get; set; }
+        public bool IsTemp { get; set; }
     }
 }

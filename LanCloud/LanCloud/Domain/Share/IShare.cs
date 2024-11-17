@@ -1,5 +1,4 @@
-﻿using LanCloud.Models.Dtos;
-using LanCloud.Models.Share.Responses;
+﻿using LanCloud.Domain.FileStripe;
 
 namespace LanCloud.Domain.Share
 {
@@ -7,6 +6,6 @@ namespace LanCloud.Domain.Share
     {
         IShareStripe[] ShareStripes { get; }
 
-        FileStripeDto[] ListFileBits();
+        IFileStripe FindFileStripe(string extention, string hash, long length, byte[] indexes);
     }
 }

@@ -1,4 +1,4 @@
-﻿using LanCloud.Models;
+﻿using LanCloud.Domain.FileRef;
 using System;
 using System.IO;
 
@@ -6,7 +6,7 @@ namespace LanCloud.Services
 {
     public static class FileRefService
     {
-        public static FileRef Save(FileInfo fileInfo, FileRef fileRef)
+        public static FileRefMetadata Save(FileInfo fileInfo, FileRefMetadata fileRef)
         {
             if (!fileInfo.Exists) fileInfo.Delete();
             using (var stream = fileInfo.OpenWrite())
@@ -14,10 +14,10 @@ namespace LanCloud.Services
             {
                 writer.Write(fileRef.Length ?? -1);
                 writer.Write(fileRef.Hash ?? "");
-                writer.Write(Convert.ToByte(fileRef.Bits?.Length ?? 0));
-                if (fileRef.Bits != null)
+                writer.Write(Convert.ToByte(fileRef.Stripes?.Length ?? 0));
+                if (fileRef.Stripes != null)
                 {
-                    foreach (var bit in fileRef.Bits)
+                    foreach (var bit in fileRef.Stripes)
                     {
                         writer.Write(Convert.ToByte(bit.Indexes.Length));
                         foreach (var index in bit.Indexes)
@@ -30,7 +30,7 @@ namespace LanCloud.Services
             return fileRef;
         }
 
-        public static FileRef Load(FileInfo fileInfo)
+        public static FileRefMetadata Load(FileInfo fileInfo)
         {
             if (!fileInfo.Exists) return null;
             using (var stream = fileInfo.OpenRead())
@@ -39,7 +39,7 @@ namespace LanCloud.Services
                 long? Length = reader.ReadInt64();
                 if (Length == -1) Length = null;
                 var Hash = reader.ReadString();
-                var Bits = new FileRefStripe[reader.ReadByte()];
+                var Bits = new FileRefStripeMetadata[reader.ReadByte()];
                 for (int i = 0; i < Bits.Length; i++)
                 {
                     var Indexes = new byte[reader.ReadByte()];
@@ -47,9 +47,9 @@ namespace LanCloud.Services
                     {
                         Indexes[j] = reader.ReadByte();
                     }
-                    Bits[i] = new FileRefStripe(Indexes);
+                    Bits[i] = new FileRefStripeMetadata(Indexes);
                 }
-                return new FileRef(Length, Hash, Bits);
+                return new FileRefMetadata(Length, Hash, Bits);
             }
         }
 

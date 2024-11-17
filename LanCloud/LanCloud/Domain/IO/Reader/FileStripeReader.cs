@@ -1,4 +1,5 @@
 ﻿using LanCloud.Domain.Application;
+using LanCloud.Domain.FileStripe;
 using LanCloud.Models;
 using LanCloud.Shared.Log;
 using System;
@@ -12,29 +13,29 @@ namespace LanCloud.Domain.IO.Reader
 {
     public class FileStripeReader : IDisposable
     {
-        public FileStripeReader(ReconstructBuffer fileBitsBuffer, FileStripe fileBit, ILogger logger)
+        public FileStripeReader(ReconstructBuffer reconstructBuffer, IFileStripe fileStripe, ILogger logger)
         {
-            if (fileBit == null)
+            if (fileStripe == null)
             {
-                Exception = new Exception("FileBit not found");
+                Exception = new Exception("FileStripe not found");
                 return;
             }
 
-            FileBitsBuffer = fileBitsBuffer;
-            FileBit = fileBit;
+            ReconstructBuffer = reconstructBuffer;
+            FileStripe = fileStripe;
             Logger = logger;
 
-            Buffer = new DoubleBuffer(Application.FileBitBufferSize);
+            Buffer = new DoubleBuffer(Application.FileStripeBufferSize);
 
             Stopwatch = Stopwatch.StartNew();
-            Stream = FileBit.OpenRead();
+            Stream = FileStripe.OpenRead();
 
             Thread = new Thread(new ThreadStart(Start));
             Thread.Start();
         }
 
-        public ReconstructBuffer FileBitsBuffer { get; }
-        public FileStripe FileBit { get; }
+        public ReconstructBuffer ReconstructBuffer { get; }
+        public IFileStripe FileStripe { get; }
         public ILogger Logger { get; }
         public DoubleBuffer Buffer { get; }
         public Stopwatch Stopwatch { get; }
@@ -48,7 +49,7 @@ namespace LanCloud.Domain.IO.Reader
         private Queue<long> Speeds { get; } = new Queue<long>(16);
         public Exception Exception { get; private set; }
 
-        public LocalApplication Application => FileBitsBuffer.Application;
+        public LocalApplication Application => ReconstructBuffer.Application;
 
         public long Speed { get; private set; }
         private void AddSpeed(long speed)
@@ -61,7 +62,7 @@ namespace LanCloud.Domain.IO.Reader
             Speed = Speeds.Sum() / Speeds.Count;
         }
 
-        public byte[] Indexes => FileBit.Indexes;
+        public byte[] Indexes => FileStripe.Indexes;
 
         private void Start()
         {

@@ -1,6 +1,8 @@
-﻿using LanCloud.Domain.Share;
+﻿using LanCloud.Domain.FileRef;
+using LanCloud.Domain.FileStripe;
+using LanCloud.Domain.Share;
+using LanCloud.Domain.VirtualFtp;
 using LanCloud.Enums;
-using LanCloud.Models;
 using LanCloud.Models.Configs;
 using LanCloud.Models.Dtos;
 using LanCloud.Servers.Ftp;
@@ -8,6 +10,7 @@ using LanCloud.Servers.Wjp;
 using LanCloud.Shared.Log;
 using Newtonsoft.Json;
 using System;
+using System.IO;
 using System.Linq;
 using System.Net;
 
@@ -15,7 +18,21 @@ namespace LanCloud.Domain.Application
 {
     public class LocalApplication : IDisposable, IWjpApplication, IFtpApplication, IWjpHandler
     {
-        public event EventHandler OnStateChanged;
+        #region Status
+
+        public event EventHandler OnStatusChanged;
+        private string _Status { get; set; }
+        public string Status
+        {
+            get => _Status;
+            set
+            {
+                _Status = value;
+                StatusChanged();
+            }
+        }
+
+        #endregion
 
         public LocalApplication(ApplicationConfig config, ILogger logger)
         {
@@ -25,11 +42,12 @@ namespace LanCloud.Domain.Application
             Status = Logger.Info($"Constructing");
 
             Authentication = new AuthenticationService(this, logger);
-            FileRefs = new FileRefCollection(this, logger);
+            RealRootFullName = Config.RefDirectoryName.TrimEnd('\\');
+            RealRoot = new DirectoryInfo(RealRootFullName);
 
-            ApplicationServerConfig = config.Servers.FirstOrDefault(a => a.IsThisComputer);
+            LocalApplicationServerConfig = config.Servers.FirstOrDefault(a => a.IsThisComputer);
             
-            int port = ApplicationServerConfig?.Port ?? 8080;
+            int port = LocalApplicationServerConfig?.Port ?? 8080;
             LocalShares = Config.Shares
                 .Select(share => new LocalShare(this, share, ++port, Logger))
                 .ToArray();
@@ -39,14 +57,14 @@ namespace LanCloud.Domain.Application
                 .Select(remoteconfig => new RemoteApplication(this, remoteconfig, logger))
                 .ToArray();
 
-            if (ApplicationServerConfig != null)
+            if (LocalApplicationServerConfig != null)
             {
-                Server = new WjpServer(IPAddress.Any, ApplicationServerConfig.Port, this, this, logger);
+                LocalApplicationServer = new WjpServer(IPAddress.Any, LocalApplicationServerConfig.Port, this, this, logger);
             }
 
-            VirtualFtpServer = new VirtualFtp.VirtualFtp(this, logger);
+            VirtualFtpServer = new VirtualFtp.VirtualFtpServer(this, logger);
 
-            if (ApplicationServerConfig != null)
+            if (LocalApplicationServerConfig != null)
             {
                 Status = Logger.Info($"OK");
             }
@@ -59,46 +77,38 @@ namespace LanCloud.Domain.Application
         public ApplicationConfig Config { get; }
         public ILogger Logger { get; }
 
+        public string RealRootFullName { get; }
+        public DirectoryInfo RealRoot { get; }
         public AuthenticationService Authentication { get; }
-        public FileRefCollection FileRefs { get; }
-        public RemoteApplication[] RemoteApplications { get; }
-        public RemoteApplicationConfig ApplicationServerConfig { get; }
         public LocalShare[] LocalShares { get; }
-        public WjpServer Server { get; }
-        public VirtualFtp.VirtualFtp VirtualFtpServer { get; }
-        private string _Status { get; set; }
+        public RemoteApplication[] RemoteApplications { get; }
+        public RemoteApplicationConfig LocalApplicationServerConfig { get; }
+        public WjpServer LocalApplicationServer { get; }
+        public VirtualFtpServer VirtualFtpServer { get; }
 
         public string HostName => Config.HostName;
-        public int FileBitBufferSize => Config.FileBitBufferSize;
+        public int FileStripeBufferSize => Config.FileStripeBufferSize;
         public int WjpBufferSize => Config.WjpBufferSize;
         public int FtpBufferSize => Config.FtpBufferSize;
-        public int? Port => ApplicationServerConfig?.Port;
-        public LocalShareStripe[] LocalShareBits => LocalShares?
+        public int? Port => LocalApplicationServerConfig?.Port;
+        public LocalShareStripe[] LocalShareStripes => LocalShares?
             .SelectMany(a => a.ShareStripes)
             .ToArray();
 
-        public string Status
-        {
-            get => _Status;
-            set
-            {
-                _Status = value;
-                StatusChanged();
-            }
-        }
 
         public void StatusChanged()
         {
-            OnStateChanged?.Invoke(this, EventArgs.Empty);
+            OnStatusChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        public FileStripe[] FindFileBits(string extention, FileRef fileRef, FileRefStripe fileRefBit)
+        public LocalFileStripe[] FindFileStripes(string extention, FileRefMetadata fileRef, FileRefStripeMetadata fileRefBit)
         {
-            var fileBits = LocalShares
-                .Select(a => a.FileBits.FindFileBit(extention, fileRef, fileRefBit))
+            if (fileRef.Length == null) return null;
+            var fileStripes = LocalShares
+                .Select(a => a.FindFileStripe(extention, fileRef.Hash, fileRef.Length.Value, fileRefBit.Indexes))
                 .Where(a => a != null)
                 .ToArray();
-            return fileBits;
+            return fileStripes;
         }
 
         public void ProcessRequest(
@@ -130,7 +140,7 @@ namespace LanCloud.Domain.Application
 
         public void Dispose()
         {
-            Server?.Dispose();
+            LocalApplicationServer?.Dispose();
             foreach (var item in RemoteApplications)
                 item.Dispose();
             if (LocalShares != null)

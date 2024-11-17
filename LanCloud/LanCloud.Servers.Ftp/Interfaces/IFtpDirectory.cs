@@ -1,17 +1,17 @@
 ﻿using System;
 namespace LanCloud.Models
 {
-    public interface IFtpDirectoryInfo
+    public interface IFtpDirectory
     {
         string Path { get; }
         string Name { get; }
-        DateTime LastWriteTime { get; }
+        DateTime? LastWriteTime { get; }
         bool Exists { get; }
 
         void Create();
         void Delete();
-        IFtpDirectoryInfo[] GetDirectories();
-        IFtpFileInfo[] GetFiles();
+        IFtpDirectory[] GetDirectories();
+        IFtpFile[] GetFiles();
         void MoveTo(string pathTo);
     }
 }

@@ -979,8 +979,8 @@ namespace LanCloud.Servers.Ftp
             foreach (var directory in directories)
             {
                 string date = directory.LastWriteTime < DateTime.Now - TimeSpan.FromDays(180) ?
-                    directory.LastWriteTime.ToString("MMM dd  yyyy") :
-                    directory.LastWriteTime.ToString("MMM dd HH:mm");
+                    directory.LastWriteTime.Value.ToString("MMM dd  yyyy") :
+                    directory.LastWriteTime.Value.ToString("MMM dd HH:mm");
 
                 string line = string.Format(
                     "drwxr-xr-x    2 2003     2003     {0,8} {1} {2}",
@@ -992,7 +992,7 @@ namespace LanCloud.Servers.Ftp
                 dataWriter.Flush();
             }
 
-            IEnumerable<IFtpFileInfo> files = FtpHandler.EnumerateFiles(pathname);
+            IEnumerable<IFtpFile> files = FtpHandler.EnumerateFiles(pathname);
 
             foreach (var file in files)
             {

@@ -1,4 +1,4 @@
-﻿namespace LanCloud.Domain.Application
+﻿namespace LanCloud.Domain.Authentication
 {
     public class UserCollection
     {

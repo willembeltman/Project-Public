@@ -41,7 +41,7 @@ namespace LanCloud
             }
         }
 
-        private static void DoTest2(VirtualFtp virtualFtpServer)
+        private static void DoTest2(VirtualFtpServer virtualFtpServer)
         {
             using (var stream = virtualFtpServer.FileOpenRead("/test.bin"))
             using (var reader = new StreamReader(stream))
@@ -51,7 +51,7 @@ namespace LanCloud
             }
         }
 
-        private static void DoTest(VirtualFtp virtualFtpServer)
+        private static void DoTest(VirtualFtpServer virtualFtpServer)
         {
             Console.WriteLine("creating file");
 

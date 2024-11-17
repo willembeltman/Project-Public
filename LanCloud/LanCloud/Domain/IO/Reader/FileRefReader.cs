@@ -1,4 +1,4 @@
-﻿using LanCloud.Domain.VirtualFtp;
+﻿using LanCloud.Domain.FileRef;
 using LanCloud.Shared.Log;
 using System;
 using System.IO;
@@ -7,17 +7,17 @@ namespace LanCloud.Domain.IO.Reader
 {
     public class FileRefReader : Stream
     {
-        public FileRefReader(FileRefInfo pathInfo, ILogger logger)
+        public FileRefReader(LocalFileRef pathInfo, ILogger logger)
         {
             PathInfo = pathInfo;
             Logger = logger;
 
-            FileBitJoiner = new ReconstructBuffer(this, logger);
+            ReconstructBuffer = new ReconstructBuffer(this, logger);
         }
 
-        public FileRefInfo PathInfo { get; }
+        public LocalFileRef PathInfo { get; }
         public ILogger Logger { get; }
-        public ReconstructBuffer FileBitJoiner { get; }
+        public ReconstructBuffer ReconstructBuffer { get; }
 
         public override long Position { get; set; }
         private bool BufferInitialized { get; set; }
@@ -27,31 +27,31 @@ namespace LanCloud.Domain.IO.Reader
         public override bool CanSeek => false;
         public override bool CanWrite => false;
         public override long Length => PathInfo.Length.Value;
-        public bool Disposed => FileBitJoiner.Disposed;
+        public bool Disposed => ReconstructBuffer.Disposed;
 
         public override int Read(byte[] buffer, int offset, int count)
         {
             if (!BufferInitialized)
             {
-                FileBitJoiner.FlipBuffer();
+                ReconstructBuffer.FlipBuffer();
                 BufferInitialized = true;
             }
 
             var read = 0;
-            while (read < count && BufferPosition < FileBitJoiner.Buffer.ReadBufferPosition)
+            while (read < count && BufferPosition < ReconstructBuffer.Buffer.ReadBufferPosition)
             {
-                var availableSpace = FileBitJoiner.Buffer.ReadBufferPosition - BufferPosition;
+                var availableSpace = ReconstructBuffer.Buffer.ReadBufferPosition - BufferPosition;
                 int bytesToWrite = Math.Min(count - read, availableSpace);
 
-                Array.Copy(FileBitJoiner.Buffer.ReadBuffer, BufferPosition, buffer, offset + read, bytesToWrite);
+                Array.Copy(ReconstructBuffer.Buffer.ReadBuffer, BufferPosition, buffer, offset + read, bytesToWrite);
 
                 read += bytesToWrite;
                 BufferPosition += bytesToWrite;
                 Position += bytesToWrite;
 
-                if (BufferPosition == FileBitJoiner.Buffer.ReadBuffer.Length)
+                if (BufferPosition == ReconstructBuffer.Buffer.ReadBuffer.Length)
                 {
-                    FileBitJoiner.FlipBuffer();
+                    ReconstructBuffer.FlipBuffer();
                     BufferPosition = 0;
                 }
             }
@@ -62,7 +62,7 @@ namespace LanCloud.Domain.IO.Reader
         {
             if (!Disposed && disposing)
             {
-                FileBitJoiner.Dispose();
+                ReconstructBuffer.Dispose();
             }
 
             base.Dispose(disposing);

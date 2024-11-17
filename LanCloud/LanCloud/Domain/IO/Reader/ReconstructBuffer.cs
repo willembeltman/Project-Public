@@ -1,6 +1,7 @@
 ﻿using LanCloud.Domain.Application;
-using LanCloud.Domain.VirtualFtp;
+using LanCloud.Domain.FileRef;
 using LanCloud.Models;
+using LanCloud.Services;
 using LanCloud.Shared.Log;
 using System;
 using System.Linq;
@@ -15,19 +16,19 @@ namespace LanCloud.Domain.IO.Reader
             FileRefReader = fileRefReader;
             Logger = logger;
 
-            FileBitReaders = FileRef.Bits
+            FileStripeReaders = FileRef.Stripes
                 .Select(fileRefBit =>
                 {
-                    var fileBit = Application
-                        .FindFileBits(PathInfo.Extention, FileRef, fileRefBit)
+                    var fileStripe = Application
+                        .FindFileStripes(PathInfo.Extention, FileRef, fileRefBit)
                         .FirstOrDefault();
-                    return new FileStripeReader(this, fileBit, Logger);
+                    return new FileStripeReader(this, fileStripe, Logger);
                 })
-                .Where(fileBit => fileBit.Exception == null)
+                .Where(fileStripe => fileStripe.Exception == null)
                 .OrderBy(a => a.Indexes.Length)
                 .ThenBy(a => a.Indexes.OrderBy(b => b).First())
                 .ToArray();
-            AllIndexes = FileBitReaders
+            AllIndexes = FileStripeReaders
                 .SelectMany(a => a.Indexes)
                 .GroupBy(a => a)
                 .Select(a => a.Key)
@@ -41,7 +42,7 @@ namespace LanCloud.Domain.IO.Reader
 
         public FileRefReader FileRefReader { get; }
         public ILogger Logger { get; }
-        internal FileStripeReader[] FileBitReaders { get; }
+        internal FileStripeReader[] FileStripeReaders { get; }
         public byte[] AllIndexes { get; }
         public DoubleBuffer Buffer { get; }
         public Thread Thread { get; }
@@ -51,9 +52,9 @@ namespace LanCloud.Domain.IO.Reader
         private AutoResetEvent StartNext { get; } = new AutoResetEvent(true);
         private AutoResetEvent BufferIsWritten { get; } = new AutoResetEvent(false);
 
-        public FileRefInfo PathInfo => FileRefReader.PathInfo;
+        public LocalFileRef PathInfo => FileRefReader.PathInfo;
         public LocalApplication Application => PathInfo.Application;
-        public FileRef FileRef => PathInfo.FileRef;
+        public FileRefMetadata FileRef => PathInfo.Metadata;
         bool KillSwitch { get; set; }
 
         public void FlipBuffer()
@@ -71,7 +72,7 @@ namespace LanCloud.Domain.IO.Reader
                 {
                     Buffer.WriteBufferPosition = 0;
 
-                    var goodReaders = FileBitReaders.Where(a => a.Exception == null).ToArray();
+                    var goodReaders = FileStripeReaders.Where(a => a.Exception == null).ToArray();
                     if (goodReaders.Length < AllIndexes.Length)
                     {
                         throw GeneralException();
@@ -226,14 +227,14 @@ namespace LanCloud.Domain.IO.Reader
 
         private Exception GeneralException()
         {
-            var badReaders = FileBitReaders.Where(a => a.Exception != null).ToArray();
+            var badReaders = FileStripeReaders.Where(a => a.Exception != null).ToArray();
             var message = $"Data is lost...{Environment.NewLine}";
             message += $"Path: {PathInfo.Path}{Environment.NewLine}";
             foreach (var badReader in badReaders)
             {
                 message += $"{Environment.NewLine}";
-                message += $"Indexes: {string.Join(", ", badReader.FileBit.Indexes)}{Environment.NewLine}";
-                message += $"FilePart: {badReader.FileBit.Info.FullName}{Environment.NewLine}";
+                message += $"Indexes: {badReader.FileStripe.Indexes.ToUniqueKey()}{Environment.NewLine}";
+                //message += $"FilePart: {badReader.FileStripe.Info.FullName}{Environment.NewLine}";
                 message += $"Error: {badReader.Exception.Message}{Environment.NewLine}";
                 message += $"Stacktrace: {badReader.Exception.StackTrace}{Environment.NewLine}";
             }
@@ -245,7 +246,7 @@ namespace LanCloud.Domain.IO.Reader
             KillSwitch = true;
             Disposed = true;
 
-            foreach (var part in FileBitReaders)
+            foreach (var part in FileStripeReaders)
             {
                 part.Dispose();
             }
