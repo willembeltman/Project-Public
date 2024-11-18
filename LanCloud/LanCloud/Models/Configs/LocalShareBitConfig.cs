@@ -6,11 +6,7 @@ namespace LanCloud.Models.Configs
     public class LocalShareBitConfig
     {
         public LocalShareBitConfig() { }
-        public LocalShareBitConfig(int index)
-        {
-            Indexes = new int[] { index };
-        }
-        public LocalShareBitConfig(int[] indexes)
+        public LocalShareBitConfig(params int[] indexes)
         {
             Indexes = indexes;
         }

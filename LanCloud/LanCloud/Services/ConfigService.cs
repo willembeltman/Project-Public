@@ -26,8 +26,8 @@ namespace LanCloud.Services
                     HostName = "WJPC2",
                     RefDirectoryName = "E:\\Test\\Ref",
                     FileStripeBufferSize = 1024 * 4,
-                    FtpBufferSize = 1024 * 4,
-                    WjpBufferSize = 1024 * 16,
+                    FtpBufferMultiplier = 1,
+                    WjpBufferMultiplier = 4,
                     Servers = new RemoteApplicationConfig[]
                     {
                         new RemoteApplicationConfig()
@@ -47,26 +47,52 @@ namespace LanCloud.Services
                     {
                         new LocalShareConfig()
                         {
-                            DirectoryName = "E:\\Test\\0",
+                            DirectoryName = "E:\\Test\\256-1",
+                            IsSSD = true,
                             Parts = new LocalShareBitConfig[]
                             {
-                                new LocalShareBitConfig(0)
+                                new LocalShareBitConfig(0, 1),
                             }
                         },
                         new LocalShareConfig()
                         {
-                            DirectoryName = "E:\\Test\\1",
+                            DirectoryName = "E:\\Test\\256-2",
+                            IsSSD = true,
                             Parts = new LocalShareBitConfig[]
                             {
-                                new LocalShareBitConfig(1)
+                                new LocalShareBitConfig(2, 3)
                             }
                         },
                         new LocalShareConfig()
                         {
-                            DirectoryName = "E:\\Test\\P",
+                            DirectoryName = "E:\\Test\\512-1",
+                            IsSSD = true,
                             Parts = new LocalShareBitConfig[]
                             {
-                                new LocalShareBitConfig(new int[] { 0, 1 })
+                                new LocalShareBitConfig(0),
+                                new LocalShareBitConfig(2)
+                            }
+                        },
+                        new LocalShareConfig()
+                        {
+                            DirectoryName = "E:\\Test\\521-2",
+                            IsSSD = true,
+                            Parts = new LocalShareBitConfig[]
+                            {
+                                new LocalShareBitConfig(1),
+                                new LocalShareBitConfig(3)
+                            }
+                        },
+                        new LocalShareConfig()
+                        {
+                            DirectoryName = "E:\\Test\\1024",
+                            IsSSD = true,
+                            Parts = new LocalShareBitConfig[]
+                            {
+                                new LocalShareBitConfig(0),
+                                new LocalShareBitConfig(1),
+                                new LocalShareBitConfig(2),
+                                new LocalShareBitConfig(3)
                             }
                         }
                     },

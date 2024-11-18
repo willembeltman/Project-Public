@@ -88,8 +88,8 @@ namespace LanCloud.Domain.Application
 
         public string HostName => Config.HostName;
         public int FileStripeBufferSize => Config.FileStripeBufferSize;
-        public int WjpBufferSize => Config.WjpBufferSize;
-        public int FtpBufferSize => Config.FtpBufferSize;
+        public int WjpBufferSize => Config.WjpBufferMultiplier * Config.FileStripeBufferSize;
+        public int FtpBufferSize => Config.FtpBufferMultiplier * Config.FileStripeBufferSize;
         public int? Port => LocalApplicationServerConfig?.Port;
         public LocalShareStripe[] LocalShareStripes => LocalShares?
             .SelectMany(a => a.LocalShareStripes)
