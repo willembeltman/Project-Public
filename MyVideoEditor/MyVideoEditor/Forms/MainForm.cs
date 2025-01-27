@@ -12,12 +12,11 @@ namespace MyVideoEditor.Forms
         public MainTimelineControl MainTimelineControl { get; }
 
         public FfmpegExecuteblesPaths FfmpegExecuteblesPaths { get; }
+        public StreamInfoService StreamInfoService { get; }
         public ProjectService ProjectService { get; }
         public StreamContainerService MediaContainerService { get; }
         public TimelineService TimelineService { get; }
         public TimeStampService TimeStampService { get; }
-
-        public ConsoleForm ConsoleForm { get; }
 
         Project? _Project { get; set; }
         public Project? Project
@@ -63,14 +62,13 @@ namespace MyVideoEditor.Forms
 
             FfmpegExecuteblesPaths =
                 new FfmpegExecuteblesPaths(Environment.ProcessPath, "Executebles");
+            StreamInfoService = new StreamInfoService();
+            TimeStampService = new TimeStampService();
+            TimelineService = new TimelineService(this);
             MediaContainerService =
-                new MediaContainerService(FfmpegExecuteblesPaths);
+                new StreamContainerService(FfmpegExecuteblesPaths, StreamInfoService);
             ProjectService =
-                new ProjectService(this);
-            TimelineService =
-                new TimelineService(this);
-            TimeStampService =
-                new TimeStampService();
+                new ProjectService(this, FfmpegExecuteblesPaths, MediaContainerService, TimelineService, TimeStampService);
 
             MediaControl = new MainMediaControl(this);
             Controls.Add(MediaControl);
@@ -80,9 +78,6 @@ namespace MyVideoEditor.Forms
 
             MainTimelineControl = new MainTimelineControl(this);
             Controls.Add(MainTimelineControl);
-
-            ConsoleForm = new ConsoleForm(this);
-            ConsoleForm.Show();
 
             InitializeComponent();
         }
@@ -200,15 +195,12 @@ namespace MyVideoEditor.Forms
                 MessageBox.Show("No project open?");
                 return;
             }
-            ProjectService.InsertVideosButtonClicked();
+            ProjectService.InsertVideosButtonClicked(Project);
             Invalidate();
         }
 
         private void findVisualStudioToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            FindVisualStudioForm form = new FindVisualStudioForm(MediaContainerService, ConsoleForm);
-            form.ShowDialog();
-
         }
     }
 }

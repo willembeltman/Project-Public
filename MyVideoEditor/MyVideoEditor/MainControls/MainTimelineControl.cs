@@ -1,43 +1,12 @@
 ﻿using MyVideoEditor.Controls;
 using MyVideoEditor.DTOs;
-using MyVideoEditor.Enums;
 using MyVideoEditor.Forms;
-using MyVideoEditor.Models;
 using MyVideoEditor.Services;
-using MyVideoEditor.VideoObjects;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace MyVideoEditor
 {
     public partial class MainTimelineControl : UserControl
     {
-        #region Props 
-
-        MainForm MainForm { get; }
-
-        ProjectService ProjectService => MainForm.ProjectService;
-        StreamContainerService MediaContainerService => MainForm.MediaContainerService;
-        TimelineService TimelineService => MainForm.TimelineService;
-        TimeStampService TimeStampService => MainForm.TimeStampService;
-
-        Project? Project => MainForm.Project;
-        Timeline? Timeline => MainForm.Timeline;
-
-        #endregion
-
-        public TimelineControl TimelineControl { get; private set; }
-        Color ButtonBackColor { get; } = SystemColors.Control;
-        Color ButtonBackColorEnabled { get; } = SystemColors.ControlDark;
-
         public MainTimelineControl(MainForm mainForm)
         {
             MainForm = mainForm;
@@ -47,6 +16,19 @@ namespace MyVideoEditor
 
             InitializeComponent();
         }
+
+        private MainForm MainForm { get; }
+        public TimelineControl TimelineControl { get; private set; }
+        private Color ButtonBackColor { get; } = SystemColors.Control;
+        private Color ButtonBackColorEnabled { get; } = SystemColors.ControlDark;
+
+        ProjectService ProjectService => MainForm.ProjectService;
+        StreamContainerService MediaContainerService => MainForm.MediaContainerService;
+        TimelineService TimelineService => MainForm.TimelineService;
+        TimeStampService TimeStampService => MainForm.TimeStampService;
+
+        Project? Project => MainForm.Project;
+        Timeline? Timeline => MainForm.Timeline;
 
         public void ProjectSet()
         {
@@ -61,8 +43,6 @@ namespace MyVideoEditor
 
             Invalidate();
         }
-
-
 
         private void TimelineControl_Load(object sender, EventArgs e)
         {
@@ -140,12 +120,12 @@ namespace MyVideoEditor
         private void TimelinePanel_DragDrop(object sender, DragEventArgs e)
         {
             if (Project == null || Timeline == null) return;
-            ProjectService.DragDrop(sender, e);
+            ProjectService.DragDrop(sender, e, Project);
         }
         private void TimelineAudioPanel_DragEnter(object sender, DragEventArgs e)
         {
             if (Project == null || Timeline == null) return;
-            ProjectService.DragDrop(sender, e);
+            ProjectService.DragDrop(sender, e, Project);
         }
 
         private void buttonPlay_Click(object sender, EventArgs e)

@@ -2,6 +2,14 @@
 {
     public class VideoFrame
     {
+        public VideoFrame(byte[] frameData, int frameWidth, int frameHeight, long index)
+        {
+            Index = index;
+            FrameData = frameData;
+            Width = frameWidth;
+            Height = frameHeight;
+        }
+
         public long Index { get; set; }
         public byte[]? FrameData { get; set; }
         public int Width { get; set; }

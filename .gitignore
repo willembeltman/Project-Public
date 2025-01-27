@@ -91,3 +91,6 @@ BenchmarkDotNet.Artifacts/
 MyVideoEditor/MyVideoEditor/Executebles/ffmpeg.exe
 MyVideoEditor/MyVideoEditor/Executebles/ffplay.exe
 MyVideoEditor/MyVideoEditor/Executebles/ffprobe.exe
+MyVideoEditor/VideoEditor/Executebles/ffmpeg.exe
+MyVideoEditor/VideoEditor/Executebles/ffplay.exe
+MyVideoEditor/VideoEditor/Executebles/ffprobe.exe

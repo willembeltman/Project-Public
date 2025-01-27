@@ -11,14 +11,17 @@ namespace MyVideoEditor.Services
         StreamContainerService MediaContainerService { get; }
         TimelineService TimelineService { get; }
         TimeStampService TimeStampService { get; }
+        public MainForm MainForm { get; }
         public FfmpegExecuteblesPaths FfmpegExecuteblesPaths { get; }
 
         public ProjectService(
+            MainForm mainForm,
             FfmpegExecuteblesPaths ffmpegExecuteblesPaths,
             StreamContainerService mediaContainerService,
             TimelineService timelineService,
             TimeStampService timeStampService)
         {
+            MainForm = mainForm;
             FfmpegExecuteblesPaths = ffmpegExecuteblesPaths;
             MediaContainerService = mediaContainerService;
             TimelineService = timelineService;
@@ -137,24 +140,21 @@ namespace MyVideoEditor.Services
             var timeline = project.Timelines.FirstOrDefault(a => a.Id == project.CurrentTimelineId);
             if (timeline == null) return;
 
-            var mediaContainers = MediaContainerService.Open(files);
-            if (mediaContainers.Any())
+            var streamContainers = MediaContainerService.Open(files);
+            if (streamContainers.Any())
             {
                 var timelinestart = timeline.TotalLength;
 
-                foreach (var mediaContainer in mediaContainers)
+                foreach (var streamContainer in streamContainers)
                 {
                     var groupid = Guid.NewGuid();
                     var duration = 0d;
-                    var fullname = mediaContainer.FullName;
+                    var fullname = streamContainer.FullName;
 
-                    var media = new DTOs.Media()
-                    {
-                        FullName = fullname
-                    };
+                    var media = new Media(streamContainer);
                     project.Medias.Add(media);
 
-                    var videosteams = mediaContainer.VideoInfos
+                    var videosteams = streamContainer.VideoInfos
                         .Select(a => new VideoStreamReader(FfmpegExecuteblesPaths, fullname, a));
                     foreach (var videostream in videosteams)
                     {
@@ -190,7 +190,7 @@ namespace MyVideoEditor.Services
                         // Control aanmaken
                         MainForm.MainTimelineControl.TimelineControl.AddTimelineVideoControl(mediavideo, videoitem, videostream);
                     }
-                    foreach (var audiostream in mediaContainer.AudioStreams)
+                    foreach (var audiostream in streamContainer.AudioStreams)
                     {
                         if (duration == 0d)
                         {
