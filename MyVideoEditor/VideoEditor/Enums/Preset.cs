@@ -1,6 +1,6 @@
 ﻿namespace VideoEditor.Enums;
 
-public enum FFMpegPreset
+public enum Preset
 {
     veryfast,
     faster,

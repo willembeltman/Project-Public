@@ -81,11 +81,25 @@ public partial class TimelineControl : UserControl
         {
             int x1 = Convert.ToInt32((clip.TimelineStartInSeconds - VisibleStart) / VisibleWidth * Width);
             int x2 = Convert.ToInt32((clip.TimelineEndInSeconds - VisibleStart) / VisibleWidth * Width);
+            int y = clip.Layer * 40 + 20;
             int width = x2 - x1;
             if (x1 > Width || x2 < 0) continue; // Clip buiten zichtbare range
 
-            var rect = new Rectangle(x1, 20, width, 40);
+            var rect = new Rectangle(x1, y, width, 40);
             g.FillRectangle(Brushes.Blue, rect);
+            g.DrawRectangle(Pens.White, rect);
+        }
+
+        foreach (var clip in Timeline.AudioClips)
+        {
+            int x1 = Convert.ToInt32((clip.TimelineStartInSeconds - VisibleStart) / VisibleWidth * Width);
+            int x2 = Convert.ToInt32((clip.TimelineEndInSeconds - VisibleStart) / VisibleWidth * Width);
+            int y = clip.Layer * 40 + 100;
+            int width = x2 - x1;
+            if (x1 > Width || x2 < 0) continue; // Clip buiten zichtbare range
+
+            var rect = new Rectangle(x1, y, width, 40);
+            g.FillRectangle(Brushes.LightBlue, rect);
             g.DrawRectangle(Pens.White, rect);
         }
     }

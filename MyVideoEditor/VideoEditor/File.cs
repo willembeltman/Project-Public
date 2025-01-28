@@ -1,5 +1,4 @@
 ﻿using VideoEditor.Enums;
-using VideoEditor.Dtos;
 using VideoEditor.Info;
 using VideoEditor.Static;
 
@@ -19,11 +18,11 @@ public class File
                 .ToArray();
         VideoStreams =
             AllStreams
-                .Where(a => a.CodecType == CodecTypeEnum.Video)
+                .Where(a => a.CodecType == CodecType.Video)
                 .ToArray();
         AudioStreams =
             AllStreams
-                .Where(a => a.CodecType == CodecTypeEnum.Audio)
+                .Where(a => a.CodecType == CodecType.Audio)
                 .ToArray();
         Duration = FFHelpers.TryParseToDouble(rapport.format.duration, out var dur) ? dur : null;
     }

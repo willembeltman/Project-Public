@@ -1,4 +1,4 @@
-﻿namespace VideoEditor.Dtos
+﻿namespace VideoEditor
 {
     public class Resolution
     {

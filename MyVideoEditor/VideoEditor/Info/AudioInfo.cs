@@ -1,13 +1,12 @@
-﻿using VideoEditor.Enums;
-namespace VideoEditor.Info;
+﻿namespace VideoEditor.Info;
 
 public class AudioInfo
 {
-    public AudioInfo(long sampleRate = 48000, BitDepth bitDepth = BitDepth.s16)
+    public AudioInfo(int sampleRate = 48000, int channels = 2)
     {
         SampleRate = sampleRate;
-        BitDepth = bitDepth;
+        Channels = channels;
     }
-    public long SampleRate { get; set; }
-    public BitDepth BitDepth { get; set; }
+    public int SampleRate { get; set; }
+    public int Channels { get; set; }
 }

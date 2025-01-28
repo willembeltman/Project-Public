@@ -1,6 +1,6 @@
 ﻿namespace VideoEditor.Static
 {
-    public static class FFExecuteblesPaths
+    public static class FFExecutebles
     {
 
         public static FileInfo FFMpeg

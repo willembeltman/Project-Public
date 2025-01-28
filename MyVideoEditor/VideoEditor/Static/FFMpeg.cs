@@ -1,7 +1,5 @@
 ﻿using System.Diagnostics;
 using VideoEditor.Enums;
-using VideoEditor.FF;
-using VideoEditor.Dtos;
 namespace VideoEditor.Static;
 
 public static class FFMpeg
@@ -20,8 +18,8 @@ public static class FFMpeg
 
         var processStartInfo = new ProcessStartInfo
         {
-            FileName = FFExecuteblesPaths.FFMpeg.FullName,
-            WorkingDirectory = FFExecuteblesPaths.FFMpeg.Directory!.FullName,
+            FileName = FFExecutebles.FFMpeg.FullName,
+            WorkingDirectory = FFExecutebles.FFMpeg.Directory!.FullName,
             Arguments = arguments,
             RedirectStandardOutput = true,
             UseShellExecute = false,
@@ -47,7 +45,7 @@ public static class FFMpeg
         Fps fps,
         IEnumerable<byte[]> frames,
         byte crf = 23,
-        FFMpegPreset preset = FFMpegPreset.medium)
+        Preset preset = Preset.medium)
     {
         var ffmpegArgs = $"-y -f rawvideo -pixel_format rgb24 " +
                          $"-video_size {resolution.Width}x{resolution.Height} " +
@@ -60,8 +58,8 @@ public static class FFMpeg
 
         var processStartInfo = new ProcessStartInfo
         {
-            FileName = FFExecuteblesPaths.FFMpeg.FullName,
-            WorkingDirectory = FFExecuteblesPaths.FFMpeg.Directory!.FullName,
+            FileName = FFExecutebles.FFMpeg.FullName,
+            WorkingDirectory = FFExecutebles.FFMpeg.Directory!.FullName,
             Arguments = ffmpegArgs,
             RedirectStandardInput = true,
             UseShellExecute = false,
@@ -92,8 +90,8 @@ public static class FFMpeg
 
         var processStartInfo = new ProcessStartInfo
         {
-            FileName = FFExecuteblesPaths.FFMpeg.FullName,
-            WorkingDirectory = FFExecuteblesPaths.FFMpeg.Directory!.FullName,
+            FileName = FFExecutebles.FFMpeg.FullName,
+            WorkingDirectory = FFExecutebles.FFMpeg.Directory!.FullName,
             Arguments = ffmpegArgs,
             RedirectStandardOutput = true,
             UseShellExecute = false,
@@ -126,8 +124,8 @@ public static class FFMpeg
 
         var processStartInfo = new ProcessStartInfo
         {
-            FileName = FFExecuteblesPaths.FFMpeg.FullName,
-            WorkingDirectory = FFExecuteblesPaths.FFMpeg.Directory!.FullName,
+            FileName = FFExecutebles.FFMpeg.FullName,
+            WorkingDirectory = FFExecutebles.FFMpeg.Directory!.FullName,
             Arguments = ffmpegArgs,
             RedirectStandardInput = true,
             UseShellExecute = false,
@@ -185,8 +183,8 @@ public static class FFMpeg
         // Start de FFmpeg process
         var processStartInfo = new ProcessStartInfo
         {
-            FileName = FFExecuteblesPaths.FFMpeg.FullName,
-            WorkingDirectory = FFExecuteblesPaths.FFMpeg.Directory!.FullName,
+            FileName = FFExecutebles.FFMpeg.FullName,
+            WorkingDirectory = FFExecutebles.FFMpeg.Directory!.FullName,
             Arguments = ffmpegArgs,
             RedirectStandardInput = true,
             UseShellExecute = false,

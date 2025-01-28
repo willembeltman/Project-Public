@@ -1,6 +1,6 @@
 ﻿namespace VideoEditor.Enums;
 
-public enum CodecTypeEnum
+public enum CodecType
 {
     Audio,
     Video

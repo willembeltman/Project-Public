@@ -13,8 +13,8 @@ public static class FFProbe
         {
             StartInfo = new ProcessStartInfo
             {
-                FileName = FFExecuteblesPaths.FFProbe.FullName,
-                WorkingDirectory = FFExecuteblesPaths.FFProbe.Directory?.FullName,
+                FileName = FFExecutebles.FFProbe.FullName,
+                WorkingDirectory = FFExecutebles.FFProbe.Directory?.FullName,
                 Arguments = arguments,
                 RedirectStandardOutput = true,
                 UseShellExecute = false,

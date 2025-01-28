@@ -1,6 +1,4 @@
-﻿using VideoEditor.Dtos;
-
-namespace VideoEditor.FF;
+﻿namespace VideoEditor;
 
 public class Timestamp
 {

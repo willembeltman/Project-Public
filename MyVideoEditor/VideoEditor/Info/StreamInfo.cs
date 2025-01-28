@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Channels;
-using VideoEditor.Enums;
+﻿using VideoEditor.Enums;
 using VideoEditor.Dtos;
 using VideoEditor.Static;
 
@@ -14,7 +12,7 @@ public class StreamInfo
         Index = stream.index;
         CodecName = stream.codec_name;
         CodecLongName = stream.codec_long_name;
-        CodecType = stream.codec_type == "video" ? CodecTypeEnum.Video : CodecTypeEnum.Audio;
+        CodecType = stream.codec_type == "video" ? CodecType.Video : CodecType.Audio;
 
         // Video
         Resolution = Resolution.TryParse(stream.width, stream.height, out Resolution? resolution) ? resolution : null;
@@ -31,16 +29,17 @@ public class StreamInfo
     public string? Title { get; }
     public string? CodecName { get; }
     public string? CodecLongName { get; }
-    public CodecTypeEnum CodecType { get; }
+    public CodecType CodecType { get; }
 
     public Resolution? Resolution { get; }
     public Fps? Fps { get;  }
+
     public int? SampleRate { get; }
     public int? Channels { get; }
 
     public override string ToString()
     {
-        if (CodecType == CodecTypeEnum.Video)
+        if (CodecType == CodecType.Video)
         {
             return $"{Index} {CodecName} {Resolution}px {Fps}fps";
         }
