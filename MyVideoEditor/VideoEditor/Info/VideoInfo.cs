@@ -1,4 +1,6 @@
-﻿namespace VideoEditor;
+﻿using VideoEditor.Dtos;
+
+namespace VideoEditor.Info;
 
 public class VideoInfo
 {

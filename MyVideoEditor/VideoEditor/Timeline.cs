@@ -1,4 +1,6 @@
-﻿namespace VideoEditor;
+﻿using VideoEditor.Info;
+
+namespace VideoEditor;
 
 public class Timeline
 {
@@ -8,6 +10,10 @@ public class Timeline
     }
 
     public Project Project { get; }
-    public VideoInfo VideoInfo { get; set; } = new VideoInfo();
+
     public ConcurrentArray<TimelineVideoClip> VideoClips { get; } = new ConcurrentArray<TimelineVideoClip>();
+    public ConcurrentArray<TimelineAudioClip> AudioClips { get; } = new ConcurrentArray<TimelineAudioClip>();
+
+    public AudioInfo AudioInfo { get; } = new AudioInfo();
+    public VideoInfo VideoInfo { get; } = new VideoInfo();
 }

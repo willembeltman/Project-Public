@@ -1,52 +1,52 @@
-﻿using VideoEditor.Static;
+﻿using VideoEditor.Enums;
+using VideoEditor.Dtos;
+using VideoEditor.Info;
+using VideoEditor.Static;
 
 namespace VideoEditor;
 
 public class File
 {
-    public File(string fullName, IEnumerable<StreamInfo> streaminfos, double? duration)
+    public File(string fullName)
     {
-        var streams = new List<StreamInfo>();
-        var videoStreams = new List<StreamInfoVideo>();
-        var audioStreams = new List<StreamInfoAudio>();
-        foreach (var info in streaminfos)
-        {
-            streams.Add(info);
-            if (info.CodecType == CodecTypeEnum.Video)
-            {
-                videoStreams.Add(new StreamInfoVideo(this, info));
-            }
-            if (info.CodecType == CodecTypeEnum.Audio)
-            {
-                audioStreams.Add(new StreamInfoAudio(this, info));
-            }
-        }
-        FullName = fullName;
-        Duration = duration;
-        Streams = streams.ToArray();
-        VideoStreams = videoStreams.ToArray();
-        AudioStreams = audioStreams.ToArray();
-    }
-    public string FullName { get; }
-    public double? Duration { get; }
-    public StreamInfo[] Streams { get; }
-    public StreamInfoVideo[] VideoStreams { get; }
-    public StreamInfoAudio[] AudioStreams { get; }
+        var rapport = FFProbe.GetRapport(fullName);
 
-    public static File Open(string fullName)
-    {
-        var streaminfos = FFProbe.GetStreamInfos(fullName);
-        var duration = FFProbe.GetDuration(fullName);
-        return new File(fullName, streaminfos, duration);
+        FullName = fullName;
+        AllStreams =
+            rapport.streams
+                .Where(a => a.codec_type == "video" || a.codec_type == "audio")
+                .Select(a => new StreamInfo(this, a))
+                .ToArray();
+        VideoStreams =
+            AllStreams
+                .Where(a => a.CodecType == CodecTypeEnum.Video)
+                .ToArray();
+        AudioStreams =
+            AllStreams
+                .Where(a => a.CodecType == CodecTypeEnum.Audio)
+                .ToArray();
+        Duration = FFHelpers.TryParseToDouble(rapport.format.duration, out var dur) ? dur : null;
     }
-    public static File[] Open(IEnumerable<string> files)
+
+    public string FullName { get; }
+    public StreamInfo[] AllStreams { get; }
+    public StreamInfo[] VideoStreams { get; }
+    public StreamInfo[] AudioStreams { get; }
+    public double? Duration { get; }
+
+    public static File[] TryOpenMultiple(IEnumerable<string> files)
     {
         var filteredfiles = CheckFileType.Filter(files);
         if (filteredfiles.Length == 0)
             return Array.Empty<File>();
 
         return filteredfiles
-            .Select(a => Open(a))
+            .Select(a => new File(a))
             .ToArray();
+    }
+
+    public override string ToString()
+    {
+        return $"{FullName} {Duration}s";
     }
 }

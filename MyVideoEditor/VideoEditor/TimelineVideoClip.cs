@@ -1,54 +1,34 @@
-﻿
+﻿using VideoEditor.Info;
 namespace VideoEditor;
 
-public class TimelineVideoClip
+public class TimelineVideoClip : TimelineClip
 {
-    public TimelineVideoClip(
-        Timeline timeline, 
-        StreamInfoVideo videoStream, 
-        double timelineStartInSeconds,
-        double timelineEndInSeconds, 
-        double videoStartInSeconds,
-        double videoEndInSeconds) 
+    public TimelineVideoClip(Timeline timeline, StreamInfo videoStream) : base(timeline)
     {
-        Timeline = timeline;
         VideoStream = videoStream;
-
-        SetTimelineStartInSeconds(timelineStartInSeconds);
-        SetTimelineEndInSeconds(timelineEndInSeconds);
-        SetVideoStartInSeconds(videoStartInSeconds);
-        SetVideoEndInSeconds(videoEndInSeconds);
     }
 
-    public Timeline Timeline { get; set; }
-    public StreamInfoVideo VideoStream { get; set; }
+    public StreamInfo VideoStream { get; }
 
-    public long TimelineStartIndex { get; set; }
-    public double TimelineStartInSeconds => TimelineStartIndex * Timeline.VideoInfo.Fps.Divider / Timeline.VideoInfo.Fps.Base;
-    private void SetTimelineStartInSeconds(double value)
+    public double TimelineStartInSeconds
     {
-        TimelineStartIndex = Convert.ToInt64(value * Timeline.VideoInfo.Fps.Base / Timeline.VideoInfo.Fps.Divider);
+        get => TimelineStartIndex * Timeline.VideoInfo.Fps.Divider / Timeline.VideoInfo.Fps.Base;
+        set => TimelineStartIndex = Convert.ToInt64(value * Timeline.VideoInfo.Fps.Base / Timeline.VideoInfo.Fps.Divider);
     }
-
-    public long TimelineEndIndex { get; set; }
-    public double TimelineEndInSeconds => TimelineEndIndex * Timeline.VideoInfo.Fps.Divider / Timeline.VideoInfo.Fps.Base;
-    private void SetTimelineEndInSeconds(double value)
+    public double TimelineEndInSeconds
     {
-        TimelineEndIndex = Convert.ToInt64(value * Timeline.VideoInfo.Fps.Base / Timeline.VideoInfo.Fps.Divider);
+        get => TimelineEndIndex * Timeline.VideoInfo.Fps.Divider / Timeline.VideoInfo.Fps.Base;
+        set => TimelineEndIndex = Convert.ToInt64(value * Timeline.VideoInfo.Fps.Base / Timeline.VideoInfo.Fps.Divider);
     }
-
-    public long VideoStartIndex { get; set; }
-    public double VideoStartInSeconds => VideoStartIndex * Timeline.VideoInfo.Fps.Divider / Timeline.VideoInfo.Fps.Base;
-    private void SetVideoStartInSeconds(double value)
+    public double ClipStartInSeconds
     {
-        VideoStartIndex = Convert.ToInt64(value * VideoStream.VideoInfo.Fps.Base / VideoStream.VideoInfo.Fps.Divider);
+        get => ClipStartIndex * VideoStream.Fps.Divider / VideoStream.Fps.Base;
+        set => ClipStartIndex = Convert.ToInt64(value * VideoStream.Fps.Base / VideoStream.Fps.Divider);
     }
-
-    public long VideoEndIndex { get; set; }
-    public double VideoEndInSeconds => VideoEndIndex * Timeline.VideoInfo.Fps.Divider / Timeline.VideoInfo.Fps.Base;
-    private void SetVideoEndInSeconds(double value)
+    public double ClipEndInSeconds
     {
-        VideoEndIndex = Convert.ToInt64(value * VideoStream.VideoInfo.Fps.Base / VideoStream.VideoInfo.Fps.Divider);
+        get => ClipEndIndex * VideoStream.Fps.Divider / VideoStream.Fps.Base;
+        set => ClipEndIndex = Convert.ToInt64(value * VideoStream.Fps.Base / VideoStream.Fps.Divider);
     }
 }
 

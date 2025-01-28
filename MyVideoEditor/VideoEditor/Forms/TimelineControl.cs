@@ -1,6 +1,4 @@
-﻿using System.Collections.Concurrent;
-using System.Diagnostics;
-using System.Net.Http.Headers;
+﻿using System.Diagnostics;
 
 namespace VideoEditor.Forms;
 
@@ -19,7 +17,7 @@ public partial class TimelineControl : UserControl
 
     Engine? Engine { get; set; }
     Project? Project => Engine?.Project;
-    Timeline? Timeline => Engine?.Timeline;
+    Timeline? Timeline => Engine?.Timeline; 
     public void SetEngine(Engine engine)
     {
         Engine = engine;
@@ -175,7 +173,7 @@ public partial class TimelineControl : UserControl
 
         var clientPoint = PointToClient(new Point(e.X, e.Y));
         var currentTime = TranslateToCurrentTime(clientPoint);
-        var files = File.Open(fullNames);
+        var files = File.TryOpenMultiple(fullNames);
 
         var pos = currentTime;
         foreach (var file in files)
@@ -184,11 +182,33 @@ public partial class TimelineControl : UserControl
 
             var start = pos;
             pos += file.Duration.Value;
-
+            var layer = 0;
             foreach (var videoStream in file.VideoStreams)
             {
-                var videoClip = new TimelineVideoClip(Timeline, videoStream, start, pos, 0, file.Duration.Value);
-                Timeline.VideoClips.Add(videoClip);
+                Timeline.VideoClips.Add(
+                    new TimelineVideoClip(Timeline, videoStream)
+                    {
+                        Layer = layer, 
+                        TimelineStartInSeconds = start, 
+                        TimelineEndInSeconds = pos,
+                        ClipStartInSeconds = 0,
+                        ClipEndInSeconds = file.Duration.Value
+                    });
+                layer++;
+            }
+            layer = 0;
+            foreach (var audioStream in file.AudioStreams)
+            {
+                Timeline.AudioClips.Add(
+                    new TimelineAudioClip(Timeline, audioStream)
+                    {
+                        Layer = layer,
+                        TimelineStartInSeconds = start,
+                        TimelineEndInSeconds = pos,
+                        ClipStartInSeconds = 0,
+                        ClipEndInSeconds = file.Duration.Value
+                    });
+                layer++;
             }
             Project.Files.Add(file);
         }

@@ -1,4 +1,4 @@
-﻿namespace VideoEditor;
+﻿namespace VideoEditor.Static;
 
 public static class CheckFileType
 {
