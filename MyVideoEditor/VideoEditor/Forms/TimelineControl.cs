@@ -39,9 +39,6 @@ public partial class TimelineControl : UserControl
         g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
         g.Clear(Color.Black);
 
-        //scrollBarControl.Maximum = 
-
-        //VisibleStart = scrollBarControl.Value;
 
         // Teken tijdsmarkeringen
         DrawTimeMarkers(g);
@@ -64,7 +61,7 @@ public partial class TimelineControl : UserControl
         }
         if (f < 0) f = 0;
 
-        for (var sec = 0D; sec < int.MaxValue; sec += add) // Beperkt aantal om te testen
+        for (var sec = 0D; sec < int.MaxValue; sec += add) 
         {
             var x = Convert.ToInt32((sec - VisibleStart) / VisibleWidth * Width);
             if (x >= Width) break;
@@ -81,28 +78,38 @@ public partial class TimelineControl : UserControl
         {
             int x1 = Convert.ToInt32((clip.TimelineStartInSeconds - VisibleStart) / VisibleWidth * Width);
             int x2 = Convert.ToInt32((clip.TimelineEndInSeconds - VisibleStart) / VisibleWidth * Width);
-            int y = clip.Layer * 40 + 20;
             int width = x2 - x1;
             if (x1 > Width || x2 < 0) continue; // Clip buiten zichtbare range
 
-            var rect = new Rectangle(x1, y, width, 40);
-            g.FillRectangle(Brushes.Blue, rect);
-            g.DrawRectangle(Pens.White, rect);
+            int height = 40;
+            int yoffset = 20;
+            int y = clip.Layer * height + yoffset;
+
+            DrawBlock(g, x1, y, width, height, Brushes.Blue, Pens.White);
         }
 
         foreach (var clip in Timeline.AudioClips)
         {
             int x1 = Convert.ToInt32((clip.TimelineStartInSeconds - VisibleStart) / VisibleWidth * Width);
             int x2 = Convert.ToInt32((clip.TimelineEndInSeconds - VisibleStart) / VisibleWidth * Width);
-            int y = clip.Layer * 40 + 100;
             int width = x2 - x1;
             if (x1 > Width || x2 < 0) continue; // Clip buiten zichtbare range
 
-            var rect = new Rectangle(x1, y, width, 40);
-            g.FillRectangle(Brushes.LightBlue, rect);
-            g.DrawRectangle(Pens.White, rect);
+            int height = 40;
+            int yoffset = 100;
+            int y = clip.Layer * height + yoffset;
+
+            DrawBlock(g, x1, y, width, height, Brushes.LightBlue, Pens.White);
         }
     }
+
+    private void DrawBlock(Graphics g, int x, int y, int width, int height, Brush fillColor, Pen borderColor)
+    {
+        var rect = new Rectangle(x, y, width, height);
+        g.FillRectangle(fillColor, rect);
+        g.DrawRectangle(borderColor, rect);
+    }
+
     private void TimelineControl_MouseWheel(object? sender, MouseEventArgs e)
     {
         if (e.Delta > 0)
@@ -177,55 +184,19 @@ public partial class TimelineControl : UserControl
 
         // En dan?
     }
-    private void InsertVideos(DragEventArgs e, string[] fullNames)
+    private void InsertVideos(DragEventArgs e, IEnumerable<string> fullNames)
     {
         if (Engine == null) return;
         if (Project == null) return;
         if (Timeline == null) return;
 
-        fullNames = fullNames.OrderBy(a => a).ToArray();
+        fullNames = fullNames.OrderBy(a => a);
 
         var clientPoint = PointToClient(new Point(e.X, e.Y));
         var currentTime = TranslateToCurrentTime(clientPoint);
         var files = File.TryOpenMultiple(fullNames);
 
-        var pos = currentTime;
-        foreach (var file in files)
-        {
-            if (file.Duration == null) continue;
-
-            var start = pos;
-            pos += file.Duration.Value;
-            var layer = 0;
-            foreach (var videoStream in file.VideoStreams)
-            {
-                Timeline.VideoClips.Add(
-                    new TimelineVideoClip(Timeline, videoStream)
-                    {
-                        Layer = layer, 
-                        TimelineStartInSeconds = start, 
-                        TimelineEndInSeconds = pos,
-                        ClipStartInSeconds = 0,
-                        ClipEndInSeconds = file.Duration.Value
-                    });
-                layer++;
-            }
-            layer = 0;
-            foreach (var audioStream in file.AudioStreams)
-            {
-                Timeline.AudioClips.Add(
-                    new TimelineAudioClip(Timeline, audioStream)
-                    {
-                        Layer = layer,
-                        TimelineStartInSeconds = start,
-                        TimelineEndInSeconds = pos,
-                        ClipStartInSeconds = 0,
-                        ClipEndInSeconds = file.Duration.Value
-                    });
-                layer++;
-            }
-            Project.Files.Add(file);
-        }
+        Timeline.AddFiles(currentTime, 0, files);
 
         Invalidate();
     }

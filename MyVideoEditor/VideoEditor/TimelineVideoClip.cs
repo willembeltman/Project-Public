@@ -3,7 +3,7 @@ namespace VideoEditor;
 
 public class TimelineVideoClip : TimelineClip
 {
-    public TimelineVideoClip(Timeline timeline, StreamInfo videoStream) : base(timeline)
+    public TimelineVideoClip(Timeline timeline, File file, StreamInfo videoStream) : base(timeline, file)
     {
         VideoStream = videoStream;
     }

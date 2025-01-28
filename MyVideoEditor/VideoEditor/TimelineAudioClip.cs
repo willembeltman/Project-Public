@@ -3,13 +3,12 @@ namespace VideoEditor;
 
 public class TimelineAudioClip : TimelineClip
 {
-    public TimelineAudioClip(Timeline timeline, StreamInfo videoStream) : base(timeline)
+    public TimelineAudioClip(Timeline timeline, File file, StreamInfo audioStream) : base(timeline, file)
     {
-        AudioStream = videoStream;
+        AudioStream = audioStream;
     }
 
     public StreamInfo AudioStream { get; }
-
 
     public double TimelineStartInSeconds
     {

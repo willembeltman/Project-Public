@@ -33,15 +33,10 @@ public class File
     public StreamInfo[] AudioStreams { get; }
     public double? Duration { get; }
 
-    public static File[] TryOpenMultiple(IEnumerable<string> files)
+    public static IEnumerable<File> TryOpenMultiple(IEnumerable<string> files)
     {
-        var filteredfiles = CheckFileType.Filter(files);
-        if (filteredfiles.Length == 0)
-            return Array.Empty<File>();
-
-        return filteredfiles
-            .Select(a => new File(a))
-            .ToArray();
+        return CheckFileType.Filter(files)
+            .Select(a => new File(a));
     }
 
     public override string ToString()
