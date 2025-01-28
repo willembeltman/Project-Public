@@ -1,7 +1,7 @@
 ﻿using VideoEditor.Info;
 namespace VideoEditor;
 
-public class TimelineAudioClip : TimelineClip
+public class TimelineAudioClip : TimelineClip, ITimelineClip
 {
     public TimelineAudioClip(Timeline timeline, File file, StreamInfo audioStream) : base(timeline, file)
     {

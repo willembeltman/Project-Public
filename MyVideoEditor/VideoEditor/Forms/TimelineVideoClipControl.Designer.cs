@@ -1,6 +1,6 @@
 ﻿namespace VideoEditor.Forms
 {
-    partial class PropertiesControl
+    partial class TimelineVideoClipControl
     {
         /// <summary> 
         /// Required designer variable.
@@ -28,31 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
-            vScrollBar1 = new VScrollBar();
-            SuspendLayout();
-            // 
-            // vScrollBar1
-            // 
-            vScrollBar1.Location = new Point(253, 0);
-            vScrollBar1.Name = "vScrollBar1";
-            vScrollBar1.Size = new Size(32, 273);
-            vScrollBar1.TabIndex = 0;
-            // 
-            // PropertiesControl
-            // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
-            AutoScaleMode = AutoScaleMode.Font;
-            BackColor = SystemColors.ControlDarkDark;
-            Controls.Add(vScrollBar1);
-            Margin = new Padding(2);
-            Name = "PropertiesControl";
-            Size = new Size(281, 273);
-            Resize += PropertiesControl_Resize;
-            ResumeLayout(false);
+            components = new System.ComponentModel.Container();
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
         }
 
         #endregion
-
-        private VScrollBar vScrollBar1;
     }
 }

@@ -33,9 +33,9 @@ public class File
     public StreamInfo[] AudioStreams { get; }
     public double? Duration { get; }
 
-    public static IEnumerable<File> TryOpenMultiple(IEnumerable<string> files)
+    public static IEnumerable<File> OpenMultiple(IEnumerable<string> files)
     {
-        return CheckFileType.Filter(files)
+        return files
             .Select(a => new File(a));
     }
 

@@ -19,6 +19,7 @@ public class Timeline
 
     internal void AddFiles(double currentTime, int startlayer, IEnumerable<File> files)
     {
+        files = files.OrderBy(a => a.FullName);
         foreach (var file in files)
         {
             if (file.Duration == null) continue;

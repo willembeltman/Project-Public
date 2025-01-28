@@ -6,21 +6,9 @@ public partial class MainForm : Form
 {
     public MainForm()
     {
-        var engine = new Engine();
         InitializeComponent();
-        timelineControl.SetEngine(engine);
-        displayControl.SetEngine(engine);
-        propertiesControl.SetEngine(engine);
-        SetEngine(engine);
+        Engine.MainForm = this;
     }
-
-    private void SetEngine(Engine engine)
-    {
-        Engine = engine;
-        Engine.SetMainForm(this);
-    }
-
-    Engine? Engine { get; set; }
 
     int TimelineHeight { get; set; } = 200;
     int PropertiesWidth { get; set; } = 320;
@@ -30,14 +18,11 @@ public partial class MainForm : Form
     private void MainForm_Load(object sender, EventArgs e)
     {
         MainForm_Resize(sender, e);
-        if (Engine == null) return;
         Engine.Start();
     }
 
     private void MainForm_Resize(object sender, EventArgs e)
     {
-        if (Engine == null) return;
-
         var nettowidth = ClientRectangle.Width - Constants.Margin;
         var nettoheight = ClientRectangle.Height - Constants.Margin - menuStrip.Height;
 

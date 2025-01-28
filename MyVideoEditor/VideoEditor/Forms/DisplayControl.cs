@@ -1,24 +1,13 @@
-﻿namespace VideoEditor.Forms;
+﻿using VideoEditor.Static;
+
+namespace VideoEditor.Forms;
 
 public partial class DisplayControl : UserControl
 {
     public DisplayControl()
     {
         InitializeComponent();
-    }
-
-    Engine? Engine { get; set; }
-
-    public void SetEngine(Engine engine)
-    {
-        Engine = engine;
-        Engine.SetDisplayControl(this);
-        DisplayControl_Resize(this, new EventArgs());
-    }
-
-    private void DisplayControl_Load(object sender, EventArgs e)
-    {
-
+        Engine.DisplayControl = this;
     }
 
     private void DisplayControl_Resize(object sender, EventArgs e)
@@ -28,8 +17,8 @@ public partial class DisplayControl : UserControl
         var width = ClientRectangle.Width;
         var height = ClientRectangle.Height;
 
-        var screenWidthBasedOnHeight = height * (Engine?.Timeline.VideoInfo.Resolution.Width ?? 1920) / (Engine?.Timeline.VideoInfo.Resolution.Height ?? 1080);
-        var screenHeightBasedOnWidth = width * (Engine?.Timeline.VideoInfo.Resolution.Height ?? 1080) / (Engine?.Timeline.VideoInfo.Resolution.Width ?? 1920);
+        var screenWidthBasedOnHeight = height * Engine.Timeline.VideoInfo.Resolution.Width / Engine.Timeline.VideoInfo.Resolution.Height;
+        var screenHeightBasedOnWidth = width * Engine.Timeline.VideoInfo.Resolution.Height / Engine.Timeline.VideoInfo.Resolution.Width;
 
         if (height > screenHeightBasedOnWidth)
         {

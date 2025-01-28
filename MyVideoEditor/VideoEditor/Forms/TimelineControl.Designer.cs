@@ -15,16 +15,18 @@ namespace VideoEditor.Forms
             // 
             // scrollBarControl
             // 
-            scrollBarControl.Location = new Point(0, 391);
+            scrollBarControl.Location = new Point(0, 398);
             scrollBarControl.Name = "scrollBarControl";
-            scrollBarControl.Size = new Size(665, 39);
+            scrollBarControl.Size = new Size(665, 32);
             scrollBarControl.TabIndex = 2;
             scrollBarControl.Scroll += ScrollBarControl_Scroll;
             // 
             // TimelineControl
             // 
             AllowDrop = true;
+            BackColor = Color.Black;
             Controls.Add(scrollBarControl);
+            DoubleBuffered = true;
             Name = "TimelineControl";
             Size = new Size(665, 430);
             Load += TimelineControl_Load;
@@ -32,8 +34,8 @@ namespace VideoEditor.Forms
             DragEnter += TimelineControl_DragEnter;
             DragOver += TimelineControl_DragOver;
             Paint += TimelineControl_Paint;
-            Resize += TimelineControl_Resize;
             MouseWheel += TimelineControl_MouseWheel;
+            Resize += TimelineControl_Resize;
             ResumeLayout(false);
         }
 

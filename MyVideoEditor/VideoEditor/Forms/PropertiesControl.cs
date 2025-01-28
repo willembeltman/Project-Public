@@ -1,23 +1,13 @@
-﻿namespace VideoEditor.Forms;
+﻿using VideoEditor.Static;
+
+namespace VideoEditor.Forms;
 
 public partial class PropertiesControl : UserControl
 {
     public PropertiesControl()
     {
         InitializeComponent();
-        BackColor = Color.White;
-    }
-    Engine? Engine { get; set; }
-
-    public void SetEngine(Engine engine)
-    {
-        Engine = engine;
-        Engine.SetPropertiesControl(this);
-    }
-
-    private void PropertiesControl_Load(object sender, EventArgs e)
-    {
-
+        Engine.PropertiesControl = this;
     }
 
     private void PropertiesControl_Resize(object sender, EventArgs e)

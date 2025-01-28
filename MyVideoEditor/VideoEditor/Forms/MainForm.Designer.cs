@@ -60,157 +60,162 @@
             menuStrip.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem, mediaToolStripMenuItem, timelineToolStripMenuItem, editorToolStripMenuItem, colorToolStripMenuItem, audioToolStripMenuItem, exportToolStripMenuItem1, helpToolStripMenuItem });
             menuStrip.Location = new Point(0, 0);
             menuStrip.Name = "menuStrip";
-            menuStrip.Size = new Size(1320, 33);
+            menuStrip.Padding = new Padding(4, 1, 0, 1);
+            menuStrip.Size = new Size(924, 24);
             menuStrip.TabIndex = 2;
             // 
             // fileToolStripMenuItem
             // 
             fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { newProjectToolStripMenuItem, openProjectToolStripMenuItem, saveProjectToolStripMenuItem, saveProjectAsToolStripMenuItem, toolStripSeparator1, exportToolStripMenuItem, toolStripSeparator2, exitToolStripMenuItem });
             fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            fileToolStripMenuItem.Size = new Size(54, 29);
+            fileToolStripMenuItem.Size = new Size(37, 22);
             fileToolStripMenuItem.Text = "File";
             // 
             // newProjectToolStripMenuItem
             // 
             newProjectToolStripMenuItem.Name = "newProjectToolStripMenuItem";
-            newProjectToolStripMenuItem.Size = new Size(250, 34);
+            newProjectToolStripMenuItem.Size = new Size(164, 22);
             newProjectToolStripMenuItem.Text = "New project";
             // 
             // openProjectToolStripMenuItem
             // 
             openProjectToolStripMenuItem.Name = "openProjectToolStripMenuItem";
-            openProjectToolStripMenuItem.Size = new Size(250, 34);
+            openProjectToolStripMenuItem.Size = new Size(164, 22);
             openProjectToolStripMenuItem.Text = "Open project";
             // 
             // saveProjectToolStripMenuItem
             // 
             saveProjectToolStripMenuItem.Name = "saveProjectToolStripMenuItem";
-            saveProjectToolStripMenuItem.Size = new Size(250, 34);
+            saveProjectToolStripMenuItem.Size = new Size(164, 22);
             saveProjectToolStripMenuItem.Text = "Save project";
             // 
             // saveProjectAsToolStripMenuItem
             // 
             saveProjectAsToolStripMenuItem.Name = "saveProjectAsToolStripMenuItem";
-            saveProjectAsToolStripMenuItem.Size = new Size(250, 34);
+            saveProjectAsToolStripMenuItem.Size = new Size(164, 22);
             saveProjectAsToolStripMenuItem.Text = "Save project as ...";
             // 
             // toolStripSeparator1
             // 
             toolStripSeparator1.Name = "toolStripSeparator1";
-            toolStripSeparator1.Size = new Size(247, 6);
+            toolStripSeparator1.Size = new Size(161, 6);
             // 
             // exportToolStripMenuItem
             // 
             exportToolStripMenuItem.Name = "exportToolStripMenuItem";
-            exportToolStripMenuItem.Size = new Size(250, 34);
+            exportToolStripMenuItem.Size = new Size(164, 22);
             exportToolStripMenuItem.Text = "Export video";
             // 
             // toolStripSeparator2
             // 
             toolStripSeparator2.Name = "toolStripSeparator2";
-            toolStripSeparator2.Size = new Size(247, 6);
+            toolStripSeparator2.Size = new Size(161, 6);
             // 
             // exitToolStripMenuItem
             // 
             exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            exitToolStripMenuItem.Size = new Size(250, 34);
+            exitToolStripMenuItem.Size = new Size(164, 22);
             exitToolStripMenuItem.Text = "Exit";
             // 
             // mediaToolStripMenuItem
             // 
             mediaToolStripMenuItem.Name = "mediaToolStripMenuItem";
-            mediaToolStripMenuItem.Size = new Size(62, 29);
+            mediaToolStripMenuItem.Size = new Size(42, 22);
             mediaToolStripMenuItem.Text = "Files";
             // 
             // timelineToolStripMenuItem
             // 
             timelineToolStripMenuItem.Name = "timelineToolStripMenuItem";
-            timelineToolStripMenuItem.Size = new Size(101, 29);
+            timelineToolStripMenuItem.Size = new Size(69, 22);
             timelineToolStripMenuItem.Text = "Timelines";
             // 
             // editorToolStripMenuItem
             // 
             editorToolStripMenuItem.Name = "editorToolStripMenuItem";
-            editorToolStripMenuItem.Size = new Size(75, 29);
+            editorToolStripMenuItem.Size = new Size(50, 22);
             editorToolStripMenuItem.Text = "Editor";
             // 
             // colorToolStripMenuItem
             // 
             colorToolStripMenuItem.Name = "colorToolStripMenuItem";
-            colorToolStripMenuItem.Size = new Size(71, 29);
+            colorToolStripMenuItem.Size = new Size(48, 22);
             colorToolStripMenuItem.Text = "Color";
             // 
             // audioToolStripMenuItem
             // 
             audioToolStripMenuItem.Name = "audioToolStripMenuItem";
-            audioToolStripMenuItem.Size = new Size(76, 29);
+            audioToolStripMenuItem.Size = new Size(51, 22);
             audioToolStripMenuItem.Text = "Audio";
             // 
             // exportToolStripMenuItem1
             // 
             exportToolStripMenuItem1.Name = "exportToolStripMenuItem1";
-            exportToolStripMenuItem1.Size = new Size(79, 29);
+            exportToolStripMenuItem1.Size = new Size(53, 22);
             exportToolStripMenuItem1.Text = "Export";
             // 
             // helpToolStripMenuItem
             // 
             helpToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { helpContentsToolStripMenuItem, toolStripSeparator4, aboutToolStripMenuItem });
             helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            helpToolStripMenuItem.Size = new Size(65, 29);
+            helpToolStripMenuItem.Size = new Size(44, 22);
             helpToolStripMenuItem.Text = "Help";
             // 
             // helpContentsToolStripMenuItem
             // 
             helpContentsToolStripMenuItem.Name = "helpContentsToolStripMenuItem";
-            helpContentsToolStripMenuItem.Size = new Size(224, 34);
+            helpContentsToolStripMenuItem.Size = new Size(148, 22);
             helpContentsToolStripMenuItem.Text = "Help contents";
             // 
             // toolStripSeparator4
             // 
             toolStripSeparator4.Name = "toolStripSeparator4";
-            toolStripSeparator4.Size = new Size(221, 6);
+            toolStripSeparator4.Size = new Size(145, 6);
             // 
             // aboutToolStripMenuItem
             // 
             aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            aboutToolStripMenuItem.Size = new Size(224, 34);
+            aboutToolStripMenuItem.Size = new Size(148, 22);
             aboutToolStripMenuItem.Text = "About";
             // 
             // timelineControl
             // 
             timelineControl.AllowDrop = true;
-            timelineControl.BackColor = Color.White;
-            timelineControl.Location = new Point(12, 507);
+            timelineControl.BackColor = Color.Black;
+            timelineControl.Location = new Point(9, 298);
+            timelineControl.Margin = new Padding(2);
             timelineControl.Name = "timelineControl";
-            timelineControl.Size = new Size(1296, 470);
+            timelineControl.Size = new Size(907, 265);
             timelineControl.TabIndex = 3;
             // 
             // displayControl
             // 
-            displayControl.Location = new Point(12, 46);
+            displayControl.BackColor = SystemColors.ControlDarkDark;
+            displayControl.Location = new Point(8, 28);
+            displayControl.Margin = new Padding(1);
             displayControl.Name = "displayControl";
-            displayControl.Size = new Size(922, 445);
+            displayControl.Size = new Size(650, 255);
             displayControl.TabIndex = 4;
             // 
             // propertiesControl
             // 
-            propertiesControl.BackColor = Color.White;
-            propertiesControl.Location = new Point(960, 46);
+            propertiesControl.BackColor = SystemColors.ControlDarkDark;
+            propertiesControl.Location = new Point(672, 28);
+            propertiesControl.Margin = new Padding(1);
             propertiesControl.Name = "propertiesControl";
-            propertiesControl.Size = new Size(348, 445);
+            propertiesControl.Size = new Size(244, 255);
             propertiesControl.TabIndex = 5;
             // 
             // MainForm
             // 
-            AutoScaleDimensions = new SizeF(10F, 25F);
+            AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackColor = SystemColors.ControlDark;
-            ClientSize = new Size(1320, 989);
+            ClientSize = new Size(924, 574);
             Controls.Add(propertiesControl);
             Controls.Add(displayControl);
             Controls.Add(timelineControl);
             Controls.Add(menuStrip);
             MainMenuStrip = menuStrip;
+            Margin = new Padding(2);
             Name = "MainForm";
             ShowIcon = false;
             Text = "My video editor";
