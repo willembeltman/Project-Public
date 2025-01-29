@@ -3,7 +3,7 @@
     internal interface ITimelineClip
     {
         Timeline Timeline { get; }
-        File File { get; }
+        StreamInfo StreamInfo { get; }
         int Layer { get; set; }
         long TimelineStartIndex { get; set; }
         long TimelineEndIndex { get; set; }

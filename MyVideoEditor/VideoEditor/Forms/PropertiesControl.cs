@@ -1,6 +1,4 @@
-﻿using VideoEditor.Static;
-
-namespace VideoEditor.Forms;
+﻿namespace VideoEditor.Forms;
 
 public partial class PropertiesControl : UserControl
 {

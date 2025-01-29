@@ -1,5 +1,4 @@
 ﻿using VideoEditor.Enums;
-using VideoEditor.Info;
 using VideoEditor.Static;
 
 namespace VideoEditor;

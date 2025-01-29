@@ -1,6 +1,4 @@
-﻿using VideoEditor.Info;
-
-namespace VideoEditor;
+﻿namespace VideoEditor;
 
 public class Timeline
 {
@@ -11,11 +9,10 @@ public class Timeline
 
     public Project Project { get; }
 
-    public ConcurrentArray<TimelineVideoClip> VideoClips { get; } = new ConcurrentArray<TimelineVideoClip>();
-    public ConcurrentArray<TimelineAudioClip> AudioClips { get; } = new ConcurrentArray<TimelineAudioClip>();
+    public ConcurrentArray<TimelineClipVideo> VideoClips { get; } = new ConcurrentArray<TimelineClipVideo>();
+    public ConcurrentArray<TimelineClipAudio> AudioClips { get; } = new ConcurrentArray<TimelineClipAudio>();
 
-    public AudioInfo AudioInfo { get; } = new AudioInfo();
-    public VideoInfo VideoInfo { get; } = new VideoInfo();
+    public TimelineInfo VideoInfo { get; } = new TimelineInfo();
 
     internal void AddFiles(double currentTime, int startlayer, IEnumerable<File> files)
     {
@@ -30,7 +27,7 @@ public class Timeline
             foreach (var videoStream in file.VideoStreams)
             {
                 VideoClips.Add(
-                    new TimelineVideoClip(this, file, videoStream)
+                    new TimelineClipVideo(this, videoStream)
                     {
                         Layer = layer,
                         TimelineStartInSeconds = start,
@@ -44,7 +41,7 @@ public class Timeline
             foreach (var audioStream in file.AudioStreams)
             {
                 AudioClips.Add(
-                    new TimelineAudioClip(this, file, audioStream)
+                    new TimelineClipAudio(this, audioStream)
                     {
                         Layer = layer,
                         TimelineStartInSeconds = start,

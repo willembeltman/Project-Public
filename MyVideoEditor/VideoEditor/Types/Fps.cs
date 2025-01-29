@@ -1,4 +1,4 @@
-﻿namespace VideoEditor;
+﻿namespace VideoEditor.Types;
 
 public class Fps
 {

@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using VideoEditor.Enums;
+using VideoEditor.Types;
 namespace VideoEditor.Static;
 
 public static class FFMpeg

@@ -1,6 +1,6 @@
 ﻿using VideoEditor.Forms;
 
-namespace VideoEditor.Static;
+namespace VideoEditor;
 
 public static class Engine
 {

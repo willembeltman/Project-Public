@@ -1,7 +1,4 @@
-﻿using System.Reflection;
-using VideoEditor.Static;
-using System.Linq;
-using System.ComponentModel;
+﻿using VideoEditor.Static;
 
 namespace VideoEditor.Forms;
 
@@ -19,8 +16,8 @@ public partial class TimelineControl : UserControl
 
     private int FirstVisibleVideoLayer { get; set; } = 0;
     private int FirstVisibleAudioLayer { get; set; } = 0;
-    private int VisibleVideoLayers { get; set; } = 4;
-    private int VisibleAudioLayers { get; set; } = 4;
+    private int VisibleVideoLayers { get; set; } = 3;
+    private int VisibleAudioLayers { get; set; } = 3;
     private int Middle { get; set; } = 0;
 
     //List<File> TempFiles { get; set; } = new List<File>();
@@ -63,8 +60,8 @@ public partial class TimelineControl : UserControl
 
     private void DrawTimeMarkers(Graphics g)
     {
-        using var pen = new Pen(Color.Gray, 1);
-        using var pen2 = new Pen(Color.FromArgb(64, 64, 64), 1);
+        using var pen = new Pen(Color.FromArgb(0, 0, 128), 1);
+        using var pen2 = new Pen(Color.FromArgb(64, 0, 0), 1);
         using var font = new Font("Arial", TextSize);
         using var brush = new SolidBrush(Color.White);
 
@@ -73,67 +70,47 @@ public partial class TimelineControl : UserControl
         {
             var y = Middle - i * VideoBlockHeight - MiddleOffset;
             g.DrawLine(pen2, 0, y, Width, y);
+
+            var text = $"{i + FirstVisibleVideoLayer}";
+            var textSize = g.MeasureString(text, font);
+            var textY = y - VideoBlockHeight / 2 - (int)(textSize.Height / 2);
+            g.DrawString(text, font, brush, 2, textY);
         }
         for (var i = 0; i < VisibleAudioLayers; i++)
         {
             var y = Middle + i * AudioBlockHeight + MiddleOffset;
             g.DrawLine(pen2, 0, y, Width, y);
+
+            var text = $"{i + FirstVisibleAudioLayer}";
+            var textSize = g.MeasureString(text, font);
+            var textY = y + VideoBlockHeight / 2 - (int)(textSize.Height / 2);
+            g.DrawString(text, font, brush, 2, textY);
         }
 
-        var add = 0.01D;
-        var f = 2;
-        while (Width / VisibleWidth * add < 50)
+        var timeIncrease = 0.01D;
+        var decimals = 2;
+        while (Width / VisibleWidth * timeIncrease < 50)
         {
-            add *= 10;
-            f--;
+            timeIncrease *= 10;
+            decimals--;
         }
-        if (f < 0) f = 0;
+        if (decimals < 0) decimals = 0;
 
-        for (var sec = 0D; sec < int.MaxValue; sec += add)
+        for (var sec = 0D; sec < double.MaxValue; sec += timeIncrease)
         {
             var x = Convert.ToInt32((sec - VisibleStart) / VisibleWidth * Width);
             if (x >= Width) break;
-
             g.DrawLine(pen, x, 0, x, Height);
 
-            // Bereken de hoogte van de tekst
-            var text = $"{sec.ToString("F" + f)}s";
+            var text = $"{sec.ToString("F" + decimals)}s";
             var textSize = g.MeasureString(text, font);
-
-            // Zet de tekst verticaal in het midden van de opgegeven middle
             var textY = Middle - (int)(textSize.Height / 2);
-
-            // Teken de tekst
             g.DrawString(text, font, brush, x + 2, textY);
         }
 
     }
     private void DrawVideoClips(Graphics g)
     {
-        //var memoryVideoClips = Engine.Timeline.VideoClips;
-        //foreach (var control in TimelineVideoClipControls())
-        //{
-        //    if (!memoryVideoClips.Contains(control.VideoClip))
-        //    {
-        //        Controls.Remove(control);
-        //    }
-        //}
-
-        //var drawnVideoClips = TimelineVideoClipControls().Select(a => a.VideoClip).ToArray();
-        //foreach (var clip in memoryVideoClips)
-        //{
-        //    if (!drawnVideoClips.Contains(clip))
-        //    {
-        //        Controls.Add(new TimelineVideoClipControl(this, clip));
-        //    }
-        //}
-
-        //foreach (var clip in TimelineVideoClipControls())
-        //{
-        //    clip.Setup();
-        //}
-
-
         foreach (var clip in Engine.Timeline.VideoClips)
         {
             int x1 = Convert.ToInt32((clip.TimelineStartInSeconds - VisibleStart) / VisibleWidth * Width);
@@ -141,7 +118,9 @@ public partial class TimelineControl : UserControl
             int width = x2 - x1;
             if (x1 > Width || x2 < 0) continue; // Clip buiten zichtbare range
 
-            int y = Middle - MiddleOffset - VideoBlockHeight - clip.Layer * VideoBlockHeight + Constants.Margin / 2;
+            var layer = clip.Layer - FirstVisibleVideoLayer;
+            if (layer < 0 || layer > VisibleVideoLayers) continue;
+            int y = Middle - MiddleOffset - VideoBlockHeight - layer * VideoBlockHeight;
 
             var rect = new Rectangle(x1, y + Constants.Margin / 2, width, VideoBlockHeight - Constants.Margin);
             g.FillRectangle(Brushes.Blue, rect);
@@ -155,7 +134,9 @@ public partial class TimelineControl : UserControl
             int width = x2 - x1;
             if (x1 > Width || x2 < 0) continue; // Clip buiten zichtbare range
 
-            int y = Middle + MiddleOffset + clip.Layer * AudioBlockHeight;
+            var layer = clip.Layer - FirstVisibleAudioLayer;
+            if (layer < 0 || layer > VisibleAudioLayers) continue;
+            int y = Middle + MiddleOffset + (clip.Layer - FirstVisibleAudioLayer) * AudioBlockHeight;
 
             var rect = new Rectangle(x1, y + Constants.Margin / 2, width, AudioBlockHeight - Constants.Margin);
             g.FillRectangle(Brushes.Blue, rect);
@@ -176,27 +157,42 @@ public partial class TimelineControl : UserControl
 
     private void TimelineControl_MouseWheel(object? sender, MouseEventArgs e)
     {
-        var delta = GetDelta(e);
+        var delta = GetScrollDelta(e);
+        var clientPoint = new Point(e.X, e.Y);
+        var currentTime = TranslateToCurrentTime(clientPoint);
         if ((ModifierKeys & Keys.Control) == Keys.Control)
         {
-            ZoomX(delta);
+            ZoomX(delta, clientPoint, currentTime);
         }
         else if ((ModifierKeys & Keys.Shift) == Keys.Shift)
         {
-            ZoomY(e, delta);
+            ZoomY(delta, clientPoint, currentTime);
         }
         else
         {
-            // Normaal op en neer scrollen
+            ScrollY(delta, clientPoint, currentTime);
         }
         Invalidate();
         SetupScrollbar();
     }
 
-    private void ZoomY(MouseEventArgs e, int delta)
+    private void ScrollY(int delta, Point clientPoint, double currentTime)
     {
-        var clientPoint = new Point(e.X, e.Y);
-        var currentTime = TranslateToCurrentTime(clientPoint);
+        if (clientPoint.Y < Middle)
+        {
+            // Video
+            FirstVisibleVideoLayer += delta;
+            if (FirstVisibleVideoLayer < 0) FirstVisibleVideoLayer = 0;
+        }
+        if (clientPoint.Y > Middle)
+        {
+            // Audio
+            FirstVisibleAudioLayer += delta;
+            if (FirstVisibleAudioLayer < 0) FirstVisibleAudioLayer = 0;
+        }
+    }
+    private void ZoomY(int delta, Point clientPoint, double currentTime)
+    {
         if (clientPoint.Y < Middle)
         {
             // Video
@@ -211,7 +207,7 @@ public partial class TimelineControl : UserControl
         }
     }
 
-    private void ZoomX(int delta)
+    private void ZoomX(int delta, Point clientPoint, double currentTime)
     {
         if (delta > 0)
         {
@@ -229,11 +225,19 @@ public partial class TimelineControl : UserControl
         }
     }
 
-    private int GetDelta(MouseEventArgs e)
+    int OldSmallScrollDelta = 0;
+    int TotalBigScrollDelta = 0;
+
+    private int GetScrollDelta(MouseEventArgs e)
     {
-        var divider = 1;
-        if (e.Delta >= 120 || e.Delta <= -120) divider = 120;
-        return e.Delta / divider;
+        TotalBigScrollDelta += e.Delta;
+
+        if (TotalBigScrollDelta / 120 == OldSmallScrollDelta)
+            return 0;
+
+        var delta = TotalBigScrollDelta / 120 - OldSmallScrollDelta;
+        OldSmallScrollDelta = TotalBigScrollDelta / 120;
+        return delta;
     }
 
     private void ScrollBarControl_Scroll(object sender, ScrollEventArgs e)

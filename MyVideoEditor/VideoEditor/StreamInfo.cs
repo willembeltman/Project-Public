@@ -1,8 +1,9 @@
 ﻿using VideoEditor.Enums;
 using VideoEditor.Dtos;
 using VideoEditor.Static;
+using VideoEditor.Types;
 
-namespace VideoEditor.Info;
+namespace VideoEditor;
 
 public class StreamInfo
 {
@@ -32,7 +33,7 @@ public class StreamInfo
     public CodecType CodecType { get; }
 
     public Resolution? Resolution { get; }
-    public Fps? Fps { get;  }
+    public Fps? Fps { get; }
 
     public int? SampleRate { get; }
     public int? Channels { get; }
