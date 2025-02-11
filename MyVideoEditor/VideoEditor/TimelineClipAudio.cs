@@ -2,20 +2,21 @@
 
 public class TimelineClipAudio : TimelineClip, ITimelineClip
 {
-    public TimelineClipAudio(Timeline timeline, StreamInfo streamInfo) : base(timeline, streamInfo)
+    public TimelineClipAudio(Timeline timeline, StreamInfo streamInfo, double clipStart, int layer) : base(timeline, streamInfo, layer)
     {
+        ClipStartInSeconds = clipStart;
     }
 
 
     public double TimelineStartInSeconds
     {
-        get => TimelineStartIndex / Timeline.VideoInfo.SampleRate;
-        set => TimelineStartIndex = Convert.ToInt64(value * Timeline.VideoInfo.SampleRate);
+        get => TimelineStartIndex / Timeline.Info.SampleRate;
+        set => TimelineStartIndex = Convert.ToInt64(value * Timeline.Info.SampleRate);
     }
     public double TimelineEndInSeconds
     {
-        get => TimelineEndIndex / Timeline.VideoInfo.SampleRate;
-        set => TimelineEndIndex = Convert.ToInt64(value * Timeline.VideoInfo.SampleRate);
+        get => TimelineEndIndex / Timeline.Info.SampleRate;
+        set => TimelineEndIndex = Convert.ToInt64(value * Timeline.Info.SampleRate);
     }
     public double ClipStartInSeconds
     {
@@ -27,5 +28,8 @@ public class TimelineClipAudio : TimelineClip, ITimelineClip
         get => ClipEndIndex / StreamInfo.SampleRate!.Value;
         set => ClipEndIndex = Convert.ToInt64(value * StreamInfo.SampleRate!.Value);
     }
+
+    public bool IsVideoClip => false;
+    public bool IsAudioClip => true;
 }
 

@@ -34,6 +34,9 @@ namespace VideoEditor.Forms
             DragEnter += TimelineControl_DragEnter;
             DragOver += TimelineControl_DragOver;
             Paint += TimelineControl_Paint;
+            MouseDown += TimelineControl_MouseDown;
+            MouseMove += TimelineControl_MouseMove;
+            MouseUp += TimelineControl_MouseUp;
             MouseWheel += TimelineControl_MouseWheel;
             Resize += TimelineControl_Resize;
             ResumeLayout(false);

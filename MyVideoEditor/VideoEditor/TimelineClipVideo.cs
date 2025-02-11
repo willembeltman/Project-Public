@@ -2,19 +2,20 @@
 
 public class TimelineClipVideo : TimelineClip, ITimelineClip
 {
-    public TimelineClipVideo(Timeline timeline, StreamInfo streamInfo) : base(timeline, streamInfo)
+    public TimelineClipVideo(Timeline timeline, StreamInfo streamInfo, double clipStart, int layer) : base(timeline, streamInfo, layer)
     {
+        ClipStartInSeconds = clipStart;
     }
 
     public double TimelineStartInSeconds
     {
-        get => TimelineStartIndex * Timeline.VideoInfo.Fps.Divider / Timeline.VideoInfo.Fps.Base;
-        set => TimelineStartIndex = Convert.ToInt64(value * Timeline.VideoInfo.Fps.Base / Timeline.VideoInfo.Fps.Divider);
+        get => TimelineStartIndex * Timeline.Info.Fps.Divider / Timeline.Info.Fps.Base;
+        set => TimelineStartIndex = Convert.ToInt64(value * Timeline.Info.Fps.Base / Timeline.Info.Fps.Divider);
     }
     public double TimelineEndInSeconds
     {
-        get => TimelineEndIndex * Timeline.VideoInfo.Fps.Divider / Timeline.VideoInfo.Fps.Base;
-        set => TimelineEndIndex = Convert.ToInt64(value * Timeline.VideoInfo.Fps.Base / Timeline.VideoInfo.Fps.Divider);
+        get => TimelineEndIndex * Timeline.Info.Fps.Divider / Timeline.Info.Fps.Base;
+        set => TimelineEndIndex = Convert.ToInt64(value * Timeline.Info.Fps.Base / Timeline.Info.Fps.Divider);
     }
     public double ClipStartInSeconds
     {
@@ -26,5 +27,8 @@ public class TimelineClipVideo : TimelineClip, ITimelineClip
         get => ClipEndIndex * StreamInfo.Fps!.Divider / StreamInfo.Fps!.Base;
         set => ClipEndIndex = Convert.ToInt64(value * StreamInfo.Fps!.Base / StreamInfo.Fps!.Divider);
     }
+
+    public bool IsVideoClip => true;
+    public bool IsAudioClip => false;
 }
 

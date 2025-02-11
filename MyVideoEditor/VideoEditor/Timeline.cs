@@ -11,10 +11,21 @@ public class Timeline
 
     public ConcurrentArray<TimelineClipVideo> VideoClips { get; } = new ConcurrentArray<TimelineClipVideo>();
     public ConcurrentArray<TimelineClipAudio> AudioClips { get; } = new ConcurrentArray<TimelineClipAudio>();
+    public ConcurrentArray<ITimelineClip> AllClips { get; } = new ConcurrentArray<ITimelineClip>();
+    public ConcurrentArray<ITimelineClip> SelectedClips { get; } = new ConcurrentArray<ITimelineClip>();
 
-    public TimelineInfo VideoInfo { get; } = new TimelineInfo();
+    public TimelineInfo Info { get; } = new TimelineInfo();
 
-    internal void AddFiles(double currentTime, int startlayer, IEnumerable<File> files)
+    public double VisibleWidth { get; set; } = 100;
+    public double VisibleStart { get; set; } = 0;
+    public double PlayerPosition { get; set; } = 0;
+
+    public int FirstVisibleVideoLayer { get; set; } = 0;
+    public int FirstVisibleAudioLayer { get; set; } = 0;
+    public int VisibleVideoLayers { get; set; } = 3;
+    public int VisibleAudioLayers { get; set; } = 3;
+
+    public void AddFiles(IEnumerable<File> files, double currentTime, int layerIndex)
     {
         files = files.OrderBy(a => a.FullName);
         foreach (var file in files)
@@ -23,32 +34,30 @@ public class Timeline
 
             var start = currentTime;
             currentTime += file.Duration.Value;
-            var layer = startlayer;
+            var layer = layerIndex;
             foreach (var videoStream in file.VideoStreams)
             {
-                VideoClips.Add(
-                    new TimelineClipVideo(this, videoStream)
-                    {
-                        Layer = layer,
-                        TimelineStartInSeconds = start,
-                        TimelineEndInSeconds = currentTime,
-                        ClipStartInSeconds = 0,
-                        ClipEndInSeconds = file.Duration.Value
-                    });
+                var clip = new TimelineClipVideo(this, videoStream, start, layerIndex)
+                {
+                    TimelineEndInSeconds = currentTime,
+                    ClipStartInSeconds = 0,
+                    ClipEndInSeconds = file.Duration.Value
+                };
+                AllClips.Add(clip);
+                VideoClips.Add(clip);
                 layer++;
             }
             layer = 0;
             foreach (var audioStream in file.AudioStreams)
             {
-                AudioClips.Add(
-                    new TimelineClipAudio(this, audioStream)
-                    {
-                        Layer = layer,
-                        TimelineStartInSeconds = start,
-                        TimelineEndInSeconds = currentTime,
-                        ClipStartInSeconds = 0,
-                        ClipEndInSeconds = file.Duration.Value
-                    });
+                var clip = new TimelineClipAudio(this, audioStream, start, layerIndex)
+                {
+                    TimelineEndInSeconds = currentTime,
+                    ClipStartInSeconds = 0,
+                    ClipEndInSeconds = file.Duration.Value
+                };
+                AllClips.Add(clip);
+                AudioClips.Add(clip);
                 layer++;
             }
             Project.Files.Add(file);

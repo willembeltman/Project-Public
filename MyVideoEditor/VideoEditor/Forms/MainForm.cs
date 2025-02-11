@@ -29,8 +29,8 @@ public partial class MainForm : Form
         var linkerwidth = nettowidth - PropertiesWidth;
         var topheight = nettoheight - TimelineHeight;
 
-        var screenWidthBasedOnHeight = topheight * Engine.Timeline.VideoInfo.Resolution.Width / Engine.Timeline.VideoInfo.Resolution.Height;
-        var screenHeightBasedOnWidth = linkerwidth * Engine.Timeline.VideoInfo.Resolution.Height / Engine.Timeline.VideoInfo.Resolution.Width;
+        var screenWidthBasedOnHeight = topheight * Engine.Timeline.Info.Resolution.Width / Engine.Timeline.Info.Resolution.Height;
+        var screenHeightBasedOnWidth = linkerwidth * Engine.Timeline.Info.Resolution.Height / Engine.Timeline.Info.Resolution.Width;
 
         if (topheight > screenHeightBasedOnWidth)
         {

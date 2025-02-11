@@ -2,10 +2,11 @@
 
 public class TimelineClip
 {
-    public TimelineClip(Timeline timeline, StreamInfo streamInfo)
+    public TimelineClip(Timeline timeline, StreamInfo streamInfo, int layer)
     {
         Timeline = timeline;
         StreamInfo = streamInfo;
+        Layer = layer;
     }
 
     public Timeline Timeline { get; }
