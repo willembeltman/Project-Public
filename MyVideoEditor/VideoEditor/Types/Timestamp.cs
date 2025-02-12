@@ -63,5 +63,16 @@ public class Timestamp
     public int Seconds { get; }
     public int Milliseconds { get; }
 
+    public override bool Equals(object? obj)
+    {
+        if (!(obj is Timestamp)) return false;
+        var other = obj as Timestamp;
+        if (Hours != other.Hours) return false;
+        if (Minutes != other.Minutes) return false;
+        if (Seconds != other.Seconds) return false;
+        if (Milliseconds != other.Milliseconds) return false;
+
+        return true;
+    }
     public override string ToString() => $"{Hours:D2}:{Minutes:D2}:{Seconds:D2}.{Milliseconds:D3}";
 }

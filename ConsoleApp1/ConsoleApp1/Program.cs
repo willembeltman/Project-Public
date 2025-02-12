@@ -2,11 +2,18 @@
 
 class Program
 {
-    static void Main (string[] args)
+    //static void Main (string[] args)
+    //{
+    //    using (var game = new Game(500, 500))
+    //    {
+    //        game.Run();
+    //    }
+    //}
+    public static void Main()
     {
-        using (var game = new Game(500, 500))
+        using (VideoPlayer player = new VideoPlayer())
         {
-            game.Run();
+            player.Run(); 
         }
     }
 }

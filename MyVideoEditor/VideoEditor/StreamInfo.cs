@@ -50,4 +50,22 @@ public class StreamInfo
 
         }
     }
+    public override bool Equals(object? obj)
+    {
+        if (!(obj is StreamInfo)) return false;
+
+        var other = obj as StreamInfo;
+        if (!File.Equals(other.File)) return false;
+        if (Index != other.Index) return false;
+        if (Title != other.Title) return false;
+        if (CodecName != other.CodecName) return false;
+        if (CodecLongName != other.CodecLongName) return false;
+        if (CodecType != other.CodecType) return false;
+        if (CodecType == CodecType.Video && !Resolution.Equals(other.Resolution)) return false;
+        if (CodecType == CodecType.Video && !Fps.Equals(other.Fps)) return false;
+        if (CodecType == CodecType.Audio && SampleRate != other.SampleRate) return false;
+        if (CodecType == CodecType.Audio && Channels != other.Channels) return false;
+
+        return true;
+    }
 }

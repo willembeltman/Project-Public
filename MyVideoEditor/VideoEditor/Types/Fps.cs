@@ -41,6 +41,15 @@ public class Fps
         return true;
     }
 
+    public override bool Equals(object? obj)
+    {
+        if (!(obj is Fps)) return false;
+        var other = obj as Fps;
+        if (Base != other.Base) return false;
+        if (Divider != other.Divider) return false;
+
+        return true;
+    }
     public override string ToString()
     {
         return $"{Value}";

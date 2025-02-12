@@ -23,6 +23,16 @@
             resolution = new Resolution(width.Value, height.Value);
             return true;
         }
+
+        public override bool Equals(object? obj)
+        {
+            if (!(obj is Resolution)) return false;
+            var other = obj as Resolution;
+            if (Width != other.Width) return false;
+            if (Height != other.Height) return false;
+
+            return true;
+        }
         public override string ToString()
         {
             return $"{Width}x{Height}";

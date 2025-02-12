@@ -2,9 +2,8 @@
 
 public class TimelineClipAudio : TimelineClip, ITimelineClip
 {
-    public TimelineClipAudio(Timeline timeline, StreamInfo streamInfo, double clipStart, int layer) : base(timeline, streamInfo, layer)
+    public TimelineClipAudio(Timeline timeline, StreamInfo streamInfo) : base(timeline, streamInfo)
     {
-        ClipStartInSeconds = clipStart;
     }
 
 

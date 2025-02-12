@@ -25,6 +25,7 @@ public class Timeline
     public int VisibleVideoLayers { get; set; } = 3;
     public int VisibleAudioLayers { get; set; } = 3;
 
+
     public void AddFiles(IEnumerable<File> files, double currentTime, int layerIndex)
     {
         files = files.OrderBy(a => a.FullName);
@@ -37,8 +38,10 @@ public class Timeline
             var layer = layerIndex;
             foreach (var videoStream in file.VideoStreams)
             {
-                var clip = new TimelineClipVideo(this, videoStream, start, layerIndex)
+                var clip = new TimelineClipVideo(this, videoStream)
                 {
+                    Layer = layer,
+                    TimelineStartInSeconds = start,
                     TimelineEndInSeconds = currentTime,
                     ClipStartInSeconds = 0,
                     ClipEndInSeconds = file.Duration.Value
@@ -50,8 +53,10 @@ public class Timeline
             layer = 0;
             foreach (var audioStream in file.AudioStreams)
             {
-                var clip = new TimelineClipAudio(this, audioStream, start, layerIndex)
+                var clip = new TimelineClipAudio(this, audioStream)
                 {
+                    Layer = layer,
+                    TimelineStartInSeconds = start,
                     TimelineEndInSeconds = currentTime,
                     ClipStartInSeconds = 0,
                     ClipEndInSeconds = file.Duration.Value

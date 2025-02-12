@@ -38,6 +38,14 @@ public class File
             .Select(a => new File(a));
     }
 
+    public override bool Equals(object? obj)
+    {
+        if (!(obj is File)) return false; 
+        var other = obj as File;
+        if (FullName != other.FullName) return false;
+        return true;
+    }
+
     public override string ToString()
     {
         return $"{FullName} {Duration}s";

@@ -24,7 +24,7 @@ public partial class TimelineControl : UserControl
     List<File> TempFiles { get; } = new List<File>();
     List<TimelineClipVideo> TempTimelineClipVideos { get; } = new List<TimelineClipVideo>();
     List<TimelineClipAudio> TempTimelineClipAudios { get; } = new List<TimelineClipAudio>();
-    IEnumerable<ITimelineClip> TempTimelineClips => 
+    IEnumerable<ITimelineClip> TempTimelineClips =>
         TempTimelineClipVideos
             .Select(a => a as ITimelineClip)
             .Concat(TempTimelineClipAudios);
@@ -254,10 +254,12 @@ public partial class TimelineControl : UserControl
             var start = currentTime;
             currentTime += file.Duration.Value;
             var layer = layerIndex;
-            foreach (var videoStream in file.VideoStreams)
+            foreach (var videoStream in file.VideoStreams.OrderBy(a => a.Index))
             {
-                var clip = new TimelineClipVideo(Timeline, videoStream, start, layerIndex)
+                var clip = new TimelineClipVideo(Timeline, videoStream)
                 {
+                    Layer = layer,
+                    TimelineStartInSeconds = start,
                     TimelineEndInSeconds = currentTime,
                     ClipStartInSeconds = 0,
                     ClipEndInSeconds = file.Duration.Value
@@ -267,10 +269,12 @@ public partial class TimelineControl : UserControl
             }
 
             layer = 0;
-            foreach (var audioStream in file.AudioStreams)
+            foreach (var audioStream in file.AudioStreams.OrderBy(a => a.Index))
             {
-                var clip = new TimelineClipAudio(Timeline, audioStream, start, layerIndex)
+                var clip = new TimelineClipAudio(Timeline, audioStream)
                 {
+                    Layer = layer,
+                    TimelineStartInSeconds = start,
                     TimelineEndInSeconds = currentTime,
                     ClipStartInSeconds = 0,
                     ClipEndInSeconds = file.Duration.Value
@@ -281,13 +285,15 @@ public partial class TimelineControl : UserControl
 
             TempFiles.Add(file);
         }
+
+        Invalidate();
     }
     private void TimelineControl_DragOver(object sender, DragEventArgs e)
     {
         var fullNames = GetDragAndDropFiles(e);
         if (fullNames.Length == 0)
         {
-            ClearTemp(); 
+            ClearTemp();
             return;
         }
 
@@ -298,7 +304,46 @@ public partial class TimelineControl : UserControl
             return;
         }
 
-        SyncTempFiles(fullNames, timelinePosition);
+        var currentTime = timelinePosition.CurrentTime;
+        var layerIndex = timelinePosition.Layer;
+        foreach (var fullName in fullNames)
+        {
+            var file = TempFiles.FirstOrDefault(a => a.FullName == fullName);
+            if (file == null) continue;
+            if (file.Duration == null) continue;
+
+            var start = currentTime;
+            currentTime += file.Duration.Value;
+            var layer = layerIndex;
+            foreach (var videoStream in file.VideoStreams.OrderBy(a => a.Index))
+            {
+                var cachedVideoStream = TempTimelineClipVideos
+                    .FirstOrDefault(a => a.StreamInfo.Equals(videoStream));
+
+                if (cachedVideoStream != null)
+                {
+                    cachedVideoStream.Layer = layer;
+                    cachedVideoStream.TimelineStartInSeconds = start;
+                    cachedVideoStream.TimelineEndInSeconds = currentTime;
+                    layer++;
+                }
+            }
+
+            layer = layerIndex;
+            foreach (var audioStream in file.AudioStreams.OrderBy(a => a.Index))
+            {
+                var cachedAudioStream = TempTimelineClipAudios
+                    .FirstOrDefault(a => a.StreamInfo.Equals(audioStream));
+
+                if (cachedAudioStream != null)
+                {
+                    cachedAudioStream.Layer = layer;
+                    cachedAudioStream.TimelineStartInSeconds = start;
+                    cachedAudioStream.TimelineEndInSeconds = currentTime;
+                    layer++;
+                }
+            }
+        }
 
         Invalidate();
         //SetupScrollbar();
@@ -306,19 +351,32 @@ public partial class TimelineControl : UserControl
     }
     private void TimelineControl_DragDrop(object sender, DragEventArgs e)
     {
+        var fullNames = GetDragAndDropFiles(e);
+        if (fullNames.Length == 0) return;
+
+        foreach (var a in TempTimelineClipVideos)
+        {
+            Timeline.VideoClips.Add(a);
+            Timeline.AllClips.Add(a);
+        }
+
+        foreach (var a in TempTimelineClipAudios)
+        {
+            Timeline.AudioClips.Add(a);
+            Timeline.AllClips.Add(a);
+        }
+
         ClearTemp();
-
-        //var fullNames = GetDragAndDropFiles(e);
-        //if (fullNames.Length == 0) return;
-        //var files = fullNames.Select(a => new File(a));
-
-        //var timelinePosition = TranslateToTimelinePosition(e);
-        //if (timelinePosition == null) return;
-
-        //Engine.Timeline.AddFiles(files, timelinePosition.CurrentTime, timelinePosition.Layer);
 
         Invalidate();
         SetupScrollbar();
+    }
+    private void TimelineControl_DragLeave(object sender, EventArgs e)
+    {
+        ClearTemp();
+        Invalidate();
+        SetupScrollbar();
+
     }
 
     private void ClearTemp()
@@ -328,44 +386,6 @@ public partial class TimelineControl : UserControl
         TempTimelineClipVideos.Clear();
     }
 
-    private void SyncTempFiles(string[] fullNames, TimelinePosition timelinePosition)
-    {
-        foreach (var tempFile in TempFiles)
-        {
-            if (!fullNames.Contains(tempFile.FullName))
-            {
-                var videoclips = TempTimelineClipVideos.Where(a => a.StreamInfo.File == tempFile);
-                foreach (var videoclip in videoclips)
-                    TempTimelineClipVideos.Remove(videoclip);
-
-                var audioclips = TempTimelineClipAudios.Where(a => a.StreamInfo.File == tempFile);
-                foreach (var audioclip in audioclips)
-                    TempTimelineClipAudios.Remove(audioclip);
-
-                TempFiles.Remove(tempFile);
-            }
-        }
-
-        foreach (var fullName in fullNames)
-        {
-            var tempFile = TempFiles.FirstOrDefault(a => a.FullName == fullName);
-            if (tempFile == null)
-            {
-                var file = new File(fullName);
-
-                foreach (var videoStream in file.VideoStreams)
-                    TempTimelineClipVideos.Add(new TimelineClipVideo(Timeline, videoStream, timelinePosition.CurrentTime, timelinePosition.Layer));
-                foreach (var audioStream in file.AudioStreams)
-                    TempTimelineClipAudios.Add(new TimelineClipAudio(Timeline, audioStream, timelinePosition.CurrentTime, timelinePosition.Layer));
-
-                TempFiles.Add(file);
-            }
-            else
-            {
-
-            }
-        }
-    }
 
     private void TimelineControl_MouseDown(object sender, MouseEventArgs e)
     {
@@ -396,7 +416,7 @@ public partial class TimelineControl : UserControl
     {
         var applicationPoint = new Point(e.X, e.Y);
         var clientPoint = PointToClient(applicationPoint);
-        var currentTime = Timeline.VisibleStart + Timeline.VisibleWidth * clientPoint.X / ClientRectangle.Width;
+        var currentTime = TranslateToCurrentTime(clientPoint);
 
         // Bepaal de hoogte van de video- en audiotijdlijn
         var timelineHeight = TimelineRectangle.Height;
@@ -408,62 +428,24 @@ public partial class TimelineControl : UserControl
         {
             // Video tijdlijn
             var videoLayerHeight = videoHeight / Timeline.VisibleVideoLayers;
-            var layerIndex = (int)(clientPoint.Y / videoLayerHeight); // Bepaal de laag op de video tijdlijn
+            var layerIndex = Timeline.FirstVisibleVideoLayer + (int)(Timeline.VisibleVideoLayers - clientPoint.Y / videoLayerHeight - 1); // Bepaal de laag op de video tijdlijn
             return new TimelinePosition(MediaFormat.Video, currentTime, layerIndex);
         }
         else if (clientPoint.Y >= videoHeight && clientPoint.Y < timelineHeight)
         {
             // Audio tijdlijn
             var audioLayerHeight = audioHeight / Timeline.VisibleAudioLayers;
-            var layerIndex = (int)((clientPoint.Y - videoHeight) / audioLayerHeight); // Bepaal de laag op de audio tijdlijn
+            var layerIndex = Timeline.FirstVisibleAudioLayer + (int)((clientPoint.Y - videoHeight) / audioLayerHeight); // Bepaal de laag op de audio tijdlijn
             return new TimelinePosition(MediaFormat.Video, currentTime, layerIndex);
         }
 
         return null;
     }
 
-    private int TranslateToLayerIndex(Point clientPoint)
-    {
-        var layerIndex = -1; // Standaard waarde wanneer geen laag wordt gevonden
-
-        // Bepaal de hoogte van de video- en audiotijdlijn
-        var timelineHeight = TimelineRectangle.Height;
-        var videoHeight = timelineHeight / 2;  // Bovenste helft is voor video
-        var audioHeight = timelineHeight - videoHeight;  // Onderste helft is voor audio
-
-        // Bepaal of de muis boven de videolaag of de audiolaag is
-        if (clientPoint.Y < videoHeight)
-        {
-            // Video tijdlijn
-            var videoLayerHeight = videoHeight / Timeline.VisibleVideoLayers;
-            layerIndex = (int)(clientPoint.Y / videoLayerHeight); // Bepaal de laag op de video tijdlijn
-        }
-        else if (clientPoint.Y >= videoHeight && clientPoint.Y < timelineHeight)
-        {
-            // Audio tijdlijn
-            var audioLayerHeight = audioHeight / Timeline.VisibleAudioLayers;
-            layerIndex = (int)((clientPoint.Y - videoHeight) / audioLayerHeight); // Bepaal de laag op de audio tijdlijn
-        }
-
-        return layerIndex;
-    }
 
     private double TranslateToCurrentTime(Point clientPoint)
     {
         return Timeline.VisibleStart + Timeline.VisibleWidth * clientPoint.X / ClientRectangle.Width;
     }
-}
 
-public class TimelinePosition
-{
-    public TimelinePosition(MediaFormat mediaFormat, double currentTime, int layerIndex)
-    {
-        MediaFormat = mediaFormat;
-        CurrentTime = currentTime;
-        Layer = layerIndex;
-    }
-
-    public MediaFormat MediaFormat { get; }
-    public double CurrentTime { get; }
-    public int Layer { get; }
 }

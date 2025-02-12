@@ -33,6 +33,7 @@ namespace VideoEditor.Forms
             DragDrop += TimelineControl_DragDrop;
             DragEnter += TimelineControl_DragEnter;
             DragOver += TimelineControl_DragOver;
+            DragLeave += TimelineControl_DragLeave;
             Paint += TimelineControl_Paint;
             MouseDown += TimelineControl_MouseDown;
             MouseMove += TimelineControl_MouseMove;

@@ -2,9 +2,8 @@
 
 public class TimelineClipVideo : TimelineClip, ITimelineClip
 {
-    public TimelineClipVideo(Timeline timeline, StreamInfo streamInfo, double clipStart, int layer) : base(timeline, streamInfo, layer)
+    public TimelineClipVideo(Timeline timeline, StreamInfo streamInfo) : base(timeline, streamInfo)
     {
-        ClipStartInSeconds = clipStart;
     }
 
     public double TimelineStartInSeconds
