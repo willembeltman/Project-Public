@@ -2,7 +2,7 @@
 
 namespace VideoEditor;
 
-public class TimelinePosition
+public struct TimelinePosition
 {
     public TimelinePosition(MediaFormat mediaFormat, double currentTime, int layerIndex)
     {

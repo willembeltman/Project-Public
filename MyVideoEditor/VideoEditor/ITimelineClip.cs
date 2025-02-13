@@ -15,4 +15,7 @@ public interface ITimelineClip
     double ClipEndInSeconds { get; set; }
     bool IsVideoClip { get; }
     bool IsAudioClip { get; }
+    double OldTimelineStartInSeconds { get; set; }
+    double OldTimelineEndInSeconds { get; set; }
+    int OldLayer { get; set; }
 }

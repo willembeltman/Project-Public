@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Diagnostics;
+using System.Linq;
 using VideoEditor.Enums;
 using VideoEditor.Static;
 
@@ -12,8 +13,15 @@ public partial class TimelineControl : UserControl
         Engine.TimelineControl = this;
     }
 
-    int OldSmallScrollDelta = 0;
-    int TotalBigScrollDelta = 0;
+    int OldSmallScrollDelta { get; set; } = 0;
+    int TotalBigScrollDelta { get; set; } = 0;
+
+    bool Moving { get; set; }
+    Point MovingStartPoint { get; set; }
+    TimelinePosition MovingStartPosition { get; set; }
+    List<File> DragAndDrop_Files { get; } = new List<File>();
+    List<TimelineClipVideo> DragAndDrop_TimelineClipVideos { get; } = new List<TimelineClipVideo>();
+    List<TimelineClipAudio> DragAndDrop_TimelineClipAudios { get; } = new List<TimelineClipAudio>();
 
     Timeline Timeline => Engine.Timeline;
     Rectangle TimelineRectangle => new Rectangle(
@@ -21,13 +29,11 @@ public partial class TimelineControl : UserControl
         ClientRectangle.Top,
         ClientRectangle.Width,
         ClientRectangle.Height - scrollBarControl.Height);
-    List<File> TempFiles { get; } = new List<File>();
-    List<TimelineClipVideo> TempTimelineClipVideos { get; } = new List<TimelineClipVideo>();
-    List<TimelineClipAudio> TempTimelineClipAudios { get; } = new List<TimelineClipAudio>();
     IEnumerable<ITimelineClip> TempTimelineClips =>
-        TempTimelineClipVideos
+        DragAndDrop_TimelineClipVideos
             .Select(a => a as ITimelineClip)
-            .Concat(TempTimelineClipAudios);
+            .Concat(DragAndDrop_TimelineClipAudios);
+
 
     private void TimelineControl_Load(object sender, EventArgs e)
     {
@@ -105,7 +111,7 @@ public partial class TimelineControl : UserControl
         var clips = Timeline.AllClips.Concat(TempTimelineClips);
         foreach (var clip in clips)
         {
-            var rect = clip.CalculateRectangle(Timeline, TimelineRectangle);
+            var rect = clip.CalculateRectangle(TimelineRectangle);
 
             if (rect.Left > ClientRectangle.Width || rect.Right < 0) continue; // Clip buiten zichtbare range
             if (rect.Top > ClientRectangle.Height || rect.Bottom < 0) continue; // Clip buiten zichtbare range
@@ -213,9 +219,6 @@ public partial class TimelineControl : UserControl
     {
         Timeline.VisibleStart = e.NewValue;
         Invalidate();
-        //scrollBarControl.Value += e.NewValue - e.OldValue;
-        //int timelineLengthInPixels = (int)(Timeline.VideoClips.Max(c => c.TimelineEndInSeconds) * VisibleWidth);
-        //scrollBarControl.Maximum = Math.Max(0, timelineLengthInPixels - Width);
     }
 
     private void TimelineControl_Resize(object sender, EventArgs e)
@@ -235,7 +238,8 @@ public partial class TimelineControl : UserControl
             return;
         }
 
-        var timelinePosition = TranslateToTimelinePosition(e);
+        var applicationPoint = new Point(e.X, e.Y);
+        var timelinePosition = TranslateToTimelinePosition(applicationPoint);
         if (timelinePosition == null)
         {
             ClearTemp();
@@ -244,8 +248,8 @@ public partial class TimelineControl : UserControl
 
         e.Effect = DragDropEffects.Copy;
 
-        var currentTime = timelinePosition.CurrentTime;
-        var layerIndex = timelinePosition.Layer;
+        var currentTime = timelinePosition.Value.CurrentTime;
+        var layerIndex = timelinePosition.Value.Layer;
         foreach (var fullName in fullNames)
         {
             var file = new File(fullName);
@@ -264,7 +268,7 @@ public partial class TimelineControl : UserControl
                     ClipStartInSeconds = 0,
                     ClipEndInSeconds = file.Duration.Value
                 };
-                TempTimelineClipVideos.Add(clip);
+                DragAndDrop_TimelineClipVideos.Add(clip);
                 layer++;
             }
 
@@ -279,11 +283,11 @@ public partial class TimelineControl : UserControl
                     ClipStartInSeconds = 0,
                     ClipEndInSeconds = file.Duration.Value
                 };
-                TempTimelineClipAudios.Add(clip);
+                DragAndDrop_TimelineClipAudios.Add(clip);
                 layer++;
             }
 
-            TempFiles.Add(file);
+            DragAndDrop_Files.Add(file);
         }
 
         Invalidate();
@@ -297,18 +301,19 @@ public partial class TimelineControl : UserControl
             return;
         }
 
-        var timelinePosition = TranslateToTimelinePosition(e);
+        var applicationPoint = new Point(e.X, e.Y);
+        var timelinePosition = TranslateToTimelinePosition(applicationPoint);
         if (timelinePosition == null)
         {
             ClearTemp();
             return;
         }
 
-        var currentTime = timelinePosition.CurrentTime;
-        var layerIndex = timelinePosition.Layer;
+        var currentTime = timelinePosition.Value.CurrentTime;
+        var layerIndex = timelinePosition.Value.Layer;
         foreach (var fullName in fullNames)
         {
-            var file = TempFiles.FirstOrDefault(a => a.FullName == fullName);
+            var file = DragAndDrop_Files.FirstOrDefault(a => a.FullName == fullName);
             if (file == null) continue;
             if (file.Duration == null) continue;
 
@@ -317,7 +322,7 @@ public partial class TimelineControl : UserControl
             var layer = layerIndex;
             foreach (var videoStream in file.VideoStreams.OrderBy(a => a.Index))
             {
-                var cachedVideoStream = TempTimelineClipVideos
+                var cachedVideoStream = DragAndDrop_TimelineClipVideos
                     .FirstOrDefault(a => a.StreamInfo.Equals(videoStream));
 
                 if (cachedVideoStream != null)
@@ -332,7 +337,7 @@ public partial class TimelineControl : UserControl
             layer = layerIndex;
             foreach (var audioStream in file.AudioStreams.OrderBy(a => a.Index))
             {
-                var cachedAudioStream = TempTimelineClipAudios
+                var cachedAudioStream = DragAndDrop_TimelineClipAudios
                     .FirstOrDefault(a => a.StreamInfo.Equals(audioStream));
 
                 if (cachedAudioStream != null)
@@ -346,58 +351,114 @@ public partial class TimelineControl : UserControl
         }
 
         Invalidate();
-        //SetupScrollbar();
-
+        SetupScrollbar();
     }
     private void TimelineControl_DragDrop(object sender, DragEventArgs e)
     {
         var fullNames = GetDragAndDropFiles(e);
         if (fullNames.Length == 0) return;
 
-        foreach (var a in TempTimelineClipVideos)
-        {
-            Timeline.VideoClips.Add(a);
-            Timeline.AllClips.Add(a);
-        }
+        Timeline.VideoClips.AddRange(DragAndDrop_TimelineClipVideos);
+        Timeline.AudioClips.AddRange(DragAndDrop_TimelineClipAudios);
+        Timeline.AllClips.AddRange(DragAndDrop_TimelineClipVideos);
+        Timeline.AllClips.AddRange(DragAndDrop_TimelineClipAudios);
 
-        foreach (var a in TempTimelineClipAudios)
-        {
-            Timeline.AudioClips.Add(a);
-            Timeline.AllClips.Add(a);
-        }
-
-        ClearTemp();
-
-        Invalidate();
-        SetupScrollbar();
+        TimelineControl_DragLeave(sender, e);
     }
     private void TimelineControl_DragLeave(object sender, EventArgs e)
     {
         ClearTemp();
         Invalidate();
         SetupScrollbar();
-
     }
 
     private void ClearTemp()
     {
-        TempFiles.Clear();
-        TempTimelineClipAudios.Clear();
-        TempTimelineClipVideos.Clear();
+        DragAndDrop_Files.Clear();
+        DragAndDrop_TimelineClipAudios.Clear();
+        DragAndDrop_TimelineClipVideos.Clear();
     }
 
 
     private void TimelineControl_MouseDown(object sender, MouseEventArgs e)
     {
+        var applicationPoint = new Point(e.X, e.Y);
+        var position = TranslateToTimelinePosition(applicationPoint);
+        if (position == null) return;
 
+        var selectedClips = new List<ITimelineClip>();
+        foreach (var clip in Timeline.AllClips)
+        {
+            var rect = clip.CalculateRectangle(TimelineRectangle);
+            if (rect.Left < e.X && e.X < rect.Right &&
+                rect.Top < e.Y && e.Y < rect.Bottom &&
+                !selectedClips.Contains(clip))
+            {
+                selectedClips.Add(clip);
+
+                foreach (var clip2 in Timeline.AllClips)
+                {
+                    if (clip2.StreamInfo.File == clip.StreamInfo.File && 
+                        !selectedClips.Contains(clip2))
+                    {
+                        selectedClips.Add(clip2);
+                    }
+                }
+            }
+            
+        }
+
+        if (selectedClips.Any(a => Timeline.SelectedClips.Any(b => b.Equals(a))))
+        {
+            Moving = true;
+            MovingStartPoint = new Point(e.X, e.Y);
+            var startposition = TranslateToTimelinePosition(MovingStartPoint);
+            if (startposition == null) return;
+            MovingStartPosition = startposition.Value;
+            foreach ( var clip in selectedClips)
+            {
+                clip.OldLayer = clip.Layer;
+                clip.OldTimelineStartInSeconds = clip.TimelineStartInSeconds;
+                clip.OldTimelineEndInSeconds = clip.TimelineEndInSeconds;
+            }
+            return;
+        }
+
+        Timeline.SelectedClips.Clear();
+        Timeline.SelectedClips.AddRange(selectedClips);
+
+        Invalidate();
     }
     private void TimelineControl_MouseMove(object sender, MouseEventArgs e)
     {
+        if (!Moving) return;
 
+        var movingEndPoint = new Point(e.X, e.Y);
+        var movingEndPosition = TranslateToTimelinePosition(movingEndPoint);
+        if (movingEndPosition == null) return;
+
+        if (movingEndPosition.Value.Layer != MovingStartPosition.Layer ||
+            movingEndPosition.Value.CurrentTime != MovingStartPosition.CurrentTime)
+        {
+            var l = movingEndPosition.Value.Layer - MovingStartPosition.Layer;
+            var w = movingEndPosition.Value.CurrentTime - MovingStartPosition.CurrentTime;
+            foreach (var clip in Timeline.SelectedClips)
+            {
+                clip.Layer = clip.OldLayer + l;
+                clip.TimelineStartInSeconds = clip.OldTimelineStartInSeconds + w;
+                clip.TimelineEndInSeconds = clip.OldTimelineEndInSeconds + w;
+            }
+        }
+
+        var x = movingEndPoint.X - MovingStartPoint.X;
+        var y = movingEndPoint.Y - MovingStartPoint.Y;
+        Debug.WriteLine($"Dragging {x}x{y}");
+
+        Invalidate();
     }
     private void TimelineControl_MouseUp(object sender, MouseEventArgs e)
     {
-
+        Moving = false;
     }
 
     private string[] GetDragAndDropFiles(DragEventArgs e)
@@ -412,12 +473,21 @@ public partial class TimelineControl : UserControl
             .OrderBy(a => a)
             .ToArray();
     }
-    private TimelinePosition? TranslateToTimelinePosition(DragEventArgs e)
+    private TimelinePosition? TranslateToTimelinePosition(Point applicationPoint)
     {
-        var applicationPoint = new Point(e.X, e.Y);
         var clientPoint = PointToClient(applicationPoint);
         var currentTime = TranslateToCurrentTime(clientPoint);
-
+        return Translate(clientPoint, currentTime);
+    }
+    //private TimelinePosition? TranslateToTimelinePosition(DragEventArgs e)
+    //{
+    //    var applicationPoint = new Point(e.X, e.Y);
+    //    var clientPoint = PointToClient(applicationPoint);
+    //    var currentTime = TranslateToCurrentTime(clientPoint);
+    //    return Translate(clientPoint, currentTime);
+    //}
+    private TimelinePosition? Translate(Point clientPoint, double currentTime)
+    {
         // Bepaal de hoogte van de video- en audiotijdlijn
         var timelineHeight = TimelineRectangle.Height;
         var videoHeight = timelineHeight / 2;  // Bovenste helft is voor video
@@ -441,7 +511,6 @@ public partial class TimelineControl : UserControl
 
         return null;
     }
-
 
     private double TranslateToCurrentTime(Point clientPoint)
     {

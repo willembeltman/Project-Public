@@ -15,4 +15,7 @@ public class TimelineClip
     public long TimelineEndIndex { get; set; }
     public long ClipStartIndex { get; set; }
     public long ClipEndIndex { get; set; }
+    public double OldTimelineStartInSeconds { get; set; }
+    public double OldTimelineEndInSeconds { get; set; }
+    public int OldLayer { get; set; }
 }

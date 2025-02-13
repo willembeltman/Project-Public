@@ -2,8 +2,9 @@
 {
     public static class ITimelineClipHelper
     {
-        public static Rectangle CalculateRectangle(this ITimelineClip clip, Timeline timeline, Rectangle timelineRectangle)
+        public static Rectangle CalculateRectangle(this ITimelineClip clip, Rectangle timelineRectangle)
         {
+            var timeline = clip.Timeline;
             int Middle = timelineRectangle.Height / 2;
             int VideoBlockHeight = (Middle - Constants.MiddleOffset) / timeline.VisibleVideoLayers;
             int AudioBlockHeight = (Middle - Constants.MiddleOffset) / timeline.VisibleAudioLayers;
