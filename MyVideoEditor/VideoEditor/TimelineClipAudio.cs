@@ -9,13 +9,13 @@ public class TimelineClipAudio : TimelineClip, ITimelineClip
 
     public double TimelineStartInSeconds
     {
-        get => TimelineStartIndex / Timeline.Info.SampleRate;
-        set => TimelineStartIndex = Convert.ToInt64(value * Timeline.Info.SampleRate);
+        get => TimelineStartIndex / Timeline.SampleRate;
+        set => TimelineStartIndex = Convert.ToInt64(value * Timeline.SampleRate);
     }
     public double TimelineEndInSeconds
     {
-        get => TimelineEndIndex / Timeline.Info.SampleRate;
-        set => TimelineEndIndex = Convert.ToInt64(value * Timeline.Info.SampleRate);
+        get => TimelineEndIndex / Timeline.SampleRate;
+        set => TimelineEndIndex = Convert.ToInt64(value * Timeline.SampleRate);
     }
     public double ClipStartInSeconds
     {

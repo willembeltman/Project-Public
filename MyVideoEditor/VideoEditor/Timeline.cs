@@ -1,10 +1,17 @@
-﻿namespace VideoEditor;
+﻿using System.Threading.Channels;
+using VideoEditor.Types;
+
+namespace VideoEditor;
 
 public class Timeline
 {
     public Timeline(Project project)
     {
         Project = project;
+        Resolution = new Resolution(1920, 1080);
+        Fps = new Fps(25, 1);
+        SampleRate = 48000;
+        AudioChannels = 2;
     }
 
     public Project Project { get; }
@@ -14,7 +21,12 @@ public class Timeline
     public ConcurrentArray<ITimelineClip> AllClips { get; } = new ConcurrentArray<ITimelineClip>();
     public ConcurrentArray<ITimelineClip> SelectedClips { get; } = new ConcurrentArray<ITimelineClip>();
 
-    public TimelineInfo Info { get; } = new TimelineInfo();
+    //public TimelineInfo Info { get; } = new TimelineInfo();
+
+    public Resolution Resolution { get; set; }
+    public Fps Fps { get; set; }
+    public int SampleRate { get; set; }
+    public int AudioChannels { get; set; }
 
     public double VisibleWidth { get; set; } = 100;
     public double VisibleStart { get; set; } = 0;

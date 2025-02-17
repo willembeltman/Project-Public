@@ -8,23 +8,23 @@ public class TimelineClipVideo : TimelineClip, ITimelineClip
 
     public double TimelineStartInSeconds
     {
-        get => TimelineStartIndex * Timeline.Info.Fps.Divider / Timeline.Info.Fps.Base;
-        set => TimelineStartIndex = Convert.ToInt64(value * Timeline.Info.Fps.Base / Timeline.Info.Fps.Divider);
+        get => TimelineStartIndex * Timeline.Fps.Divider / Timeline.Fps.Base;
+        set => TimelineStartIndex = Convert.ToInt64(value * Timeline.Fps.Base / Timeline.Fps.Divider);
     }
     public double TimelineEndInSeconds
     {
-        get => TimelineEndIndex * Timeline.Info.Fps.Divider / Timeline.Info.Fps.Base;
-        set => TimelineEndIndex = Convert.ToInt64(value * Timeline.Info.Fps.Base / Timeline.Info.Fps.Divider);
+        get => TimelineEndIndex * Timeline.Fps.Divider / Timeline.Fps.Base;
+        set => TimelineEndIndex = Convert.ToInt64(value * Timeline.Fps.Base / Timeline.Fps.Divider);
     }
     public double ClipStartInSeconds
     {
-        get => ClipStartIndex * StreamInfo.Fps!.Divider / StreamInfo.Fps!.Base;
-        set => ClipStartIndex = Convert.ToInt64(value * StreamInfo.Fps!.Base / StreamInfo.Fps!.Divider);
+        get => ClipStartIndex * StreamInfo.Fps!.Value.Divider / StreamInfo.Fps!.Value.Base;
+        set => ClipStartIndex = Convert.ToInt64(value * StreamInfo.Fps!.Value.Base / StreamInfo.Fps!.Value.Divider);
     }
     public double ClipEndInSeconds
     {
-        get => ClipEndIndex * StreamInfo.Fps!.Divider / StreamInfo.Fps!.Base;
-        set => ClipEndIndex = Convert.ToInt64(value * StreamInfo.Fps!.Base / StreamInfo.Fps!.Divider);
+        get => ClipEndIndex * StreamInfo.Fps!.Value.Divider / StreamInfo.Fps!.Value.Base;
+        set => ClipEndIndex = Convert.ToInt64(value * StreamInfo.Fps!.Value.Base / StreamInfo.Fps!.Value.Divider);
     }
 
     public bool IsVideoClip => true;

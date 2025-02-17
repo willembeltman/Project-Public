@@ -15,8 +15,8 @@ public partial class DisplayControl : UserControl
         var width = ClientRectangle.Width;
         var height = ClientRectangle.Height;
 
-        var screenWidthBasedOnHeight = height * Engine.Timeline.Info.Resolution.Width / Engine.Timeline.Info.Resolution.Height;
-        var screenHeightBasedOnWidth = width * Engine.Timeline.Info.Resolution.Height / Engine.Timeline.Info.Resolution.Width;
+        var screenWidthBasedOnHeight = height * Engine.Timeline.Resolution.Width / Engine.Timeline.Resolution.Height;
+        var screenHeightBasedOnWidth = width * Engine.Timeline.Resolution.Height / Engine.Timeline.Resolution.Width;
 
         if (height > screenHeightBasedOnWidth)
         {

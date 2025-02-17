@@ -1,6 +1,6 @@
 ﻿namespace VideoEditor.Types;
 
-public class Fps
+public readonly struct Fps
 {
     public Fps()
     {
@@ -14,8 +14,8 @@ public class Fps
         Divider = divider;
     }
 
-    public long Base { get; set; }
-    public long Divider { get; set; }
+    public long Base { get; }
+    public long Divider { get; }
 
     public double Value
     {
@@ -25,31 +25,30 @@ public class Fps
         }
     }
 
-    public static bool TryParse(string? value, out Fps? result)
+    public static bool operator ==(Fps p1, Fps p2)
     {
-        result = null;
-
-        if (value == null) return false;
-
-        var list = value.Split(['/'], StringSplitOptions.RemoveEmptyEntries);
-
-        if (list.Length != 2) return false;
-        if (!long.TryParse(list[0], out var @base)) return false;
-        if (!long.TryParse(list[1], out var divider)) return false;
-
-        result = new Fps(@base, divider);
-        return true;
+        return p1.Equals(p2);
     }
-
+    public static bool operator !=(Fps p1, Fps p2)
+    {
+        return !p1.Equals(p2);
+    }
     public override bool Equals(object? obj)
     {
+        if (obj == null) return false;
         if (!(obj is Fps)) return false;
-        var other = obj as Fps;
-        if (Base != other.Base) return false;
-        if (Divider != other.Divider) return false;
 
+        var other = obj as Fps?;
+        if (other == null) return false;
+        if (Base != other.Value.Base) return false;
+        if (Divider != other.Value.Divider) return false;
         return true;
     }
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Base, Divider);
+    }
+
     public override string ToString()
     {
         return $"{Value}";

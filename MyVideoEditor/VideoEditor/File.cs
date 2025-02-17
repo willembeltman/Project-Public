@@ -38,10 +38,11 @@ public class File
             .Select(a => new File(a));
     }
 
-    public override bool Equals(object? obj)
+    public bool EqualTo(object? obj)
     {
         if (!(obj is File)) return false; 
         var other = obj as File;
+        if (other == null) return false;
         if (FullName != other.FullName) return false;
         return true;
     }

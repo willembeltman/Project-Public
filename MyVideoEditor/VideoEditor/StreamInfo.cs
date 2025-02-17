@@ -16,13 +16,35 @@ public class StreamInfo
         CodecType = stream.codec_type == "video" ? CodecType.Video : CodecType.Audio;
 
         // Video
-        Resolution = Resolution.TryParse(stream.width, stream.height, out Resolution? resolution) ? resolution : null;
-        Fps = Fps.TryParse(stream.avg_frame_rate, out Fps? fps) ? fps : null;
+        Resolution = TryParse(stream.width, stream.height, out Resolution? resolution) ? resolution : null;
+        Fps = TryParse(stream.avg_frame_rate, out Fps? fps) ? fps : null;
 
         // Audio
         Title = stream.tags?.title;
         Channels = stream.channels;
         SampleRate = FFHelpers.TryParseToInt(stream.sample_rate, out int sampleRate) ? sampleRate : null;
+    }
+    public static bool TryParse(int? width, int? height, out Resolution? resolution)
+    {
+        resolution = null;
+        if (width == null || height == null) return false;
+        resolution = new Resolution(width.Value, height.Value);
+        return true;
+    }
+    public static bool TryParse(string? value, out Fps? result)
+    {
+        result = null;
+
+        if (value == null) return false;
+
+        var list = value.Split(['/'], StringSplitOptions.RemoveEmptyEntries);
+
+        if (list.Length != 2) return false;
+        if (!long.TryParse(list[0], out var @base)) return false;
+        if (!long.TryParse(list[1], out var divider)) return false;
+
+        result = new Fps(@base, divider);
+        return true;
     }
 
     public File File { get; }
@@ -50,19 +72,21 @@ public class StreamInfo
 
         }
     }
-    public override bool Equals(object? obj)
+
+    public bool EqualTo(object? obj)
     {
         if (!(obj is StreamInfo)) return false;
 
         var other = obj as StreamInfo;
-        if (!File.Equals(other.File)) return false;
+        if (other == null) return false;
+        if (File.FullName != other.File.FullName) return false;
         if (Index != other.Index) return false;
         if (Title != other.Title) return false;
         if (CodecName != other.CodecName) return false;
         if (CodecLongName != other.CodecLongName) return false;
         if (CodecType != other.CodecType) return false;
-        if (CodecType == CodecType.Video && !Resolution.Equals(other.Resolution)) return false;
-        if (CodecType == CodecType.Video && !Fps.Equals(other.Fps)) return false;
+        if (CodecType == CodecType.Video && Resolution != other.Resolution) return false;
+        if (CodecType == CodecType.Video && Fps != other.Fps) return false;
         if (CodecType == CodecType.Audio && SampleRate != other.SampleRate) return false;
         if (CodecType == CodecType.Audio && Channels != other.Channels) return false;
 

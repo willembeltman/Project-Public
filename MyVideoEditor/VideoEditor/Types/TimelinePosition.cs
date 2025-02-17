@@ -1,8 +1,8 @@
 ﻿using VideoEditor.Enums;
 
-namespace VideoEditor;
+namespace VideoEditor.Types;
 
-public struct TimelinePosition
+public readonly struct TimelinePosition
 {
     public TimelinePosition(MediaFormat mediaFormat, double currentTime, int layerIndex)
     {

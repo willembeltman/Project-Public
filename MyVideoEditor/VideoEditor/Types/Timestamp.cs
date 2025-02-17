@@ -1,6 +1,6 @@
 ﻿namespace VideoEditor.Types;
 
-public class Timestamp
+public readonly struct Timestamp
 {
     public Timestamp()
     {
@@ -63,16 +63,32 @@ public class Timestamp
     public int Seconds { get; }
     public int Milliseconds { get; }
 
+    public static bool operator ==(Timestamp p1, Timestamp p2)
+    {
+        return p1.Equals(p2);
+    }
+    public static bool operator !=(Timestamp p1, Timestamp p2)
+    {
+        return !p1.Equals(p2);
+    }
     public override bool Equals(object? obj)
     {
+        if (obj == null) return false;
         if (!(obj is Timestamp)) return false;
-        var other = obj as Timestamp;
-        if (Hours != other.Hours) return false;
-        if (Minutes != other.Minutes) return false;
-        if (Seconds != other.Seconds) return false;
-        if (Milliseconds != other.Milliseconds) return false;
+
+        var other = obj as Timestamp?;
+        if (other == null) return false;
+        if (Hours != other.Value.Hours) return false;
+        if (Minutes != other.Value.Minutes) return false;
+        if (Seconds != other.Value.Seconds) return false;
+        if (Milliseconds != other.Value.Milliseconds) return false;
 
         return true;
     }
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Hours, Minutes, Seconds, Milliseconds);
+    }
+
     public override string ToString() => $"{Hours:D2}:{Minutes:D2}:{Seconds:D2}.{Milliseconds:D3}";
 }
