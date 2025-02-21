@@ -1,6 +1,0 @@
-@BeltmanSoftwareDesign.NetCoreWebApi_HostAddress = http://localhost:5111
-
-GET {{BeltmanSoftwareDesign.NetCoreWebApi_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

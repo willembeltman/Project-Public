@@ -1,6 +1,0 @@
-@StorageBlob_HostAddress = http://localhost:5252
-
-GET {{StorageBlob_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
