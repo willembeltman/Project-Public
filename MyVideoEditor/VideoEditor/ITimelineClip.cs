@@ -4,6 +4,7 @@ public interface ITimelineClip
 {
     Timeline Timeline { get; }
     StreamInfo StreamInfo { get; }
+    TimelineClipGroup Group { get; set; }
     int Layer { get; set; }
     long TimelineStartIndex { get; set; }
     long TimelineEndIndex { get; set; }

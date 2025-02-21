@@ -1,14 +1,13 @@
-﻿using VideoEditor.Enums;
+﻿using VideoEditor.Dtos;
+using VideoEditor.Enums;
 using VideoEditor.Static;
 
 namespace VideoEditor;
 
 public class File
 {
-    public File(string fullName)
+    private File(string fullName, FFProbeRapport rapport)
     {
-        var rapport = FFProbe.GetRapport(fullName);
-
         FullName = fullName;
         AllStreams =
             rapport.streams
@@ -35,7 +34,15 @@ public class File
     public static IEnumerable<File> OpenMultiple(IEnumerable<string> files)
     {
         return files
-            .Select(a => new File(a));
+            .Select(Open)
+            .Where(a => a != null)
+            .Select(a => a!);
+    }
+    public static File? Open(string fullName)
+    {
+        var rapport = FFProbe.GetRapport(fullName);
+        if (rapport == null) return null;
+        return new File(fullName, rapport);
     }
 
     public bool EqualTo(object? obj)
@@ -51,4 +58,5 @@ public class File
     {
         return $"{FullName} {Duration}s";
     }
+
 }

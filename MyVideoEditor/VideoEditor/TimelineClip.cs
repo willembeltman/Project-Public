@@ -2,10 +2,11 @@
 
 public class TimelineClip
 {
-    public TimelineClip(Timeline timeline, StreamInfo streamInfo)
+    public TimelineClip(Timeline timeline, StreamInfo streamInfo, TimelineClipGroup group)
     {
         Timeline = timeline;
         StreamInfo = streamInfo;
+        Group = group;
     }
 
     public Timeline Timeline { get; }
@@ -18,4 +19,5 @@ public class TimelineClip
     public double OldTimelineStartInSeconds { get; set; }
     public double OldTimelineEndInSeconds { get; set; }
     public int OldLayer { get; set; }
+    public TimelineClipGroup Group { get; set; }
 }

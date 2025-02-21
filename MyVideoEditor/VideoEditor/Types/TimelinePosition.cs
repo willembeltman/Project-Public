@@ -4,14 +4,14 @@ namespace VideoEditor.Types;
 
 public readonly struct TimelinePosition
 {
-    public TimelinePosition(MediaFormat mediaFormat, double currentTime, int layerIndex)
+    public TimelinePosition(double currentTime, int layerIndex, MediaFormat mediaFormat)
     {
-        MediaFormat = mediaFormat;
         CurrentTime = currentTime;
         Layer = layerIndex;
+        MediaFormat = mediaFormat;
     }
 
-    public MediaFormat MediaFormat { get; }
     public double CurrentTime { get; }
     public int Layer { get; }
+    public MediaFormat MediaFormat { get; }
 }
