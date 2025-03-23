@@ -6,14 +6,12 @@ namespace CPUCalculator2.Services;
 
 public class PassmarkDownloader
 {
-    public IEnumerable<PassmarkCpu> GetCpus()
+    public IEnumerable<PassmarkCpu> GetPassmarkCpus()
     {
-        var passmarkDownloader = new PassmarkDownloader();
-        var tweakersdownloader = new TweakersDownloader();
         var cpus =
-            passmarkDownloader.GetSingleScores().Concat(
-                passmarkDownloader.GetHighMultiScores().Concat(
-                    passmarkDownloader.GetOverclockedScores())
+            GetSingleScores().Concat(
+                GetHighMultiScores().Concat(
+                    GetOverclockedScores())
                 )
             .GroupBy(a => a.Link)
             .ToArray();

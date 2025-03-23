@@ -4,12 +4,10 @@ namespace CPUCalculator2.Services;
 
 public class CpuService
 {
-    PassmarkDownloader PassmarkDownloader = new PassmarkDownloader();
     TweakersDownloader TweakersDownloader = new TweakersDownloader();
 
-    public IEnumerable<Cpu> CompileNewList()
+    public IEnumerable<Cpu> CompileNewList(IEnumerable<PassmarkCpu> cpus)
     {
-        var cpus = PassmarkDownloader.GetCpus();
         foreach (var cpu in cpus)
         {
             var product = TweakersDownloader.GetTweakersProduct(cpu);

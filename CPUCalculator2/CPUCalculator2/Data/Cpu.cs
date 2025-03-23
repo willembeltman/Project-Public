@@ -90,18 +90,18 @@ public class Cpu
 
     public static string CreateCsvHeader()
     {
-        return 
-            $"TweakersId;TweakersName;TweakersLink;TweakersPrice;TweakersThumbnail;" +
-            $"Name;SingleScore;MultiScore;MultiScoreOC;PassmarkLink;" +
-            $"Overclocked_MultiScore;Overclocked_SingleScore;" +
-            $"SingleScoreBedrag;MultiScoreBedrag;Overclocked_MultiScoreBedrag;Overclocked_SingleScoreBedrag;";
+        return
+            $"\"TweakersId\";\"TweakersName\";\"TweakersLink\";\"TweakersPrice\";\"TweakersThumbnail\";" +
+            $"\"Name\";\"SingleScore\";\"MultiScore\";\"MultiScoreOC\";\"PassmarkLink\";" +
+            $"\"Overclocked_MultiScore\";\"Overclocked_SingleScore\";" +
+            $"\"SingleScoreBedrag\";\"MultiScoreBedrag\";\"Overclocked_MultiScoreBedrag\";\"Overclocked_SingleScoreBedrag\"";
     }
     public string CreateCsvRow()
     {
         return
-            $"{TweakersId};{TweakersName};{TweakersLink};{TweakersPrice};{TweakersThumbnail};" +
-            $"{Name};{SingleScore};{MultiScore};{MultiScoreOC};{PassmarkLink};" +
+            $"{TweakersId};\"{TweakersName}\";\"{TweakersLink}\";{TweakersPrice};\"{TweakersThumbnail};\"" +
+            $"\"{Name}\";{SingleScore};{MultiScore};{MultiScoreOC};\"{PassmarkLink}\";" +
             $"{Overclocked_MultiScore};{Overclocked_SingleScore};" +
-            $"{SingleScoreBedrag};{MultiScoreBedrag};{Overclocked_MultiScoreBedrag};{Overclocked_SingleScoreBedrag};";
+            $"{SingleScoreBedrag};{MultiScoreBedrag};{Overclocked_MultiScoreBedrag};{Overclocked_SingleScoreBedrag}";
     }
 }
