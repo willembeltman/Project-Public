@@ -1,9 +1,8 @@
-﻿namespace CPUCalculator2.Services
+﻿namespace CPUCalculator2.Services;
+
+public enum ScoreTypeEnum
 {
-    public enum ScoreTypeEnum
-    {
-        Single,
-        Multi,
-        Overclocked,
-    }
+    Single,
+    Multi,
+    Overclocked,
 }

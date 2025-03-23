@@ -1,6 +1,6 @@
 ﻿using CPUCalculator2.Services;
 
-namespace CPUCalculator2.Data;
+namespace CPUCalculator2.Models;
 
 public class PassmarkSimpleCpu
 {

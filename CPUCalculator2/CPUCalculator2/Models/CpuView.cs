@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace CPUCalculator2.Data;
+namespace CPUCalculator2.Models;
 
 public class CpuView
 {
@@ -145,6 +145,6 @@ public class CpuView
 
     public override string ToString()
     {
-        return $"{Name} {(TweakersPrijs ?? 0):F2} ({SingleScore:F0} / {MultiScore:F0} {Overclocked_SingleScore:F0} / {Overclocked_MultiScore:F0})";
+        return $"{Name} {TweakersPrijs ?? 0:F2} ({SingleScore:F0} / {MultiScore:F0} {Overclocked_SingleScore:F0} / {Overclocked_MultiScore:F0})";
     }
 }

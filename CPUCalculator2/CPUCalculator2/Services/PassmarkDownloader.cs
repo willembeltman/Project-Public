@@ -1,5 +1,6 @@
 ﻿using CPUCalculator2.Data;
 using CPUCalculator2.Helpers;
+using CPUCalculator2.Models;
 using System.Xml.Linq;
 
 namespace CPUCalculator2.Services;
