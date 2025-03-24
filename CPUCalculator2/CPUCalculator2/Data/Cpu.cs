@@ -39,7 +39,7 @@ public class Cpu
     public string? TweakersThumbnail
     {
         get => TweakersProduct.Thumbnail;
-        set => TweakersProduct.Name = value;
+        set => TweakersProduct.Thumbnail = value;
     }
 
     public string Name
@@ -99,9 +99,15 @@ public class Cpu
     public string CreateCsvRow()
     {
         return
-            $"{TweakersId};\"{TweakersName}\";\"{TweakersLink}\";{TweakersPrice};\"{TweakersThumbnail};\"" +
-            $"\"{Name}\";{SingleScore};{MultiScore};{MultiScoreOC};\"{PassmarkLink}\";" +
-            $"{Overclocked_MultiScore};{Overclocked_SingleScore};" +
-            $"{SingleScoreBedrag};{MultiScoreBedrag};{Overclocked_MultiScoreBedrag};{Overclocked_SingleScoreBedrag}";
+            $"{TweakersId};\"{TweakersName}\";\"{TweakersLink}\";{TweakersPrice};\"{TweakersThumbnail}\";" +
+            $"\"{Name}\";{SingleScore:F0};{MultiScore:F0};{MultiScoreOC:F0};\"{PassmarkLink}\";" +
+            $"{Overclocked_MultiScore:F0};{Overclocked_SingleScore:F0};" +
+            $"{SingleScoreBedrag:F2};{MultiScoreBedrag:F2};{Overclocked_MultiScoreBedrag:F2};{Overclocked_SingleScoreBedrag:F2}";
+    }
+
+    public void OverwriteWith(Cpu cpu)
+    {
+        PassmarkCpu.OverwriteWith(cpu.PassmarkCpu);
+        TweakersProduct.OverwriteWith(cpu.TweakersProduct);
     }
 }

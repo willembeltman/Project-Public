@@ -1,8 +1,8 @@
-﻿using CPUCalculator2.Services;
+﻿using CPUCalculator2.Enums;
 
-namespace CPUCalculator2.Models;
+namespace CPUCalculator2.Data;
 
-public class PassmarkSimpleCpu
+public class PassmarkScore
 {
     public string? Name { get; set; }
     public string? Link { get; set; }

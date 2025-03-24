@@ -1,4 +1,5 @@
 ﻿using CPUCalculator2.Data;
+using CPUCalculator2.Enums;
 using CPUCalculator2.Helpers;
 using CPUCalculator2.Models;
 using System.Xml.Linq;
@@ -7,7 +8,7 @@ namespace CPUCalculator2.Services;
 
 public class PassmarkDownloader
 {
-    public IEnumerable<PassmarkCpu> GetPassmarkCpus()
+    public IEnumerable<PassmarkCpu> GetAllCpus()
     {
         var cpus =
             GetSingleScores().Concat(
@@ -42,15 +43,26 @@ public class PassmarkDownloader
             );
         }
     }
-
-    public IEnumerable<PassmarkSimpleCpu> GetHighMultiScores()
-        => Get("https://www.cpubenchmark.net/high_end_cpus.html", ScoreTypeEnum.Multi);
-    public IEnumerable<PassmarkSimpleCpu> GetOverclockedScores()
-        => Get("https://www.cpubenchmark.net/overclocked_cpus.html", ScoreTypeEnum.Overclocked);
-    public IEnumerable<PassmarkSimpleCpu> GetSingleScores()
-        => Get("https://www.cpubenchmark.net/singlethread.html", ScoreTypeEnum.Single);
-    private static IEnumerable<PassmarkSimpleCpu> Get(string url, ScoreTypeEnum scoreType)
+    public IEnumerable<PassmarkScore> GetAllGpus()
     {
+        var gpus =
+            GetHighEndGpus();
+        return gpus;
+    }
+
+    public IEnumerable<PassmarkScore> GetHighMultiScores()
+        => Get("https://www.cpubenchmark.net/high_end_cpus.html", ScoreTypeEnum.Multi);
+    public IEnumerable<PassmarkScore> GetOverclockedScores()
+        => Get("https://www.cpubenchmark.net/overclocked_cpus.html", ScoreTypeEnum.Overclocked);
+    public IEnumerable<PassmarkScore> GetSingleScores()
+        => Get("https://www.cpubenchmark.net/singlethread.html", ScoreTypeEnum.Single);
+    public IEnumerable<PassmarkScore> GetHighEndGpus()
+        => Get("https://www.videocardbenchmark.net/high_end_gpus.html", ScoreTypeEnum.Gpu);
+
+    private static IEnumerable<PassmarkScore> Get(string url, ScoreTypeEnum scoreType)
+    {
+        Console.WriteLine("Getting page: " + url);
+
         var pagehtml = HttpClientHelper.GetWebpage(url);
         var startline = "<ul class=\"chartlist\">";
         var endline = "</ul>";
@@ -82,7 +94,7 @@ public class PassmarkDownloader
                 var scorestr = list.Skip(2).First().Value;
                 if (double.TryParse(StringHelper.NumberFormat(scorestr), out var score))
                 {
-                    var item = new PassmarkSimpleCpu()
+                    var item = new PassmarkScore()
                     {
                         Name = name,
                         Link = href,

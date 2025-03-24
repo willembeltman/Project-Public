@@ -1,4 +1,5 @@
-﻿namespace CPUCalculator2.Data;
+﻿
+namespace CPUCalculator2.Data;
 
 public class PassmarkCpu
 {
@@ -24,4 +25,14 @@ public class PassmarkCpu
     public double SingleScore { get; set; }
     public double MultiScore { get; set; }
     public double? OcScore { get; set; }
+
+    internal void OverwriteWith(PassmarkCpu passmarkCpu)
+    {
+        Name = passmarkCpu.Name;
+        FullName = passmarkCpu.FullName;
+        Link = passmarkCpu.Link;
+        SingleScore = passmarkCpu.SingleScore;
+        MultiScore = passmarkCpu.MultiScore;
+        OcScore += passmarkCpu.OcScore;
+    }
 }

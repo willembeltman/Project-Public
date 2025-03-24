@@ -1,4 +1,5 @@
-﻿namespace CPUCalculator2.Data;
+﻿
+namespace CPUCalculator2.Data;
 
 public class TweakersProduct
 {
@@ -28,4 +29,14 @@ public class TweakersProduct
     public double Price { get; set; }
     public string? Link { get; set; }
     public string? Thumbnail { get; set; }
+
+    internal void OverwriteWith(TweakersProduct tweakersProduct)
+    {
+        Id = tweakersProduct.Id;
+        Name = tweakersProduct.Name;
+        Type = tweakersProduct.Type;
+        Price = tweakersProduct.Price;
+        Link = tweakersProduct.Link;
+        Thumbnail = tweakersProduct.Thumbnail;
+    }
 }

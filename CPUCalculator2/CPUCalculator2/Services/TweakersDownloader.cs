@@ -7,10 +7,10 @@ namespace CPUCalculator2.Services;
 
 public class TweakersDownloader
 {
-    public TweakersProduct? GetTweakersProduct(PassmarkCpu passmarkCpu)
+    public TweakersProduct? GetTweakersProduct(string searchtext)
     {
-        var words = passmarkCpu.Name.ToLower().Split(' ');
-        var prices = GetFromTweakers(passmarkCpu.Name)
+        var words = searchtext.ToLower().Split(' ');
+        var prices = GetFromTweakers(searchtext)
             .Where(item =>
             {
                 if (item.Name == null) return false;
@@ -31,6 +31,7 @@ public class TweakersDownloader
 
     public IEnumerable<TweakersProduct> GetFromTweakers(string searchstring)
     {
+        Console.WriteLine("Searching tweakers for: " + searchstring);
         var str = "vanaf \\u20ac";
         var str2 = "vanaf €";
         var oldurl = "https://tweakers.net/xmlhttp/xmlHttp.php?application=sitewidesearch&type=search&action=pricewatch&keyword=" + HttpUtility.UrlEncode(searchstring) + "&output=json";

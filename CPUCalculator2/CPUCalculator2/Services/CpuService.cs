@@ -10,7 +10,7 @@ public class CpuService
     {
         foreach (var cpu in cpus)
         {
-            var product = TweakersDownloader.GetTweakersProduct(cpu);
+            var product = TweakersDownloader.GetTweakersProduct(cpu.Name);
             if (product == null) continue;
 
             yield return new Cpu(cpu, product);
