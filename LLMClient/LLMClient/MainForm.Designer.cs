@@ -1,6 +1,6 @@
 ﻿namespace LLMClient
 {
-    partial class Form1
+    partial class MainForm
     {
         /// <summary>
         ///  Required designer variable.
@@ -72,21 +72,21 @@
             ModelCombo.FormattingEnabled = true;
             ModelCombo.Location = new Point(12, 12);
             ModelCombo.Name = "ModelCombo";
-            ModelCombo.Size = new Size(600, 23);
+            ModelCombo.Size = new Size(359, 23);
             ModelCombo.TabIndex = 3;
             ModelCombo.SelectedIndexChanged += ModelCombo_SelectedIndexChanged;
             // 
             // StatusLabel
             // 
             StatusLabel.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            StatusLabel.Location = new Point(620, 12);
+            StatusLabel.Location = new Point(377, 12);
             StatusLabel.Name = "StatusLabel";
-            StatusLabel.Size = new Size(152, 24);
+            StatusLabel.Size = new Size(395, 24);
             StatusLabel.TabIndex = 4;
             StatusLabel.Text = "Ready";
             StatusLabel.TextAlign = ContentAlignment.MiddleRight;
             // 
-            // Form1
+            // MainForm
             // 
             ClientSize = new Size(784, 491);
             Controls.Add(StatusLabel);
@@ -94,10 +94,10 @@
             Controls.Add(OutputTextbox);
             Controls.Add(SendButton);
             Controls.Add(PromptTextbox);
-            Name = "Form1";
+            Name = "MainForm";
             Text = "Foundry Client";
-            FormClosing += Form1_FormClosing;
-            Load += Form1_Load;
+            FormClosing += MainForm_FormClosing;
+            Load += MainForm_Load;
             ResumeLayout(false);
             PerformLayout();
 

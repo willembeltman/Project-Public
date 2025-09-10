@@ -3,66 +3,50 @@ using System.Text;
 
 namespace LLMClient;
 
-public partial class Form1 : Form
+public partial class MainForm : Form
 {
     private Process? CurrentSession;
     private Config CurrentConfig;
     private CancellationTokenSource? _readingCts;
 
-    public Form1()
+    public MainForm()
     {
         InitializeComponent();
         CurrentConfig = ConfigHelper.LoadConfig();
     }
 
-    private async void Form1_Load(object sender, EventArgs e)
+    private async void MainForm_Load(object sender, EventArgs e)
     {
         // Laad models uit foundry (direct bij start)
-        if (CurrentConfig.ModelList == null)
+        if (CurrentConfig.ModelList == null || 
+            CurrentConfig.LastUpdate == null || 
+            CurrentConfig.LastUpdate < DateTime.UtcNow.AddMonths(-1))
         {
-            CurrentConfig.ModelList = await LoadModelListAsync();
-            CurrentConfig.Save();
+            try
+            {
+                SetStatus("Models ophalen...");
+                CurrentConfig.ModelList = await ModelRepository.LoadModelListAsync();
+                CurrentConfig.LastUpdate = DateTime.UtcNow;
+                CurrentConfig.Save();
+            }
+            catch (Exception ex)
+            {
+                SetStatus("Kon models niet ophalen");
+                AppendOutput($"[Error loading model list: {ex.Message}]\n");
+            }
         }
 
         if (CurrentConfig.ModelList != null)
         {
-            // UI updaten
-            //if (ModelCombo.InvokeRequired)
-            //{
-            //    ModelCombo.Invoke(new Action(() =>
-            //    {
-            //        ModelCombo.Items.Clear();
-            //        ModelCombo.Items.AddRange(CurrentConfig.ModelList);
-            //        if (!string.IsNullOrWhiteSpace(CurrentConfig.SelectedModel))
-            //        {
-            //            ModelCombo.SelectedItem = CurrentConfig.SelectedModel;
-            //        }
-            //    }));
-            //}
-            //else
-            //{
-            ModelCombo.Items.Clear();
-            ModelCombo.Items.AddRange(CurrentConfig.ModelList);
-            if (!string.IsNullOrWhiteSpace(CurrentConfig.SelectedModel))
-            {
-                ModelCombo.SelectedItem = CurrentConfig.SelectedModel;
-            }
-            //}
-
-            // Als er een geselecteerd model in config staat: probeer die te starten
-            if (!string.IsNullOrWhiteSpace(CurrentConfig.SelectedModel))
-            {
-                ModelCombo.SelectedItem = CurrentConfig.SelectedModel;
-                await StartModelSessionAsync(CurrentConfig.SelectedModel);
-            }
+            UpdateModelList(CurrentConfig.ModelList, CurrentConfig.SelectedModel);
         }
     }
 
-    private async void Form1_FormClosing(object sender, FormClosingEventArgs e)
+    private async void MainForm_FormClosing(object sender, FormClosingEventArgs e)
     {
         // Probeer netjes af te sluiten
-        await StopCurrentSessionAsync(sendExit: true);
-        await RunCommandAsync("foundry", "service stop");
+        await StopCurrentSessionAsync(sendExitCommand: true);
+        await ProcessHelper.RunCommandAsync("foundry", "service stop");
     }
 
     private async void SendButton_Click(object sender, EventArgs e)
@@ -80,7 +64,7 @@ public partial class Form1 : Form
         // Zo kun je in de LLM-repl bijvoorbeeld een speciale decode logica hebben,
         // of de CLI begrijpt daadwerkelijk literal "\n".
         // Als jouw foundry-llm REPL gewoon stdin accepteert met nieuwe regels, gebruik dan: message = text;
-        var encoded = StringHelper.EncodeMessagePreserveNewlines(text);
+        var encoded = text.EncodeMessagePreserveNewlines();
 
         try
         {
@@ -105,7 +89,7 @@ public partial class Form1 : Form
         CurrentConfig.Save();
 
         // Stop huidige session
-        await StopCurrentSessionAsync(sendExit: true);
+        await StopCurrentSessionAsync(sendExitCommand: true);
 
         // Start nieuw model
         if (!string.IsNullOrWhiteSpace(selected))
@@ -114,83 +98,10 @@ public partial class Form1 : Form
         }
     }
 
-
-    #region Helpers: encode / append output
-
-
-    private void AppendOutput(string text)
-    {
-        if (OutputTextbox.InvokeRequired)
-        {
-            OutputTextbox.Invoke(new Action(() =>
-            {
-                OutputTextbox.AppendText(text);
-                OutputTextbox.ScrollToCaret();
-            }));
-        }
-        else
-        {
-            OutputTextbox.AppendText(text);
-            OutputTextbox.ScrollToCaret();
-        }
-    }
-
-    private void SetStatus(string text)
-    {
-        if (StatusLabel.InvokeRequired)
-        {
-            StatusLabel.Invoke(new Action(() => StatusLabel.Text = text));
-        }
-        else
-        {
-            StatusLabel.Text = text;
-        }
-    }
-
-    #endregion
-
-    #region Foundry / process handling
-    private async Task<string[]?> LoadModelListAsync()
-    {
-        SetStatus("Models ophalen...");
-        try
-        {
-            var result = await RunCommandCaptureStdoutAsync("foundry", "model list");
-
-            var lines = result.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
-            var models = new List<string>();
-
-            foreach (var line in lines)
-            {
-                // Sla header en scheidingslijnen over
-                if (line.StartsWith("Alias") || line.StartsWith("---")) continue;
-
-                // Splits de regel op whitespace
-                var parts = line.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-
-                if (parts.Length > 0)
-                {
-                    // laatste kolom is altijd het Model ID
-                    var modelId = parts[^1];
-                    models.Add(modelId);
-                }
-            }
-
-            SetStatus($"Models geladen ({models.Count})");
-            return models.ToArray();
-        }
-        catch (Exception ex)
-        {
-            SetStatus("Kon models niet ophalen");
-            //AppendOutput($"[Error loading model list: {ex.Message}]\n");
-        }
-        return null;
-    }
-
     private Task StartModelSessionAsync(string modelName)
     {
         SetStatus($"Start model {modelName}...");
-        //AppendOutput($"\n[Starting model {modelName}]\n");
+        AppendOutput($"\n[Starting model {modelName}]\n");
 
         // Run "foundry model start <model>" and keep process open (interactive)
         try
@@ -198,7 +109,7 @@ public partial class Form1 : Form
             var psi = new ProcessStartInfo
             {
                 FileName = "foundry",
-                Arguments = $"model run {EscapeArgument(modelName)}",
+                Arguments = $"model run {modelName.EscapeArgument()}",
                 UseShellExecute = false,
                 RedirectStandardInput = true,
                 RedirectStandardOutput = true,
@@ -218,7 +129,7 @@ public partial class Form1 : Form
             _readingCts = new CancellationTokenSource();
 
             // Start byte-by-byte reader for stdout
-            _ = Task.Run(() => ReadStdOutByteByByte(proc, _readingCts.Token));
+            _ = Task.Run(() => ReadStdOut(proc, _readingCts.Token));
 
             // Start reader for stderr (line-based but shown)
             _ = Task.Run(() => ReadStdErr(proc, _readingCts.Token));
@@ -234,14 +145,14 @@ public partial class Form1 : Form
         return Task.CompletedTask;
     }
 
-    private async Task StopCurrentSessionAsync(bool sendExit)
+    private async Task StopCurrentSessionAsync(bool sendExitCommand)
     {
         if (CurrentSession == null) return;
 
         try
         {
             SetStatus("Sessiestop...");
-            if (sendExit && !CurrentSession.HasExited)
+            if (sendExitCommand && !CurrentSession.HasExited)
             {
                 try
                 {
@@ -281,11 +192,9 @@ public partial class Form1 : Form
         }
     }
 
-    #endregion
-
     #region Low-level IO
 
-    private async Task ReadStdOutByteByByte(Process proc, CancellationToken ct)
+    private async Task ReadStdOut(Process proc, CancellationToken ct)
     {
         try
         {
@@ -337,61 +246,55 @@ public partial class Form1 : Form
         }
     }
 
-    private static string EscapeArgument(string arg)
-    {
-        // Minimal escaping for spaces
-        if (arg.Contains(" "))
-        {
-            return $"\"{arg}\"";
-        }
-        return arg;
-    }
+    #endregion
 
-    private async Task<string> RunCommandCaptureStdoutAsync(string fileName, string arguments)
-    {
-        var psi = new ProcessStartInfo
-        {
-            FileName = fileName,
-            Arguments = arguments,
-            UseShellExecute = false,
-            RedirectStandardOutput = true,
-            CreateNoWindow = true,
-            StandardOutputEncoding = Encoding.UTF8
-        };
+    #region Gui
 
-        using var proc = new Process { StartInfo = psi };
-        var sb = new StringBuilder();
-        proc.Start();
-        using var sr = proc.StandardOutput;
-        while (!sr.EndOfStream)
+    private void UpdateModelList(string[] modelList, string? selectedModel)
+    {
+        if (ModelCombo.InvokeRequired)
         {
-            var line = await sr.ReadLineAsync();
-            if (line != null)
+            ModelCombo.Invoke(new Action(() =>
             {
-                sb.AppendLine(line);
+                UpdateModelList(modelList, selectedModel);
+            }));
+        }
+        else
+        {
+            ModelCombo.Items.Clear();
+            ModelCombo.Items.AddRange(modelList);
+            if (!string.IsNullOrWhiteSpace(selectedModel))
+            {
+                ModelCombo.SelectedItem = selectedModel; // Causes model to be started
             }
         }
-        proc.WaitForExit();
-        return sb.ToString();
     }
 
-    private async Task<int> RunCommandAsync(string fileName, string arguments)
+    private void AppendOutput(string text)
     {
-        var psi = new ProcessStartInfo
+        if (OutputTextbox.InvokeRequired)
         {
-            FileName = fileName,
-            Arguments = arguments,
-            UseShellExecute = false,
-            CreateNoWindow = true
-        };
+            OutputTextbox.Invoke(new Action(() => AppendOutput(text)));
+        }
+        else
+        {
+            OutputTextbox.AppendText(text);
+            OutputTextbox.ScrollToCaret();
+        }
+    }
 
-        using var proc = new Process { StartInfo = psi };
-        proc.Start();
-        await proc.WaitForExitAsync();
-        return proc.ExitCode;
+    private void SetStatus(string text)
+    {
+        if (StatusLabel.InvokeRequired)
+        {
+            StatusLabel.Invoke(new Action(() => SetStatus(text)));
+        }
+        else
+        {
+            StatusLabel.Text = text;
+        }
     }
 
     #endregion
-
 }
 
