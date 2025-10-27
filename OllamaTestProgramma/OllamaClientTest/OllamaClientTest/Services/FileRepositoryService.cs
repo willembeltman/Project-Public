@@ -1,7 +1,10 @@
 ﻿
 namespace OllamaAgentGenerator.Services;
 
-// Please finish this class, be mindfull of the encoding of both commands and 
+// This class is used by a LLM Model to create and store files.
+// It generates the text used in the prompt for the current file context/content for the LLM model to work on.
+// It also handles the decoding of the response MCP(Model Context Protocol aka commands for the LLM to call) commands and executes them.
+// Please finish this class, be mindfull of the encoding of both mcp-commands and files while retreiving them back
 public class FileRepositoryService(DirectoryInfo directoryInfo)
 {
     public bool WantsToSeeCompile { get; internal set; }
@@ -9,22 +12,28 @@ public class FileRepositoryService(DirectoryInfo directoryInfo)
     public string GenerateFileContentsText()
     {
         // Give a list of all files inside the directory (recursive) with their contents
+
         // Example:
         // index.html
         // <html>
         // </html>
         // index.css
         // html { background: black; }
+
+        // Maybe this works? How do you want this formatted?
         throw new NotImplementedException();
     }
     public string GenerateMcpCommandsText()
     {
         // Give a list of command the llm can callback:
+
         // Example: 
-        // CreateOrUpdateFile(path, content)
-        // MoveFile(path, newPath)
-        // DeleteFile(path)
-        // Compile()
+        // %CreateOrUpdateFile(path, content)%
+        // %MoveFile(path, newPath)%
+        // %DeleteFile(path)%
+        // $Compile()%
+
+        // THESE EXAMPLES ARE NOT GOOD IT THINK
         throw new NotImplementedException();
     }
     public void ProcessResponse(string responseText)
