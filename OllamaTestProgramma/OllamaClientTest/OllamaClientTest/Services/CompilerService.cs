@@ -1,4 +1,4 @@
-﻿
+﻿namespace OllamaAgentGenerator.Services;
 
 internal class CompilerService
 {

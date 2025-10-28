@@ -1,93 +1,114 @@
 ﻿using OllamaAgentGenerator.Agents;
 using OllamaAgentGenerator.Services;
 
-Console.WriteLine("Initialising model...");
-using var llmService = new LLMService("deepseek-r1:8b");
-
-await llmService.InitializeModelAsync();
-
-Console.WriteLine("Model initialised. Please supply a prompt, what do you want to create:");
-
-var userPromptText = Console.ReadLine();
-if (userPromptText != null)
+internal class Program
 {
-    var currentDirectoryName = Path.Combine(Environment.CurrentDirectory, "Source");
-    var currentDirectory = new DirectoryInfo(currentDirectoryName);
-    var fileRepository = new FileRepositoryService(currentDirectory);
-    var compiler = new CompilerService(currentDirectory);
-    
-    var doPromptAgent = new DoPromptAgent(userPromptText, fileRepository);
-    var isPromptFinishedAgent = new IsPromptFinishedAgent(userPromptText, fileRepository);
-
-    Console.WriteLine();
-
-    var i = 0;
-
-    while (true)
+    private static async Task Main(string[] args)
     {
-        string fullPromptText = doPromptAgent.GeneratePrompt();
-        Console.WriteLine($"Step {++i}: Ask model:"); 
-        Console.WriteLine(fullPromptText);
-        Console.WriteLine();
+        Console.Clear();
+        Console.ForegroundColor = ConsoleColor.DarkGray;
+        Console.WriteLine("Initialising model...");
+        //using var llmService = new LLMService("gpt-oss:20b");
+        using var llmService = new LLMService("gemma3:4b");
 
-        var responseText = string.Empty;
-        Console.WriteLine("Model answered:");
-        await foreach (var chunk in llmService.PromptAsync(fullPromptText))
+        await llmService.InitializeModelAsync();
+
+        Console.ForegroundColor = ConsoleColor.White;
+        Console.WriteLine("Model initialised. Please supply a prompt, what do you want to create:");
+
+        var userPromptText = Console.ReadLine();
+        if (userPromptText != null)
         {
-            responseText += chunk;
-            Console.Write(chunk);
-        }
-        Console.WriteLine();
+            var currentDirectoryName = Path.Combine(Environment.CurrentDirectory, "Source");
+            var currentDirectory = new DirectoryInfo(currentDirectoryName);
+            var fileRepository = new FileRepositoryService(currentDirectory);
+            var compiler = new CompilerService(currentDirectory);
 
-        Console.WriteLine("Applying answer to context.");
-        Console.WriteLine();
-        doPromptAgent.ProcessResponse(responseText);
+            var doPromptAgent = new DoPromptAgent(userPromptText, fileRepository);
+            var isPromptFinishedAgent = new IsPromptFinishedAgent(userPromptText, fileRepository);
 
-        if (doPromptAgent.WantsToSeeCompile)
-        {
-            Console.WriteLine($"Step {++i}: Compiling...");
+            Console.WriteLine();
 
-            var compileErrors = compiler.Compile();
-            if (compileErrors != null)
+            var i = 0;
+            var compileErrors = string.Empty;
+
+            if (fileRepository.HasFiles)
             {
-                fullPromptText = doPromptAgent.GeneratePrompt(compileErrors);
+                compileErrors = compiler.Compile();
+            }
+
+            while (true)
+            {
+                Console.ForegroundColor = ConsoleColor.DarkGray;
+
+                // DO WORK
+                string fullPromptText = doPromptAgent.GeneratePrompt(compileErrors);
                 Console.WriteLine($"Step {++i}: Ask model:");
+                Console.WriteLine();
+                Console.WriteLine(fullPromptText);
+                Console.WriteLine();
+
+                Console.WriteLine("Model answered:");
+                var responseText = await CallLLM(llmService, fullPromptText);
+                Console.WriteLine();
+
+                Console.WriteLine("Applying answer to context.");
+                Console.WriteLine();
+                doPromptAgent.ProcessResponse(responseText);
+
+                // COMPILE
+                Console.WriteLine($"Step {++i}: Compiling...");
+                Console.WriteLine();
+                compileErrors = compiler.Compile();
+
+                // CHECK
+                Console.WriteLine($"Step {++i}: Ask model:");
+                Console.WriteLine();
+                fullPromptText = isPromptFinishedAgent.GeneratePrompt();
                 Console.WriteLine(fullPromptText);
                 Console.WriteLine();
 
                 responseText = string.Empty;
                 Console.WriteLine("Model answered:");
-                await foreach (var chunk in llmService.PromptAsync(fullPromptText))
-                {
-                    responseText += chunk;
-                    Console.Write(chunk);
-                }
+                responseText = await CallLLM(llmService, fullPromptText);
                 Console.WriteLine();
 
-                Console.WriteLine("Applying answer to context.");
-                doPromptAgent.ProcessResponse(responseText);
+                Console.WriteLine("Check if prompt has been satisfied.");
+                isPromptFinishedAgent.ProcessResponse(responseText);
+
+                if (isPromptFinishedAgent.IsDone) break;
             }
         }
+    }
 
-        Console.WriteLine($"Stap {++i}: Checken of de huidige context toereikend is...");
-
-        Console.WriteLine("Volledige vraag aan het model:");
-        fullPromptText = isPromptFinishedAgent.GeneratePrompt();
-        Console.WriteLine(fullPromptText);
-        Console.WriteLine();
-
-        responseText = string.Empty;
-        Console.WriteLine("Antwoord van het model:");
+    private static async Task<string> CallLLM(LLMService llmService, string fullPromptText)
+    {
+        var isThinking = false;
+        var responseText = string.Empty;
         await foreach (var chunk in llmService.PromptAsync(fullPromptText))
         {
-            responseText += chunk;
-            Console.Write(chunk);
+            responseText += chunk.response ?? string.Empty;
+            if (!string.IsNullOrEmpty(chunk.thinking))
+            {
+                if (!isThinking)
+                {
+                    isThinking = true;
+                    Console.WriteLine("Thinking:");
+                }
+                Console.ForegroundColor = ConsoleColor.DarkGray;
+                Console.Write(chunk.thinking);
+            }
+            if (!string.IsNullOrEmpty(chunk.response))
+            {
+                if (isThinking)
+                {
+                    isThinking = false;
+                    Console.WriteLine("");
+                }
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.Write(chunk.response);
+            }
         }
-        Console.WriteLine();
-
-        Console.WriteLine("Antwoord (eventueel) uitvoeren op de context");
-        isPromptFinishedAgent.ProcessResponse(responseText);
-
-        if (isPromptFinishedAgent.IsDone) break;
+        return responseText;
     }
 }

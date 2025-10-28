@@ -23,10 +23,11 @@ public class LLMService(string modelName,
     public record OllamaResponse(
         string? model,
         DateTime? created_at,
+        string? thinking,
         string? response,
         bool done);
 
-    public async IAsyncEnumerable<string> PromptAsync(string prompt, [EnumeratorCancellation] CancellationToken ct = default)
+    public async IAsyncEnumerable<(string? thinking, string? response)> PromptAsync(string prompt, [EnumeratorCancellation] CancellationToken ct = default)
     {
         var payload = new
         {
@@ -60,9 +61,9 @@ public class LLMService(string modelName,
                 break;
             }
 
-            if (data.response != null)
+            if (data.thinking != null || data.response != null)
             {
-                yield return data.response;
+                yield return (data.thinking, data.response);
             }
         }
     }

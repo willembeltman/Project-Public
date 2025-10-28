@@ -6,21 +6,21 @@ public class DoPromptAgent(
     string userPromptText,
     FileRepositoryService fileRepository)
 {
-    public bool WantsToSeeCompile => fileRepository.WantsToSeeCompile;
-
     public string GeneratePrompt(string? compileErrors = null)
     {
         var fileContentsText = fileRepository.GenerateFileContentsText();
-        var mcpText = fileRepository.GenerateMcpCommandsText();
+        var prompt = $"The current source contents is:\n{fileContentsText}\n\n";
 
-        var prompt = $"The current source contents is:\n{fileContentsText}\n";
         if (!string.IsNullOrWhiteSpace(compileErrors))
         {
-            prompt += $"The current compile errors are:\n{compileErrors}\n";
+            prompt += $"The current compile errors are:\n{compileErrors}\n\n";
         }
-        prompt += $"The user prompt was:\n{userPromptText}\n";
-        prompt += $"Please choose actions to solve the user prompt:\n{mcpText}";
-        return prompt;
+
+        prompt += $"The user prompt was:\n{userPromptText}\n\n";
+
+        var mcpText = fileRepository.GenerateMcpCommandsText();
+        prompt += $"Please choose from actions to solve the user prompt(you can do multiple):\n{mcpText}";
+        return prompt; 
     }
 
     public void ProcessResponse(string responseText)
