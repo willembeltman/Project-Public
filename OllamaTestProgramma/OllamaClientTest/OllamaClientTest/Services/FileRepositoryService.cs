@@ -5,7 +5,7 @@ public class FileRepositoryService
     private readonly HashSet<string> _fileContents = new();
     private readonly DirectoryInfo _directoryInfo;
 
-    public bool HasFiles { get; internal set; }
+    public bool HasFiles => _fileContents.Count > 0;
 
     // Track all existing files and their content
     public FileRepositoryService(DirectoryInfo directoryInfo)
@@ -49,17 +49,28 @@ public class FileRepositoryService
     // Generate MCP command template for the model to use
     public string GenerateMcpCommandsText()
     {
-        return $@"%%CreateOrUpdateFile(""<path>"", ""<content>"")%%
-%%MoveFile(""<oldPath>"", ""<newPath>"")%%
-%%DeleteFile(""<path>"")%%
+        return $@"
+%%CreateOrUpdateFile(""<path>"", ""<content>"")%%
+<path> is the relative path to the file, example: replace <path> with content\player.svg
+<content> is the content of the file encoded as string, example replace <content> with <html>\n</html> 
 
-Please keep in mind to always use the %% for the beginning and the end(!)";
+%%MoveFile(""<oldPath>"", ""<newPath>"")%%
+<oldPath> is the current path to the file, example: content\player.svg
+<newPath> is the path you want to move the file to, example: content\player2.svg
+
+%%DeleteFile(""<path>"")%%
+<path> is the relative path of the file you want to delete, example: content\player.svg
+
+Note: Please keep in mind to always use the %% for the beginning and the end(!)
+Note #2: Please always replace <path>, <content>, <oldPath>, <newPath> and <path>";
     }
 
     // Process response containing MCP commands and execute them
-    public void ProcessResponse(string responseText)
+    public bool ProcessResponse(string responseText)
     {
-        foreach (var command in ParseMcpCommands(responseText))
+        var commandList = ParseMcpCommands(responseText).ToArray();
+        if (commandList.Length == 0) return false;
+        foreach (var command in commandList)
         {
             try
             {
@@ -84,6 +95,7 @@ Please keep in mind to always use the %% for the beginning and the end(!)";
                 Console.WriteLine($"Error executing command {command.Type}: {ex.Message}");
             }
         }
+        return true;
     }
 
     private IEnumerable<(string Type, string Param1, string Param2)> ParseMcpCommands(string responseText)
@@ -96,6 +108,7 @@ Please keep in mind to always use the %% for the beginning and the end(!)";
             var movePosition = responseText.IndexOf("%%MoveFile(", position);
             var deletePosition = responseText.IndexOf("%%DeleteFile(", position);
 
+            actionDetected = false;
             if (createPosition > 0)
             {
                 actionDetected = true;
@@ -111,7 +124,8 @@ Please keep in mind to always use the %% for the beginning and the end(!)";
                 var content = responseText
                     .Substring(createPosition2, createPosition3 - createPosition2)
                     .Replace("\\r", "\r")
-                    .Replace("\\n", "\n");
+                    .Replace("\\n", "\n")
+                    .Replace("\\\\", "\\");
                 yield return ("CreateOrUpdateFile", fileName, content);
             }
             

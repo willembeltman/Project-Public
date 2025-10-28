@@ -8,11 +8,17 @@ public class IsPromptFinishedAgent(
 {
     public bool IsDone { get; internal set; }
 
-    public string GeneratePrompt()
+    public string GeneratePrompt(string compileErrors)
     {
         var fileContentsText = fileRepository.GenerateFileContentsText();
         var prompt = $"The current source contents is:\n{fileContentsText}\n";
-        prompt += $"The user prompt was:\n{userPromptText}\n";
+
+        if (!string.IsNullOrWhiteSpace(compileErrors))
+        {
+            prompt += $"The current compile errors are:\n{compileErrors}\n\n";
+        }
+
+        prompt += $"The user prompt is:\n{userPromptText}\n";
         prompt += $"Is the prompt satisfied? Reply [YES] or [NO]";
         return prompt;
     }

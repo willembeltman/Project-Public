@@ -16,7 +16,9 @@ internal class Program
         Console.ForegroundColor = ConsoleColor.White;
         Console.WriteLine("Model initialised. Please supply a prompt, what do you want to create:");
 
-        var userPromptText = Console.ReadLine();
+        //var userPromptText = Console.ReadLine();
+        var userPromptText = "Create a snake game in C#"; 
+        Console.WriteLine(userPromptText);
         if (userPromptText != null)
         {
             var currentDirectoryName = Path.Combine(Environment.CurrentDirectory, "Source");
@@ -43,7 +45,7 @@ internal class Program
 
                 // DO WORK
                 string fullPromptText = doPromptAgent.GeneratePrompt(compileErrors);
-                Console.WriteLine($"Step {++i}: Ask model:");
+                Console.WriteLine($"###{++i} Ask model:");
                 Console.WriteLine();
                 Console.WriteLine(fullPromptText);
                 Console.WriteLine();
@@ -56,15 +58,17 @@ internal class Program
                 Console.WriteLine();
                 doPromptAgent.ProcessResponse(responseText);
 
+                Console.ForegroundColor = ConsoleColor.DarkGray;
+
                 // COMPILE
-                Console.WriteLine($"Step {++i}: Compiling...");
+                Console.WriteLine($"###{++i} Compiling...");
                 Console.WriteLine();
                 compileErrors = compiler.Compile();
 
                 // CHECK
-                Console.WriteLine($"Step {++i}: Ask model:");
+                Console.WriteLine($"###{++i} Ask model:");
                 Console.WriteLine();
-                fullPromptText = isPromptFinishedAgent.GeneratePrompt();
+                fullPromptText = isPromptFinishedAgent.GeneratePrompt(compileErrors);
                 Console.WriteLine(fullPromptText);
                 Console.WriteLine();
 

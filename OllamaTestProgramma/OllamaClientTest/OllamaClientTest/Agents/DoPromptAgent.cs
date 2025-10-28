@@ -16,13 +16,14 @@ public class DoPromptAgent(
             prompt += $"The current compile errors are:\n{compileErrors}\n\n";
         }
 
-        prompt += $"The user prompt was:\n{userPromptText}\n\n";
-
         var mcpText = fileRepository.GenerateMcpCommandsText();
-        prompt += $"Please choose from actions to solve the user prompt(you can do multiple):\n{mcpText}";
+        prompt += $"Please choose from these actions to solve the user prompt(you can do multiple):\n{mcpText}\n\n";
+
+        prompt += $"The user prompt is:\n{userPromptText}";
+
         return prompt; 
     }
 
-    public void ProcessResponse(string responseText)
+    public bool ProcessResponse(string responseText)
         => fileRepository.ProcessResponse(responseText);
 }
