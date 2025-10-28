@@ -10,7 +10,12 @@ public class IsPromptFinishedAgent(
 
     public string GeneratePrompt(string compileErrors)
     {
-        var fileContentsText = fileRepository.GenerateFileContentsText();
+        fileRepository.InitializeFileTracking();
+
+        string fileContentsText = fileRepository.FileContents.Count == 0
+            ? "<No files in directory>"
+            : string.Join(Environment.NewLine, fileRepository.FileContents);
+
         var prompt = $"The current source contents is:\n{fileContentsText}\n";
 
         if (!string.IsNullOrWhiteSpace(compileErrors))

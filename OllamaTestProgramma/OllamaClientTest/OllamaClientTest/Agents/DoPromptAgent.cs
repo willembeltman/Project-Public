@@ -9,45 +9,55 @@ public class DoPromptAgent(
 {
     public string GeneratePrompt(string? compileErrors = null)
     {
-        var fileContentsText = string.Empty;
         fileRepository.InitializeFileTracking();
-        if (fileRepository.FileContents.Count == 0) fileContentsText = "<No files in directory>";
-        fileContentsText = string.Join(Environment.NewLine, fileRepository.FileContents);
 
-        return @$"The current source contents is:
+        string fileContentsText = fileRepository.FileContents.Count == 0
+            ? "<No files in directory>"
+            : string.Join(Environment.NewLine, fileRepository.FileContents);
+
+        return @$"
+The current source contents are:
 {fileContentsText}
-{(!string.IsNullOrWhiteSpace(compileErrors) ? @$"
+
+{(string.IsNullOrWhiteSpace(compileErrors) ? string.Empty : @$"
 The current compile errors are:
 {compileErrors}
-" : "" )}
-You are connected to a local Machine Control Protocol (MCP) that accepts file operations using the following commands:
+")}
+
+You are connected to a local Machine Control Protocol (MCP) that accepts file operations using the following exact commands:
 
 %CreateOrUpdateFile(""path"", ""content"")%
-Creates a new file or replaces the existing one at ""path"".
-The ""content"" parameter must escape newlines as \n and carriage returns as \r.
+  - Creates or replaces the file at the given ""path"".
+  - The ""content"" parameter must escape newline characters as \n.
 
 %MoveFile(""oldPath"", ""newPath"")%
-Moves or renames a file.
+  - Moves or renames a file from ""oldPath"" to ""newPath"".
 
 %DeleteFile(""path"")%
-Deletes a file.
+  - Deletes the file at the given ""path"".
 
 Formatting rules:
-
-Always start a command with % and end it with )%.
-
-Never include additional text, explanations, or Markdown outside of the %... )% block.
-
-Commands must be written exactly as shown, including quotation marks and commas.
+- Always start a command with % and end it with "")% . Pay extra attention to the ending "")% .
+- Do not include any additional text, explanations, or Markdown outside of a %... )% block.
+- Commands must match the examples exactly, including quotation marks and commas.
+- Never explain what you are doing — just output the command itself.
+- The ""content"" parameter must use DOUBLE escaping:
+      \\n for newline
+      \\r for carriage return
+      \\\\ for backslash
+      \\\"" for double quotes
 
 Example:
+%CreateOrUpdateFile(""scripts\test.txt"", ""Hello\nWorld!"")%
 
-%CreateOrUpdateFile(""scripts/test.txt"", ""Hello\\nWorld!"")%
+When you decide to modify the files, respond only with the appropriate MCP command.
+Do not wrap your response in code blocks, Markdown, or any extra text.
 
-The user prompt is:
+User prompt:
 {userPromptText}
 ";
     }
+
 
     public bool ProcessResponse(string responseText)
         => fileRepository.ProcessResponse(responseText);

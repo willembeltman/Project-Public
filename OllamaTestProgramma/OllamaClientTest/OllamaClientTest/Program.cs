@@ -8,8 +8,8 @@ internal class Program
         Console.Clear();
         Console.ForegroundColor = ConsoleColor.DarkGray;
         Console.WriteLine("Initialising model...");
-        //using var llmService = new LLMService("gpt-oss:20b");
-        using var llmService = new LLMService("gemma3:4b");
+        using var llmService = new LLMService("gpt-oss:20b");
+        //using var llmService = new LLMService("gemma3:4b");
 
         await llmService.InitializeModelAsync();
 

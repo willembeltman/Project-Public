@@ -78,12 +78,15 @@ public class FileRepositoryService
         var actionDetected = true;
         while (actionDetected)
         {
+            actionDetected = false;
+
+            if (position >= responseText.Length) break;
+
             var createPosition = responseText.IndexOf("%CreateOrUpdateFile(", position);
             var movePosition = responseText.IndexOf("%MoveFile(", position);
             var deletePosition = responseText.IndexOf("%DeleteFile(", position);
 
-            actionDetected = false;
-            if (createPosition > 0)
+            if (createPosition >= 0)
             {
                 var createPosition0 = responseText.IndexOf("(\"", createPosition) + 2;
                 var createPosition1 = responseText.IndexOf("\",", createPosition0);
@@ -102,14 +105,15 @@ public class FileRepositoryService
                     var fileName = responseText.Substring(createPosition0, createPosition1 - createPosition0);
                     var content = responseText
                         .Substring(createPosition2, createPosition3 - createPosition2)
+                        .Replace("\\\\", "\\")
                         .Replace("\\r", "\r")
                         .Replace("\\n", "\n")
-                        .Replace("\\\\", "\\");
+                        .Replace("\\\"", "\"");
                     yield return ("CreateOrUpdateFile", fileName, content);
                 }
             }
 
-            if (movePosition > 0)
+            if (movePosition >= 0)
             {
                 var movePosition0 = responseText.IndexOf("(\"", movePosition) + 2;
                 var movePosition1 = responseText.IndexOf("\",", movePosition0);
@@ -131,7 +135,7 @@ public class FileRepositoryService
                 }
             }
 
-            if (deletePosition > 0)
+            if (deletePosition >= 0)
             {
                 var deletePosition0 = responseText.IndexOf("(\"", deletePosition) + 2;
                 var deletePosition1 = responseText.IndexOf("\")%", deletePosition0);
