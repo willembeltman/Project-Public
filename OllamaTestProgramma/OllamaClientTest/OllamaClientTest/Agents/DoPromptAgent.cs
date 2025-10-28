@@ -1,4 +1,5 @@
 ﻿using OllamaAgentGenerator.Services;
+using System.IO;
 
 namespace OllamaAgentGenerator.Agents;
 
@@ -8,20 +9,44 @@ public class DoPromptAgent(
 {
     public string GeneratePrompt(string? compileErrors = null)
     {
-        var fileContentsText = fileRepository.GenerateFileContentsText();
-        var prompt = $"The current source contents is:\n{fileContentsText}\n\n";
+        var fileContentsText = string.Empty;
+        fileRepository.InitializeFileTracking();
+        if (fileRepository.FileContents.Count == 0) fileContentsText = "<No files in directory>";
+        fileContentsText = string.Join(Environment.NewLine, fileRepository.FileContents);
 
-        if (!string.IsNullOrWhiteSpace(compileErrors))
-        {
-            prompt += $"The current compile errors are:\n{compileErrors}\n\n";
-        }
+        return @$"The current source contents is:
+{fileContentsText}
+{(!string.IsNullOrWhiteSpace(compileErrors) ? @$"
+The current compile errors are:
+{compileErrors}
+" : "" )}
+You are connected to a local Machine Control Protocol (MCP) that accepts file operations using the following commands:
 
-        var mcpText = fileRepository.GenerateMcpCommandsText();
-        prompt += $"Please choose from these actions to solve the user prompt(you can do multiple):\n{mcpText}\n\n";
+%CreateOrUpdateFile(""path"", ""content"")%
+Creates a new file or replaces the existing one at ""path"".
+The ""content"" parameter must escape newlines as \n and carriage returns as \r.
 
-        prompt += $"The user prompt is:\n{userPromptText}";
+%MoveFile(""oldPath"", ""newPath"")%
+Moves or renames a file.
 
-        return prompt; 
+%DeleteFile(""path"")%
+Deletes a file.
+
+Formatting rules:
+
+Always start a command with % and end it with )%.
+
+Never include additional text, explanations, or Markdown outside of the %... )% block.
+
+Commands must be written exactly as shown, including quotation marks and commas.
+
+Example:
+
+%CreateOrUpdateFile(""scripts/test.txt"", ""Hello\\nWorld!"")%
+
+The user prompt is:
+{userPromptText}
+";
     }
 
     public bool ProcessResponse(string responseText)
