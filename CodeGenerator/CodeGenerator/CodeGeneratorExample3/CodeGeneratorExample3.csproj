@@ -11,7 +11,7 @@
     <Content Include="Example3.md" />
   </ItemGroup>
 
-	<ItemGroup>
+	<ItemGroup> 
 		<ProjectReference Include="..\CodeGeneratorExample3.Analyzer\CodeGeneratorExample3.Analyzer.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
 	</ItemGroup>
 	
