@@ -36,7 +36,8 @@ internal class Program
 
             if (fileRepository.HasFiles)
             {
-                compileErrors = compiler.Compile();
+                compileErrors = compiler.Compile()
+                    .Replace(currentDirectoryName + "\\", "");
             }
 
             while (true)
@@ -63,7 +64,8 @@ internal class Program
                 // COMPILE
                 Console.WriteLine($"###{++i} Compiling...");
                 Console.WriteLine();
-                compileErrors = compiler.Compile();
+                compileErrors = compiler.Compile()
+                    .Replace(currentDirectoryName + "\\", "");
 
                 // CHECK
                 Console.WriteLine($"###{++i} Ask model:");

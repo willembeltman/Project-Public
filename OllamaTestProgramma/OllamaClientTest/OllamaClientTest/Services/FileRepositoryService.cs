@@ -102,7 +102,12 @@ public class FileRepositoryService
                     if (position < endPosition)
                         position = endPosition;
 
-                    var fileName = responseText.Substring(createPosition0, createPosition1 - createPosition0);
+                    var fileName = responseText
+                        .Substring(createPosition0, createPosition1 - createPosition0)
+                        .Replace("\\\\", "\\")
+                        .Replace("\\r", "\r")
+                        .Replace("\\n", "\n")
+                        .Replace("\\\"", "\"");
                     var content = responseText
                         .Substring(createPosition2, createPosition3 - createPosition2)
                         .Replace("\\\\", "\\")
@@ -129,8 +134,18 @@ public class FileRepositoryService
                     if (position < endPosition)
                         position = endPosition;
 
-                    var oldPath = responseText.Substring(movePosition0, movePosition1 - movePosition0);
-                    var newPath = responseText.Substring(movePosition2, movePosition3 - movePosition2);
+                    var oldPath = responseText
+                        .Substring(movePosition0, movePosition1 - movePosition0)
+                        .Replace("\\\\", "\\")
+                        .Replace("\\r", "\r")
+                        .Replace("\\n", "\n")
+                        .Replace("\\\"", "\"");
+                    var newPath = responseText
+                        .Substring(movePosition2, movePosition3 - movePosition2)
+                        .Replace("\\\\", "\\")
+                        .Replace("\\r", "\r")
+                        .Replace("\\n", "\n")
+                        .Replace("\\\"", "\"");
                     yield return ("MoveFile", oldPath, newPath);
                 }
             }
@@ -148,7 +163,12 @@ public class FileRepositoryService
                     if (position < endPosition)
                         position = endPosition;
 
-                    var path = responseText.Substring(deletePosition0, deletePosition1 - deletePosition0);
+                    var path = responseText
+                        .Substring(deletePosition0, deletePosition1 - deletePosition0)
+                        .Replace("\\\\", "\\")
+                        .Replace("\\r", "\r")
+                        .Replace("\\n", "\n")
+                        .Replace("\\\"", "\"");
                     yield return ("DeleteFile", path, string.Empty);
                 }
             }

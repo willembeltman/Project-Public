@@ -2,6 +2,10 @@
 
 namespace OllamaAgentGenerator.Services;
 
+using System.Diagnostics;
+using System.Text;
+using System.Text.RegularExpressions;
+
 public class CompilerService
 {
     private readonly DirectoryInfo currentDirectory;
@@ -12,30 +16,23 @@ public class CompilerService
     }
 
     /// <summary>
-    /// Compiles anything in the currentDirectory.
-    /// Looks for a .sln first, then a .csproj.
-    /// Returns a status string (e.g. "Build successful" or error details).
+    /// Compiles the solution or project in the current directory.
+    /// Returns a detailed report including errors and warnings if any.
     /// </summary>
-    /// <returns>Compilation status.</returns>
     public string Compile()
     {
-        // 1. Find a file to compile
         var slnFile = currentDirectory.GetFiles("*.sln", SearchOption.TopDirectoryOnly).FirstOrDefault();
         var csprojFile = currentDirectory.GetFiles("*.csproj", SearchOption.TopDirectoryOnly).FirstOrDefault();
 
         if (slnFile == null && csprojFile == null)
-        {
             return "No .sln or .csproj file was found.";
-        }
 
-        // .sln takes precedence
         string fileToBuild = slnFile?.FullName ?? csprojFile.FullName;
 
-        // 2. Prepare the process
         var startInfo = new ProcessStartInfo
         {
             FileName = "dotnet",
-            Arguments = $"build \"{fileToBuild}\"",
+            Arguments = $"build \"{fileToBuild}\" -nologo -v:m",
             WorkingDirectory = currentDirectory.FullName,
             RedirectStandardOutput = true,
             RedirectStandardError = true,
@@ -45,29 +42,49 @@ public class CompilerService
 
         try
         {
-            using var process = Process.Start(startInfo);
-            if (process == null)
-                return "Failed to start build process.";
+            using var process = new Process { StartInfo = startInfo };
+            var outputBuilder = new StringBuilder();
+            var errorBuilder = new StringBuilder();
 
-            // Capture the output
-            string stdout = process.StandardOutput.ReadToEnd();
-            string stderr = process.StandardError.ReadToEnd();
+            process.OutputDataReceived += (_, e) => { if (e.Data != null) outputBuilder.AppendLine(e.Data); };
+            process.ErrorDataReceived += (_, e) => { if (e.Data != null) errorBuilder.AppendLine(e.Data); };
 
+            process.Start();
+            process.BeginOutputReadLine();
+            process.BeginErrorReadLine();
             process.WaitForExit();
 
+            string output = outputBuilder.ToString();
+            string errors = errorBuilder.ToString();
+
+            // Try to extract compiler errors using regex
+            // Example line: "Program.cs(10,5): error CS1002: ; expected [MyApp -> MyApp.csproj]"
+            var matches = Regex.Matches(output + errors, @"^(?<file>.+?)\((?<line>\d+),(?<col>\d+)\):\s*(?<type>error|warning)\s*(?<code>CS\d+):\s*(?<msg>.+)$",
+                RegexOptions.Multiline);
+
+            if (matches.Count > 0)
+            {
+                var formatted = new StringBuilder();
+                formatted.AppendLine($"Build failed ({matches.Count} issue{(matches.Count == 1 ? "" : "s")}):");
+
+                foreach (Match m in matches)
+                {
+                    formatted.AppendLine($"[{m.Groups["type"].Value.ToUpper()} {m.Groups["code"].Value}] {m.Groups["file"].Value}({m.Groups["line"].Value},{m.Groups["col"].Value}): {m.Groups["msg"].Value}");
+                }
+
+                return formatted.ToString();
+            }
+
             if (process.ExitCode == 0)
-            {
-                return $"Build successful.\n{stdout}";
-            }
-            else
-            {
-                return $"Build failed (exit code {process.ExitCode}).\n{stderr}";
-            }
+                return $"Build successful.\n{output.Trim()}";
+
+            // No regex matches but nonzero exit: return raw logs
+            return $"Build failed (exit code {process.ExitCode}).\n{output}\n{errors}";
         }
         catch (Exception ex)
         {
-            // If the dotnet CLI is not available or another error occurs
             return $"Build process threw an exception: {ex.Message}";
         }
     }
 }
+

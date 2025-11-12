@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="CodeGeneratorExample1.Generator/CodeGeneratorExample1.Generator.csproj" />
+  <Project Path="CodeGeneratorExample1/CodeGeneratorExample1.csproj" />
+  <Project Path="CodeGeneratorExample2/CodeGeneratorExample2.csproj" />
+  <Project Path="CodeGeneratorExample3.Analyzer/CodeGeneratorExample3.Analyzer.csproj" />
+  <Project Path="CodeGeneratorExample3/CodeGeneratorExample3.csproj" />
+</Solution>
