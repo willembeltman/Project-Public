@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Example3.md" />
+    <Content Include="Example3.md" />
   </ItemGroup>
 
 	<ItemGroup>

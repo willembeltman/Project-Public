@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace CodeGeneratorExample1;
+﻿namespace CodeGeneratorExample1;
 
 internal class Program
 {
