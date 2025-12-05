@@ -4,7 +4,7 @@ namespace SupplierProductCalculator;
 
 public static class TestDataFactory
 {
-    public static Order CreateTestOrderInDatabase(ApplicationDbContext db)
+    public static Order CreateTestOrderInDatabase(TestDbContext db)
     {
         var supplierA = new Supplier() { Name = "Supplier A", DeliveryPrice = 5m };
         var supplierB = new Supplier() { Name = "Supplier B", DeliveryPrice = 10m };

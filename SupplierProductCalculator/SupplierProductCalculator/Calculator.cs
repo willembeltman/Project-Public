@@ -38,7 +38,7 @@ public record SupplierOrderRow(
     }
 }
 
-public static class OrderExtention
+public static class Calculator
 {
     public static IEnumerable<Quote> CalculateQuotes(this Order order)
     {

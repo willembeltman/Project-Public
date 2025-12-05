@@ -5,17 +5,17 @@ class Program
     static void Main(string[] args)
     {
         // Create test database
-        var db = new ApplicationDbContext();
+        var db = new TestDbContext();
 
         // Create order
-        var order = TestDataFactory.CreateTestOrderInDatabase(db);
+        var testOrder = TestDataFactory.CreateTestOrderInDatabase(db);
 
         // Calculate quotes
-        var quotes = order.CalculateQuotes()
+        var quotes = testOrder.CalculateQuotes()
             .OrderBy(a => a.TotalPrice)
             .ToArray();
 
         // Show quotes
-        ConsoleService.ShowQuotes(quotes);
+        ConsoleOutput.ShowQuotes(quotes);
     }   
 }

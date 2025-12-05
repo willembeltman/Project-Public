@@ -4,16 +4,16 @@ using SupplierProductCalculator.Entities;
 
 namespace SupplierProductCalculator;
 
-public class ApplicationDbContext : DbContext
+public class TestDbContext : DbContext
 {
     private static readonly SqliteConnection _keepAliveConnection =
         new SqliteConnection("DataSource=:memory:");
 
-    static ApplicationDbContext()
+    static TestDbContext()
     {
         _keepAliveConnection.Open(); // database blijft bestaan zolang de app draait
     }
-    public ApplicationDbContext() : base()
+    public TestDbContext() : base()
     {
         Database.EnsureCreated();
     }
