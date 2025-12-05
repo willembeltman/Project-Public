@@ -9,6 +9,3 @@ public class OrderRow
     public virtual Product Product { get; set; } = null!;
     public int Quantity { get; set; }
 }
-
-
-// Calculator output

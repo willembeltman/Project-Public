@@ -7,6 +7,3 @@ public class Product
     public virtual ICollection<SupplierProduct> SupplierProducts { get; set; } = [];
     public virtual ICollection<OrderRow> OrderRows { get; set; } = [];
 }
-
-
-// Calculator output

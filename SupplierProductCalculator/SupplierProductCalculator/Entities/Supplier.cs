@@ -7,6 +7,3 @@ public class Supplier
     public decimal DeliveryPrice { get; set; }
     public virtual ICollection<SupplierProduct> SupplierProducts { get; set; } = [];
 }
-
-
-// Calculator output

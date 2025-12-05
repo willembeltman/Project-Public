@@ -75,6 +75,3 @@ public class TestDbContext : DbContext
             .IsUnique(false);
     }
 }
-
-
-// Calculator output

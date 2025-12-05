@@ -9,6 +9,3 @@ public class SupplierProduct
     public virtual Product Product { get; set; } = null!;
     public decimal Price { get; set; }
 }
-
-
-// Calculator output
