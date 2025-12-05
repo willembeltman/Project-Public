@@ -7,7 +7,7 @@ public static class TestDataFactory
     public static Order CreateTestOrderInDatabase(TestDbContext db)
     {
         var supplierA = new Supplier() { Name = "Supplier A", DeliveryPrice = 5 };
-        var supplierB = new Supplier() { Name = "Supplier B", DeliveryPrice = 10 };
+        var supplierB = new Supplier() { Name = "Supplier B", DeliveryPrice = 35 };
 
         var product1 = new Product()
         {

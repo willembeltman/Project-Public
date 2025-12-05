@@ -14,7 +14,9 @@ public record SupplierOrder(
 public record SupplierOrderRow(
     OrderRow OrderRow,
     SupplierProduct SupplierProduct,
-    decimal SubTotalPrice); public record OrderRowWithSupplierProducts(
+    decimal SubTotalPrice); 
+
+public record OrderRowWithSupplierProducts(
     OrderRow OrderRow,
     SupplierProduct[] SupplierProducts)
 {
