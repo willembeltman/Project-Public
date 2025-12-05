@@ -13,6 +13,10 @@ public class ApplicationDbContext : DbContext
     {
         _keepAliveConnection.Open(); // database blijft bestaan zolang de app draait
     }
+    public ApplicationDbContext() : base()
+    {
+        Database.EnsureCreated();
+    }
 
     public DbSet<Order> Orders => Set<Order>();
     public DbSet<OrderRow> OrderRows => Set<OrderRow>();
