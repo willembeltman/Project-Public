@@ -7,12 +7,15 @@ class Program
         // Create test database
         var db = new ApplicationDbContext();
 
-        var order = TestDataFactory.CreateOrderInDatabase(db);
+        // Create order
+        var order = TestDataFactory.CreateTestOrderInDatabase(db);
 
+        // Calculate quotes
         var quotes = order.CalculateQuotes()
             .OrderBy(a => a.TotalPrice)
             .ToArray();
 
+        // Show quotes
         ConsoleService.ShowQuotes(quotes);
     }   
 }
