@@ -16,6 +16,6 @@ class Program
             .ToArray();
 
         // Show quotes
-        ConsoleOutput.ShowQuotes(quotes);
+        ConsoleHandler.ShowQuotes(quotes);
     }   
 }

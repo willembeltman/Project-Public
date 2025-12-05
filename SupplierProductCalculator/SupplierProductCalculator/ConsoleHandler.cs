@@ -1,6 +1,6 @@
 ﻿namespace SupplierProductCalculator;
 
-public static class ConsoleOutput
+public static class ConsoleHandler
 {
     public static void ShowQuotes(Quote[] quotes)
     {
