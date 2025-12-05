@@ -6,16 +6,16 @@ public static class TestDataFactory
 {
     public static Order CreateTestOrderInDatabase(TestDbContext db)
     {
-        var supplierA = new Supplier() { Name = "Supplier A", DeliveryPrice = 5m };
-        var supplierB = new Supplier() { Name = "Supplier B", DeliveryPrice = 10m };
+        var supplierA = new Supplier() { Name = "Supplier A", DeliveryPrice = 5 };
+        var supplierB = new Supplier() { Name = "Supplier B", DeliveryPrice = 10 };
 
         var product1 = new Product()
         {
             Name = "Laptop",
             SupplierProducts =
             [
-                new() { Supplier = supplierA, Price = 500m },
-                new() { Supplier = supplierB, Price = 450m }
+                new() { Supplier = supplierA, Price = 500 },
+                new() { Supplier = supplierB, Price = 450 }
             ]
         };
         var product2 = new Product()
@@ -23,7 +23,7 @@ public static class TestDataFactory
             Name = "Mouse",
             SupplierProducts =
             [
-                new() { Supplier = supplierA, Price = 20m },
+                new() { Supplier = supplierA, Price = 20 },
                 new() { Supplier = supplierB, Price = 25 }
             ]
         };
@@ -32,8 +32,8 @@ public static class TestDataFactory
             Name = "Keyboard",
             SupplierProducts =
             [
-                new() { Supplier = supplierA, Price = 15m },
-                new() { Supplier = supplierB, Price = 20m }
+                new() { Supplier = supplierA, Price = 15 },
+                new() { Supplier = supplierB, Price = 20 }
             ]
         };
 
