@@ -1,24 +1,49 @@
-﻿namespace SupplierProductCalculator;
+﻿using SupplierProductCalculator.Entities;
 
-// Database
-public record Order(IEnumerable<OrderRow> Rows);
-public record OrderRow(int Quantity, Product Product);
-public record Product(IEnumerable<SupplierProduct> SupplierProducts);
-public record Supplier(decimal DeliveryPrice, IEnumerable<SupplierProduct> SupplierProducts);
-public record SupplierProduct(Supplier Supplier, Product Product, decimal Price);
+namespace SupplierProductCalculator;
 
-// Calculator output
-public record Quote(SupplierOrder[] SupplierOrders, decimal TotalPrice);
-public record SupplierOrder(Supplier Supplier, SupplierOrderRow[] SupplierOrderRows, decimal SubTotalPrice);
-public record SupplierOrderRow(OrderRow OrderRow, SupplierProduct SupplierProduct, decimal SubTotalPrice);
+public record Quote(
+    SupplierOrder[] SupplierOrders,
+    decimal TotalPrice);
 
-// Calculator
+public record SupplierOrder(
+    Supplier Supplier,
+    SupplierOrderRow[] SupplierOrderRows,
+    decimal SubTotalPrice);
+
+public record SupplierOrderRow(
+    OrderRow OrderRow,
+    SupplierProduct SupplierProduct,
+    decimal SubTotalPrice); public record OrderRowWithSupplierProducts(
+    OrderRow OrderRow,
+    SupplierProduct[] SupplierProducts)
+{
+    public int SelectedSupplierProductIndex { get; private set; }
+    public SupplierProduct SelectedSupplierProduct => SupplierProducts[SelectedSupplierProductIndex];
+    public bool SelectNextProduct()
+    {
+        if (SupplierProducts.Length == 0)
+        {
+            throw new Exception(
+                "Internal exception: " +
+                "This order contains product with no suppliers to choose from.");
+        }
+        SelectedSupplierProductIndex++;
+        if (SelectedSupplierProductIndex >= SupplierProducts.Length)
+        {
+            SelectedSupplierProductIndex = 0;
+            return true;
+        }
+        return false;
+    }
+}
+
 public static class OrderExtention
 {
     public static IEnumerable<Quote> CalculateQuotes(this Order order)
     {
         // Create OrderRowWithSupplierProducts "Bits"
-        var orderRowsWithSupplierProducts = order.Rows
+        var orderRowsWithSupplierProducts = order.OrderRows
             .Where(row => row.Quantity > 0)
             .Select(row => new OrderRowWithSupplierProducts(row, [.. row.Product.SupplierProducts]))
             .ToArray();
@@ -47,14 +72,14 @@ public static class OrderExtention
             // Create quote with current supplier-product combination
             var supplierOrderRows = orderRowsWithSupplierProducts
                     .Select(a => new SupplierOrderRow(
-                        a.OrderRow, 
+                        a.OrderRow,
                         a.SelectedSupplierProduct,
                         a.OrderRow.Quantity * a.SelectedSupplierProduct.Price))
                     .ToArray();
             var supplierOrders = supplierOrderRows
                     .GroupBy(a => a.SupplierProduct.Supplier)
                     .Select(supplierGroup => new SupplierOrder(
-                        supplierGroup.Key, 
+                        supplierGroup.Key,
                         [.. supplierGroup],
                         supplierGroup.Key.DeliveryPrice + supplierGroup.Sum(a => a.SubTotalPrice)))
                     .ToArray();
@@ -71,27 +96,6 @@ public static class OrderExtention
                 if (rollover == false)
                     break;
             }
-        }
-    }
-    private record OrderRowWithSupplierProducts(OrderRow OrderRow, SupplierProduct[] SupplierProducts)
-    {
-        public int SelectedSupplierProductIndex { get; private set; }
-        public SupplierProduct SelectedSupplierProduct => SupplierProducts[SelectedSupplierProductIndex];
-        public bool SelectNextProduct()
-        {
-            if (SupplierProducts.Length == 0)
-            {
-                throw new Exception(
-                    "Internal exception: " +
-                    "This order contains product with no suppliers to choose from.");
-            }
-            SelectedSupplierProductIndex++;
-            if (SelectedSupplierProductIndex >= SupplierProducts.Length)
-            {
-                SelectedSupplierProductIndex = 0;
-                return true;
-            }
-            return false;
         }
     }
 }

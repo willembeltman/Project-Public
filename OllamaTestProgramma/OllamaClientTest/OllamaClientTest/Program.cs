@@ -16,6 +16,19 @@ internal class Program
         Console.ForegroundColor = ConsoleColor.White;
         Console.WriteLine("Model initialised. Please supply a prompt, what do you want to create:");
 
+        //var prompt1 = "Onthoud dit: 245";
+        //Console.WriteLine($"Asked: {prompt1}");
+        //Console.WriteLine("Model answered:");
+        //var responseText1 = await CallLLM(llmService, prompt1);
+        //Console.WriteLine();
+
+        //var prompt2 = "Welk nummer vroeg ik net om te onthouden?";
+        //Console.WriteLine($"Asked: {prompt2}");
+        //Console.WriteLine("Model answered:");
+        //var responseText2 = await CallLLM(llmService, prompt2);
+        //Console.WriteLine();
+
+        //return;
         //var userPromptText = Console.ReadLine();
         var userPromptText = "Create a snake game in C#"; 
         Console.WriteLine(userPromptText);
