@@ -2,7 +2,7 @@
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 
-namespace OllamaAgentGenerator.Services;
+namespace MyCodingAgent.Services;
 
 public class LLMService(string modelName,
     HttpClient? httpClient = null,

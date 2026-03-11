@@ -1,33 +1,18 @@
 ﻿using System.Diagnostics;
-
-namespace OllamaAgentGenerator.Services;
-
-using System.Diagnostics;
 using System.Text;
 using System.Text.RegularExpressions;
 
-public class CompilerService
+namespace MyCodingAgent.Services;
+
+public static class Compiler
 {
-    private readonly DirectoryInfo currentDirectory;
-
-    public CompilerService(DirectoryInfo currentDirectory)
-    {
-        this.currentDirectory = currentDirectory ?? throw new ArgumentNullException(nameof(currentDirectory));
-    }
-
-    /// <summary>
-    /// Compiles the solution or project in the current directory.
-    /// Returns a detailed report including errors and warnings if any.
-    /// </summary>
-    public string Compile()
+    public static async Task<string> Compile(DirectoryInfo currentDirectory)
     {
         var slnFile = currentDirectory.GetFiles("*.sln", SearchOption.TopDirectoryOnly).FirstOrDefault();
         var csprojFile = currentDirectory.GetFiles("*.csproj", SearchOption.TopDirectoryOnly).FirstOrDefault();
-
-        if (slnFile == null && csprojFile == null)
+        var fileToBuild = slnFile?.FullName ?? csprojFile?.FullName;
+        if (fileToBuild == null)
             return "No .sln or .csproj file was found.";
-
-        string fileToBuild = slnFile?.FullName ?? csprojFile.FullName;
 
         var startInfo = new ProcessStartInfo
         {
@@ -87,4 +72,3 @@ public class CompilerService
         }
     }
 }
-
