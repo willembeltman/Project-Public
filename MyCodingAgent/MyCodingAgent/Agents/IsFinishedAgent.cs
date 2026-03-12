@@ -1,40 +1,38 @@
 ﻿namespace MyCodingAgent.Agents;
 
 public class IsFinishedAgent(
-    string userPromptText, 
     Workspace workspace)
 {
-    public bool IsDone { get; internal set; }
-    public bool HasAnswered { get; internal set; }
 
-    public string GeneratePrompt()
+    public bool IsDone { get; set; }
+
+    public async Task<string> GeneratePrompt(string compileResult)
     {
-        //fileRepository.InitializeFileTracking();
+        return $@"The current source contents is:{(workspace.Files.Count == 0
+            ? @$"
+<No files in directory>"
+            : string.Join(Environment.NewLine, workspace.Files.Values.Select(a => $@"
 
-        string fileContentsText = workspace.Files.Count == 0
-            ? "<No files in directory>"
-            : string.Join(Environment.NewLine, workspace.Files);
+File '{a.RelativePath}':
+{a.FileContent}")))}{(string.IsNullOrWhiteSpace(compileResult) ? "" : $@"
 
-        var prompt = $"The current source contents is:\n{fileContentsText}\n";
+The current compile result is:
+{compileResult}")}
 
-        if (!string.IsNullOrWhiteSpace(workspace.CompileResult))
-        {
-            prompt += $"The current compile result is:\n{workspace.CompileResult}\n\n";
-        }
+The user prompt is:
+{workspace.UserPrompt}
 
-        prompt += $"The user prompt is:\n{userPromptText}\n";
-        prompt += $"Is the prompt satisfied? Reply [YES] or [NO]";
-        return prompt;
+Is the prompt satisfied? Reply [YES] or [NO]";
     }
 
-    public bool ProcessResponse(string responseText)
+    public async Task<bool> ProcessResponse(AgentResponse response)
     {
-        if (responseText.Contains("[NO]", StringComparison.InvariantCultureIgnoreCase))
+        if (response.responseText.Contains("[NO]", StringComparison.InvariantCultureIgnoreCase))
         {
             IsDone = false;
             return true;
         }
-        else if (responseText.Contains("[YES]", StringComparison.InvariantCultureIgnoreCase))
+        else if (response.responseText.Contains("[YES]", StringComparison.InvariantCultureIgnoreCase))
         {
             IsDone = true;
             return true;

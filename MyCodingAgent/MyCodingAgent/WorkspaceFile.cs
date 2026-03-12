@@ -2,9 +2,15 @@
 
 public record WorkspaceFile(
     string RelativePath,
-    FileInfo FileInfo,
+    string RealPath,
     string FileContent)
 {
-    public string[] Lines => FileContent.Split('\n');
-    public int LineCount => Lines.Length;
+    public Line[] GetLines()
+    {
+        var lines = FileContent.Split('\n');
+        return Enumerable.Range(0, lines.Length)
+            .Select(i => new Line(i, lines[i]))
+            .ToArray();
+    }
+    public int GetLineCount() => GetLines().Length;
 }

@@ -2,11 +2,11 @@
 
 public class AgentAction
 {
-    public string Type { get; set; } = "";
-    public string? Path { get; set; }
-    public string? NewPath { get; set; }
-    public string? Content { get; set; }
-    public int? StartLine { get; set; }
-    public int? EndLine { get; set; }
-    public int? Id { get; set; }
+    public string type { get; set; } = "";
+    public string? path { get; set; }
+    public string? newPath { get; set; }
+    public string? content { get; set; }
+    public int? startLine { get; set; }
+    public int? endLine { get; set; }
+    public string? id { get; set; }
 }

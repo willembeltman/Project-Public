@@ -1,100 +1,150 @@
 ﻿using MyCodingAgent;
 using MyCodingAgent.Agents;
-using MyCodingAgent.Services;
+using MyCodingAgent.Ollama;
 
 internal class Program
 {
     private static async Task Main(string[] args)
     {
         Console.Clear();
-        Console.ForegroundColor = ConsoleColor.DarkGray;
-        Console.WriteLine("Initialising model...");
-        using var llmService = new LLMService("gpt-oss:20b");
-        //using var llmService = new LLMService("gemma3:4b");
-
-        await llmService.InitializeModelAsync();
 
         Console.ForegroundColor = ConsoleColor.White;
-        Console.WriteLine("Model initialised. Please supply a prompt, what do you want to create:");
-
-        //var userPromptText = Console.ReadLine();
-        var userPromptText = "Create a snake game in C#";
-        Console.WriteLine(userPromptText);
-
-        if (userPromptText == null) return;
-        await RunTask(llmService, userPromptText);
-    }
-
-    private static async Task RunTask(LLMService llmService, string userPromptText)
-    {
-        var workspaceDirectory = Path.Combine(Environment.CurrentDirectory, "Source");
-        var workspace = new Workspace(workspaceDirectory);
-        //var agent = new Agent(userPromptText, workspace);
-        var isPromptFinishedAgent = new IsFinishedAgent(userPromptText, workspace);
-
-        await workspace.InitializeAsync();
-        Console.WriteLine("Workspace initialized");
+        Console.WriteLine("MyCodingAgent v0.001, created by Willem-Jan Beltman");
         Console.WriteLine();
 
+        Console.ForegroundColor = ConsoleColor.DarkGray;
+        Console.WriteLine("Loading workspace, please wait...");
+
+        var workspaceDirectory = Path.Combine(Environment.CurrentDirectory, "Source");
+        var workspace = await Workspace.TryLoad(workspaceDirectory);
+        if (workspace == null)
+            workspace = await CreateWorkspace(workspaceDirectory);
+
+        Console.WriteLine("Workspace loaded. Creating Ollama service, please wait...");
+        using var llmService = new LLMService();
+
+        Console.WriteLine("Ollama service created, getting model list, please wait...");
+        var list = await llmService.GetModels();
+
+        var model = ChooseModel(list);
+
+        Console.WriteLine($"Initialising model '{model.Name}', please wait...");
+        await llmService.InitializeModelAsync(model);
+
+        Console.WriteLine($"Model '{model.Name}' initialized, initialising agents, please wait...");
+        var codingAgent = new CodingAgent(workspace);
+        var isPromptFinishedAgent = new IsFinishedAgent(workspace);
+
+        Console.WriteLine("Agents initialized, attempting to compile project, please wait...");
+        var compileResult = await workspace.CompileAsync();
+
+        Console.WriteLine("Project compile attempt finished, starting lllm-development-cycle, please wait...");
         var index = 0;
         while (true)
         {
+            index++;
+
             // DO WORK
             var hasAnswered = false;
             while (!hasAnswered)
             {
-                Console.ForegroundColor = ConsoleColor.DarkGray;
-
-                var fullPromptText = workspace.GeneratePrompt(userPromptText);
-                Console.WriteLine($"###{++index} Ask model:");
-                Console.WriteLine();
+                var fullPromptText = codingAgent.GeneratePrompt(compileResult);
+                Console.WriteLine($"#{index} Ask model:");
                 Console.WriteLine(fullPromptText);
                 Console.WriteLine();
 
-                Console.WriteLine("Model answered:");
-                var responseText = await CallLLM(llmService, fullPromptText);
+                Console.WriteLine($"#{index} Model answered:");
+                var response = await CallLLM(llmService, model, fullPromptText, index);
                 Console.WriteLine();
 
-                Console.WriteLine("Applying answer.");
-                Console.WriteLine();
-                hasAnswered = await workspace.ProcessResponse(responseText);
+                Console.WriteLine($"#{index} Applying answer...");
+                hasAnswered = await codingAgent.ProcessResponse(response);
 
-                Console.ForegroundColor = ConsoleColor.DarkGray;
-                Console.WriteLine($"###{++index} Compiling...");
-                Console.WriteLine();
-                await workspace.CompileAsync();
+                await workspace.Save();
+
+                Console.WriteLine($"#{index} Compiling...");
+                compileResult = await workspace.CompileAsync();
             }
 
             // CHECK
             hasAnswered = false;
             while (!hasAnswered)
             {
-                var fullPromptText = isPromptFinishedAgent.GeneratePrompt();
-                Console.WriteLine($"###{++index} Ask model:");
-                Console.WriteLine();
+                var fullPromptText = await isPromptFinishedAgent.GeneratePrompt(compileResult);
+                Console.WriteLine($"#{index} Ask model:");
                 Console.WriteLine(fullPromptText);
                 Console.WriteLine();
 
-                Console.WriteLine("Model answered:");
-                var responseText = await CallLLM(llmService, fullPromptText);
+                Console.WriteLine($"#{index} Model answered:");
+                var response = await CallLLM(llmService, model, fullPromptText, index);
                 Console.WriteLine();
 
-                Console.WriteLine("Check if prompt has been satisfied.");
-                Console.WriteLine();
-                hasAnswered = isPromptFinishedAgent.ProcessResponse(responseText);
+                Console.WriteLine($"#{index} Check if prompt has been satisfied.");
+                hasAnswered = await isPromptFinishedAgent.ProcessResponse(response);
             }
 
             if (isPromptFinishedAgent.IsDone) break;
         }
     }
 
-    private static async Task<string> CallLLM(LLMService llmService, string fullPromptText)
+    private static OllamaModel ChooseModel(OllamaModel[] list)
+    {
+        var previousColor = Console.ForegroundColor;
+        OllamaModel? model = null;
+        while (model == null)
+        {
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine("Choose a model:");
+            Console.WriteLine();
+            for (var i = 0; i < list.Length; i++)
+            {
+                Console.WriteLine($"{i}. {list[i].Name} (size: {list[i].Size})");
+            }
+            Console.WriteLine();
+            var key = Console.ReadKey();
+
+            if (char.IsDigit(key.KeyChar))
+            {
+                var choice = key.KeyChar - '0';
+                if (choice >= 0 && choice < list.Length)
+                {
+                    model = list[choice];
+                }
+            }
+        }
+
+        Console.WriteLine($"Choosen model: {model.Name}");
+        Console.WriteLine();
+
+        Console.ForegroundColor = previousColor;
+        return model;
+    }
+
+    private static async Task<Workspace> CreateWorkspace(string workspaceDirectory)
+    {
+        var previousColor = Console.ForegroundColor;
+        Console.ForegroundColor = ConsoleColor.White;
+        Console.WriteLine("Please supply a prompt, what do you want to create:");
+        string? userPromptText = null;
+        var first = true;
+        while (userPromptText == null)
+        {
+            if (first) first = false;
+            else Console.WriteLine("Prompt cannot be empty, please try again:");
+            userPromptText = Console.ReadLine(); // Todo: multiline
+        }
+        var workspace = await Workspace.Create(workspaceDirectory, userPromptText);
+        Console.ForegroundColor = previousColor;
+        return workspace;
+    }
+
+    private static async Task<AgentResponse> CallLLM(LLMService llmService, OllamaModel model, string fullPromptText, int index)
     {
         var isThinking = false;
+        var thinkingText = string.Empty;
         var responseText = string.Empty;
-        await foreach (var chunk in llmService.PromptAsync(fullPromptText))
+        await foreach (var chunk in llmService.PromptAsync(model, fullPromptText))
         {
-            responseText += chunk.response ?? string.Empty;
             if (!string.IsNullOrEmpty(chunk.thinking))
             {
                 if (!isThinking)
@@ -104,6 +154,7 @@ internal class Program
                 }
                 Console.ForegroundColor = ConsoleColor.DarkGray;
                 Console.Write(chunk.thinking);
+                thinkingText += chunk.thinking;
             }
             if (!string.IsNullOrEmpty(chunk.response))
             {
@@ -114,8 +165,9 @@ internal class Program
                 }
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.Write(chunk.response);
+                responseText += chunk.response;
             }
         }
-        return responseText;
+        return new (index, responseText, thinkingText);
     }
 }

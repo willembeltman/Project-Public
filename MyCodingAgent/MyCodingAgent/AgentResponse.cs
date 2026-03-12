@@ -1,6 +1,6 @@
 ﻿namespace MyCodingAgent;
 
-public class AgentResponse
-{
-    public List<AgentAction> Actions { get; set; } = [];
-}
+public record AgentResponse(
+    int index,
+    string responseText, 
+    string? thinkingText);
