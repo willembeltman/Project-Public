@@ -57,7 +57,7 @@ internal class Program
 
                 Console.WriteLine("Applying answer.");
                 Console.WriteLine();
-                hasAnswered = agent.ProcessResponse(responseText);
+                hasAnswered = await workspace.ProcessResponse(responseText);
 
                 Console.ForegroundColor = ConsoleColor.DarkGray;
                 Console.WriteLine($"###{++index} Compiling...");

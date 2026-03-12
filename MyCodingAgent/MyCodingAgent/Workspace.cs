@@ -11,7 +11,7 @@ public class Workspace(string currentDirectoryName)
     public readonly Dictionary<string, WorkspaceFile> FileRepository = new();
     public readonly Dictionary<int, string> Memory = new();
     public readonly Dictionary<int, string> Tasks = new();
-    public readonly Queue<string> McpHistory = new();
+    public readonly Queue<string> History = new();
     public WorkspaceFile? CurrentFile;
     public string CompileResult = string.Empty;
 
@@ -40,13 +40,15 @@ public class Workspace(string currentDirectoryName)
             [.. FileRepository.Values.Select(a => new AgentFileSummery(a.RelativePath, a.LineCount))],
             CompileResult,
             [.. Tasks.Select(a => new AgentTask(a.Key, a.Value))],
-            [.. Memory.Select(a => new AgentMemory(a.Key, a.Value))]);
+            [.. Memory.Select(a => new AgentMemory(a.Key, a.Value))],
+            [.. History.Select(a => a)]);
+
         var requestJson = JsonSerializer.Serialize(request);
-        
+
         return $@"You are an autonomous software engineering agent operating inside a .NET development workspace.
 
-You interact with this system through a JSON command protocol. The system behaves like a minimal Visual Studio console environment.  
-Your goal is to inspect the workspace, modify files, and resolve compile errors.
+You interact with this system through a JSON command protocol. The system behaves like a minimal Visual Studio console environment.
+Your goal is to inspect the workspace, modify files, and resolve compile errors in order to fulfill the user's request.
 
 IMPORTANT RULES
 
@@ -56,6 +58,7 @@ IMPORTANT RULES
 4. Only use the actions listed below.
 5. Prefer minimal edits when possible (use partial_overwrite_file).
 6. Work iteratively: inspect → edit → compile → fix errors.
+7. If you need file content, open the file first.
 
 COMMAND PROTOCOL
 
@@ -152,21 +155,17 @@ Delete a task:
   ""id"": 1
 }}
 
-EXAMPLE RESPONSE
+RESPONSE FORMAT
+
+You must ALWAYS respond using this JSON structure:
 
 {{
-  ""actions"": [
-    {{
-      ""type"": ""open_workspace_file"",
-      ""path"": ""Program.cs""
-    }},
-    {{
-      ""type"": ""create_or_update_task"",
-      ""id"": 1,
-      ""content"": ""Fix compile errors in Program.cs""
-    }}
-  ]
+  ""actions"": []
 }}
+
+USER REQUEST
+
+{userPrompt}
 
 WORKSPACE STATE
 
@@ -178,11 +177,11 @@ The following JSON describes the current workspace.
 
     public async Task<bool> ProcessResponse(string responseText)
     {
-        if (!TryParseActions(responseText, out var actions))
+        if (!TryParseActions(responseText, out var response))
             return false;
 
         var found = false;
-        foreach (var action in actions)
+        foreach (var action in response.Actions)
         {
             found = true;
             switch (action.Type)
@@ -244,20 +243,39 @@ The following JSON describes the current workspace.
         return found;
     }
 
-    private bool TryParseActions(string responseText, out List<AgentAction> output)
+    private bool TryParseActions(string responseText, out AgentResponse response)
     {
-        output = new List<AgentAction>();
+        response = new AgentResponse();
+        var json = Clean(responseText);
         try
         {
-            var newOutput = JsonSerializer.Deserialize<List<AgentAction>>(responseText);
-            if (newOutput == null) return false;
-            output = newOutput;
+            var newResponse = JsonSerializer.Deserialize<AgentResponse>(json);
+            if (newResponse == null) return false;
+            response = newResponse;
             return true;
         }
-        catch
+        catch (Exception ex)
         {
+            History.Enqueue($"Could not parse response: {ex.Message}");
             return false;
         }
+    }
+    string Clean(string input)
+    {
+        input = input.Trim();
+
+        if (input.StartsWith("```"))
+        {
+            var firstNewline = input.IndexOf('\n');
+            var lastFence = input.LastIndexOf("```");
+
+            if (firstNewline >= 0 && lastFence > firstNewline)
+            {
+                input = input.Substring(firstNewline + 1, lastFence - firstNewline - 1);
+            }
+        }
+
+        return input.Trim();
     }
 
     // MCP INTERFACE
@@ -265,11 +283,11 @@ The following JSON describes the current workspace.
     {
         if (FileRepository.TryGetValue(path, out CurrentFile))
         {
-            McpHistory.Enqueue($"Opened workspace file '{path}'");
+            History.Enqueue($"Opened workspace file '{path}'");
         }
         else
         {
-            McpHistory.Enqueue($"Tried to open workspace file '{path}': Error, file not found");
+            History.Enqueue($"Tried to open workspace file '{path}': Error, file not found");
         }
     }
     private async Task CreateDirectory(string path)
@@ -278,11 +296,11 @@ The following JSON describes the current workspace.
         try
         {
             Directory.CreateDirectory(fullPath);
-            McpHistory.Enqueue($"Created directory '{path}'");
+            History.Enqueue($"Created directory '{path}'");
         }
         catch (Exception ex)
         {
-            McpHistory.Enqueue($"Tried to created directory '{path}': Error {ex}");
+            History.Enqueue($"Tried to created directory '{path}': Error {ex}");
         }
     }
     private async Task RemoveDirectory(string path)
@@ -293,16 +311,16 @@ The following JSON describes the current workspace.
             if (Directory.Exists(fullPath))
             {
                 Directory.Delete(fullPath, true);
-                McpHistory.Enqueue($"Removed directory '{path}'");
+                History.Enqueue($"Removed directory '{path}'");
             }
             else
             {
-                McpHistory.Enqueue($"Tried to remove directory '{path}': Error directory does not exist");
+                History.Enqueue($"Tried to remove directory '{path}': Error directory does not exist");
             }
         }
         catch (Exception ex)
         {
-            McpHistory.Enqueue($"Tried to remove directory '{path}': Error {ex}");
+            History.Enqueue($"Tried to remove directory '{path}': Error {ex}");
         }
     }
     private async Task CreateOrUpdateFile(string path, string fullContent)
@@ -319,7 +337,7 @@ The following JSON describes the current workspace.
         FileRepository[path] =
             new WorkspaceFile(path, new FileInfo(fullPath), fullContent);
 
-        McpHistory.Enqueue($"Updated {path}");
+        History.Enqueue($"Updated {path}");
     }
     private async Task PartialOverwriteFile(string path, int startLineNr, int endLineNr, string newContent)
     {
@@ -338,7 +356,7 @@ The following JSON describes the current workspace.
         FileRepository[path] =
             new WorkspaceFile(path, new FileInfo(fullPath), content);
 
-        McpHistory.Enqueue($"Updated {path}");
+        History.Enqueue($"Updated {path}");
     }
     private async Task MoveFile(string path, string newPath)
     {
@@ -356,7 +374,7 @@ The following JSON describes the current workspace.
             FileRepository[newPath] =
                 new WorkspaceFile(path, new FileInfo(fullPath), content);
 
-            McpHistory.Enqueue($"Moved {path} -> {newPath}");
+            History.Enqueue($"Moved {path} -> {newPath}");
         }
     }
     private async Task DeleteFile(string path)
@@ -368,7 +386,7 @@ The following JSON describes the current workspace.
             File.Delete(fullPath);
             FileRepository.Remove(path);
 
-            McpHistory.Enqueue($"Deleted {path}");
+            History.Enqueue($"Deleted {path}");
         }
     }
     private void AddOrUpdateMemory(int id, string content)
@@ -430,5 +448,6 @@ The following JSON describes the current workspace.
         AgentFileSummery[] files,
         string compiler_output,
         AgentTask[] tasks,
-        AgentMemory[] memory);
+        AgentMemory[] memory,
+        string[] history);
 }

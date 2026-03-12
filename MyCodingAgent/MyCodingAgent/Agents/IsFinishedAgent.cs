@@ -11,18 +11,18 @@ public class IsFinishedAgent(
     {
         //fileRepository.InitializeFileTracking();
 
-        //string fileContentsText = workspace.FileContents.Count == 0
-        //    ? "<No files in directory>"
-        //    : string.Join(Environment.NewLine, workspace.FileRepository);
+        string fileContentsText = workspace.FileRepository.Count == 0
+            ? "<No files in directory>"
+            : string.Join(Environment.NewLine, workspace.FileRepository);
 
-        //var prompt = $"The current source contents is:\n{fileContentsText}\n";
+        var prompt = $"The current source contents is:\n{fileContentsText}\n";
 
-        //if (!string.IsNullOrWhiteSpace(compileErrors))
-        //{
-        //    prompt += $"The current compile errors are:\n{compileErrors}\n\n";
-        //}
+        if (!string.IsNullOrWhiteSpace(workspace.CompileResult))
+        {
+            prompt += $"The current compile result is:\n{workspace.CompileResult}\n\n";
+        }
 
-        var prompt = $"The user prompt is:\n{userPromptText}\n";
+        prompt += $"The user prompt is:\n{userPromptText}\n";
         prompt += $"Is the prompt satisfied? Reply [YES] or [NO]";
         return prompt;
     }
@@ -32,10 +32,13 @@ public class IsFinishedAgent(
         if (responseText.Contains("[NO]", StringComparison.InvariantCultureIgnoreCase))
         {
             IsDone = false;
+            return true;
         }
         else if (responseText.Contains("[YES]", StringComparison.InvariantCultureIgnoreCase))
         {
             IsDone = true;
+            return true;
         }
+        return false;
     }
 }
