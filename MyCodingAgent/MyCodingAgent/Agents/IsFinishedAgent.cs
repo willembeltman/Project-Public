@@ -11,9 +11,9 @@ public class IsFinishedAgent(
     {
         //fileRepository.InitializeFileTracking();
 
-        string fileContentsText = workspace.FileRepository.Count == 0
+        string fileContentsText = workspace.Files.Count == 0
             ? "<No files in directory>"
-            : string.Join(Environment.NewLine, workspace.FileRepository);
+            : string.Join(Environment.NewLine, workspace.Files);
 
         var prompt = $"The current source contents is:\n{fileContentsText}\n";
 

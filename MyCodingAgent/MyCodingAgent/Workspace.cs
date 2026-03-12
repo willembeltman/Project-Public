@@ -8,16 +8,16 @@ using System.Text.Json;
 public class Workspace(string currentDirectoryName)
 {
     public readonly DirectoryInfo CurrentDirectory = new(currentDirectoryName);
-    public readonly Dictionary<string, WorkspaceFile> FileRepository = new();
+    public readonly Dictionary<string, WorkspaceFile> Files = new();
     public readonly Dictionary<int, string> Memory = new();
     public readonly Dictionary<int, string> Tasks = new();
     public readonly Queue<string> History = new();
-    public WorkspaceFile? CurrentFile;
+    public string? CurrentFilePath;
     public string CompileResult = string.Empty;
 
     public Task InitializeAsync()
     {
-        FileRepository.Clear();
+        Files.Clear();
 
         if (!CurrentDirectory.Exists)
             CurrentDirectory.Create();
@@ -35,20 +35,28 @@ public class Workspace(string currentDirectoryName)
     }
     public string GeneratePrompt(string userPrompt)
     {
+        AgentFile? currentFile = null;
+        if (CurrentFilePath != null && Files.TryGetValue(CurrentFilePath, out var file))
+        {
+            currentFile = new AgentFile(file.RelativePath, file.FileContent);
+        }
+
         var request = new AgentRequest(
-            CurrentFile == null ? null : new AgentFile(CurrentFile.RelativePath, CurrentFile.FileContent),
-            [.. FileRepository.Values.Select(a => new AgentFileSummery(a.RelativePath, a.LineCount))],
+            currentFile,
+            [.. Files.Values.Select(a => new AgentFileSummery(a.RelativePath, a.LineCount))],
             CompileResult,
             [.. Tasks.Select(a => new AgentTask(a.Key, a.Value))],
             [.. Memory.Select(a => new AgentMemory(a.Key, a.Value))],
-            [.. History.Select(a => a)]);
+            [.. History.Take(3)]);
 
         var requestJson = JsonSerializer.Serialize(request);
-
         return $@"You are an autonomous software engineering agent operating inside a .NET development workspace.
 
 You interact with this system through a JSON command protocol. The system behaves like a minimal Visual Studio console environment.
 Your goal is to inspect the workspace, modify files, and resolve compile errors in order to fulfill the user's request.
+
+The workspace already contains code written by another developer. Do NOT assume files are empty or broken.
+You should inspect files before modifying them.
 
 IMPORTANT RULES
 
@@ -58,7 +66,35 @@ IMPORTANT RULES
 4. Only use the actions listed below.
 5. Prefer minimal edits when possible (use partial_overwrite_file).
 6. Work iteratively: inspect → edit → compile → fix errors.
-7. If you need file content, open the file first.
+7. If a file already exists you MUST open it before modifying it.
+8. Never overwrite a file you have not inspected.
+9. Only create new files if they do not already exist.
+10. Only create directories if they are required.
+
+HOW TO WORK
+
+Follow this development loop:
+
+1. Inspect the workspace state.
+2. If a file is mentioned in an error message, open it first.
+3. If you need to modify an existing file, open it first using ""open_workspace_file"".
+4. After inspecting files, apply minimal changes.
+5. Prefer ""partial_overwrite_file"" instead of rewriting entire files.
+6. Only use ""create_or_update_file"" when creating a completely new file or when the file is clearly unusable.
+
+FILES
+
+The workspace JSON lists all available files.  
+If a file appears in this list it already exists.
+
+To read the contents of a file you MUST use:
+
+{{
+  ""type"": ""open_workspace_file"",
+  ""path"": ""SnakeGame.cs""
+}}
+
+Do not guess file contents.
 
 COMMAND PROTOCOL
 
@@ -75,14 +111,14 @@ Open a file from the workspace:
 
 {{
   ""type"": ""open_workspace_file"",
-  ""path"": ""src/Program.cs""
+  ""path"": ""Program.cs""
 }}
 
 Create or overwrite a file:
 
 {{
   ""type"": ""create_or_update_file"",
-  ""path"": ""src/MyClass.cs"",
+  ""path"": ""MyClass.cs"",
   ""content"": ""full file content here""
 }}
 
@@ -90,36 +126,36 @@ Delete a file:
 
 {{
   ""type"": ""delete_file"",
-  ""path"": ""src/OldFile.cs""
+  ""path"": ""OldFile.cs""
 }}
 
 Move or rename a file:
 
 {{
   ""type"": ""move_file"",
-  ""path"": ""src/OldName.cs"",
-  ""newPath"": ""src/NewName.cs""
+  ""path"": ""OldName.cs"",
+  ""newPath"": ""NewName.cs""
 }}
 
 Create a directory:
 
 {{
   ""type"": ""create_directory"",
-  ""path"": ""src/services""
+  ""path"": ""services""
 }}
 
 Delete a directory:
 
 {{
   ""type"": ""delete_directory"",
-  ""path"": ""src/old""
+  ""path"": ""old""
 }}
 
 Overwrite specific lines in a file:
 
 {{
   ""type"": ""partial_overwrite_file"",
-  ""path"": ""src/Program.cs"",
+  ""path"": ""Program.cs"",
   ""startLine"": 10,
   ""endLine"": 20,
   ""content"": ""replacement lines""
@@ -249,7 +285,12 @@ The following JSON describes the current workspace.
         var json = Clean(responseText);
         try
         {
-            var newResponse = JsonSerializer.Deserialize<AgentResponse>(json);
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
+
+            var newResponse = JsonSerializer.Deserialize<AgentResponse>(json, options);
             if (newResponse == null) return false;
             response = newResponse;
             return true;
@@ -281,8 +322,9 @@ The following JSON describes the current workspace.
     // MCP INTERFACE
     private async Task OpenWorkspaceFile(string path)
     {
-        if (FileRepository.TryGetValue(path, out CurrentFile))
+        if (Files.TryGetValue(path, out _))
         {
+            CurrentFilePath = path;
             History.Enqueue($"Opened workspace file '{path}'");
         }
         else
@@ -334,29 +376,36 @@ The following JSON describes the current workspace.
 
         await File.WriteAllTextAsync(fullPath, fullContent);
 
-        FileRepository[path] =
+        Files[path] =
             new WorkspaceFile(path, new FileInfo(fullPath), fullContent);
 
         History.Enqueue($"Updated {path}");
     }
     private async Task PartialOverwriteFile(string path, int startLineNr, int endLineNr, string newContent)
     {
-        TryParseFullPath(path, out var fullPath);
-        var file = FileRepository[path];
-        var lines = file.FileContent.Split('\n').ToList();
-        var newLines = newContent.Split('\n');
+        try
+        {
+            TryParseFullPath(path, out var fullPath);
+            var file = Files[path];
+            var lines = file.FileContent.Split('\n').ToList();
+            var newLines = newContent.Split('\n');
 
-        lines.RemoveRange(startLineNr - 1, endLineNr - startLineNr + 1);
-        lines.InsertRange(startLineNr - 1, newLines);
+            lines.RemoveRange(startLineNr - 1, endLineNr - startLineNr + 1);
+            lines.InsertRange(startLineNr - 1, newLines);
 
-        var content = string.Join("\n", lines);
+            var content = string.Join("\n", lines);
 
-        await File.WriteAllTextAsync(fullPath, content);
+            await File.WriteAllTextAsync(fullPath, content);
 
-        FileRepository[path] =
-            new WorkspaceFile(path, new FileInfo(fullPath), content);
+            Files[path] =
+                new WorkspaceFile(path, new FileInfo(fullPath), content);
 
-        History.Enqueue($"Updated {path}");
+            History.Enqueue($"Updated '{path}'");
+        }
+        catch (Exception ex)
+        {
+            History.Enqueue($"Tried to update '{path}', startLine {startLineNr}, endLineNr {endLineNr}: Error {ex.Message}");
+        }
     }
     private async Task MoveFile(string path, string newPath)
     {
@@ -368,10 +417,10 @@ The following JSON describes the current workspace.
             Directory.CreateDirectory(Path.GetDirectoryName(newFullPath)!);
 
             File.Move(fullPath, newFullPath, true);
-            FileRepository.Remove(path);
+            Files.Remove(path);
 
             var content = await File.ReadAllTextAsync(newFullPath);
-            FileRepository[newPath] =
+            Files[newPath] =
                 new WorkspaceFile(path, new FileInfo(fullPath), content);
 
             History.Enqueue($"Moved {path} -> {newPath}");
@@ -384,7 +433,7 @@ The following JSON describes the current workspace.
         if (File.Exists(fullPath))
         {
             File.Delete(fullPath);
-            FileRepository.Remove(path);
+            Files.Remove(path);
 
             History.Enqueue($"Deleted {path}");
         }
@@ -427,7 +476,7 @@ The following JSON describes the current workspace.
             using var reader = new StreamReader(file.FullName);
             string fileContent = reader.ReadToEnd();
 
-            FileRepository[relative] = new WorkspaceFile(relative, file, fileContent);
+            Files[relative] = new WorkspaceFile(relative, file, fileContent);
         }
     }
 
