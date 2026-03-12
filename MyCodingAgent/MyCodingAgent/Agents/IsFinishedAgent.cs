@@ -27,7 +27,7 @@ public class IsFinishedAgent(
         return prompt;
     }
 
-    public void ProcessResponse(string responseText)
+    public bool ProcessResponse(string responseText)
     {
         if (responseText.Contains("[NO]", StringComparison.InvariantCultureIgnoreCase))
         {
@@ -37,10 +37,5 @@ public class IsFinishedAgent(
         {
             IsDone = true;
         }
-    }
-
-    public void Reset()
-    {
-        HasAnswered = false;
     }
 }

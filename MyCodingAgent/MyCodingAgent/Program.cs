@@ -29,23 +29,23 @@ internal class Program
     {
         var workspaceDirectory = Path.Combine(Environment.CurrentDirectory, "Source");
         var workspace = new Workspace(workspaceDirectory);
-        var agent = new Agent(userPromptText, workspace);
+        //var agent = new Agent(userPromptText, workspace);
         var isPromptFinishedAgent = new IsFinishedAgent(userPromptText, workspace);
 
-        workspace.InitializeAsync();
+        await workspace.InitializeAsync();
         Console.WriteLine("Workspace initialized");
         Console.WriteLine();
 
         var index = 0;
         while (true)
         {
-            Console.ForegroundColor = ConsoleColor.DarkGray;
-
             // DO WORK
-            agent.Reset();
-            while (!agent.HasAnswered)
+            var hasAnswered = false;
+            while (!hasAnswered)
             {
-                string fullPromptText = agent.GeneratePrompt();
+                Console.ForegroundColor = ConsoleColor.DarkGray;
+
+                var fullPromptText = workspace.GeneratePrompt(userPromptText);
                 Console.WriteLine($"###{++index} Ask model:");
                 Console.WriteLine();
                 Console.WriteLine(fullPromptText);
@@ -57,33 +57,31 @@ internal class Program
 
                 Console.WriteLine("Applying answer.");
                 Console.WriteLine();
-                agent.ProcessResponse(responseText);
+                hasAnswered = agent.ProcessResponse(responseText);
+
+                Console.ForegroundColor = ConsoleColor.DarkGray;
+                Console.WriteLine($"###{++index} Compiling...");
+                Console.WriteLine();
+                await workspace.CompileAsync();
             }
 
-            Console.ForegroundColor = ConsoleColor.DarkGray;
-
-            // COMPILE
-            Console.WriteLine($"###{++index} Compiling...");
-            Console.WriteLine();
-            await workspace.CompileAsync();
-
             // CHECK
-            isPromptFinishedAgent.Reset();
-            while (!isPromptFinishedAgent.HasAnswered)
+            hasAnswered = false;
+            while (!hasAnswered)
             {
+                var fullPromptText = isPromptFinishedAgent.GeneratePrompt();
                 Console.WriteLine($"###{++index} Ask model:");
                 Console.WriteLine();
-                var fullPromptText = isPromptFinishedAgent.GeneratePrompt();
                 Console.WriteLine(fullPromptText);
                 Console.WriteLine();
 
-                var responseText = string.Empty;
                 Console.WriteLine("Model answered:");
-                responseText = await CallLLM(llmService, fullPromptText);
+                var responseText = await CallLLM(llmService, fullPromptText);
                 Console.WriteLine();
 
                 Console.WriteLine("Check if prompt has been satisfied.");
-                isPromptFinishedAgent.ProcessResponse(responseText);
+                Console.WriteLine();
+                hasAnswered = isPromptFinishedAgent.ProcessResponse(responseText);
             }
 
             if (isPromptFinishedAgent.IsDone) break;

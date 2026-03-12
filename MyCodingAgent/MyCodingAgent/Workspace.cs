@@ -2,14 +2,18 @@
 
 namespace MyCodingAgent;
 
+using System.Text.Json;
+
+
 public class Workspace(string currentDirectoryName)
 {
     public readonly DirectoryInfo CurrentDirectory = new(currentDirectoryName);
-    public readonly Dictionary<string, string> FileRepository = new();
+    public readonly Dictionary<string, WorkspaceFile> FileRepository = new();
     public readonly Dictionary<int, string> Memory = new();
     public readonly Dictionary<int, string> Tasks = new();
     public readonly Queue<string> McpHistory = new();
-    public string CompileErrors = string.Empty;
+    public WorkspaceFile? CurrentFile;
+    public string CompileResult = string.Empty;
 
     public Task InitializeAsync()
     {
@@ -25,34 +29,212 @@ public class Workspace(string currentDirectoryName)
     public async Task CompileAsync()
     {
         var compileErrors = await Compiler.Compile(CurrentDirectory);
-        CompileErrors = compileErrors
+
+        CompileResult = compileErrors
             .Replace(CurrentDirectory.FullName + "\\", "");
     }
-
-    // Process response containing MCP commands and execute them
-    public bool ProcessResponse(string responseText)
+    public string GeneratePrompt(string userPrompt)
     {
+        var request = new AgentRequest(
+            CurrentFile == null ? null : new AgentFile(CurrentFile.RelativePath, CurrentFile.FileContent),
+            [.. FileRepository.Values.Select(a => new AgentFileSummery(a.RelativePath, a.LineCount))],
+            CompileResult,
+            [.. Tasks.Select(a => new AgentTask(a.Key, a.Value))],
+            [.. Memory.Select(a => new AgentMemory(a.Key, a.Value))]);
+        var requestJson = JsonSerializer.Serialize(request);
+        
+        return $@"You are an autonomous software engineering agent operating inside a .NET development workspace.
+
+You interact with this system through a JSON command protocol. The system behaves like a minimal Visual Studio console environment.  
+Your goal is to inspect the workspace, modify files, and resolve compile errors.
+
+IMPORTANT RULES
+
+1. Your response MUST be valid JSON.
+2. The JSON MUST contain an array called ""actions"".
+3. Do NOT include explanations outside the JSON.
+4. Only use the actions listed below.
+5. Prefer minimal edits when possible (use partial_overwrite_file).
+6. Work iteratively: inspect → edit → compile → fix errors.
+
+COMMAND PROTOCOL
+
+Each action has the following structure:
+
+{{
+  ""type"": ""action_name"",
+  ""parameters"": ...
+}}
+
+AVAILABLE ACTIONS
+
+Open a file from the workspace:
+
+{{
+  ""type"": ""open_workspace_file"",
+  ""path"": ""src/Program.cs""
+}}
+
+Create or overwrite a file:
+
+{{
+  ""type"": ""create_or_update_file"",
+  ""path"": ""src/MyClass.cs"",
+  ""content"": ""full file content here""
+}}
+
+Delete a file:
+
+{{
+  ""type"": ""delete_file"",
+  ""path"": ""src/OldFile.cs""
+}}
+
+Move or rename a file:
+
+{{
+  ""type"": ""move_file"",
+  ""path"": ""src/OldName.cs"",
+  ""newPath"": ""src/NewName.cs""
+}}
+
+Create a directory:
+
+{{
+  ""type"": ""create_directory"",
+  ""path"": ""src/services""
+}}
+
+Delete a directory:
+
+{{
+  ""type"": ""delete_directory"",
+  ""path"": ""src/old""
+}}
+
+Overwrite specific lines in a file:
+
+{{
+  ""type"": ""partial_overwrite_file"",
+  ""path"": ""src/Program.cs"",
+  ""startLine"": 10,
+  ""endLine"": 20,
+  ""content"": ""replacement lines""
+}}
+
+Store persistent memory:
+
+{{
+  ""type"": ""create_or_update_memory"",
+  ""id"": 1,
+  ""content"": ""important information about the project""
+}}
+
+Delete stored memory:
+
+{{
+  ""type"": ""delete_memory"",
+  ""id"": 1
+}}
+
+Create or update a task:
+
+{{
+  ""type"": ""create_or_update_task"",
+  ""id"": 1,
+  ""content"": ""Implement user authentication""
+}}
+
+Delete a task:
+
+{{
+  ""type"": ""delete_task"",
+  ""id"": 1
+}}
+
+EXAMPLE RESPONSE
+
+{{
+  ""actions"": [
+    {{
+      ""type"": ""open_workspace_file"",
+      ""path"": ""Program.cs""
+    }},
+    {{
+      ""type"": ""create_or_update_task"",
+      ""id"": 1,
+      ""content"": ""Fix compile errors in Program.cs""
+    }}
+  ]
+}}
+
+WORKSPACE STATE
+
+The following JSON describes the current workspace.
+
+{requestJson}
+";
+    }
+
+    public async Task<bool> ProcessResponse(string responseText)
+    {
+        if (!TryParseActions(responseText, out var actions))
+            return false;
+
         var found = false;
-        foreach (var action in ParseActions(responseText))
+        foreach (var action in actions)
         {
             found = true;
             switch (action.Type)
             {
+                case "open_workspace_file":
+                    await OpenWorkspaceFile(action.Path!);
+                    break;
+
                 case "create_or_update_file":
-                    CreateOrUpdateFile(action.Path!, action.Content!);
+                    await CreateOrUpdateFile(action.Path!, action.Content!);
                     break;
 
                 case "delete_file":
-                    DeleteFile(action.Path!);
+                    await DeleteFile(action.Path!);
                     break;
 
                 case "move_file":
-                    MoveFile(action.OldPath!, action.NewPath!);
+                    await MoveFile(action.Path!, action.NewPath!);
                     break;
 
-                // Todo de rest
+                case "create_directory":
+                    await CreateDirectory(action.Path!);
+                    break;
 
-                // Ps: compile hoeft niet
+                case "delete_directory":
+                    await RemoveDirectory(action.Path!);
+                    break;
+
+                case "partial_overwrite_file":
+                    await PartialOverwriteFile(
+                        action.Path!,
+                        action.StartLine!.Value,
+                        action.EndLine!.Value,
+                        action.Content!
+                    );
+                    break;
+
+                case "create_or_update_memory":
+                    AddOrUpdateMemory(action.Id!.Value, action.Content!);
+                    break;
+
+                case "delete_memory":
+                    DeleteMemory(action.Id!.Value);
+                    break;
+
+                case "create_or_update_task":
+                    AddOrUpdateTask(action.Id!.Value, action.Content!);
+                    break;
+
+                case "delete_task":
+                    DeleteTask(action.Id!.Value);
+                    break;
 
                 default:
                     found = false;
@@ -62,92 +244,157 @@ public class Workspace(string currentDirectoryName)
         return found;
     }
 
-    private IEnumerable<AgentAction> ParseActions(string responseText)
+    private bool TryParseActions(string responseText, out List<AgentAction> output)
     {
-        throw new NotImplementedException();
+        output = new List<AgentAction>();
+        try
+        {
+            var newOutput = JsonSerializer.Deserialize<List<AgentAction>>(responseText);
+            if (newOutput == null) return false;
+            output = newOutput;
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
     }
 
     // MCP INTERFACE
-    private void CreateDirectory(string path)
+    private async Task OpenWorkspaceFile(string path)
     {
-        if (!CheckPath(path)) 
-            throw new Exception($"LLLM tries to hack me! WTF? gives a path {path}");
-        var fullPath = Path.Combine(CurrentDirectory.FullName, path);
-        Directory.CreateDirectory(fullPath);
-    }
-    private void RemoveDirectory(string path)
-    {
-        if (!CheckPath(path))
-            throw new Exception($"LLLM tries to hack me! WTF? gives a path {path}");
-        var fullPath = Path.Combine(CurrentDirectory.FullName, path);
-        Directory.Delete(fullPath);
-    }
-
-    private void CreateOrUpdateFile(string path, string fullContent)
-    {
-        var fullPath = Path.Combine(CurrentDirectory.FullName, path);
-
-        if (File.Exists(fullPath))
+        if (FileRepository.TryGetValue(path, out CurrentFile))
         {
-            File.WriteAllText(fullPath, fullContent);  // Overwrite existing file
-            Console.WriteLine($"Updated {path}");
+            McpHistory.Enqueue($"Opened workspace file '{path}'");
         }
         else
         {
-            Directory.CreateDirectory(Path.GetDirectoryName(fullPath)!); // Ensure directory exists
-            File.WriteAllText(fullPath, fullContent);   // Create new file
-            Console.WriteLine($"Created {path}");
+            McpHistory.Enqueue($"Tried to open workspace file '{path}': Error, file not found");
         }
     }
-    private void PartialOverwriteFile(string path, int startLineNr, int endLineNr, string fullContent)
+    private async Task CreateDirectory(string path)
     {
-
-    }
-    private void MoveFile(string path, string newPath)
-    {
-        if (File.Exists(path))
+        TryParseFullPath(path, out var fullPath);
+        try
         {
-            var newFullPath = Path.Combine(CurrentDirectory.FullName, newPath);
-            Directory.CreateDirectory(Path.GetDirectoryName(newFullPath)!); // Ensure target directory exists
-
-            File.Move(path, newFullPath, true);     // Replace existing file if needed
-            Console.WriteLine($"Moved {path} to {newPath}");
+            Directory.CreateDirectory(fullPath);
+            McpHistory.Enqueue($"Created directory '{path}'");
+        }
+        catch (Exception ex)
+        {
+            McpHistory.Enqueue($"Tried to created directory '{path}': Error {ex}");
         }
     }
-    private void DeleteFile(string path)
+    private async Task RemoveDirectory(string path)
     {
-        var fullPath = Path.Combine(CurrentDirectory.FullName, path);
+        TryParseFullPath(path, out var fullPath);
+        try
+        {
+            if (Directory.Exists(fullPath))
+            {
+                Directory.Delete(fullPath, true);
+                McpHistory.Enqueue($"Removed directory '{path}'");
+            }
+            else
+            {
+                McpHistory.Enqueue($"Tried to remove directory '{path}': Error directory does not exist");
+            }
+        }
+        catch (Exception ex)
+        {
+            McpHistory.Enqueue($"Tried to remove directory '{path}': Error {ex}");
+        }
+    }
+    private async Task CreateOrUpdateFile(string path, string fullContent)
+    {
+        TryParseFullPath(path, out var fullPath);
+        var fileInfo = new FileInfo(fullPath);
+        if (fileInfo.Directory == null)
+            throw new Exception($"Weird stuff, directory is empty? {fileInfo}");
+        if (fileInfo.Directory.Exists == false)
+            fileInfo.Directory.Create();
+
+        await File.WriteAllTextAsync(fullPath, fullContent);
+
+        FileRepository[path] =
+            new WorkspaceFile(path, new FileInfo(fullPath), fullContent);
+
+        McpHistory.Enqueue($"Updated {path}");
+    }
+    private async Task PartialOverwriteFile(string path, int startLineNr, int endLineNr, string newContent)
+    {
+        TryParseFullPath(path, out var fullPath);
+        var file = FileRepository[path];
+        var lines = file.FileContent.Split('\n').ToList();
+        var newLines = newContent.Split('\n');
+
+        lines.RemoveRange(startLineNr - 1, endLineNr - startLineNr + 1);
+        lines.InsertRange(startLineNr - 1, newLines);
+
+        var content = string.Join("\n", lines);
+
+        await File.WriteAllTextAsync(fullPath, content);
+
+        FileRepository[path] =
+            new WorkspaceFile(path, new FileInfo(fullPath), content);
+
+        McpHistory.Enqueue($"Updated {path}");
+    }
+    private async Task MoveFile(string path, string newPath)
+    {
+        TryParseFullPath(path, out var fullPath);
+        var newFullPath = Path.Combine(CurrentDirectory.FullName, newPath);
+
+        if (File.Exists(fullPath))
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(newFullPath)!);
+
+            File.Move(fullPath, newFullPath, true);
+            FileRepository.Remove(path);
+
+            var content = await File.ReadAllTextAsync(newFullPath);
+            FileRepository[newPath] =
+                new WorkspaceFile(path, new FileInfo(fullPath), content);
+
+            McpHistory.Enqueue($"Moved {path} -> {newPath}");
+        }
+    }
+    private async Task DeleteFile(string path)
+    {
+        TryParseFullPath(path, out var fullPath);
 
         if (File.Exists(fullPath))
         {
             File.Delete(fullPath);
-            Console.WriteLine($"Deleted {path}");
+            FileRepository.Remove(path);
+
+            McpHistory.Enqueue($"Deleted {path}");
         }
     }
+    private void AddOrUpdateMemory(int id, string content)
+    {
+        Memory[id] = content;
+    }
+    private void DeleteMemory(int id)
+    {
+        Memory.Remove(id);
+    }
+    private void AddOrUpdateTask(int id, string content)
+    {
+        Tasks[id] = content;
+    }
+    private void DeleteTask(int id)
+    {
+        Tasks.Remove(id);
+    }
+    private void TryParseFullPath(string path, out string fullPath)
+    {
+        fullPath = Path.GetFullPath(
+            Path.Combine(CurrentDirectory.FullName, path));
 
-    private void AddMemory(int id, string content)
-    {
-        throw new NotImplementedException();
+        if (!fullPath.StartsWith(CurrentDirectory.FullName))
+            throw new Exception($"LLM tries to hack me: {path}");
     }
-    private void DeleteMemory(int id, string content)
-    {
-        throw new NotImplementedException();
-    }
-    private void AddTask(int id, string content)
-    {
-        throw new NotImplementedException();
-    }
-    private void DeleteTask(int id, string content)
-    {
-        throw new NotImplementedException();
-    }
-
-    private bool CheckPath(string path)
-    {
-        // Stay within workspace ;)
-        throw new NotImplementedException();
-    }
-
     private void ReadDirectory(DirectoryInfo directoryInfo)
     {
         foreach (var dir in directoryInfo.GetDirectories())
@@ -157,10 +404,31 @@ public class Workspace(string currentDirectoryName)
 
         foreach (var file in directoryInfo.GetFiles())
         {
+            var relative = Path.GetRelativePath(CurrentDirectory.FullName, file.FullName);
+
             using var reader = new StreamReader(file.FullName);
-            string content = reader.ReadToEnd();
-            FileRepository[file.Name] = content;
+            string fileContent = reader.ReadToEnd();
+
+            FileRepository[relative] = new WorkspaceFile(relative, file, fileContent);
         }
     }
-}
 
+    public record AgentFile(
+        string path,
+        string content);
+    public record AgentFileSummery(
+        string path,
+        int lineCount);
+    public record AgentMemory(
+        int id,
+        string content);
+    public record AgentTask(
+        int id,
+        string content);
+    public record AgentRequest(
+        AgentFile? current_file,
+        AgentFileSummery[] files,
+        string compiler_output,
+        AgentTask[] tasks,
+        AgentMemory[] memory);
+}
