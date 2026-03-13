@@ -2,4 +2,4 @@
 
 public record AgentWorkspaceFileBrowser(
     string path,
-    string content);
+    Line[] lines);

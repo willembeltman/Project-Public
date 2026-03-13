@@ -1,6 +1,7 @@
 ﻿using System.Net.Http.Json;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace MyCodingAgent.Ollama;
 
@@ -37,6 +38,11 @@ public class LLMService(
 
     public async IAsyncEnumerable<OllamaResponse> PromptAsync(OllamaModel model, string prompt, [EnumeratorCancellation] CancellationToken ct = default)
     {
+
+        var options = new JsonSerializerOptions
+        {
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+        };
         var payload = new
         {
             model = model.Name,
@@ -62,7 +68,7 @@ public class LLMService(
                 yield break;
             }
 
-            var data = JsonSerializer.Deserialize<OllamaResponseRaw>(json);
+            var data = JsonSerializer.Deserialize<OllamaResponseRaw>(json, options);
 
             if (data == null)
             {

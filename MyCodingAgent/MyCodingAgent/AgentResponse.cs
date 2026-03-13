@@ -1,6 +1,6 @@
 ﻿namespace MyCodingAgent;
 
 public record AgentResponse(
-    int index,
+    DateTime date,
     string responseText, 
     string? thinkingText);

@@ -17,7 +17,7 @@ public class CodingAgent(
         {
             fileBrowser = new AgentWorkspaceFileBrowser(
                 workspaceFile.RelativePath,
-                workspaceFile.FileContent);
+                workspaceFile.GetLines());
         }
 
         if (fileBrowser == null)
@@ -27,7 +27,7 @@ public class CodingAgent(
             {
                 fileBrowser = new AgentWorkspaceFileBrowser(
                     file.RelativePath,
-                    file.FileContent);
+                    file.GetLines());
             }
         }
 
@@ -53,11 +53,56 @@ public class CodingAgent(
             }
         }
 
+        var options = new JsonSerializerOptions
+        {
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+        };
         var sb = new StringBuilder();
+
+        if (workspace.AgentResponseResults.Count > 0)
+        {
+            sb.AppendLine("================================");
+            sb.AppendLine("YOUR LAST RESPONSE");
+            sb.AppendLine("================================");
+            sb.AppendLine();
+
+            foreach (var h in workspace.AgentResponseResults.OrderByDescending(a => a.Response.date).Take(1))
+            {
+                sb.AppendLine($"You at {h.Response.date}:");
+                sb.AppendLine($"Thinking: {h.Response.thinkingText}");
+                sb.AppendLine($"Responsed: {h.Response.responseText}");
+
+                if (h.ParseError != null)
+                {
+                    sb.AppendLine($"Parse error: ERROR!!! {h.ParseError}. Please respond in json!");
+                }
+                else
+                {
+                    sb.AppendLine("Parse state: Succesfully parsed response");
+                }
+
+                if (h.Actions != null && h.Actions.Any())
+                {
+                    sb.AppendLine($"Parsed actions:");
+                    foreach (var action in h.Actions)
+                    {
+                        sb.AppendLine($"Action: {JsonSerializer.Serialize(action.AgentAction, options)}");
+                        sb.AppendLine($"Result: {action.Result}");
+                        sb.AppendLine();
+                    }
+                }
+                else
+                {
+                    sb.AppendLine($"Parsed actions: ERROR!!! No actions found in response, please respond in json!");
+                    sb.AppendLine();
+                }
+            }
+        }
 
         sb.AppendLine("================================");
         sb.AppendLine("USER REQUEST");
         sb.AppendLine("================================");
+        sb.AppendLine();
         sb.AppendLine(workspace.UserPrompt);
         sb.AppendLine();
 
@@ -68,26 +113,36 @@ public class CodingAgent(
 
         if (fileBrowser != null)
         {
-            sb.AppendLine("CURRENT FILE");
             sb.AppendLine("--------------------------------");
+            sb.AppendLine("CURRENT OPENED FILE");
+            sb.AppendLine("--------------------------------");
+            sb.AppendLine();
             sb.AppendLine(fileBrowser.path);
             sb.AppendLine();
-            sb.AppendLine(fileBrowser.content);
+            foreach (var line in fileBrowser.lines)
+            {
+                sb.AppendLine($"{line.lineNumber, 4}|{line.content}");
+            }
             sb.AppendLine();
         }
 
+        sb.AppendLine("--------------------------------");
         sb.AppendLine("ALL PROJECT FILES");
         sb.AppendLine("--------------------------------");
+        sb.AppendLine();
 
-        foreach (var file in workspace.Files.Values)
-        {
-            sb.AppendLine($"{file.RelativePath} ({file.GetLineCount()} lines)");
-        }
+        if (workspace.Files.Count > 0)
+            foreach (var file in workspace.Files.Values)
+                sb.AppendLine($"{file.RelativePath} ({file.GetLineCount()} lines)");
+        else
+            sb.AppendLine("No files found in project");
 
         sb.AppendLine();
 
+        sb.AppendLine("--------------------------------");
         sb.AppendLine("COMPILER OUTPUT");
         sb.AppendLine("--------------------------------");
+        sb.AppendLine();
 
         if (!string.IsNullOrWhiteSpace(compiler_output))
             sb.AppendLine(compiler_output);
@@ -98,14 +153,16 @@ public class CodingAgent(
 
         if (workspace.SearchText != null)
         {
+            sb.AppendLine("--------------------------------");
             sb.AppendLine("SEARCH");
             sb.AppendLine("--------------------------------");
-            sb.AppendLine($"Query: {workspace.SearchText}");
             sb.AppendLine();
+            sb.AppendLine($"Query: {workspace.SearchText}");
+            sb.AppendLine($"Results: ");
 
             foreach (var r in searchResults)
             {
-                sb.AppendLine($"{r.path}:{r.lineNumber} {r.line}");
+                sb.AppendLine($"{r.path,4}:{r.lineNumber} {r.line}");
             }
 
             sb.AppendLine();
@@ -113,8 +170,10 @@ public class CodingAgent(
 
         if (workspace.Tasks.Count > 0)
         {
+            sb.AppendLine("--------------------------------");
             sb.AppendLine("TASKS");
             sb.AppendLine("--------------------------------");
+            sb.AppendLine();
 
             foreach (var t in workspace.Tasks)
             {
@@ -126,8 +185,10 @@ public class CodingAgent(
 
         if (workspace.Notes.Count > 0)
         {
+            sb.AppendLine("--------------------------------");
             sb.AppendLine("NOTES");
             sb.AppendLine("--------------------------------");
+            sb.AppendLine();
 
             foreach (var n in workspace.Notes)
             {
@@ -137,40 +198,15 @@ public class CodingAgent(
             sb.AppendLine();
         }
 
-        if (workspace.AgentResponseResults.Count > 0)
-        {
-            sb.AppendLine("RECENT HISTORY");
-            sb.AppendLine("--------------------------------");
-
-            foreach (var h in workspace.AgentResponseResults.Take(3))
-            {
-                if (h.ParseError != null)
-                    sb.AppendLine($"ParseError: {h.ParseError}");
-
-                if (h.Actions != null)
-                {
-                    foreach (var a in h.Actions)
-                    {
-                        var actionJson = JsonSerializer.Serialize(a.AgentAction, new JsonSerializerOptions
-                        {
-                            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-                        });
-                        sb.AppendLine($"Action: {actionJson}");
-                        sb.AppendLine($"Result: {a.Result}");
-                    }
-                }
-
-                sb.AppendLine();
-            }
-        }
-
         var workspaceText = sb.ToString();
 
-        return $@"You are an autonomous software engineering agent operating inside a .NET development workspace.
+        return $@"You are an autonomous software engineering agent operating inside a .NET 10 development workspace.
 
 You interact with this system through a JSON command protocol.
 
+================================
 IMPORTANT RULES
+================================
 
 1. Your response MUST be valid JSON.
 2. The JSON MUST contain an array called ""actions"".
@@ -178,40 +214,49 @@ IMPORTANT RULES
 4. Only use the actions listed below.
 5. If you modify an existing file you MUST open it first.
 6. Never assume file contents.
+7. Target .NET 10
 
+================================
 DEVELOPMENT LOOP
+================================
 
 1. Inspect workspace
 2. Open files if needed
 3. Apply minimal edits
 4. Fix compiler errors
 
+================================
 AVAILABLE ACTIONS
+================================
 
-Search for text:
-
+--------------------------------
+Search for text
+--------------------------------
 {{
   ""type"": ""search"",
   ""content"": ""class Program""
 }}
 
-Open file:
-
+--------------------------------
+Open file
+--------------------------------
 {{
   ""type"": ""open_file"",
   ""path"": ""Program.cs""
 }}
 
-Create or overwrite file:
-
+--------------------------------
+Create or overwrite file
+--------------------------------
 {{
   ""type"": ""create_or_update_file"",
   ""path"": ""MyClass.cs"",
   ""content"": ""file content here""
 }}
 
-Overwrite specific lines:
-
+--------------------------------
+Overwrite specific lines
+--------------------------------
 {{
   ""type"": ""partial_overwrite_file"",
   ""path"": ""Program.cs"",
@@ -220,67 +265,76 @@ Overwrite specific lines:
   ""content"": ""replacement lines""
 }}
 
-Delete file:
-
+--------------------------------
+Delete file
+--------------------------------
 {{
   ""type"": ""delete_file"",
   ""path"": ""OldFile.cs""
 }}
 
-Move file:
-
+--------------------------------
+Move file
+--------------------------------
 {{
   ""type"": ""move_file"",
   ""path"": ""Old.cs"",
   ""newPath"": ""New.cs""
 }}
 
-Create directory:
-
+--------------------------------
+Create directory
+--------------------------------
 {{
   ""type"": ""create_directory"",
   ""path"": ""services""
 }}
 
-Delete directory:
-
+--------------------------------
+Delete directory
+--------------------------------
 {{
   ""type"": ""delete_directory"",
   ""path"": ""old""
 }}
 
-Create note:
-
+--------------------------------
+Create note
+--------------------------------
 {{
   ""type"": ""create_or_update_note"",
   ""id"": 1,
   ""content"": ""important info""
 }}
 
-Delete note:
-
+--------------------------------
+Delete note
+--------------------------------
 {{
   ""type"": ""delete_note"",
   ""id"": 1
 }}
 
-Create task:
-
+--------------------------------
+Create task
+--------------------------------
 {{
   ""type"": ""create_or_update_task"",
   ""id"": 1,
   ""content"": ""implement feature""
 }}
 
-Delete task:
-
+--------------------------------
+Delete task
+--------------------------------
 {{
   ""type"": ""delete_task"",
   ""id"": 1
 }}
 
+--------------------------------
 RESPONSE FORMAT
-
+--------------------------------
 {{
   ""actions"": []
 }}

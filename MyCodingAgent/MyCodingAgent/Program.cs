@@ -168,6 +168,6 @@ internal class Program
                 responseText += chunk.response;
             }
         }
-        return new (index, responseText, thinkingText);
+        return new (DateTime.Now, responseText, thinkingText);
     }
 }
