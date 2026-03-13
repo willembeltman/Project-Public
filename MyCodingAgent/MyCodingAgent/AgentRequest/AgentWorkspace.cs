@@ -7,5 +7,4 @@ public record AgentWorkspace(
     string? search_text,
     AgentWorkspaceSearchResult[] search_results,
     AgentWorkspaceTask[] tasks,
-    AgentWorkspaceNote[] notes,
     AgentWorkspaceHistory[] history);
