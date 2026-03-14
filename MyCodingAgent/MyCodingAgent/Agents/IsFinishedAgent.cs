@@ -1,6 +1,8 @@
 ﻿using MyCodingAgent.BaseAgents;
 using MyCodingAgent.Compile;
+using MyCodingAgent.Helpers;
 using MyCodingAgent.Models;
+using System.Text;
 
 namespace MyCodingAgent.Agents;
 
@@ -10,16 +12,34 @@ public class IsFinishedAgent(
 {
     public async Task<string> GeneratePrompt(CompileResult compileResult)
     {
-        return $@"The current source contents is:{(workspace.Files.Count == 0
-            ? @$"
-<No files in directory>"
-            : string.Join(Environment.NewLine, workspace.Files.Select(a => $@"
+        StringBuilder sb = new StringBuilder();
 
-File '{a.RelativePath}':
-{a.GetFileContent}")))}{(string.IsNullOrWhiteSpace(compileResult.Output) ? "" : $@"
+        sb.AppendLine("The current source contents is:");
 
-The current compile result is:
-{compileResult}")}
+        if (workspace.Files.Count == 0)
+        {
+            sb.AppendLine("<No files in directory>");
+        }
+        else
+        {
+            foreach (var a in workspace.Files)
+            {
+                var content = await a.GetFileContent();
+                sb.AppendLine($"File '{a.RelativePath}'");
+                foreach (var line in content.GetLines())
+                {
+                    sb.AppendLine($"{line.lineNumber:3}|{line.content}");
+                }
+            }
+        }
+
+        if (string.IsNullOrWhiteSpace(compileResult.Output))
+        {
+            sb.AppendLine("The current compile result is:");
+            sb.AppendLine(compileResult.Output);
+        }
+
+        return $@"{sb}
 
 The user prompt is:
 {workspace.UserPrompt}

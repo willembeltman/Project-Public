@@ -9,36 +9,17 @@ public class DebuggingAgent(Workspace workspace) : FencedBaseAgent(workspace), I
 {
     public async Task<string> GeneratePrompt(CompileResult compileResult)
     {
+        var promptHelper = new PromptHelper(workspace);
         var sb = new StringBuilder();
 
-        foreach (var fileGroup in compileResult.Errors.GroupBy(a => a.File))
-        {
-            var relativePath = fileGroup.Key;
-            if (string.IsNullOrWhiteSpace(relativePath)) continue;
+        var actionsText = GetReducedActionsText();
 
-            var file = workspace.GetFile(relativePath);
-            if (file != null)
-            {
-                sb.AppendLine(relativePath);
-                sb.AppendLine("ERRORS");
-                foreach (var error in fileGroup)
-                {
-                    sb.AppendLine(error.FullError.TrimEnd('\n').TrimEnd('\r'));
-                }
-
-                sb.AppendLine();
-                sb.AppendLine("CODE");
-                var fileContent = await file.GetFileContent();
-                foreach (var line in fileContent.GetLines())
-                {
-                    sb.AppendLine($"{line.lineNumber,3}|{line.content}");
-                }
-                sb.AppendLine();
-            }
-        }
+        await promptHelper.LastResponse(sb);
+        await promptHelper.ProjectFiles(sb);
+        await promptHelper.CurrentOpenFile(sb);
+        await promptHelper.ShowErrorFiles(compileResult, sb);
 
         var workspaceText = sb.ToString();
-        var actionsText = GetActionsText();
 
         return $@"You are a .NET 10 compiler repair agent.
 
@@ -50,4 +31,5 @@ GOAL
 Make the code compile successfully.
 Do not change behavior unless required.";
     }
+
 }

@@ -66,6 +66,62 @@ IMPORTANT RULES
 7. You may return multiple actions in a single response.
 8. Only use the parameters defined for each action.
 9. Every action MUST be inside a fenced block.
+10. Parameter 'path', 'newPath', 'searchText' and 'replaceText' cannot contain new lines
+11. Parameter 'content' always starts on the next line and can be multiple lines
+";
+    }
+    protected string GetReducedActionsText()
+    {
+        return @"
+You interact with this system through a tool-DSL with fenced blocks command protocol.
+
+AVAILABLE ACTIONS
+find_and_replace(path: string, searchText: string, replaceText: string)
+find_and_replace_all(searchText: string, replaceText: string)
+open_file(path: string)
+create_or_update_file(path: string, content: string)
+partial_overwrite_file(path: string, startLine: number, endLine: number, content: string)
+move_file(path: string, newPath: string)
+delete_file(path: string)
+ask_developer_extra_information(content: string)
+
+EXAMPLE RESPONSE
+
+# action
+```find_and_replace
+path: Program.cs
+searchText: Using multiple lines for replace doesn't work
+replaceText: Using multiple lines for replace is too fragile
+```
+
+# action
+```partial_overwrite_file
+path: Program.cs
+startLine: 8
+endLine: 9
+content:
+    Console.WriteLine(""This is 1 line of code with 4 leading spaces"");
+```
+
+# action
+```ask_developer_extra_information
+content:
+What do you mean with 'Make a game'? What kind of game do you want me to make?
+```
+
+IMPORTANT RULES
+1. Always lead with # action
+2. Do NOT include explanations outside the actions.
+3. Only use the actions listed above.
+4. Never assume file contents, open the file first.
+5. Target .NET 10.
+6. If you need to modify a file you MUST first open_file.
+7. You may return multiple actions in a single response.
+8. Only use the parameters defined for each action.
+9. Every action MUST be inside a fenced block.
+10. Parameter 'path', 'newPath', 'searchText' and 'replaceText' cannot contain new lines
+11. Parameter 'content' always starts on the next line and can be multiple lines
+
 ";
     }
 
@@ -203,16 +259,14 @@ IMPORTANT RULES
             return new(null, ex.Message);
         }
     }
-
-    private int? TryInt(string? v)
+    private int? TryInt(string? value)
     {
-        if (int.TryParse(v, out var result))
+        if (int.TryParse(value, out var result))
         {
             return result;
         }
         return null;
     }
-
     private Dictionary<string, string> ParseKeyValue(string input)
     {
         var dict = new Dictionary<string, string>();
@@ -248,4 +302,11 @@ IMPORTANT RULES
 
         return dict;
     }
+    private static readonly HashSet<string> SingleLineFields =
+[
+    "path",
+    "newPath",
+    "searchText",
+    "replaceText"
+];
 }

@@ -134,7 +134,7 @@ internal class Program
         {
             var fullPromptText = await isPromptFinishedAgent.GeneratePrompt(compileResult);
             Console.WriteLine($"#{workspace.PromptIndex} Ask model:");
-            Console.WriteLine(fullPromptText);
+            WritePromptToConsole(fullPromptText);
             Console.WriteLine();
 
             Console.WriteLine($"#{workspace.PromptIndex} Model answered:");
