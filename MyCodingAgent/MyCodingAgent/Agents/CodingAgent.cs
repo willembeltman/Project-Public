@@ -1,10 +1,11 @@
-﻿using System.Text;
+﻿using MyCodingAgent.Compile;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace MyCodingAgent.Agents;
 
-public class CodingAgent(Workspace workspace)
+public class CodingAgent(Workspace workspace) : IModifyAgent
 {
     JsonSerializerOptions JsonSerializerOptions = new JsonSerializerOptions
     {
@@ -15,14 +16,12 @@ public class CodingAgent(Workspace workspace)
         PropertyNameCaseInsensitive = true
     };
 
-    public string GeneratePrompt(string compiler_output)
+    public string GeneratePrompt(CompileResult compileResult)
     {
         var sb = new StringBuilder();
         if (workspace.AgentResponseResults.Count > 0)
         {
-            sb.AppendLine("================================");
             sb.AppendLine("YOUR LAST RESPONSE");
-            sb.AppendLine("================================");
             sb.AppendLine();
 
             var agentResponseResults = workspace.AgentResponseResults
@@ -30,70 +29,55 @@ public class CodingAgent(Workspace workspace)
                 .Take(1);
             foreach (var h in agentResponseResults)
             {
-                sb.AppendLine($"You at {h.Response.date}:");
-                sb.AppendLine();
-                foreach (var line in h.Response.GetLines())
+                foreach (var line in h.Response.responseText.GetLines())
                 {
-                    sb.AppendLine($"{line.lineNumber,4}|{line.content}");
+                    sb.AppendLine($"{line.lineNumber,3}|{line.content}");
                 }
                 sb.AppendLine();
 
                 if (h.ParseError != null)
-                    sb.AppendLine($"Parse error: ERROR!!! {h.ParseError}. Please respond in json!");
+                    sb.AppendLine($"Parsing result: {h.ParseError}");
                 else
-                    sb.AppendLine("Parse state: Succesfully parsed response");
+                    sb.AppendLine("Parsing result: Succesfully parsed your response");
 
                 if (h.Actions != null && h.Actions.Any())
                 {
-                    sb.AppendLine($"Parsed actions:");
+                    sb.AppendLine($"Your parsed actions:");
+                    int i = 0;
                     foreach (var action in h.Actions)
                     {
-                        sb.AppendLine($"Action: {JsonSerializer.Serialize(action.AgentAction, JsonSerializerOptions)}");
-                        sb.AppendLine($"Result: {action.Result}");
-                        sb.AppendLine();
+                        i++;
+                        sb.AppendLine($"{i}. Action: {action.AgentAction.type} '{action.AgentAction.path}' Result: {action.Result}");
                     }
                 }
-                else
-                {
-                    sb.AppendLine();
-                }
+                sb.AppendLine();
             }
         }
 
-        sb.AppendLine("================================");
         sb.AppendLine("USER REQUEST");
-        sb.AppendLine("================================");
         sb.AppendLine();
-        foreach (var line in workspace.UserPrompt.GetLines())
-        {
-            sb.AppendLine($"{line.lineNumber,4}|{line.content}");
-        }
-        sb.AppendLine();
-
-        sb.AppendLine("================================");
-        sb.AppendLine("WORKSPACE");
-        sb.AppendLine("================================");
+        //foreach (var line in workspace.UserPrompt.GetLines())
+        //{
+        //    sb.AppendLine($"{line.lineNumber,3}|{line.content}");
+        //}
+        sb.AppendLine(workspace.UserPrompt);
         sb.AppendLine();
 
         var fileBrowser = GetWorkspaceFile();
         if (fileBrowser != null)
         {
-            sb.AppendLine("--------------------------------");
             sb.AppendLine("CURRENT OPENED FILE");
-            sb.AppendLine("--------------------------------");
             sb.AppendLine();
             sb.AppendLine(fileBrowser.RelativePath);
             sb.AppendLine();
             foreach (var line in fileBrowser.FileContent.GetLines())
             {
-                sb.AppendLine($"{line.lineNumber,4}|{line.content}");
+                sb.AppendLine($"{line.lineNumber,3}|{line.content}");
             }
             sb.AppendLine();
         }
 
-        sb.AppendLine("--------------------------------");
         sb.AppendLine("ALL PROJECT FILES");
-        sb.AppendLine("--------------------------------");
         sb.AppendLine();
 
         if (workspace.Files.Count > 0)
@@ -104,16 +88,14 @@ public class CodingAgent(Workspace workspace)
 
         sb.AppendLine();
 
-        sb.AppendLine("--------------------------------");
         sb.AppendLine("COMPILER OUTPUT");
-        sb.AppendLine("--------------------------------");
         sb.AppendLine();
 
-        if (!string.IsNullOrWhiteSpace(compiler_output))
+        if (!string.IsNullOrWhiteSpace(compileResult.Output))
         {
-            foreach (var line in compiler_output.GetLines())
+            foreach (var line in compileResult.Output.GetLines())
             {
-                sb.AppendLine($"{line.lineNumber,4}|{line.content}");
+                sb.AppendLine($"{line.lineNumber,3}|{line.content}");
             }
         }
         else
@@ -123,25 +105,21 @@ public class CodingAgent(Workspace workspace)
         {
             var searchResults = GetSearchResults();
             sb.AppendLine();
-            sb.AppendLine("--------------------------------");
-            sb.AppendLine("SEARCH");
-            sb.AppendLine("--------------------------------");
+            sb.AppendLine("SEARCH RESULT");
             sb.AppendLine();
             sb.AppendLine($"Query: {workspace.SearchText}");
             sb.AppendLine($"Results: ");
 
             foreach (var r in searchResults)
             {
-                sb.AppendLine($"{r.path,4}:{r.lineNumber} {r.line}");
+                sb.AppendLine($"{r.path,3}:{r.lineNumber} {r.line}");
             }
         }
 
         if (workspace.Tasks.Count > 0)
         {
             sb.AppendLine();
-            sb.AppendLine("--------------------------------");
             sb.AppendLine("TASKS");
-            sb.AppendLine("--------------------------------");
             sb.AppendLine();
 
             foreach (var t in workspace.Tasks)
@@ -156,99 +134,29 @@ public class CodingAgent(Workspace workspace)
 
 You interact with this system through a JSON command protocol.
 
-================================
 IMPORTANT RULES
-================================
-
 1. Your response MUST be valid JSON.
 2. The JSON MUST contain an array called ""actions"".
 3. Do NOT include explanations outside the JSON.
 4. Only use the actions listed below.
 5. If you modify an existing file you MUST open it first.
 6. Never assume file contents.
-7. Target .NET 10
+7. Always target .NET 10
 
-================================
 AVAILABLE ACTIONS
-================================
+search(content: string)
+open_file(path: string)
+create_or_update_file(path: string, content: string)
+partial_overwrite_file(path: string, startLine: number, endLine: number, content: string)
+delete_file(path: string)
+move_file(path: string, newPath: string)
 
-Search for text:
-{{
-  ""type"": ""search"",
-  ""content"": ""class Program""
-}}
-
-Open file:
-{{
-  ""type"": ""open_file"",
-  ""path"": ""Program.cs""
-}}
-
-Create or overwrite file:
-{{
-  ""type"": ""create_or_update_file"",
-  ""path"": ""MyClass.cs"",
-  ""content"": ""file content here""
-}}
-
-Overwrite specific lines:
-{{
-  ""type"": ""partial_overwrite_file"",
-  ""path"": ""Program.cs"",
-  ""startLine"": 10,
-  ""endLine"": 20,
-  ""content"": ""replacement lines""
-}}
-
-Delete file:
-{{
-  ""type"": ""delete_file"",
-  ""path"": ""OldFile.cs""
-}}
-
-Move file:
-{{
-  ""type"": ""move_file"",
-  ""path"": ""Old.cs"",
-  ""newPath"": ""New.cs""
-}}
-
-Create directory:
-{{
-  ""type"": ""create_directory"",
-  ""path"": ""services""
-}}
-
-Delete directory:
-{{
-  ""type"": ""delete_directory"",
-  ""path"": ""old""
-}}
-
-Create task:
-{{
-  ""type"": ""create_or_update_task"",
-  ""id"": 1,
-  ""content"": ""implement feature""
-}}
-
-Delete task:
-{{
-  ""type"": ""delete_task"",
-  ""id"": 1
-}}
-
---------------------------------
 RESPONSE FORMAT
---------------------------------
 {{
   ""actions"": []
 }}
 
---------------------------------
 EXAMPLE RESPONSE
---------------------------------
-
 User request:
 Open Program.cs
 
@@ -262,7 +170,13 @@ Response:
   ]
 }}
 
-{workspaceText}";
+{workspaceText}
+
+Respond ONLY with JSON.
+
+The first character of your response must be ""{{""
+The last character must be ""}}""
+Do not end response with ```";
     }
     private IEnumerable<AgentWorkspaceSearchResult> GetSearchResults()
     {
@@ -273,7 +187,7 @@ Response:
         {
             foreach (var line in file.FileContent.GetLines())
             {
-                if (!line.content.Contains(workspace.SearchText)) 
+                if (!line.content.Contains(workspace.SearchText))
                     continue;
 
                 yield return new AgentWorkspaceSearchResult(
@@ -287,8 +201,8 @@ Response:
     {
         WorkspaceFile? fileBrowser = null;
 
-        if (workspace.FileBrowserPath != null &&
-            workspace.Files.TryGetValue(workspace.FileBrowserPath, out var workspaceFile))
+        if (workspace.CurrentOpenFile != null &&
+            workspace.Files.TryGetValue(workspace.CurrentOpenFile, out var workspaceFile))
         {
             fileBrowser = workspaceFile;
         }
@@ -324,35 +238,35 @@ Response:
             switch (agentAction.type)
             {
                 case "search":
-                    result = await workspace.SearchAsync(agentAction.content!);
+                    result = await workspace.Search(agentAction.content!);
                     break;
 
                 case "open_file":
-                    result = await workspace.OpenFileAsync(agentAction.path!);
+                    result = await workspace.OpenFile(agentAction.path!);
                     break;
 
                 case "create_or_update_file":
-                    result = await workspace.CreateOrUpdateFileAsync(agentAction.path!, agentAction.content!);
+                    result = await workspace.CreateOrUpdateFile(agentAction.path!, agentAction.content!);
                     break;
 
                 case "delete_file":
-                    result = await workspace.DeleteFileAsync(agentAction.path!);
+                    result = await workspace.DeleteFile(agentAction.path!);
                     break;
 
                 case "move_file":
-                    result = await workspace.MoveFileAsync(agentAction.path!, agentAction.newPath!);
+                    result = await workspace.MoveFile(agentAction.path!, agentAction.newPath!);
                     break;
 
                 case "create_directory":
-                    result = await workspace.CreateDirectoryAsync(agentAction.path!);
+                    result = await workspace.CreateDirectory(agentAction.path!);
                     break;
 
                 case "delete_directory":
-                    result = await workspace.RemoveDirectoryAsync(agentAction.path!);
+                    result = await workspace.RemoveDirectory(agentAction.path!);
                     break;
 
                 case "partial_overwrite_file":
-                    result = await workspace.PartialOverwriteFileAsync(
+                    result = await workspace.PartialOverwriteFile(
                         agentAction.path!,
                         agentAction.startLine!.Value,
                         agentAction.endLine!.Value,
@@ -361,11 +275,11 @@ Response:
                     break;
 
                 case "create_or_update_task":
-                    result = await workspace.CreateOrUpdateTaskAsync(agentAction.id!, agentAction.content!);
+                    result = await workspace.CreateOrUpdateTask(agentAction.id!, agentAction.content!);
                     break;
 
                 case "delete_task":
-                    result = await workspace.DeleteTaskAsync(agentAction.id!);
+                    result = await workspace.DeleteTask(agentAction.id!);
                     break;
 
                 default:
@@ -373,7 +287,8 @@ Response:
                     found = false;
                     break;
             }
-            list.Add(new AgentActionResult(agentAction, result));
+            if (agentAction != null)
+                list.Add(new AgentActionResult(agentAction, result));
         }
         workspace.AgentResponseResults.Add(new AgentResponseResult(agentResponse, null, [.. list]));
         await workspace.Save();

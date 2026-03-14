@@ -1,4 +1,4 @@
-﻿using MyCodingAgent.Services;
+﻿using MyCodingAgent.Compile;
 using System.Text.Json;
 
 namespace MyCodingAgent;
@@ -7,11 +7,13 @@ public class Workspace
 {
     public string RootDirectoryName { get; set; } = string.Empty;
     public string UserPrompt { get; set; } = string.Empty;
-    public string? FileBrowserPath { get; set; }
+    public bool UserPromptDone { get; set; }
+    public string? CurrentOpenFile { get; set; }
     public Dictionary<string, WorkspaceFile> Files { get; set; } = new();
     public Dictionary<string, string> Tasks { get; set; } = new();
     public List<AgentResponseResult> AgentResponseResults { get; set; } = new();
     public string? SearchText { get; set; }
+    public int PromptIndex { get; set; }
 
     public async static Task<Workspace?> TryLoad(string rootDirectoryName, CancellationToken ct = default)
     {
@@ -35,6 +37,7 @@ public class Workspace
 
         return workspace;
     }
+
     public async static Task<Workspace> Create(string rootDirectoryName, string userPrompt)
     {
         var workspace = new Workspace()
@@ -61,12 +64,12 @@ public class Workspace
         using var stream = File.OpenWrite(llmFileString);
         await JsonSerializer.SerializeAsync(stream, this);
     }
-    public async Task<string> CompileAsync()
+
+    public async Task<CompileResult> Compile()
     {
         var currentDirectory = new DirectoryInfo(RootDirectoryName);
         var compileErrors = await Compiler.Compile(currentDirectory);
-        return compileErrors
-            .Replace(currentDirectory.FullName + "\\", "");
+        return compileErrors;
     }
     public void TryParseFullPath(string path, out string fullPath)
     {
@@ -96,18 +99,17 @@ public class Workspace
         }
     }
 
-
-    // MCP INTERFACE
-    public async Task<string> SearchAsync(string searchText)
+    public async Task<string> Search(string searchText)
     {
         SearchText = searchText;
         return $"Changed search text to: '{searchText}'";
     }
-    public async Task<string> OpenFileAsync(string path)
+
+    public async Task<string> OpenFile(string path)
     {
         if (Files.TryGetValue(path, out _))
         {
-            FileBrowserPath = path;
+            CurrentOpenFile = path;
             return $"Opened workspace file '{path}'";
         }
         else
@@ -115,7 +117,8 @@ public class Workspace
             return $"Tried to open workspace file '{path}': Error, file not found";
         }
     }
-    public async Task<string> CreateDirectoryAsync(string path)
+
+    public async Task<string> CreateDirectory(string path)
     {
         TryParseFullPath(path, out var fullPath);
         try
@@ -128,7 +131,8 @@ public class Workspace
             return $"Tried to created directory '{path}': Error {ex}";
         }
     }
-    public async Task<string> RemoveDirectoryAsync(string path)
+
+    public async Task<string> RemoveDirectory(string path)
     {
         TryParseFullPath(path, out var fullPath);
         try
@@ -148,7 +152,43 @@ public class Workspace
             return $"Tried to remove directory '{path}': Error {ex}";
         }
     }
-    public async Task<string> CreateOrUpdateFileAsync(string path, string fullContent)
+
+    public async Task<string> MoveFile(string path, string newPath)
+    {
+        TryParseFullPath(path, out var fullPath);
+        TryParseFullPath(newPath, out var newFullPath);
+
+        if (File.Exists(fullPath))
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(newFullPath)!);
+
+            File.Move(fullPath, newFullPath, true);
+            Files.Remove(path);
+
+            var content = await File.ReadAllTextAsync(newFullPath);
+            Files[newPath] =
+                new WorkspaceFile(path, fullPath, content);
+
+            return $"Moved {path} -> {newPath}";
+        }
+        return $"Error: could not find '{path}'";
+    }
+
+    public async Task<string> DeleteFile(string path)
+    {
+        TryParseFullPath(path, out var fullPath);
+
+        if (File.Exists(fullPath))
+        {
+            File.Delete(fullPath);
+            Files.Remove(path);
+
+            return $"Deleted '{path}'";
+        }
+        return $"Error: could not find '{path}'";
+    }
+
+    public async Task<string> CreateOrUpdateFile(string path, string fullContent)
     {
         TryParseFullPath(path, out var fullPath);
         var fileInfo = new FileInfo(fullPath);
@@ -164,7 +204,8 @@ public class Workspace
 
         return $"Updated {path}";
     }
-    public async Task<string> PartialOverwriteFileAsync(string path, int startLineNr, int endLineNr, string newContent)
+
+    public async Task<string> PartialOverwriteFile(string path, int startLineNr, int endLineNr, string newContent)
     {
         try
         {
@@ -190,45 +231,26 @@ public class Workspace
             return $"Tried to update '{path}', startLine {startLineNr}, endLineNr {endLineNr}: Error {ex.Message}";
         }
     }
-    public async Task<string> MoveFileAsync(string path, string newPath)
+
+    public async Task<string> FindAndReplace(string path, string searchText, string replaceText)
     {
-        TryParseFullPath(path, out var fullPath);
-        TryParseFullPath(newPath, out var newFullPath);
-
-        if (File.Exists(fullPath))
-        {
-            Directory.CreateDirectory(Path.GetDirectoryName(newFullPath)!);
-
-            File.Move(fullPath, newFullPath, true);
-            Files.Remove(path);
-
-            var content = await File.ReadAllTextAsync(newFullPath);
-            Files[newPath] =
-                new WorkspaceFile(path, fullPath, content);
-
-            return $"Moved {path} -> {newPath}";
-        }
-        return $"Error: could not find '{path}'";
+        SearchText = searchText;
+        return $"Changed search text to: '{searchText}'";
     }
-    public async Task<string> DeleteFileAsync(string path)
+
+    public async Task<string> FindAndReplaceAll(string searchText, string replaceText)
     {
-        TryParseFullPath(path, out var fullPath);
-
-        if (File.Exists(fullPath))
-        {
-            File.Delete(fullPath);
-            Files.Remove(path);
-
-            return $"Deleted '{path}'";
-        }
-        return $"Error: could not find '{path}'";
+        SearchText = searchText;
+        return $"Changed search text to: '{searchText}'";
     }
-    public async Task<string> CreateOrUpdateTaskAsync(string id, string content)
+
+    public async Task<string> CreateOrUpdateTask(string id, string content)
     {
         Tasks[id] = content;
         return $"Updated task '{id}'";
     }
-    public async Task<string> DeleteTaskAsync(string id)
+
+    public async Task<string> DeleteTask(string id)
     {
         Tasks.Remove(id);
         return $"Removed task '{id}'";

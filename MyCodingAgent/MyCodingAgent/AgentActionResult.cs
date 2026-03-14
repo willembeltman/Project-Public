@@ -1,5 +1,5 @@
 ﻿namespace MyCodingAgent;
 
 public record AgentActionResult(
-    AgentAction? AgentAction,
+    AgentAction AgentAction,
     string Result);

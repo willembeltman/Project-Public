@@ -1,12 +1,14 @@
-﻿namespace MyCodingAgent.Agents;
+﻿using MyCodingAgent.Compile;
+
+namespace MyCodingAgent.Agents;
 
 public class IsFinishedAgent(
-    Workspace workspace)
+    Workspace workspace) 
 {
 
     public bool IsDone { get; set; }
 
-    public async Task<string> GeneratePrompt(string compileResult)
+    public async Task<string> GeneratePrompt(CompileResult compileResult)
     {
         return $@"The current source contents is:{(workspace.Files.Count == 0
             ? @$"
@@ -14,7 +16,7 @@ public class IsFinishedAgent(
             : string.Join(Environment.NewLine, workspace.Files.Values.Select(a => $@"
 
 File '{a.RelativePath}':
-{a.FileContent}")))}{(string.IsNullOrWhiteSpace(compileResult) ? "" : $@"
+{a.FileContent}")))}{(string.IsNullOrWhiteSpace(compileResult.Output) ? "" : $@"
 
 The current compile result is:
 {compileResult}")}
@@ -22,7 +24,10 @@ The current compile result is:
 The user prompt is:
 {workspace.UserPrompt}
 
-Is the prompt satisfied? Reply [YES] or [NO]";
+Is the prompt satisfied? Reply [YES] or [NO]
+
+Response must include the [ and ] signs
+";
     }
 
     public async Task<bool> ProcessResponse(AgentResponse response)
