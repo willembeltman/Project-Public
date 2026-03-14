@@ -5,7 +5,7 @@ using System.Text;
 using MyCodingAgent.Interfaces;
 using MyCodingAgent.BaseAgents;
 
-public class DebuggingAgent(Workspace workspace) : JsonAgent(workspace), IAgent
+public class DebuggingAgent(Workspace workspace) : FencedBaseAgent(workspace), IAgent
 {
     public async Task<string> GeneratePrompt(CompileResult compileResult)
     {
@@ -38,26 +38,16 @@ public class DebuggingAgent(Workspace workspace) : JsonAgent(workspace), IAgent
         }
 
         var workspaceText = sb.ToString();
+        var actionsText = GetActionsText();
 
         return $@"You are a .NET 10 compiler repair agent.
 
+{actionsText}
+
+{workspaceText}
+
 GOAL
 Make the code compile successfully.
-Do not change behavior unless required.
-
-IMPORTANT RULES
-1. Your response MUST be valid JSON
-2. The JSON MUST contain an array called ""actions""
-3. Only use the actions listed below
-4. Prefer minimal edits
-5. If modifying a file prefer partial_overwrite_file
-{GetActionsText()}
-
-FILES
-{workspaceText}Respond ONLY with JSON.
-
-The first character of your response must be ""{{""
-The last character must be ""}}""
-Do not end response with ```";
+Do not change behavior unless required.";
     }
 }

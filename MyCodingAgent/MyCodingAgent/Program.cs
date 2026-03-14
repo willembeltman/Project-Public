@@ -49,7 +49,7 @@ internal class Program
                 // DEBUG MODE
                 compileResult = await ModifyFlow(workspace, llmService, model, debuggingAgent, compileResult);
             }
-                
+
             // FEATURE MODE
             compileResult = await ModifyFlow(workspace, llmService, model, codingAgent, compileResult);
 
@@ -121,10 +121,10 @@ internal class Program
     }
 
     private static async Task<bool> IsFinishedFlow(
-        Workspace workspace, 
+        Workspace workspace,
         LLMService llmService,
-        OllamaModel model, 
-        IsFinishedAgent isPromptFinishedAgent, 
+        OllamaModel model,
+        IsFinishedAgent isPromptFinishedAgent,
         CompileResult compileResult)
     {
         workspace.PromptIndex++;
@@ -151,13 +151,12 @@ internal class Program
     }
 
     private static async Task<CompileResult> ModifyFlow(
-        Workspace workspace, 
+        Workspace workspace,
         LLMService llmService,
-        OllamaModel model, 
-        IAgent agent, 
+        OllamaModel model,
+        IAgent agent,
         CompileResult compileResult)
     {
-
         workspace.PromptIndex++;
         var hasAnswered = false;
         while (!hasAnswered)
@@ -176,11 +175,35 @@ internal class Program
 
             await workspace.Save();
 
+            if (workspace.QuestionForDeveloper != null)
+            {
+                var answer = AskQuestionToDeveloper(workspace.QuestionForDeveloper);
+                workspace.Tasks.Add(new WorkspaceTask(workspace.QuestionForDeveloper, answer));
+            }
+
             Console.WriteLine($"#{workspace.PromptIndex} Compiling...");
             compileResult = await workspace.Compile();
         }
 
         return compileResult;
+    }
+
+    private static string AskQuestionToDeveloper(string questionForDeveloper)
+    {
+        var previousColor = Console.ForegroundColor;
+
+        Console.ForegroundColor = ConsoleColor.White;
+        Console.WriteLine("The llm model want more information, can you answer his question?");
+        Console.WriteLine("The question:");
+        Console.WriteLine(questionForDeveloper);
+        Console.WriteLine();
+        Console.WriteLine("Your answer:");
+        var answer = ConsoleEditor.ReadMultilineInput();
+        Console.WriteLine();
+        Console.WriteLine();
+
+        Console.ForegroundColor = previousColor;
+        return answer;
     }
 
     private static void WritePromptToConsole(string fullPromptText)
@@ -194,8 +217,8 @@ internal class Program
     }
 
     private static async Task<AgentResponse> CallLLM(
-        LLMService llmService, 
-        OllamaModel model, 
+        LLMService llmService,
+        OllamaModel model,
         string fullPromptText)
     {
         var previousColor = Console.ForegroundColor;
@@ -230,6 +253,6 @@ internal class Program
         }
 
         Console.ForegroundColor = previousColor;
-        return new (DateTime.Now, responseText, thinkingText);
+        return new(DateTime.Now, responseText, thinkingText);
     }
 }

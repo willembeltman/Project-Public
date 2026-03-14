@@ -6,7 +6,7 @@ namespace MyCodingAgent.Agents;
 
 public class IsFinishedAgent(
     Workspace workspace) 
-    : YesNoAgent
+    : YesNoBaseAgent
 {
     public async Task<string> GeneratePrompt(CompileResult compileResult)
     {

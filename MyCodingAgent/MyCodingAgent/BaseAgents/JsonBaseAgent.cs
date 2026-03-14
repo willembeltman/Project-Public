@@ -3,7 +3,7 @@ using System.Text.Json;
 
 namespace MyCodingAgent.BaseAgents;
 
-public class JsonAgent(
+public class JsonBaseAgent(
     Workspace workspace)
 {
     protected JsonSerializerOptions JsonDeserializerOptions { get; } = new() { PropertyNameCaseInsensitive = true };
@@ -12,6 +12,8 @@ public class JsonAgent(
     protected string GetActionsText()
     {
         return @"
+You interact with this system through a JSON command protocol.
+
 AVAILABLE ACTIONS
 find(searchText: string)
 find_and_replace(path: string, searchText: string, replaceText: string)
@@ -23,6 +25,7 @@ move_file(path: string, newPath: string)
 delete_file(path: string)
 create_or_update_task(path: string, content: string)
 delete_task(path: string)
+ask_developer_extra_information(content: string)
 
 RESPONSE FORMAT
 {
@@ -41,7 +44,17 @@ Response:
       ""path"": ""Program.cs""
     }
   ]
-}";
+}
+
+IMPORTANT RULES
+1. Your response MUST be valid JSON.
+2. The JSON MUST contain an array called ""actions"".
+3. Do NOT include explanations outside the JSON.
+4. Only use the actions listed above.
+5. Never assume file contents, open the file first.
+6. Target .NET 10
+7. Do not find_and_replace large textblocks
+8. If you need to modify a file you MUST first open_file.";
     }
 
     public async Task<bool> ProcessResponse(AgentResponse agentResponse)
@@ -107,12 +120,16 @@ Response:
                     result = await workspace.DeleteTask(action.path!);
                     break;
 
+                case "ask_developer_extra_information":
+                    result = await workspace.AskDeveloper(action.content!);
+                    break;
+
                 default:
                     result = $"Action '{action.type}' not found";
                     found = false;
                     break;
             }
-            if (action != null)
+            if (result != null)
                 list.Add(new AgentActionResult(action, result));
         }
         workspace.AgentResponseResults.Add(new AgentResponseResult(agentResponse, null, [.. list]));
@@ -136,17 +153,12 @@ Response:
     {
         input = input.Trim();
 
-        if (input.StartsWith("```"))
-        {
-            var firstNewline = input.IndexOf('\n');
-            var lastFence = input.LastIndexOf("```");
+        int start = input.IndexOf('{');
+        int end = input.LastIndexOf('}');
 
-            if (firstNewline >= 0 && lastFence > firstNewline)
-            {
-                input = input.Substring(firstNewline + 1, lastFence - firstNewline - 1);
-            }
-        }
+        if (start >= 0 && end > start)
+            input = input.Substring(start, end - start + 1);
 
-        return input.Trim();
+        return input;
     }
 }

@@ -2,7 +2,7 @@
 
 namespace MyCodingAgent.BaseAgents;
 
-public class YesNoAgent
+public class YesNoBaseAgent
 {
     public async Task<bool?> ProcessResponse(AgentResponse response)
     {

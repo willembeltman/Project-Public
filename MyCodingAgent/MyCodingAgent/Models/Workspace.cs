@@ -15,6 +15,7 @@ public class Workspace
     public string? CurrentOpenFile { get; set; }
     public string? SearchText { get; set; }
     public List<WorkspaceFile> Files { get; set; } = [];
+    public string? QuestionForDeveloper { get; private set; }
     public List<WorkspaceTask> Tasks { get; set; } = [];
     public List<AgentResponseResult> AgentResponseResults { get; set; } = [];
 
@@ -109,6 +110,43 @@ public class Workspace
     {
         SearchText = searchText;
         return Task.FromResult($"Changed search text to: '{searchText}'");
+    }
+    public async Task<string> FindAndReplace(string path, string searchText, string replaceText)
+    {
+        SearchText = searchText;
+        var file = GetFile(path);
+        if (file == null)
+            return $"Error could not find path '{path}'";
+
+        var content = await file.GetFileContent();
+        var fileChanges = Regex.Matches(content, Regex.Escape(searchText)).Count;
+        content = content.Replace(searchText, replaceText);
+
+        if (fileChanges > 0)
+        {
+            await file.UpdateContent(content);
+        }
+
+        return $"Replaced {fileChanges} instances";
+    }
+    public async Task<string> FindAndReplaceAll(string searchText, string replaceText)
+    {
+        SearchText = searchText;
+
+        var allChanges = 0;
+        foreach (var file in Files)
+        {
+            var content = await file.GetFileContent();
+            var fileChanges = Regex.Matches(content, Regex.Escape(searchText)).Count;
+            content = content.Replace(searchText, replaceText);
+
+            if (fileChanges > 0)
+            {
+                await file.UpdateContent(content);
+            }
+        }
+
+        return $"Replaced {allChanges} instances";
     }
     public Task<string> OpenFile(string path)
     {
@@ -242,43 +280,6 @@ public class Workspace
             return $"Error while updating '{path}': {ex.Message}";
         }
     }
-    public async Task<string> FindAndReplace(string path, string searchText, string replaceText)
-    {
-        SearchText = searchText;
-        var file = GetFile(path);
-        if (file == null)
-            return $"Error could not find path '{path}'";
-
-        var content = await file.GetFileContent();
-        var fileChanges = Regex.Matches(content, Regex.Escape(searchText)).Count;
-        content = content.Replace(searchText, replaceText);
-
-        if (fileChanges > 0)
-        {
-            await file.UpdateContent(content);
-        }
-
-        return $"Replaced '{searchText}' with '{replaceText}', {fileChanges} found";
-    }
-    public async Task<string> FindAndReplaceAll(string searchText, string replaceText)
-    {
-        SearchText = searchText;
-
-        var allChanges = 0;
-        foreach (var file in Files)
-        {
-            var content = await file.GetFileContent();
-            var fileChanges = Regex.Matches(content, Regex.Escape(searchText)).Count;
-            content = content.Replace(searchText, replaceText);
-
-            if (fileChanges > 0)
-            {
-                await file.UpdateContent(content);
-            }
-        }
-
-        return $"Replaced '{searchText}' with '{replaceText}', {allChanges} found";
-    }
     public Task<string> CreateOrUpdateTask(string path, string content)
     {
         var task = GetTask(path);
@@ -335,5 +336,11 @@ public class Workspace
 
         if (!fullPath.StartsWith(currentDirectory.FullName + Path.DirectorySeparatorChar))
             throw new Exception($"LLM path escape detected: {path}");
+    }
+
+    internal async Task<string?> AskDeveloper(string question)
+    {
+        QuestionForDeveloper = question;
+        return "Question asked, result is in tasks";
     }
 }
