@@ -2,6 +2,7 @@
 using MyCodingAgent.Ollama;
 using MyCodingAgent.Compile;
 using MyCodingAgent.Models;
+using MyCodingAgent.Interfaces;
 
 internal class Program
 {
@@ -71,7 +72,12 @@ internal class Program
         while (userPromptText == null)
         {
             if (first) first = false;
-            else Console.WriteLine("Prompt cannot be empty, please try again:");
+            else
+            {
+                Console.WriteLine();
+                Console.WriteLine("Prompt cannot be empty, please try again:");
+            }
+            Console.WriteLine();
             userPromptText = ConsoleEditor.ReadMultilineInput();
         }
         var workspace = await Workspace.Create(workspaceDirectory, userPromptText);
@@ -123,6 +129,7 @@ internal class Program
     {
         workspace.PromptIndex++;
         var hasAnswered = false;
+        var isDone = false;
         while (!hasAnswered)
         {
             var fullPromptText = await isPromptFinishedAgent.GeneratePrompt(compileResult);
@@ -135,26 +142,29 @@ internal class Program
             Console.WriteLine();
 
             Console.WriteLine($"#{workspace.PromptIndex} Check if prompt has been satisfied.");
-            hasAnswered = await isPromptFinishedAgent.ProcessResponse(response);
+            var answer = await isPromptFinishedAgent.ProcessResponse(response);
+            hasAnswered = answer.HasValue;
+            isDone = answer == true;
         }
 
-        return isPromptFinishedAgent.IsDone;
+        return isDone;
     }
 
     private static async Task<CompileResult> ModifyFlow(
         Workspace workspace, 
         LLMService llmService,
         OllamaModel model, 
-        IModifyAgent agent, 
+        IAgent agent, 
         CompileResult compileResult)
     {
+
         workspace.PromptIndex++;
         var hasAnswered = false;
         while (!hasAnswered)
         {
             var fullPromptText = await agent.GeneratePrompt(compileResult);
-            Console.WriteLine($"#{workspace.PromptIndex} Ask model:");
-            Console.WriteLine(fullPromptText);
+            Console.WriteLine($"#{workspace.PromptIndex} Asking model:");
+            WritePromptToConsole(fullPromptText);
             Console.WriteLine();
 
             Console.WriteLine($"#{workspace.PromptIndex} Model answered:");
@@ -171,6 +181,16 @@ internal class Program
         }
 
         return compileResult;
+    }
+
+    private static void WritePromptToConsole(string fullPromptText)
+    {
+        var previousColor = Console.ForegroundColor;
+
+        Console.ForegroundColor = ConsoleColor.White;
+        Console.WriteLine(fullPromptText);
+
+        Console.ForegroundColor = previousColor;
     }
 
     private static async Task<AgentResponse> CallLLM(

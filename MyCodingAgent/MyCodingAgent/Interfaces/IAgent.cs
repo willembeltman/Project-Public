@@ -1,9 +1,9 @@
 ﻿using MyCodingAgent.Compile;
 using MyCodingAgent.Models;
 
-namespace MyCodingAgent.Agents;
+namespace MyCodingAgent.Interfaces;
 
-public interface IModifyAgent
+public interface IAgent
 {
     Task<string> GeneratePrompt(CompileResult compileResult);
     Task<bool> ProcessResponse(AgentResponse agentResponse);

@@ -1,14 +1,13 @@
-﻿using MyCodingAgent.Compile;
+﻿using MyCodingAgent.BaseAgents;
+using MyCodingAgent.Compile;
 using MyCodingAgent.Models;
 
 namespace MyCodingAgent.Agents;
 
 public class IsFinishedAgent(
     Workspace workspace) 
+    : YesNoAgent
 {
-
-    public bool IsDone { get; set; }
-
     public async Task<string> GeneratePrompt(CompileResult compileResult)
     {
         return $@"The current source contents is:{(workspace.Files.Count == 0
@@ -29,20 +28,5 @@ Is the prompt satisfied? Reply [YES] or [NO]
 
 Response must include the [ and ] signs
 ";
-    }
-
-    public async Task<bool> ProcessResponse(AgentResponse response)
-    {
-        if (response.responseText.Contains("[NO]", StringComparison.InvariantCultureIgnoreCase))
-        {
-            IsDone = false;
-            return true;
-        }
-        else if (response.responseText.Contains("[YES]", StringComparison.InvariantCultureIgnoreCase))
-        {
-            IsDone = true;
-            return true;
-        }
-        return false;
     }
 }

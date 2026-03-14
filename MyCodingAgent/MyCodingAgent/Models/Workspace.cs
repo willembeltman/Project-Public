@@ -1,4 +1,5 @@
 ﻿using MyCodingAgent.Compile;
+using MyCodingAgent.Helpers;
 using MyCodingAgent.Models;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -18,9 +19,33 @@ public class Workspace
     public List<AgentResponseResult> AgentResponseResults { get; set; } = [];
 
     public WorkspaceFile? GetFile(string path)
-        => Files.FirstOrDefault(a => a.RelativePath.Equals(path, StringComparison.CurrentCultureIgnoreCase));
+        => Files.FirstOrDefault(a => a.RelativePath.Equals(path.Replace("/", "\\"), StringComparison.CurrentCultureIgnoreCase));
     public WorkspaceTask? GetTask(string path)
         => Tasks.FirstOrDefault(a => a.Id.Equals(path, StringComparison.CurrentCultureIgnoreCase));
+    public async Task<SearchResult[]> GetSearchResults()
+    {
+        if (SearchText == null)
+            return [];
+
+        var list = new List<SearchResult>();
+        foreach (var file in Files)
+        {
+            var fileContent = await file.GetFileContent();
+            foreach (var line in fileContent.GetLines())
+            {
+                if (!line.content.Contains(SearchText))
+                    continue;
+
+                var result = new SearchResult(
+                    file.RelativePath,
+                    line.lineNumber,
+                    line.content);
+
+                list.Add(result);
+            }
+        }
+        return [.. list];
+    }
 
     public async static Task<Workspace?> TryLoad(string rootDirectoryName, CancellationToken ct = default)
     {
@@ -80,7 +105,7 @@ public class Workspace
         var compileResult = await Compiler.Compile(currentDirectory);
         return compileResult;
     }
-    public Task<string> Search(string searchText)
+    public Task<string> Find(string searchText)
     {
         SearchText = searchText;
         return Task.FromResult($"Changed search text to: '{searchText}'");
@@ -222,7 +247,7 @@ public class Workspace
         SearchText = searchText;
         var file = GetFile(path);
         if (file == null)
-            return $"Error could not find '{path}'";
+            return $"Error could not find path '{path}'";
 
         var content = await file.GetFileContent();
         var fileChanges = Regex.Matches(content, Regex.Escape(searchText)).Count;
