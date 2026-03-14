@@ -154,12 +154,16 @@ IMPORTANT RULES
 7. Always target .NET 10
 
 AVAILABLE ACTIONS
-search(content: string)
+find(searchText: string)
+find_and_replace(path: string, searchText: string, replaceText: string)
+find_and_replace_all(searchText: string, replaceText: string)
 open_file(path: string)
 create_or_update_file(path: string, content: string)
 partial_overwrite_file(path: string, startLine: number, endLine: number, content: string)
-delete_file(path: string)
 move_file(path: string, newPath: string)
+delete_file(path: string)
+create_or_update_task(path: string, content: string)
+delete_task(path: string)
 
 RESPONSE FORMAT
 {{
@@ -225,64 +229,72 @@ Do not end response with ```";
 
         var found = false;
         var list = new List<AgentActionResult>();
-        foreach (var agentAction in agentActionCollection.actions)
+        foreach (var action in agentActionCollection.actions)
         {
             found = true;
             var result = (string?)null;
-            switch (agentAction.type)
+            switch (action.type)
             {
-                case "search":
-                    result = await workspace.Search(agentAction.content!);
+                case "find":
+                    result = await workspace.Search(action.searchText!);
+                    break;
+
+                case "find_and_replace":
+                    result = await workspace.FindAndReplace(action.path!, action.searchText!, action.replaceText!);
+                    break;
+
+                case "find_and_replace_all":
+                    result = await workspace.FindAndReplaceAll(action.searchText!, action.replaceText!);
                     break;
 
                 case "open_file":
-                    result = await workspace.OpenFile(agentAction.path!);
+                    result = await workspace.OpenFile(action.path!);
                     break;
 
                 case "create_or_update_file":
-                    result = await workspace.CreateOrUpdateFile(agentAction.path!, agentAction.content!);
+                    result = await workspace.CreateOrUpdateFile(action.path!, action.content!);
                     break;
 
                 case "delete_file":
-                    result = await workspace.DeleteFile(agentAction.path!);
+                    result = await workspace.DeleteFile(action.path!);
                     break;
 
                 case "move_file":
-                    result = await workspace.MoveFile(agentAction.path!, agentAction.newPath!);
+                    result = await workspace.MoveFile(action.path!, action.newPath!);
                     break;
 
-                case "create_directory":
-                    result = await workspace.CreateDirectory(agentAction.path!);
-                    break;
+                //case "create_directory":
+                //    result = await workspace.CreateDirectory(action.path!);
+                //    break;
 
-                case "delete_directory":
-                    result = await workspace.RemoveDirectory(agentAction.path!);
-                    break;
+                //case "delete_directory":
+                //    result = await workspace.RemoveDirectory(action.path!);
+                //    break;
 
                 case "partial_overwrite_file":
                     result = await workspace.PartialOverwriteFile(
-                        agentAction.path!,
-                        agentAction.startLine!.Value,
-                        agentAction.endLine!.Value,
-                        agentAction.content!
+                        action.path!,
+                        action.startLine!.Value,
+                        action.endLine!.Value,
+                        action.content!
                     );
                     break;
 
                 case "create_or_update_task":
-                    result = await workspace.CreateOrUpdateTask(agentAction.id!, agentAction.content!);
+                    result = await workspace.CreateOrUpdateTask(action.path!, action.content!);
                     break;
 
                 case "delete_task":
-                    result = await workspace.DeleteTask(agentAction.id!);
+                    result = await workspace.DeleteTask(action.path!);
                     break;
 
                 default:
-                    result = $"Action '{agentAction.type}' not found";
+                    result = $"Action '{action.type}' not found";
                     found = false;
                     break;
             }
-            if (agentAction != null)
-                list.Add(new AgentActionResult(agentAction, result));
+            if (action != null)
+                list.Add(new AgentActionResult(action, result));
         }
         workspace.AgentResponseResults.Add(new AgentResponseResult(agentResponse, null, [.. list]));
         await workspace.Save();

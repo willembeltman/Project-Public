@@ -8,5 +8,6 @@ public class AgentAction
     public string? content { get; set; }
     public int? startLine { get; set; }
     public int? endLine { get; set; }
-    public string? id { get; set; }
+    public string? searchText { get; set; }
+    public string? replaceText { get; set; }
 }

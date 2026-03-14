@@ -3,6 +3,7 @@ using MyCodingAgent.Ollama;
 using MyCodingAgent.Compile;
 using System.Text;
 using MyCodingAgent.Models;
+using MyCodingAgent.Helpers;
 
 internal class Program
 {
@@ -73,50 +74,11 @@ internal class Program
         {
             if (first) first = false;
             else Console.WriteLine("Prompt cannot be empty, please try again:");
-            userPromptText = ReadMultilineInput();
+            userPromptText = ConsoleEditor.ReadMultilineInput();
         }
         var workspace = await Workspace.Create(workspaceDirectory, userPromptText);
         Console.ForegroundColor = previousColor;
         return workspace;
-    }
-    private static string ReadMultilineInput()
-    {
-        var sb = new StringBuilder();
-
-        while (true)
-        {
-            var key = Console.ReadKey(intercept: true);
-
-            if (key.Key == ConsoleKey.Enter)
-            {
-                // SHIFT+ENTER = newline
-                if (key.Modifiers.HasFlag(ConsoleModifiers.Shift))
-                {
-                    sb.AppendLine();
-                    Console.WriteLine();
-                    continue;
-                }
-
-                // ENTER = submit
-                Console.WriteLine();
-                break;
-            }
-
-            if (key.Key == ConsoleKey.Backspace)
-            {
-                if (sb.Length > 0)
-                {
-                    sb.Length--;
-                    Console.Write("\b \b");
-                }
-                continue;
-            }
-
-            sb.Append(key.KeyChar);
-            Console.Write(key.KeyChar);
-        }
-
-        return sb.ToString();
     }
 
     private static OllamaModel ChooseModel(OllamaModel[] list)

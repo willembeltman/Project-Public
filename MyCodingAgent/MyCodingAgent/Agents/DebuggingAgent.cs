@@ -154,11 +154,11 @@ Do not end response with ```";
                     break;
 
                 case "create_or_update_task":
-                    result = await workspace.CreateOrUpdateTask(agentAction.id!, agentAction.content!);
+                    result = await workspace.CreateOrUpdateTask(agentAction.path!, agentAction.content!);
                     break;
 
                 case "delete_task":
-                    result = await workspace.DeleteTask(agentAction.id!);
+                    result = await workspace.DeleteTask(agentAction.path!);
                     break;
 
                 default:
