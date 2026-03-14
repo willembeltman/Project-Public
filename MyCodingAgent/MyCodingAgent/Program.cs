@@ -67,7 +67,7 @@ internal class Program
     {
         var previousColor = Console.ForegroundColor;
         Console.ForegroundColor = ConsoleColor.White;
-        Console.WriteLine("Please supply a prompt, what do you want to create:");
+        Console.WriteLine("Please supply a prompt, what do you want to create (use CTRL + enter to submit):");
         string? userPromptText = null;
         var first = true;
         while (userPromptText == null)
