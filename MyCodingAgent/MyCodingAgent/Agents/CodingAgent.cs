@@ -41,8 +41,8 @@ public class CodingAgent(Workspace workspace) : JsonAgent(workspace), IAgent
                         int i = 0;
                         foreach (var action in h.actions)
                         {
-                            i++;
                             sb.AppendLine($"{i}. Action: {action.agentAction.type} '{action.agentAction.path ?? action.agentAction.searchText}' Result: {action.result}");
+                            i++;
                         }
                     }
                     else
@@ -140,8 +140,7 @@ IMPORTANT RULES
 4. Only use the actions listed above.
 5. Never assume file contents, open the file first.
 6. Target .NET 10
-8. To prevent json parsing issues, please try to only update 1 row each action
-9. Do not find_and_replace large textblocks
+7. Do not find_and_replace large textblocks
 
 {workspaceText}
 
