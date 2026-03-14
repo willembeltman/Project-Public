@@ -21,10 +21,10 @@ public class FencedBaseAgent(
 You interact with this system through a tool-DSL with fenced blocks command protocol.
 
 AVAILABLE ACTIONS
+open_file(path: string)
 find(searchText: string)
 find_and_replace(path: string, searchText: string, replaceText: string)
 find_and_replace_all(searchText: string, replaceText: string)
-open_file(path: string)
 create_or_update_file(path: string, content: string)
 partial_overwrite_file(path: string, startLine: number, endLine: number, content: string)
 move_file(path: string, newPath: string)
@@ -35,20 +35,20 @@ ask_developer_extra_information(content: string)
 
 EXAMPLE RESPONSE
 
-# action
-```find
+```action
+type: find
 searchText: A search is always one line
 ```
 
-# action
-```find_and_replace
+```action
+type: find_and_replace
 path: Program.cs
 searchText: Using multiple lines for replace doesn't work
 replaceText: Using multiple lines for replace is too fragile
 ```
 
-# action
-```partial_overwrite_file
+```action
+type: partial_overwrite_file
 path: Program.cs
 startLine: 8
 endLine: 9
@@ -67,7 +67,8 @@ IMPORTANT RULES
 8. Only use the parameters defined for each action.
 9. Every action MUST be inside a fenced block.
 10. Parameter 'path', 'newPath', 'searchText' and 'replaceText' cannot contain new lines
-11. Parameter 'content' always starts on the next line and can be multiple lines
+11. Parameter 'content' is the only one that can have multiple lines
+Optional: You can use #### as delimiters
 ";
     }
     protected string GetReducedActionsText()
@@ -137,15 +138,14 @@ IMPORTANT RULES
             return false;
         }
 
-        var found = false;
+        var changed = false;
         var list = new List<AgentActionResult>();
 
         foreach (var action in agentActionCollection.actions)
         {
-            found = true;
             var result = (string?)null;
 
-            switch (action.type)
+            switch (action.action)
             {
                 case "find":
                     result = await workspace.Find(action.searchText!);
@@ -156,12 +156,14 @@ IMPORTANT RULES
                         action.path!,
                         action.searchText!,
                         action.replaceText!);
+                    changed = true;
                     break;
 
                 case "find_and_replace_all":
                     result = await workspace.FindAndReplaceAll(
                         action.searchText!,
                         action.replaceText!);
+                    changed = true;
                     break;
 
                 case "open_file":
@@ -172,10 +174,12 @@ IMPORTANT RULES
                     result = await workspace.CreateOrUpdateFile(
                         action.path!,
                         action.content!);
+                    changed = true;
                     break;
 
                 case "delete_file":
                     result = await workspace.DeleteFile(action.path!);
+                    changed = true;
                     break;
 
                 case "move_file":
@@ -190,6 +194,7 @@ IMPORTANT RULES
                         action.startLine!.Value,
                         action.endLine!.Value,
                         action.content!);
+                    changed = true;
                     break;
 
                 case "create_or_update_task":
@@ -207,8 +212,8 @@ IMPORTANT RULES
                     break;
 
                 default:
-                    result = $"Action '{action.type}' not found";
-                    found = false;
+                    result = $"Action '{action.action}' not found";
+                    changed = false;
                     break;
             }
 
@@ -219,94 +224,74 @@ IMPORTANT RULES
         workspace.AgentResponseResults.Add(
             new AgentResponseResult(agentResponse, null, [.. list]));
 
-        return found;
+        return changed;
     }
     private (AgentActionCollection? response, string? parseError) TryParseActions(string input)
     {
-        try
+        var lines = input.Split('\n');
+        var actions = new List<AgentAction>();
+        var currentAction = (AgentAction?)null;
+        var readingContent = false;
+
+        for (var i = 0; i < lines.Length; i++)
         {
-            var actions = new List<AgentAction>();
+            var line = lines[i];
 
-            var matches = Regex.Matches(
-                input,
-                @"```(\w+)\s*(.*?)```",
-                RegexOptions.Singleline);
-
-            foreach (Match match in matches)
+            if (line.StartsWith("####"))
             {
-                var type = match.Groups[1].Value.Trim();
-                var body = match.Groups[2].Value;
-
-                var dict = ParseKeyValue(body);
-
-                actions.Add(new AgentAction
-                {
-                    type = type,
-                    path = dict.GetValueOrDefault("path"),
-                    searchText = dict.GetValueOrDefault("searchText"),
-                    replaceText = dict.GetValueOrDefault("replaceText"),
-                    content = dict.GetValueOrDefault("content"),
-                    newPath = dict.GetValueOrDefault("newPath"),
-                    startLine = TryInt(dict.GetValueOrDefault("startLine")),
-                    endLine = TryInt(dict.GetValueOrDefault("endLine"))
-                });
+                // Reset
+                currentAction = null;
+                readingContent = false;
             }
-
-            return new(new AgentActionCollection { actions = actions }, null);
-        }
-        catch (Exception ex)
-        {
-            return new(null, ex.Message);
-        }
-    }
-    private int? TryInt(string? value)
-    {
-        if (int.TryParse(value, out var result))
-        {
-            return result;
-        }
-        return null;
-    }
-    private Dictionary<string, string> ParseKeyValue(string input)
-    {
-        var dict = new Dictionary<string, string>();
-
-        using var reader = new StringReader(input);
-
-        string? line;
-        string? currentKey = null;
-        var sb = new StringBuilder();
-
-        while ((line = reader.ReadLine()) != null)
-        {
-            if (line.Contains(":") && !line.StartsWith(" "))
+            else if (currentAction == null)
             {
-                if (currentKey != null)
-                    dict[currentKey] = sb.ToString().Trim();
-
-                var parts = line.Split(':', 2);
-                currentKey = parts[0].Trim();
-                sb.Clear();
-
-                if (parts.Length > 1)
-                    sb.AppendLine(parts[1]);
+                if (line.StartsWith("```"))
+                {
+                    currentAction = new AgentAction()
+                    {
+                        lang = line.Substring("```".Length).Trim(' '),
+                    };
+                    actions.Add(currentAction);
+                }
             }
             else
             {
-                sb.AppendLine(line);
+                if (line.StartsWith("```"))
+                {
+                    currentAction = null;
+                    readingContent = false;
+                }
+                else
+                {
+                    if (line.StartsWith("type:")) currentAction.action = line.Substring("type:".Length).Trim(' ');
+                    else if (line.StartsWith("path:")) currentAction.path = line.Substring("path:".Length).Trim(' ');
+                    else if (line.StartsWith("newPath:")) currentAction.newPath = line.Substring("newPath:".Length).Trim(' ');
+                    else if (line.StartsWith("searchText:")) currentAction.searchText = line.Substring("searchText:".Length).Trim(' ');
+                    else if (line.StartsWith("replaceText:")) currentAction.replaceText = line.Substring("replaceText:".Length).Trim(' ');
+                    else if (line.StartsWith("startLine:")) currentAction.startLine = Convert.ToInt32(line.Substring("startLine:".Length).Trim(' '));
+                    else if (line.StartsWith("endLine:")) currentAction.endLine = Convert.ToInt32(line.Substring("endLine:".Length).Trim(' '));
+                    else if (line.StartsWith("content:"))
+                    {
+                        if (line.Trim(' ').Length > "content:".Length)
+                            currentAction.content = line.Substring("content:".Length).Trim(' ');
+                        readingContent = true;
+                    }
+                    else if (readingContent)
+                    {
+                        if (currentAction.content != null)
+                            currentAction.content += "\n";
+                        else
+                            currentAction.content += string.Empty;
+                        currentAction.content += line;
+                    }
+                    else
+                    {
+                        return new(null, $"Error reading parsing actions, unexpected characters, line {i + 1}: {line}");
+                    }
+                }
             }
         }
 
-        if (currentKey != null)
-            dict[currentKey] = sb.ToString().Trim();
-
-        return dict;
+        return new(new AgentActionCollection() { actions = actions }, null);
     }
-    private static readonly HashSet<string> SingleLineFields =
-[
-    "path",
-    "newPath",
-    "searchText",
-    "replaceText"
-];
 }

@@ -28,7 +28,7 @@ public class IsFinishedAgent(
                 sb.AppendLine($"File '{a.RelativePath}'");
                 foreach (var line in content.GetLines())
                 {
-                    sb.AppendLine($"{line.lineNumber:3}|{line.content}");
+                    sb.AppendLine($"{line.lineNumber,3}|{line.content}");
                 }
             }
         }

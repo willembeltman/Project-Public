@@ -1,6 +1,9 @@
 ﻿namespace MyCodingAgent.Models;
 
-public record AgentResponse(
-    DateTime date,
-    string responseText,
-    string? thinkingText);
+public class AgentResponse
+{
+    public DateTime date { get; set; }
+    public string responseText { get; set; } = string.Empty;
+    public string? thinkingText { get; set; }
+    public bool handled { get; set; }
+}

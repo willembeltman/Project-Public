@@ -73,7 +73,7 @@ IMPORTANT RULES
         {
             found = true;
             var result = (string?)null;
-            switch (action.type)
+            switch (action.action)
             {
                 case "find":
                     result = await workspace.Find(action.searchText!);
@@ -125,7 +125,7 @@ IMPORTANT RULES
                     break;
 
                 default:
-                    result = $"Action '{action.type}' not found";
+                    result = $"Action '{action.action}' not found";
                     found = false;
                     break;
             }

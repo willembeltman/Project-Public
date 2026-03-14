@@ -1,9 +1,8 @@
 ﻿using MyCodingAgent.Compile;
-using MyCodingAgent.Helpers;
 using MyCodingAgent.Models;
 using System.Text;
 
-namespace MyCodingAgent.BaseAgents;
+namespace MyCodingAgent.Helpers;
 
 public class PromptHelper(Workspace workspace)
 {
@@ -11,12 +10,18 @@ public class PromptHelper(Workspace workspace)
     {
         if (workspace.AgentResponseResults.Count > 0)
         {
-            sb.AppendLine("LAST 3 RESPONSES");
-            sb.AppendLine();
-
             var agentResponseResults = workspace.AgentResponseResults
                 .OrderByDescending(a => a.response.date)
-                .Take(3);
+                .Take(1)
+                .ToArray();
+
+            if (agentResponseResults.Length == 1)
+                sb.AppendLine($"YOUR LAST RESPONSE / HISTORY");
+            else
+                sb.AppendLine($"YOUR LAST {agentResponseResults.Length} RESPONSES / HISTORY");
+
+            sb.AppendLine();
+
             foreach (var result in agentResponseResults)
             {
                 sb.AppendLine($"YOU @ {result.response.date}");
@@ -37,10 +42,10 @@ public class PromptHelper(Workspace workspace)
                     sb.AppendLine($"Your parsed actions:");
                     if (result.actions.Length > 0)
                     {
-                        int i = 0;
+                        int i = 1;
                         foreach (var action in result.actions)
                         {
-                            sb.AppendLine($"{i}. Action: {action.agentAction.type} Result: {action.result}");
+                            sb.AppendLine($"{i}. Action: '{action.agentAction.action}' Result: '{action.result}'");
                             i++;
                         }
                     }
@@ -49,6 +54,8 @@ public class PromptHelper(Workspace workspace)
                         sb.AppendLine($"<No actions found in response>");
                     }
                 }
+                sb.AppendLine();
+                sb.AppendLine("END OF HISTORY");
                 sb.AppendLine();
             }
         }
@@ -82,8 +89,8 @@ public class PromptHelper(Workspace workspace)
         var currentOpenFile = (WorkspaceFile?)null;
         if (workspace.CurrentOpenFile != null)
             currentOpenFile = workspace.GetFile(workspace.CurrentOpenFile);
-        if (currentOpenFile == null)
-            currentOpenFile = workspace.Files.FirstOrDefault();
+        //if (currentOpenFile == null)
+        //    currentOpenFile = workspace.Files.FirstOrDefault();
         if (currentOpenFile != null)
         {
             sb.AppendLine(currentOpenFile.RelativePath);
@@ -96,19 +103,19 @@ public class PromptHelper(Workspace workspace)
         }
         else
         {
-            sb.AppendLine("<No file opened>");
+            sb.AppendLine("NO FILE OPENED, YOU MUST FIRST OPEN A FILE WITH THE ACTION 'open_file' !!!");
             sb.AppendLine();
         }
     }
     public async Task SearchResults(StringBuilder sb)
     {
-        sb.AppendLine("SEARCH RESULTS");
+        sb.AppendLine("YOUR LAST SEARCH RESULTS");
         sb.AppendLine();
 
         if (!string.IsNullOrWhiteSpace(workspace.SearchText))
         {
             var searchResults = await workspace.GetSearchResults();
-            sb.AppendLine($"SearchText: {workspace.SearchText}");
+            sb.AppendLine($"SearchText: '{workspace.SearchText}'");
             sb.AppendLine($"Results: ");
 
             foreach (var r in searchResults)
@@ -140,7 +147,7 @@ public class PromptHelper(Workspace workspace)
         {
             foreach (var t in workspace.Tasks)
             {
-                sb.AppendLine($"{t.Id}. {t.Content}");
+                sb.AppendLine($"TASK '{t.Id}': {t.Content}");
             }
         }
         else

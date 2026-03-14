@@ -109,7 +109,7 @@ public class Workspace
     public Task<string> Find(string searchText)
     {
         SearchText = searchText;
-        return Task.FromResult($"Changed search text to: '{searchText}'");
+        return Task.FromResult($"Changed your SearchText");
     }
     public async Task<string> FindAndReplace(string path, string searchText, string replaceText)
     {

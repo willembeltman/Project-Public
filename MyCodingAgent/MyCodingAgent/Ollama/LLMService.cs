@@ -38,7 +38,6 @@ public class LLMService(
 
     public async IAsyncEnumerable<OllamaResponse> PromptAsync(OllamaModel model, string prompt, [EnumeratorCancellation] CancellationToken ct = default)
     {
-
         var options = new JsonSerializerOptions
         {
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull

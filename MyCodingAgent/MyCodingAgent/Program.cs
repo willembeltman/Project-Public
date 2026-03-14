@@ -3,6 +3,7 @@ using MyCodingAgent.Ollama;
 using MyCodingAgent.Compile;
 using MyCodingAgent.Models;
 using MyCodingAgent.Interfaces;
+using System.Xml.Linq;
 
 internal class Program
 {
@@ -40,6 +41,16 @@ internal class Program
 
         Console.WriteLine("Agents initialized, attempting to compile project, please wait...");
         var compileResult = await workspace.Compile();
+
+        var unhandled = workspace.AgentResponseResults
+            .Where(a => a.response.handled == false)
+            .ToArray();
+        foreach (var unhandledResult in unhandled)
+        {
+            await codingAgent.ProcessResponse(unhandledResult.response);
+            unhandledResult.response.handled = true;
+            await workspace.Save();
+        }
 
         Console.WriteLine("Project compile attempt finished, starting lllm-development-cycle, please wait...");
         while (true)
@@ -120,6 +131,46 @@ internal class Program
         return model;
     }
 
+    private static async Task<CompileResult> ModifyFlow(
+        Workspace workspace,
+        LLMService llmService,
+        OllamaModel model,
+        IAgent agent,
+        CompileResult compileResult)
+    {
+        workspace.PromptIndex++;
+        var hasAnswered = false;
+        while (!hasAnswered)
+        {
+            var fullPromptText = await agent.GeneratePrompt(compileResult);
+            Console.WriteLine($"#{workspace.PromptIndex} Asking model:");
+            WritePromptToConsole(fullPromptText);
+            Console.WriteLine();
+
+            Console.WriteLine($"#{workspace.PromptIndex} Model answered:");
+            var response = await CallLLM(llmService, model, fullPromptText);
+            Console.WriteLine();
+
+            Console.WriteLine($"#{workspace.PromptIndex} Applying answer...");
+            hasAnswered = await agent.ProcessResponse(response);
+            response.handled = true;
+
+            await workspace.Save();
+
+            if (workspace.QuestionForDeveloper != null)
+            {
+                var answer = AskQuestionToDeveloper(workspace.QuestionForDeveloper);
+                workspace.Tasks.Add(new WorkspaceTask(workspace.QuestionForDeveloper, answer));
+                await workspace.Save();
+            }
+
+            Console.WriteLine($"#{workspace.PromptIndex} Compiling...");
+            compileResult = await workspace.Compile();
+        }
+
+        return compileResult;
+    }
+
     private static async Task<bool> IsFinishedFlow(
         Workspace workspace,
         LLMService llmService,
@@ -148,44 +199,6 @@ internal class Program
         }
 
         return isDone;
-    }
-
-    private static async Task<CompileResult> ModifyFlow(
-        Workspace workspace,
-        LLMService llmService,
-        OllamaModel model,
-        IAgent agent,
-        CompileResult compileResult)
-    {
-        workspace.PromptIndex++;
-        var hasAnswered = false;
-        while (!hasAnswered)
-        {
-            var fullPromptText = await agent.GeneratePrompt(compileResult);
-            Console.WriteLine($"#{workspace.PromptIndex} Asking model:");
-            WritePromptToConsole(fullPromptText);
-            Console.WriteLine();
-
-            Console.WriteLine($"#{workspace.PromptIndex} Model answered:");
-            var response = await CallLLM(llmService, model, fullPromptText);
-            Console.WriteLine();
-
-            Console.WriteLine($"#{workspace.PromptIndex} Applying answer...");
-            hasAnswered = await agent.ProcessResponse(response);
-
-            await workspace.Save();
-
-            if (workspace.QuestionForDeveloper != null)
-            {
-                var answer = AskQuestionToDeveloper(workspace.QuestionForDeveloper);
-                workspace.Tasks.Add(new WorkspaceTask(workspace.QuestionForDeveloper, answer));
-            }
-
-            Console.WriteLine($"#{workspace.PromptIndex} Compiling...");
-            compileResult = await workspace.Compile();
-        }
-
-        return compileResult;
     }
 
     private static string AskQuestionToDeveloper(string questionForDeveloper)
@@ -253,6 +266,11 @@ internal class Program
         }
 
         Console.ForegroundColor = previousColor;
-        return new(DateTime.Now, responseText, thinkingText);
+        return new()
+        {
+            date = DateTime.Now,
+            responseText = responseText,
+            thinkingText = thinkingText
+        };
     }
 }
