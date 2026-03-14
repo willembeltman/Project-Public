@@ -1,21 +1,26 @@
 ﻿using MyCodingAgent.Compile;
+using MyCodingAgent.Models;
 using System.Text.Json;
 using System.Text.RegularExpressions;
-using static System.Net.WebRequestMethods;
 
-namespace MyCodingAgent;
+namespace MyCodingAgent.Models;
 
 public class Workspace
 {
+    public int PromptIndex { get; set; }
     public string RootDirectoryName { get; set; } = string.Empty;
     public string UserPrompt { get; set; } = string.Empty;
     public bool UserPromptDone { get; set; }
     public string? CurrentOpenFile { get; set; }
-    public Dictionary<string, WorkspaceFile> Files { get; set; } = new(StringComparer.OrdinalIgnoreCase);
-    public Dictionary<string, string> Tasks { get; set; } = new();
-    public List<AgentResponseResult> AgentResponseResults { get; set; } = new();
     public string? SearchText { get; set; }
-    public int PromptIndex { get; set; }
+    public List<WorkspaceFile> Files { get; set; } = [];
+    public List<WorkspaceTask> Tasks { get; set; } = [];
+    public List<AgentResponseResult> AgentResponseResults { get; set; } = [];
+
+    public WorkspaceFile? GetFile(string path)
+        => Files.FirstOrDefault(a => a.RelativePath.Equals(path, StringComparison.CurrentCultureIgnoreCase));
+    public WorkspaceTask? GetTask(string path)
+        => Tasks.FirstOrDefault(a => a.Id.Equals(path, StringComparison.CurrentCultureIgnoreCase));
 
     public async static Task<Workspace?> TryLoad(string rootDirectoryName, CancellationToken ct = default)
     {
@@ -32,7 +37,9 @@ public class Workspace
             {
                 var rootDirectory = new DirectoryInfo(rootDirectoryName);
                 workspace.Files.Clear();
-                await workspace.ReadDirectory(rootDirectory); // voor de zekerheid
+
+                // For when the developer has changed the source code
+                await workspace.InitializeDirectory(rootDirectory); 
                 await workspace.Save();
             }
         }
@@ -51,8 +58,10 @@ public class Workspace
         if (!rootDirectory.Exists)
             rootDirectory.Create();
 
-        await workspace.ReadDirectory(rootDirectory);
+        // For when the developer has already setup a project and the workspace.llm file is just missing
+        await workspace.InitializeDirectory(rootDirectory);
         await workspace.Save();
+
         return workspace;
     }
     public async Task Save()
@@ -78,7 +87,8 @@ public class Workspace
     }
     public Task<string> OpenFile(string path)
     {
-        if (Files.TryGetValue(path, out _))
+        var file = GetFile(path);
+        if (file != null)
         {
             CurrentOpenFile = path;
             return Task.FromResult($"Opened workspace file '{path}'");
@@ -125,7 +135,8 @@ public class Workspace
     }
     public Task<string> MoveFile(string path, string newPath)
     {
-        if (!Files.TryGetValue(path, out var file))
+        var file = GetFile(path);
+        if (file == null)
             return Task.FromResult($"Error could not find '{path}'");
 
         TryParseFullPath(newPath, out var newFullPath);
@@ -135,7 +146,7 @@ public class Workspace
             if (file.Exists())
             {
                 file.Move(newPath, newFullPath);
-                return $"Moved {path} -> {newPath}";
+                return Task.FromResult($"Moved {path} -> {newPath}");
             }
             return Task.FromResult($"Error while moving: could not find '{path}'");
         }
@@ -146,7 +157,8 @@ public class Workspace
     }
     public Task<string> DeleteFile(string path)
     {
-        if (!Files.TryGetValue(path, out var file))
+        var file = GetFile(path);
+        if (file == null)
             return Task.FromResult($"Error could not find '{path}'");
 
         try
@@ -154,7 +166,7 @@ public class Workspace
             if (file.Exists())
             {
                 file.Delete();
-                Files.Remove(path);
+                Files.Remove(file);
                 return Task.FromResult($"Deleted '{path}'");
             }
             return Task.FromResult($"Error while deleting: could not find '{path}'");
@@ -170,10 +182,19 @@ public class Workspace
 
         try
         {
-            var file = new WorkspaceFile(path, fullPath);
-            await file.UpdateContent(content);
-            Files[path] = file;
-            return $"Updated {path}";
+            var file = GetFile(path);
+            if (file == null)
+            {
+                var newFile = new WorkspaceFile(path, fullPath);
+                await newFile.UpdateContent(content);
+                Files.Add(newFile);
+                return $"Created {path}";
+            }
+            else
+            {
+                await file.UpdateContent(content);
+                return $"Updated {path}";
+            }
         }
         catch (Exception ex)
         {
@@ -182,7 +203,8 @@ public class Workspace
     }
     public async Task<string> PartialOverwriteFile(string path, int startLineNr, int endLineNr, string newContent)
     {
-        if (!Files.TryGetValue(path, out var file))
+        var file = GetFile(path);
+        if (file == null)
             return $"Error could not find '{path}'";
 
         try
@@ -198,7 +220,8 @@ public class Workspace
     public async Task<string> FindAndReplace(string path, string searchText, string replaceText)
     {
         SearchText = searchText;
-        if (!Files.TryGetValue(path, out var file))
+        var file = GetFile(path);
+        if (file == null)
             return $"Error could not find '{path}'";
 
         var content = await file.GetFileContent();
@@ -217,7 +240,7 @@ public class Workspace
         SearchText = searchText;
 
         var allChanges = 0;
-        foreach (var file in Files.Values)
+        foreach (var file in Files)
         {
             var content = await file.GetFileContent();
             var fileChanges = Regex.Matches(content, Regex.Escape(searchText)).Count;
@@ -231,17 +254,53 @@ public class Workspace
 
         return $"Replaced '{searchText}' with '{replaceText}', {allChanges} found";
     }
-    public Task<string> CreateOrUpdateTask(string id, string content)
+    public Task<string> CreateOrUpdateTask(string path, string content)
     {
-        Tasks[id] = content;
-        return Task.FromResult($"Updated task '{id}'");
+        var task = GetTask(path);
+        if (task == null)
+        {
+            task = new WorkspaceTask(path, content);
+            Tasks.Add(task);
+            return Task.FromResult($"Created task '{path}'");
+        }
+        else
+        {
+            task.Content = content;
+            return Task.FromResult($"Updated task '{path}'");
+        }
     }
-    public Task<string> DeleteTask(string id)
+    public Task<string> DeleteTask(string path)
     {
-        Tasks.Remove(id);
-        return Task.FromResult($"Removed task '{id}'");
+        var task = GetTask(path);
+        if (task != null)
+        {
+            Tasks.Remove(task);
+            return Task.FromResult($"Removed task '{path}'");
+        }
+        return Task.FromResult($"Could not find task '{path}'");
     }
 
+    private async Task InitializeDirectory(DirectoryInfo directoryInfo, bool isRoot = true, CancellationToken ct = default)
+    {
+        foreach (var dir in directoryInfo.GetDirectories())
+        {
+            if (isRoot && dir.Name == "obj") continue;
+            if (isRoot && dir.Name == "bin") continue;
+            if (isRoot && dir.Name == ".vs") continue;
+            await InitializeDirectory(dir, false, ct);
+        }
+
+        foreach (var file in directoryInfo.GetFiles())
+        {
+            if (isRoot && file.Name == "workspace.llm") continue;
+            if (file.Extension is ".dll" or ".exe" or ".png" or ".jpg" or ".zip")
+                continue;
+            var relativePath = Path.GetRelativePath(RootDirectoryName, file.FullName);
+            var fullPath = file.FullName;
+            var workspaceFile = new WorkspaceFile(relativePath, fullPath);
+            Files.Add(workspaceFile);
+        }
+    }
     private void TryParseFullPath(string path, out string fullPath)
     {
         var currentDirectory = new DirectoryInfo(RootDirectoryName);
@@ -251,26 +310,5 @@ public class Workspace
 
         if (!fullPath.StartsWith(currentDirectory.FullName + Path.DirectorySeparatorChar))
             throw new Exception($"LLM path escape detected: {path}");
-    }
-    private async Task ReadDirectory(DirectoryInfo directoryInfo, bool root = true, CancellationToken ct = default)
-    {
-        foreach (var dir in directoryInfo.GetDirectories())
-        {
-            if (root && dir.Name == "obj") continue;
-            if (root && dir.Name == "bin") continue;
-            if (root && dir.Name == ".vs") continue;
-            await ReadDirectory(dir, false, ct);
-        }
-
-        foreach (var file in directoryInfo.GetFiles())
-        {
-            if (root && file.Name == "workspace.llm") continue;
-            if (file.Extension is ".dll" or ".exe" or ".png" or ".jpg" or ".zip")
-                continue;
-            var relativePath = Path.GetRelativePath(RootDirectoryName, file.FullName);
-            var fullPath = file.FullName;
-            var workspaceFile = new WorkspaceFile(relativePath, fullPath);
-            Files[relativePath] = workspaceFile;
-        }
     }
 }

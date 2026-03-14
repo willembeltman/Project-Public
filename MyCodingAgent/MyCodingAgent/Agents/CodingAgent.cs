@@ -1,4 +1,6 @@
 ﻿using MyCodingAgent.Compile;
+using MyCodingAgent.Models;
+using MyCodingAgent.Helpers;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -16,7 +18,7 @@ public class CodingAgent(Workspace workspace) : IModifyAgent
         PropertyNameCaseInsensitive = true
     };
 
-    public string GeneratePrompt(CompileResult compileResult)
+    public async Task<string> GeneratePrompt(CompileResult compileResult)
     {
         var sb = new StringBuilder();
         if (workspace.AgentResponseResults.Count > 0)
@@ -25,29 +27,29 @@ public class CodingAgent(Workspace workspace) : IModifyAgent
             sb.AppendLine();
 
             var agentResponseResults = workspace.AgentResponseResults
-                .OrderByDescending(a => a.Response.date)
+                .OrderByDescending(a => a.response.date)
                 .Take(1);
             foreach (var h in agentResponseResults)
             {
-                foreach (var line in h.Response.responseText.GetLines())
+                foreach (var line in h.response.responseText.GetLines())
                 {
                     sb.AppendLine($"{line.lineNumber,3}|{line.content}");
                 }
                 sb.AppendLine();
 
-                if (h.ParseError != null)
-                    sb.AppendLine($"Parsing result: {h.ParseError}");
+                if (h.parseError != null)
+                    sb.AppendLine($"Parsing result: {h.parseError}");
                 else
                     sb.AppendLine("Parsing result: Succesfully parsed your response");
 
-                if (h.Actions != null && h.Actions.Any())
+                if (h.actions != null && h.actions.Any())
                 {
                     sb.AppendLine($"Your parsed actions:");
                     int i = 0;
-                    foreach (var action in h.Actions)
+                    foreach (var action in h.actions)
                     {
                         i++;
-                        sb.AppendLine($"{i}. Action: {action.AgentAction.type} '{action.AgentAction.path}' Result: {action.Result}");
+                        sb.AppendLine($"{i}. Action: {action.agentAction.type} '{action.agentAction.path}' Result: {action.result}");
                     }
                 }
                 sb.AppendLine();
@@ -63,14 +65,19 @@ public class CodingAgent(Workspace workspace) : IModifyAgent
         sb.AppendLine(workspace.UserPrompt);
         sb.AppendLine();
 
-        var fileBrowser = GetWorkspaceFile();
+        var fileBrowser = (WorkspaceFile?)null;
+        if (workspace.CurrentOpenFile != null)
+            fileBrowser = workspace.GetFile(workspace.CurrentOpenFile);
+        if (fileBrowser == null)
+            fileBrowser = workspace.Files.FirstOrDefault();
         if (fileBrowser != null)
         {
             sb.AppendLine("CURRENT OPENED FILE");
             sb.AppendLine();
             sb.AppendLine(fileBrowser.RelativePath);
             sb.AppendLine();
-            foreach (var line in fileBrowser.FileContent.GetLines())
+            var fileContent = await fileBrowser.GetFileContent();
+            foreach (var line in fileContent.GetLines())
             {
                 sb.AppendLine($"{line.lineNumber,3}|{line.content}");
             }
@@ -81,8 +88,11 @@ public class CodingAgent(Workspace workspace) : IModifyAgent
         sb.AppendLine();
 
         if (workspace.Files.Count > 0)
-            foreach (var file in workspace.Files.Values)
-                sb.AppendLine($"{file.RelativePath} ({file.FileContent.GetLineCount()} lines)");
+            foreach (var file in workspace.Files)
+            {
+                var fileContent = await file.GetFileContent();
+                sb.AppendLine($"{file.RelativePath} ({fileContent.GetLineCount()} lines)");
+            }
         else
             sb.AppendLine("No files found in project");
 
@@ -103,7 +113,7 @@ public class CodingAgent(Workspace workspace) : IModifyAgent
 
         if (workspace.SearchText != null)
         {
-            var searchResults = GetSearchResults();
+            var searchResults = await GetSearchResults();
             sb.AppendLine();
             sb.AppendLine("SEARCH RESULT");
             sb.AppendLine();
@@ -124,7 +134,7 @@ public class CodingAgent(Workspace workspace) : IModifyAgent
 
             foreach (var t in workspace.Tasks)
             {
-                sb.AppendLine($"{t.Key}. {t.Value}");
+                sb.AppendLine($"{t.Id}. {t.Content}");
             }
         }
 
@@ -178,45 +188,29 @@ The first character of your response must be ""{{""
 The last character must be ""}}""
 Do not end response with ```";
     }
-    private IEnumerable<AgentWorkspaceSearchResult> GetSearchResults()
+    private async Task<SearchResult[]> GetSearchResults()
     {
         if (workspace.SearchText == null)
-            yield break;
+            return [];
 
-        foreach (var file in workspace.Files.Values)
+        var list = new List<SearchResult>();
+        foreach (var file in workspace.Files)
         {
-            foreach (var line in file.FileContent.GetLines())
+            var fileContent = await file.GetFileContent();
+            foreach (var line in fileContent.GetLines())
             {
                 if (!line.content.Contains(workspace.SearchText))
                     continue;
 
-                yield return new AgentWorkspaceSearchResult(
-                        file.RelativePath,
-                        line.lineNumber,
-                        line.content);
+                var result = new SearchResult(
+                    file.RelativePath,
+                    line.lineNumber,
+                    line.content);
+
+                list.Add(result);
             }
         }
-    }
-    private WorkspaceFile? GetWorkspaceFile()
-    {
-        WorkspaceFile? fileBrowser = null;
-
-        if (workspace.CurrentOpenFile != null &&
-            workspace.Files.TryGetValue(workspace.CurrentOpenFile, out var workspaceFile))
-        {
-            fileBrowser = workspaceFile;
-        }
-
-        if (fileBrowser == null)
-        {
-            var file = workspace.Files.Values.FirstOrDefault();
-            if (file != null)
-            {
-                fileBrowser = file;
-            }
-        }
-
-        return fileBrowser;
+        return [..list];
     }
 
     public async Task<bool> ProcessResponse(AgentResponse agentResponse)
@@ -231,7 +225,7 @@ Do not end response with ```";
 
         var found = false;
         var list = new List<AgentActionResult>();
-        foreach (var agentAction in agentActionCollection.Actions)
+        foreach (var agentAction in agentActionCollection.actions)
         {
             found = true;
             var result = (string?)null;

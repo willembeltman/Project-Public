@@ -1,4 +1,6 @@
-﻿namespace MyCodingAgent;
+﻿using MyCodingAgent.Models;
+
+namespace MyCodingAgent.Helpers;
 
 public static class StringHelpers
 {

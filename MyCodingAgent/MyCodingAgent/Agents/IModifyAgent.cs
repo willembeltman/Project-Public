@@ -1,9 +1,10 @@
 ﻿using MyCodingAgent.Compile;
+using MyCodingAgent.Models;
 
 namespace MyCodingAgent.Agents;
 
 public interface IModifyAgent
 {
-    string GeneratePrompt(CompileResult compileResult);
+    Task<string> GeneratePrompt(CompileResult compileResult);
     Task<bool> ProcessResponse(AgentResponse agentResponse);
 }

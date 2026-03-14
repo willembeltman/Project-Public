@@ -1,4 +1,4 @@
-﻿namespace MyCodingAgent;
+﻿namespace MyCodingAgent.Models;
 
 public class WorkspaceFile(
     string relativePath,
@@ -44,7 +44,7 @@ public class WorkspaceFile(
     public void Move(string newPath, string newFullPath)
     {
         Directory.CreateDirectory(Path.GetDirectoryName(newFullPath)!);
-        File.Move(fullPath, newFullPath, true);
+        File.Move(FullPath, newFullPath, true);
         RelativePath = newPath;
         FullPath = newFullPath;
     }

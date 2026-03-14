@@ -1,8 +1,8 @@
-﻿using MyCodingAgent;
-using MyCodingAgent.Agents;
+﻿using MyCodingAgent.Agents;
 using MyCodingAgent.Ollama;
 using MyCodingAgent.Compile;
 using System.Text;
+using MyCodingAgent.Models;
 
 internal class Program
 {
@@ -53,6 +53,7 @@ internal class Program
             // FEATURE MODE
             compileResult = await ModifyFlow(workspace, llmService, model, codingAgent, compileResult);
 
+            // ISDONE CHECK
             var isDone = await IsFinishedFlow(workspace, llmService, model, isPromptFinishedAgent, compileResult);
             if (isDone) break;
         }
@@ -191,7 +192,7 @@ internal class Program
         var hasAnswered = false;
         while (!hasAnswered)
         {
-            var fullPromptText = agent.GeneratePrompt(compileResult);
+            var fullPromptText = await agent.GeneratePrompt(compileResult);
             Console.WriteLine($"#{workspace.PromptIndex} Ask model:");
             Console.WriteLine(fullPromptText);
             Console.WriteLine();

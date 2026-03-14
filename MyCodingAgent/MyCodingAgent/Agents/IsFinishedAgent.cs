@@ -1,4 +1,5 @@
 ﻿using MyCodingAgent.Compile;
+using MyCodingAgent.Models;
 
 namespace MyCodingAgent.Agents;
 
@@ -13,7 +14,7 @@ public class IsFinishedAgent(
         return $@"The current source contents is:{(workspace.Files.Count == 0
             ? @$"
 <No files in directory>"
-            : string.Join(Environment.NewLine, workspace.Files.Values.Select(a => $@"
+            : string.Join(Environment.NewLine, workspace.Files.Select(a => $@"
 
 File '{a.RelativePath}':
 {a.GetFileContent}")))}{(string.IsNullOrWhiteSpace(compileResult.Output) ? "" : $@"

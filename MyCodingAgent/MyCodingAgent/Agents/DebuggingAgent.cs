@@ -1,6 +1,7 @@
-﻿using MyCodingAgent;
-using MyCodingAgent.Agents;
+﻿using MyCodingAgent.Agents;
 using MyCodingAgent.Compile;
+using MyCodingAgent.Models;
+using MyCodingAgent.Helpers;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -16,17 +17,19 @@ public class DebuggingAgent(Workspace workspace) : IModifyAgent
         PropertyNameCaseInsensitive = true
     };
 
-    public string GeneratePrompt(CompileResult compileResult)
+    public async Task<string> GeneratePrompt(CompileResult compileResult)
     {
         var sb = new StringBuilder();
 
         foreach (var fileGroup in compileResult.Errors.GroupBy(a => a.File))
         {
-            var fileName = fileGroup.Key;
-            if (string.IsNullOrWhiteSpace(fileName)) continue;
-            if (workspace.Files.TryGetValue(fileName, out var file))
+            var relativePath = fileGroup.Key;
+            if (string.IsNullOrWhiteSpace(relativePath)) continue;
+
+            var file = workspace.GetFile(relativePath);
+            if (file != null)
             {
-                sb.AppendLine(fileName);
+                sb.AppendLine(relativePath);
                 sb.AppendLine("ERRORS");
                 foreach (var error in fileGroup)
                 {
@@ -35,7 +38,8 @@ public class DebuggingAgent(Workspace workspace) : IModifyAgent
 
                 sb.AppendLine();
                 sb.AppendLine("CODE");
-                foreach (var line in file.FileContent.GetLines())
+                var fileContent = await file.GetFileContent();
+                foreach (var line in fileContent.GetLines())
                 {
                     sb.AppendLine($"{line.lineNumber,3}|{line.content}");
                 }
@@ -106,7 +110,7 @@ Do not end response with ```";
 
         var found = false;
         var list = new List<AgentActionResult>();
-        foreach (var agentAction in agentActionCollection.Actions)
+        foreach (var agentAction in agentActionCollection.actions)
         {
             found = true;
             var result = (string?)null;
