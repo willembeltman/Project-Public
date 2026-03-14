@@ -16,7 +16,7 @@ public class IsFinishedAgent(
             : string.Join(Environment.NewLine, workspace.Files.Values.Select(a => $@"
 
 File '{a.RelativePath}':
-{a.FileContent}")))}{(string.IsNullOrWhiteSpace(compileResult.Output) ? "" : $@"
+{a.GetFileContent}")))}{(string.IsNullOrWhiteSpace(compileResult.Output) ? "" : $@"
 
 The current compile result is:
 {compileResult}")}
