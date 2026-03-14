@@ -1,9 +1,7 @@
 ﻿using MyCodingAgent.Agents;
 using MyCodingAgent.Ollama;
 using MyCodingAgent.Compile;
-using System.Text;
 using MyCodingAgent.Models;
-using MyCodingAgent.Helpers;
 
 internal class Program
 {
