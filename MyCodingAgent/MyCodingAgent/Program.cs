@@ -24,7 +24,7 @@ internal class Program
             workspace = await CreateWorkspace(workspaceDirectory);
 
         Console.WriteLine("Workspace loaded. Creating Ollama service, please wait...");
-        using var llmService = new LLMService();
+        using var llmService = new OllamaService();
 
         Console.WriteLine("Ollama service created, getting model list, please wait...");
         var list = await llmService.GetModels();
@@ -41,16 +41,6 @@ internal class Program
 
         Console.WriteLine("Agents initialized, attempting to compile project, please wait...");
         var compileResult = await workspace.Compile();
-
-        var unhandled = workspace.AgentResponseResults
-            .Where(a => a.response.handled == false)
-            .ToArray();
-        foreach (var unhandledResult in unhandled)
-        {
-            await codingAgent.ProcessResponse(unhandledResult.response);
-            unhandledResult.response.handled = true;
-            await workspace.Save();
-        }
 
         Console.WriteLine("Project compile attempt finished, starting lllm-development-cycle, please wait...");
         while (true)
@@ -133,7 +123,7 @@ internal class Program
 
     private static async Task<CompileResult> ModifyFlow(
         Workspace workspace,
-        LLMService llmService,
+        OllamaService llmService,
         OllamaModel model,
         IAgent agent,
         CompileResult compileResult)
@@ -142,18 +132,17 @@ internal class Program
         var hasAnswered = false;
         while (!hasAnswered)
         {
-            var fullPromptText = await agent.GeneratePrompt(compileResult);
+            var prompt = await agent.GeneratePrompt(compileResult);
             Console.WriteLine($"#{workspace.PromptIndex} Asking model:");
-            WritePromptToConsole(fullPromptText);
+            WritePromptToConsole(prompt);
             Console.WriteLine();
 
             Console.WriteLine($"#{workspace.PromptIndex} Model answered:");
-            var response = await CallLLM(llmService, model, fullPromptText);
+            var response = await CallLLM(llmService, model, prompt);
             Console.WriteLine();
 
             Console.WriteLine($"#{workspace.PromptIndex} Applying answer...");
-            hasAnswered = await agent.ProcessResponse(response);
-            response.handled = true;
+            hasAnswered = await agent.ProcessResponse(prompt, response);
 
             await workspace.Save();
 
@@ -173,7 +162,7 @@ internal class Program
 
     private static async Task<bool> IsFinishedFlow(
         Workspace workspace,
-        LLMService llmService,
+        OllamaService llmService,
         OllamaModel model,
         IsFinishedAgent isPromptFinishedAgent,
         CompileResult compileResult)
@@ -219,58 +208,29 @@ internal class Program
         return answer;
     }
 
-    private static void WritePromptToConsole(string fullPromptText)
+    private static void WritePromptToConsole(OllamaPrompt prompt)
     {
         var previousColor = Console.ForegroundColor;
 
         Console.ForegroundColor = ConsoleColor.White;
-        Console.WriteLine(fullPromptText);
+        Console.WriteLine(prompt.messages.Last().content);
 
         Console.ForegroundColor = previousColor;
     }
 
     private static async Task<AgentResponse> CallLLM(
-        LLMService llmService,
+        OllamaService llmService,
         OllamaModel model,
-        string fullPromptText)
+        OllamaPrompt prompt)
     {
         var previousColor = Console.ForegroundColor;
 
-        var isThinking = false;
-        var thinkingText = string.Empty;
-        var responseText = string.Empty;
-        await foreach (var chunk in llmService.PromptAsync(model, fullPromptText))
-        {
-            if (!string.IsNullOrEmpty(chunk.thinking))
-            {
-                if (!isThinking)
-                {
-                    isThinking = true;
-                    Console.WriteLine("Thinking:");
-                }
-                Console.ForegroundColor = ConsoleColor.DarkGray;
-                Console.Write(chunk.thinking);
-                thinkingText += chunk.thinking;
-            }
-            if (!string.IsNullOrEmpty(chunk.response))
-            {
-                if (isThinking)
-                {
-                    isThinking = false;
-                    Console.WriteLine("");
-                }
-                Console.ForegroundColor = ConsoleColor.White;
-                Console.Write(chunk.response);
-                responseText += chunk.response;
-            }
-        }
+        var response = await llmService.ChatAsync(model, prompt);
+
+        Console.ForegroundColor = ConsoleColor.White;
+        Console.Write(response.message.content);
 
         Console.ForegroundColor = previousColor;
-        return new()
-        {
-            date = DateTime.Now,
-            responseText = responseText,
-            thinkingText = thinkingText
-        };
+        return response;
     }
 }

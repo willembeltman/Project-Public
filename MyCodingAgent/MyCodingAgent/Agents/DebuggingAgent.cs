@@ -4,32 +4,37 @@ using MyCodingAgent.Helpers;
 using System.Text;
 using MyCodingAgent.Interfaces;
 using MyCodingAgent.BaseAgents;
+using MyCodingAgent.Ollama;
 
-public class DebuggingAgent(Workspace workspace) : FencedBaseAgent(workspace), IAgent
+public class DebuggingAgent(Workspace workspace) : JsonBaseAgent(workspace), IAgent
 {
-    public async Task<string> GeneratePrompt(CompileResult compileResult)
+    public async Task<OllamaPrompt> GeneratePrompt(CompileResult compileResult)
     {
+        string tools = CreateToolsString();
+
         var promptHelper = new PromptHelper(workspace);
         var sb = new StringBuilder();
 
-        var actionsText = GetReducedActionsText();
+        var actions = GetReducedActionsText();
 
-        await promptHelper.LastResponse(sb);
+        //await promptHelper.LastResponse(sb);
         await promptHelper.ProjectFiles(sb);
         await promptHelper.CurrentOpenFile(sb);
         await promptHelper.ShowErrorFiles(compileResult, sb);
 
         var workspaceText = sb.ToString();
 
-        return $@"You are a .NET 10 compiler repair agent.
+        var prompt = $@"You are a .NET 10 compiler repair agent.
 
-{actionsText}
+{actions}
 
 {workspaceText}
 
 GOAL
 Make the code compile successfully.
 Do not change behavior unless required.";
+
+        return new OllamaPrompt([new OllamaMessage(nameof(OllamaAgentRole.user), prompt)], tools);
     }
 
 }

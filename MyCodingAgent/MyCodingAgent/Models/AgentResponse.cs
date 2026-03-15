@@ -1,9 +1,17 @@
 ﻿namespace MyCodingAgent.Models;
 
-public class AgentResponse
-{
-    public DateTime date { get; set; }
-    public string responseText { get; set; } = string.Empty;
-    public string? thinkingText { get; set; }
-    public bool handled { get; set; }
-}
+public record AgentResponse(
+    string model,
+    DateTime created_at,
+    AgentResponseMessage message);
+
+public record AgentResponseMessage(
+    string content,
+    AgentResponseMessageToolCall[] tool_calls);
+
+public record AgentResponseMessageToolCall(
+    AgentAction function);
+
+public record AgentAction(
+    string name,
+    AgentActionArguments arguments);

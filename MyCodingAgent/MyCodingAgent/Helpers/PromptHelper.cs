@@ -11,7 +11,7 @@ public class PromptHelper(Workspace workspace)
         if (workspace.AgentResponseResults.Count > 0)
         {
             var agentResponseResults = workspace.AgentResponseResults
-                .OrderByDescending(a => a.response.date)
+                .OrderByDescending(a => a.response.created_at)
                 .Take(1)
                 .ToArray();
 
@@ -24,38 +24,30 @@ public class PromptHelper(Workspace workspace)
 
             foreach (var result in agentResponseResults)
             {
-                sb.AppendLine($"YOU @ {result.response.date}");
+                sb.AppendLine($"YOU AT {result.response.created_at}");
 
-                foreach (var line in result.response.responseText.GetLines())
+                foreach (var line in result.response.message.content.GetLines())
                 {
                     sb.AppendLine($"{line.lineNumber,3}|{line.content}");
                 }
-                sb.AppendLine();
 
                 if (result.parseError != null)
                     sb.AppendLine($"Parsing result: {result.parseError}");
-                else
-                    sb.AppendLine("Parsing result: Succesfully parsed your response");
 
-                if (result.actions != null && result.actions.Any())
+                if (result.actionResults != null && result.actionResults.Any())
                 {
                     sb.AppendLine($"Your parsed actions:");
-                    if (result.actions.Length > 0)
+                    int i = 1;
+                    foreach (var action in result.actionResults)
                     {
-                        int i = 1;
-                        foreach (var action in result.actions)
-                        {
-                            sb.AppendLine($"{i}. Action: '{action.agentAction.action}' Result: '{action.result}'");
-                            i++;
-                        }
-                    }
-                    else
-                    {
-                        sb.AppendLine($"<No actions found in response>");
+                        sb.AppendLine($"{i}. Action: '{action.agentAction.name}' Result: '{action.result}'");
+                        i++;
                     }
                 }
-                sb.AppendLine();
-                sb.AppendLine("END OF HISTORY");
+                else
+                {
+                    sb.AppendLine($"Parsing result: Error, no actions found in response.");
+                }
                 sb.AppendLine();
             }
         }
@@ -103,7 +95,7 @@ public class PromptHelper(Workspace workspace)
         }
         else
         {
-            sb.AppendLine("NO FILE OPENED, YOU MUST FIRST OPEN A FILE WITH THE ACTION 'open_file' !!!");
+            sb.AppendLine("<No file opened>");
             sb.AppendLine();
         }
     }
@@ -115,8 +107,7 @@ public class PromptHelper(Workspace workspace)
         if (!string.IsNullOrWhiteSpace(workspace.SearchText))
         {
             var searchResults = await workspace.GetSearchResults();
-            sb.AppendLine($"SearchText: '{workspace.SearchText}'");
-            sb.AppendLine($"Results: ");
+            sb.AppendLine($"searchText: '{workspace.SearchText}'");
 
             foreach (var r in searchResults)
             {
@@ -127,7 +118,7 @@ public class PromptHelper(Workspace workspace)
         }
         else
         {
-            sb.AppendLine("<No search text supplied>");
+            sb.AppendLine("<No searchText text supplied>");
             sb.AppendLine();
         }
     }
@@ -165,7 +156,16 @@ public class PromptHelper(Workspace workspace)
         foreach (var fileGroup in compileResult.Errors.GroupBy(a => a.File))
         {
             var relativePath = fileGroup.Key;
-            if (string.IsNullOrWhiteSpace(relativePath)) continue;
+            if (string.IsNullOrWhiteSpace(relativePath))
+            {
+                sb.AppendLine("ERRORS");
+                foreach (var error in fileGroup)
+                {
+                    sb.AppendLine(error.FullError.TrimEnd('\n').TrimEnd('\r'));
+                }
+                sb.AppendLine();
+                continue;
+            }
 
             var file = workspace.GetFile(relativePath);
             if (file != null)
@@ -183,7 +183,6 @@ public class PromptHelper(Workspace workspace)
                 {
                     sb.AppendLine(error.FullError.TrimEnd('\n').TrimEnd('\r'));
                 }
-
                 sb.AppendLine();
             }
         }

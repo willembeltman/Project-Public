@@ -2,15 +2,16 @@
 using MyCodingAgent.Compile;
 using MyCodingAgent.Helpers;
 using MyCodingAgent.Models;
+using MyCodingAgent.Ollama;
 using System.Text;
 
 namespace MyCodingAgent.Agents;
 
 public class IsFinishedAgent(
-    Workspace workspace) 
+    Workspace workspace)
     : YesNoBaseAgent
 {
-    public async Task<string> GeneratePrompt(CompileResult compileResult)
+    public async Task<OllamaPrompt> GeneratePrompt(CompileResult compileResult)
     {
         StringBuilder sb = new StringBuilder();
 
@@ -33,13 +34,12 @@ public class IsFinishedAgent(
             }
         }
 
-        if (string.IsNullOrWhiteSpace(compileResult.Output))
+        if (!string.IsNullOrWhiteSpace(compileResult.Output))
         {
             sb.AppendLine("The current compile result is:");
             sb.AppendLine(compileResult.Output);
         }
-
-        return $@"{sb}
+        var fullPrompt = $@"{sb}
 
 The user prompt is:
 {workspace.UserPrompt}
@@ -48,5 +48,7 @@ Is the prompt satisfied? Reply [YES] or [NO]
 
 Response must include the [ and ] signs
 ";
+
+        return new OllamaPrompt([new OllamaMessage(nameof(OllamaAgentRole.user), fullPrompt)], "[]");
     }
 }

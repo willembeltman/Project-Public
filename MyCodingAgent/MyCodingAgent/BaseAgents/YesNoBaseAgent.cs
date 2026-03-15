@@ -6,11 +6,11 @@ public class YesNoBaseAgent
 {
     public async Task<bool?> ProcessResponse(AgentResponse response)
     {
-        if (response.responseText.Contains("[NO]", StringComparison.InvariantCultureIgnoreCase))
+        if (response.message.content.Contains("[NO]", StringComparison.InvariantCultureIgnoreCase))
         {
             return false;
         }
-        else if (response.responseText.Contains("[YES]", StringComparison.InvariantCultureIgnoreCase))
+        else if (response.message.content.Contains("[YES]", StringComparison.InvariantCultureIgnoreCase))
         {
             return true;
         }

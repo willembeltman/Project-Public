@@ -1,14 +1,27 @@
-﻿using System.Net.Http.Json;
+﻿using MyCodingAgent.Models;
+using System.Net.Http.Json;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace MyCodingAgent.Ollama;
 
-public class LLMService(
+public class OllamaService(
     Uri? ollamaServerUrl = null) : IDisposable
 {
-    private readonly HttpClient HttpClient = new();
+    JsonSerializerOptions options = new JsonSerializerOptions
+    {
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+    };
+    JsonSerializerOptions optionsIndented = new JsonSerializerOptions
+    {
+        WriteIndented = true
+    };
+
+    private readonly HttpClient HttpClient = new()
+    {
+        Timeout = TimeSpan.FromSeconds(3600)
+    };
     private readonly Uri OllamaServerUrl = ollamaServerUrl ?? new Uri("http://localhost:11434");
 
     public async Task<OllamaModel[]> GetModels(CancellationToken ct = default)
@@ -36,54 +49,32 @@ public class LLMService(
         response.EnsureSuccessStatusCode();
     }
 
-    public async IAsyncEnumerable<OllamaResponse> PromptAsync(OllamaModel model, string prompt, [EnumeratorCancellation] CancellationToken ct = default)
+    public async Task<AgentResponse> ChatAsync(
+        OllamaModel model, 
+        OllamaPrompt prompt, 
+        CancellationToken ct = default)
     {
-        var options = new JsonSerializerOptions
-        {
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-        };
-        var payload = new
-        {
-            model = model.Name,
-            prompt = prompt,
-            stream = true
-        };
+        var payload = $@"{{
+  ""model"": ""{model.Name}"",
+  ""messages"": {JsonSerializer.Serialize(prompt.messages, optionsIndented)},
+  ""stream"": false,
+  ""tools"": {prompt.tools}
+}}";
 
-        var url = new Uri(OllamaServerUrl, "/api/generate");
+        var url = new Uri(OllamaServerUrl, "/api/chat");
         var request = new HttpRequestMessage(HttpMethod.Post, url)
         {
-            Content = JsonContent.Create(payload)
+            Content = new StringContent(payload)
         };
 
         var response = await HttpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, ct);
         response.EnsureSuccessStatusCode();
 
-        var reader = new StreamReader(await response.Content.ReadAsStreamAsync(ct));
-        while (!ct.IsCancellationRequested)
-        {
-            var json = await reader.ReadLineAsync();
-            if (json == null)
-            {
-                yield break;
-            }
+        var agentResponse = 
+            await response.Content.ReadFromJsonAsync<AgentResponse>()
+            ?? throw new Exception("Something is not right");
 
-            var data = JsonSerializer.Deserialize<OllamaResponseRaw>(json, options);
-
-            if (data == null)
-            {
-                yield break;
-            }
-
-            if (data.done)
-            {
-                yield break;
-            }
-
-            if (data.thinking != null || data.response != null)
-            {
-                yield return new OllamaResponse(data.thinking, data.response);
-            }
-        }
+        return agentResponse;
     }
 
     public void Dispose()
