@@ -1,6 +1,5 @@
-﻿using MyCodingAgent.Models;
+﻿using MyCodingAgent.Interfaces;
 using System.Net.Http.Json;
-using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -9,15 +8,6 @@ namespace MyCodingAgent.Ollama;
 public class OllamaService(
     Uri? ollamaServerUrl = null) : IDisposable
 {
-    JsonSerializerOptions options = new JsonSerializerOptions
-    {
-        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-    };
-    JsonSerializerOptions optionsIndented = new JsonSerializerOptions
-    {
-        WriteIndented = true
-    };
-
     private readonly HttpClient HttpClient = new()
     {
         Timeout = TimeSpan.FromSeconds(3600)
@@ -49,16 +39,34 @@ public class OllamaService(
         response.EnsureSuccessStatusCode();
     }
 
-    public async Task<AgentResponse> ChatAsync(
+    public async Task<OllamaResponse> ChatAsync(
         OllamaModel model, 
         OllamaPrompt prompt, 
         CancellationToken ct = default)
     {
         var payload = $@"{{
   ""model"": ""{model.Name}"",
-  ""messages"": {JsonSerializer.Serialize(prompt.messages, optionsIndented)},
+  ""messages"": {JsonSerializer.Serialize(prompt.messages, Program.JsonSerializeOptions)},
   ""stream"": false,
-  ""tools"": {prompt.tools}
+  ""tools"": [{string.Join(",", prompt.tools.Select(tool => $@"
+  {{
+    ""type"": ""function"",
+    ""function"": {{
+      ""name"": ""{tool.Name}"",
+      ""description"": ""{tool.Desciption}"",
+      ""parameters"": {{
+        ""type"": ""object"",
+        ""properties"": {{{string.Join(",", tool.Parameters.Select(parameter => $@"
+          ""{parameter.Name}"": {{
+            ""type"": ""{parameter.Type}"",
+            ""description"": ""{parameter.Description}""
+          }}"))}
+        }},
+        ""required"": [{string.Join(",", tool.Parameters.Select(parameter => $@"""{parameter.Name}"""))}]
+      }}
+    }}
+  }}"))}
+]
 }}";
 
         var url = new Uri(OllamaServerUrl, "/api/chat");
@@ -71,7 +79,7 @@ public class OllamaService(
         response.EnsureSuccessStatusCode();
 
         var agentResponse = 
-            await response.Content.ReadFromJsonAsync<AgentResponse>()
+            await response.Content.ReadFromJsonAsync<OllamaResponse>()
             ?? throw new Exception("Something is not right");
 
         return agentResponse;

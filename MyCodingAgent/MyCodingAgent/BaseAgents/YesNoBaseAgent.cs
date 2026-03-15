@@ -1,10 +1,10 @@
-﻿using MyCodingAgent.Models;
+﻿using MyCodingAgent.Ollama;
 
 namespace MyCodingAgent.BaseAgents;
 
 public class YesNoBaseAgent
 {
-    public async Task<bool?> ProcessResponse(AgentResponse response)
+    public async Task<bool?> ProcessResponse(OllamaResponse response)
     {
         if (response.message.content.Contains("[NO]", StringComparison.InvariantCultureIgnoreCase))
         {

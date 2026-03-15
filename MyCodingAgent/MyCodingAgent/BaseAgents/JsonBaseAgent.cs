@@ -1,15 +1,28 @@
-﻿using MyCodingAgent.Agents;
+﻿using MyCodingAgent.Interfaces;
 using MyCodingAgent.Models;
 using MyCodingAgent.Ollama;
-using System.Text.Json;
+using MyCodingAgent.Tools;
 
 namespace MyCodingAgent.BaseAgents;
 
 public class JsonBaseAgent(
     Workspace workspace)
 {
-    protected JsonSerializerOptions JsonDeserializerOptions { get; } = new() { PropertyNameCaseInsensitive = true };
     protected Workspace workspace { get; } = workspace;
+    protected ITool[] tools { get; } =
+    [
+        new ListAllFiles(workspace),
+        new Find(workspace),
+        new FindAndReplace(workspace),
+        new FindAndReplaceAll(workspace),
+        new OpenFile(workspace),
+        new CreateOrUpdateFile(workspace),
+        new PartialOverwriteFile(workspace),
+        new MoveFile(workspace),
+        new DeleteFile(workspace),
+        new CompileWorkspace(workspace),
+        new AskDeveloperForExtraInformation()
+    ];
 
     protected string GetActionsText()
     {
@@ -132,210 +145,37 @@ IMPORTANT RULES
 ";
     }
 
-    protected string CreateToolsString()
+    protected async Task<AgentResponseResult> GetAgentResponseResult(OllamaPrompt prompt, OllamaResponse response)
     {
-        return $@"[{string.Join(",", GetToolDefinitions().Select(tool => $@"
-    {{
-        ""type"": ""function"",
-        ""function"": {{
-            ""name"": ""{tool.Name}"",
-            ""description"": ""{tool.Desciption}"",
-            ""parameters"": {{
-                ""type"": ""object"",
-                ""properties"": {{{string.Join(",", tool.Parameters.Select(parameter => $@"
-                    ""{parameter.Name}"": {{
-                        ""type"": ""{parameter.Type}"",
-                        ""description"": ""{parameter.Description}""
-                    }}"))}
-                }},
-                ""required"": [{string.Join(",", tool.Parameters.Select(parameter => $@"""{parameter.Name}"""))}]
-            }}
-        }}
-    }}"))}
-]";
-    }
-    protected Tool[] GetToolDefinitions() =>
-    [
-        new ("find", "search for a specific string inside all files, result will be in next message",
-            [
-                new ("searchText", "string", "the specific string")
-            ]),
-
-            new ("find_and_replace", "searches for a specific string inside given file and replaces it with the replacement string",
-            [
-                new ("path", "string", "path to the file to search in"),
-                new ("searchText", "string", "the search string"),
-                new ("replaceText", "string", "the replacement string")
-            ]),
-
-            new ("find_and_replace_all", "searches for a specific string inside all files and replaces it with the replacement string",
-            [
-                new ("searchText", "string", "the search string"),
-                new ("replaceText", "string", "the replacement string")
-            ]),
-
-            new ("open_file", "opens a file and returns its content",
-            [
-                new ("path", "string", "path to the file to open")
-            ]),
-
-            new ("create_or_update_file", "creates a new file or overwrites an existing file with the provided content",
-            [
-                new ("path", "string", "path to the file"),
-                new ("content", "string", "full content of the file")
-            ]),
-
-            new ("partial_overwrite_file", "overwrites a specific line range inside a file",
-            [
-                new ("path", "string", "path to the file"),
-                new ("startLine", "number", "first line to overwrite (inclusive)"),
-                new ("endLine", "number", "last line to overwrite (inclusive)"),
-                new ("content", "string", "replacement content for the specified line range")
-            ]),
-
-            new ("move_file", "moves or renames a file",
-            [
-                new ("path", "string", "current path of the file"),
-                new ("newPath", "string", "new path of the file")
-            ]),
-
-            new ("delete_file", "deletes a file",
-            [
-                new ("path", "string", "path to the file")
-            ]),
-
-            new ("create_or_update_task", "creates or updates a task file used to track progress",
-            [
-                new ("path", "string", "path of the task file"),
-                new ("content", "string", "content of the task file")
-            ]),
-
-            new ("delete_task", "deletes a task file",
-            [
-                new ("path", "string", "path of the task file")
-            ]),
-
-            new ("ask_developer_extra_information", "asks the developer for additional information when the task cannot continue",
-            [
-                new ("content", "string", "question or information request for the developer")
-            ])
-    ];
-
-    public async Task<bool> ProcessResponse(OllamaPrompt prompt, AgentResponse agentResponse)
-    {
-        //(var agentActionCollection, var parseError) = TryParseActions(agentResponse.responseText);
-
-        //if (agentActionCollection == null || parseError != null)
-        //{
-        //    workspace.AgentResponseResults.Add(
-        //        new AgentResponseResult(
-        //            prompt.messages.Last(a => a.role == OllamaAgentRole.user).content,
-        //            agentResponse, 
-        //            parseError, 
-        //            []));
-        //    return false;
-        //}
-
-        var found = false;
-        var list = new List<AgentActionResult>();
-        foreach (var tool_call in agentResponse.message.tool_calls)
+        var list = new List<AgentResponseToolResult>();
+        foreach (var tool_call in response.message.tool_calls)
         {
-            var actionType = tool_call.function.name;
-            var action = tool_call.function.arguments;
+            var toolName = tool_call.function.name;
+            var toolArguments = tool_call.function.arguments;
 
-            found = true;
-            var result = (string?)null;
-            switch (actionType)
+            var tool = tools.FirstOrDefault(a => a.Name == toolName);
+            if (tool == null)
             {
-                case "find":
-                    result = await workspace.Find(action.searchText!);
-                    break;
-
-                case "find_and_replace":
-                    result = await workspace.FindAndReplace(action.path!, action.searchText!, action.replaceText!);
-                    break;
-
-                case "find_and_replace_all":
-                    result = await workspace.FindAndReplaceAll(action.searchText!, action.replaceText!);
-                    break;
-
-                case "open_file":
-                    result = await workspace.OpenFile(action.path!);
-                    break;
-
-                case "create_or_update_file":
-                    result = await workspace.CreateOrUpdateFile(action.path!, action.content!);
-                    break;
-
-                case "delete_file":
-                    result = await workspace.DeleteFile(action.path!);
-                    break;
-
-                case "move_file":
-                    result = await workspace.MoveFile(action.path!, action.newPath!);
-                    break;
-
-                case "partial_overwrite_file":
-                    result = await workspace.PartialOverwriteFile(
-                        action.path!,
-                        action.startLine!.Value,
-                        action.endLine!.Value,
-                        action.content!
-                    );
-                    break;
-
-                case "create_or_update_task":
-                    result = await workspace.CreateOrUpdateTask(action.path!, action.content!);
-                    break;
-
-                case "delete_task":
-                    result = await workspace.DeleteTask(action.path!);
-                    break;
-
-                case "ask_developer_extra_information":
-                    result = await workspace.AskDeveloper(action.content!);
-                    break;
-
-                default:
-                    result = $"Action '{actionType}' not found";
-                    found = false;
-                    break;
+                list.Add(new AgentResponseToolResult(
+                    tool_call.function,
+                    new ToolResult(
+                        $"Could not find tool '{toolName}'",
+                        $"Could not find tool",
+                        true)));
+                continue;
             }
-            if (result != null)
-                list.Add(new AgentActionResult(tool_call.function, result));
+            else
+            {
+                var toolResult = await tool.Invoke(toolArguments);
+                list.Add(new AgentResponseToolResult(
+                    tool_call.function,
+                    toolResult));
+            }
         }
-        workspace.AgentResponseResults.Add(
-            new AgentResponseResult(
-                    prompt.messages.Last(a => a.role == nameof(OllamaAgentRole.user)).content,
-                    agentResponse,
-                    null, 
-                    [.. list]));
-        return found;
-    }
-    private (AgentActionCollection? response, string? parseError) TryParseActions(string responseText)
-    {
-        try
-        {
-            var json = Clean(responseText);
-            var newResponse = JsonSerializer.Deserialize<AgentActionCollection>(json, JsonDeserializerOptions);
-            if (newResponse == null) return new(null, "Could not deserialize to { actions: [ ... ] }");
-            return new(newResponse, null);
-        }
-        catch (Exception ex)
-        {
-            return new(null, ex.Message);
-        }
-    }
-    private string Clean(string input)
-    {
-        input = input.Trim();
 
-        int start = input.IndexOf('{');
-        int end = input.LastIndexOf('}');
-
-        if (start >= 0 && end > start)
-            input = input.Substring(start, end - start + 1);
-
-        return input;
+        return new AgentResponseResult(
+            prompt,
+            response,
+            [.. list]);
     }
 }

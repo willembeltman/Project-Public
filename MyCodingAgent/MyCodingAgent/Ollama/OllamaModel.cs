@@ -1,5 +1,4 @@
-﻿
-namespace MyCodingAgent.Ollama;
+﻿namespace MyCodingAgent.Ollama;
 
 public record OllamaModel(
     string Name, 

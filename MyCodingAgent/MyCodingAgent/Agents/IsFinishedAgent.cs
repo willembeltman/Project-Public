@@ -49,6 +49,6 @@ Is the prompt satisfied? Reply [YES] or [NO]
 Response must include the [ and ] signs
 ";
 
-        return new OllamaPrompt([new OllamaMessage(nameof(OllamaAgentRole.user), fullPrompt)], "[]");
+        return new OllamaPrompt([new OllamaPromptMessage(nameof(OllamaAgentRole.user), fullPrompt)], []);
     }
 }

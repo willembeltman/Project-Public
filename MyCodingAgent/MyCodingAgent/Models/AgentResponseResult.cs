@@ -3,7 +3,6 @@
 namespace MyCodingAgent.Models;
 
 public record AgentResponseResult(
-    string request,
-    AgentResponse response,
-    string? parseError,
-    AgentActionResult[] actionResults);
+    OllamaPrompt Prompt,
+    OllamaResponse Response,
+    AgentResponseToolResult[] ToolResults);

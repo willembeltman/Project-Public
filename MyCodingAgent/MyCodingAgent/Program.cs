@@ -1,12 +1,27 @@
 ﻿using MyCodingAgent.Agents;
-using MyCodingAgent.Ollama;
 using MyCodingAgent.Compile;
-using MyCodingAgent.Models;
 using MyCodingAgent.Interfaces;
-using System.Xml.Linq;
+using MyCodingAgent.Models;
+using MyCodingAgent.Ollama;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 internal class Program
 {
+    public static JsonSerializerOptions JsonSerializeOptions = new JsonSerializerOptions
+    {
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+        WriteIndented = true,
+    }; 
+    public static JsonSerializerOptions JsonSerializeOptionsNotIndented = new JsonSerializerOptions
+    {
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+    };
+    public static JsonSerializerOptions JsonDeserializerOptions = new JsonSerializerOptions
+    {
+        PropertyNameCaseInsensitive = true
+    };
+
     private static async Task Main(string[] args)
     {
         Console.Clear();
@@ -51,6 +66,10 @@ internal class Program
                 compileResult = await ModifyFlow(workspace, llmService, model, debuggingAgent, compileResult);
             }
 
+            // CLEAR DEBUG HISTORY
+            workspace.DebugHistory.Clear();
+            await workspace.Save();
+
             // FEATURE MODE
             compileResult = await ModifyFlow(workspace, llmService, model, codingAgent, compileResult);
 
@@ -61,6 +80,63 @@ internal class Program
 
         workspace.UserPromptDone = true;
         await workspace.Save();
+    }
+    private static async Task<CompileResult> ModifyFlow(Workspace workspace, OllamaService llmService, OllamaModel model, IAgent agent, CompileResult compileResult)
+    {
+        workspace.PromptIndex++;
+        var hasAnswered = false;
+        while (!hasAnswered)
+        {
+            var prompt = await agent.GeneratePrompt(compileResult);
+            Console.WriteLine($"#{workspace.PromptIndex} Asking model:");
+            WritePromptToConsole(prompt);
+            Console.WriteLine();
+
+            Console.WriteLine($"#{workspace.PromptIndex} Model answered:");
+            var response = await CallLLM(llmService, model, prompt);
+            Console.WriteLine();
+
+            Console.WriteLine($"#{workspace.PromptIndex} Applying answer...");
+            hasAnswered = await agent.ProcessResponse(prompt, response);
+
+            await workspace.Save();
+
+            //if (workspace.QuestionForDeveloper != null)
+            //{
+            //    var answer = AskQuestionToDeveloper(workspace.QuestionForDeveloper);
+            //    workspace.Tasks.Add(new WorkspaceTask(workspace.QuestionForDeveloper, answer));
+            //    await workspace.Save();
+            //}
+
+            Console.WriteLine($"#{workspace.PromptIndex} Compiling...");
+            compileResult = await workspace.Compile();
+        }
+
+        return compileResult;
+    }
+    private static async Task<bool> IsFinishedFlow(Workspace workspace, OllamaService llmService, OllamaModel model, IsFinishedAgent isPromptFinishedAgent, CompileResult compileResult)
+    {
+        workspace.PromptIndex++;
+        var hasAnswered = false;
+        var isDone = false;
+        while (!hasAnswered)
+        {
+            var fullPromptText = await isPromptFinishedAgent.GeneratePrompt(compileResult);
+            Console.WriteLine($"#{workspace.PromptIndex} Ask model:");
+            WritePromptToConsole(fullPromptText);
+            Console.WriteLine();
+
+            Console.WriteLine($"#{workspace.PromptIndex} Model answered:");
+            var response = await CallLLM(llmService, model, fullPromptText);
+            Console.WriteLine();
+
+            Console.WriteLine($"#{workspace.PromptIndex} Check if prompt has been satisfied.");
+            var answer = await isPromptFinishedAgent.ProcessResponse(response);
+            hasAnswered = answer.HasValue;
+            isDone = answer == true;
+        }
+
+        return isDone;
     }
 
     private static async Task<Workspace> CreateWorkspace(string workspaceDirectory)
@@ -85,7 +161,6 @@ internal class Program
         Console.ForegroundColor = previousColor;
         return workspace;
     }
-
     private static OllamaModel ChooseModel(OllamaModel[] list)
     {
         var previousColor = Console.ForegroundColor;
@@ -120,115 +195,35 @@ internal class Program
         Console.ForegroundColor = previousColor;
         return model;
     }
-
-    private static async Task<CompileResult> ModifyFlow(
-        Workspace workspace,
-        OllamaService llmService,
-        OllamaModel model,
-        IAgent agent,
-        CompileResult compileResult)
-    {
-        workspace.PromptIndex++;
-        var hasAnswered = false;
-        while (!hasAnswered)
-        {
-            var prompt = await agent.GeneratePrompt(compileResult);
-            Console.WriteLine($"#{workspace.PromptIndex} Asking model:");
-            WritePromptToConsole(prompt);
-            Console.WriteLine();
-
-            Console.WriteLine($"#{workspace.PromptIndex} Model answered:");
-            var response = await CallLLM(llmService, model, prompt);
-            Console.WriteLine();
-
-            Console.WriteLine($"#{workspace.PromptIndex} Applying answer...");
-            hasAnswered = await agent.ProcessResponse(prompt, response);
-
-            await workspace.Save();
-
-            if (workspace.QuestionForDeveloper != null)
-            {
-                var answer = AskQuestionToDeveloper(workspace.QuestionForDeveloper);
-                workspace.Tasks.Add(new WorkspaceTask(workspace.QuestionForDeveloper, answer));
-                await workspace.Save();
-            }
-
-            Console.WriteLine($"#{workspace.PromptIndex} Compiling...");
-            compileResult = await workspace.Compile();
-        }
-
-        return compileResult;
-    }
-
-    private static async Task<bool> IsFinishedFlow(
-        Workspace workspace,
-        OllamaService llmService,
-        OllamaModel model,
-        IsFinishedAgent isPromptFinishedAgent,
-        CompileResult compileResult)
-    {
-        workspace.PromptIndex++;
-        var hasAnswered = false;
-        var isDone = false;
-        while (!hasAnswered)
-        {
-            var fullPromptText = await isPromptFinishedAgent.GeneratePrompt(compileResult);
-            Console.WriteLine($"#{workspace.PromptIndex} Ask model:");
-            WritePromptToConsole(fullPromptText);
-            Console.WriteLine();
-
-            Console.WriteLine($"#{workspace.PromptIndex} Model answered:");
-            var response = await CallLLM(llmService, model, fullPromptText);
-            Console.WriteLine();
-
-            Console.WriteLine($"#{workspace.PromptIndex} Check if prompt has been satisfied.");
-            var answer = await isPromptFinishedAgent.ProcessResponse(response);
-            hasAnswered = answer.HasValue;
-            isDone = answer == true;
-        }
-
-        return isDone;
-    }
-
-    private static string AskQuestionToDeveloper(string questionForDeveloper)
-    {
-        var previousColor = Console.ForegroundColor;
-
-        Console.ForegroundColor = ConsoleColor.White;
-        Console.WriteLine("The llm model want more information, can you answer his question?");
-        Console.WriteLine("The question:");
-        Console.WriteLine(questionForDeveloper);
-        Console.WriteLine();
-        Console.WriteLine("Your answer:");
-        var answer = ConsoleEditor.ReadMultilineInput();
-        Console.WriteLine();
-        Console.WriteLine();
-
-        Console.ForegroundColor = previousColor;
-        return answer;
-    }
-
     private static void WritePromptToConsole(OllamaPrompt prompt)
     {
         var previousColor = Console.ForegroundColor;
 
         Console.ForegroundColor = ConsoleColor.White;
-        Console.WriteLine(prompt.messages.Last().content);
+        foreach (var message in prompt.messages)
+        {
+            Console.WriteLine($"[{message.role.ToUpper()}]");
+            Console.WriteLine(message.content);
+            Console.WriteLine();
+        }
 
         Console.ForegroundColor = previousColor;
     }
-
-    private static async Task<AgentResponse> CallLLM(
-        OllamaService llmService,
-        OllamaModel model,
-        OllamaPrompt prompt)
+    private static async Task<OllamaResponse> CallLLM(OllamaService llmService, OllamaModel model, OllamaPrompt prompt)
     {
         var previousColor = Console.ForegroundColor;
 
         var response = await llmService.ChatAsync(model, prompt);
 
         Console.ForegroundColor = ConsoleColor.White;
-        Console.Write(response.message.content);
+        Console.WriteLine($"{response.message.content}");
+        Console.WriteLine();
+        foreach (var call in response.message.tool_calls)
+        {
+            Console.WriteLine($"tool_call: {call.function.name}:");
+            Console.WriteLine($"{JsonSerializer.Serialize(call.function.arguments, JsonSerializeOptions)}");
+        }
+        Console.WriteLine();
 
         Console.ForegroundColor = previousColor;
         return response;
