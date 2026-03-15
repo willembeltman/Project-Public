@@ -96,13 +96,6 @@ internal class Program
 
             await workspace.Save();
 
-            //if (workspace.QuestionForDeveloper != null)
-            //{
-            //    var answer = AskQuestionToDeveloper(workspace.QuestionForDeveloper);
-            //    workspace.Tasks.Add(new WorkspaceTask(workspace.QuestionForDeveloper, answer));
-            //    await workspace.Save();
-            //}
-
             Console.WriteLine($"#{workspace.PromptIndex} Compiling...");
             compileResult = await workspace.Compile();
         }
