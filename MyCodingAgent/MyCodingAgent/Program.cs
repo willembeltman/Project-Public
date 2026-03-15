@@ -52,13 +52,12 @@ internal class Program
         Console.WriteLine($"Model '{model.Name}' initialized, initialising agents, please wait...");
         var codingAgent = new CodingAgent(workspace);
         var debuggingAgent = new DebuggingAgent(workspace);
-        var isPromptFinishedAgent = new IsFinishedAgent(workspace);
 
         Console.WriteLine("Agents initialized, attempting to compile project, please wait...");
         var compileResult = await workspace.Compile();
 
         Console.WriteLine("Project compile attempt finished, starting lllm-development-cycle, please wait...");
-        while (true)
+        while (!workspace.UserPromptDone)
         {
             while (compileResult.Errors.Count > 0 && workspace.Files.Count > 0)
             {
@@ -72,10 +71,6 @@ internal class Program
 
             // FEATURE MODE
             compileResult = await ModifyFlow(workspace, llmService, model, codingAgent, compileResult);
-
-            // ISDONE CHECK
-            var isDone = await IsFinishedFlow(workspace, llmService, model, isPromptFinishedAgent, compileResult);
-            if (isDone) break;
         }
 
         workspace.UserPromptDone = true;
@@ -114,31 +109,7 @@ internal class Program
 
         return compileResult;
     }
-    private static async Task<bool> IsFinishedFlow(Workspace workspace, OllamaService llmService, OllamaModel model, IsFinishedAgent isPromptFinishedAgent, CompileResult compileResult)
-    {
-        workspace.PromptIndex++;
-        var hasAnswered = false;
-        var isDone = false;
-        while (!hasAnswered)
-        {
-            var fullPromptText = await isPromptFinishedAgent.GeneratePrompt(compileResult);
-            Console.WriteLine($"#{workspace.PromptIndex} Ask model:");
-            WritePromptToConsole(fullPromptText);
-            Console.WriteLine();
-
-            Console.WriteLine($"#{workspace.PromptIndex} Model answered:");
-            var response = await CallLLM(llmService, model, fullPromptText);
-            Console.WriteLine();
-
-            Console.WriteLine($"#{workspace.PromptIndex} Check if prompt has been satisfied.");
-            var answer = await isPromptFinishedAgent.ProcessResponse(response);
-            hasAnswered = answer.HasValue;
-            isDone = answer == true;
-        }
-
-        return isDone;
-    }
-
+   
     private static async Task<Workspace> CreateWorkspace(string workspaceDirectory)
     {
         var previousColor = Console.ForegroundColor;

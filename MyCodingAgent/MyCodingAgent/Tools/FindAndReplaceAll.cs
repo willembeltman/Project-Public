@@ -2,7 +2,6 @@
 using MyCodingAgent.Models;
 using MyCodingAgent.Ollama;
 using System.Text.RegularExpressions;
-using static System.Net.WebRequestMethods;
 
 namespace MyCodingAgent.Tools;
 

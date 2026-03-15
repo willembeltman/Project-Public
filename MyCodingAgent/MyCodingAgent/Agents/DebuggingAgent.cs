@@ -1,20 +1,33 @@
-﻿using MyCodingAgent.BaseAgents;
+﻿using MyCodingAgent.Agents;
 using MyCodingAgent.Compile;
 using MyCodingAgent.Helpers;
 using MyCodingAgent.Interfaces;
 using MyCodingAgent.Models;
 using MyCodingAgent.Ollama;
+using MyCodingAgent.Tools;
 using System.Text;
-using System.Text.Json;
 
-public class DebuggingAgent(Workspace workspace) : JsonBaseAgent(workspace), IAgent
+public class DebuggingAgent(Workspace workspace) : Agent(workspace), IAgent
 {
+    protected ITool[] tools { get; } =
+    [
+        new ListAllFiles(workspace),
+        new Find(workspace),
+        new FindAndReplace(workspace),
+        new FindAndReplaceAll(workspace),
+        new OpenFile(workspace),
+        new CreateOrUpdateFile(workspace),
+        new PartialOverwriteFile(workspace),
+        new MoveFile(workspace),
+        new DeleteFile(workspace),
+        new CompileWorkspace(workspace),
+        new AskDeveloperForExtraInformation()
+    ];
+
     public async Task<OllamaPrompt> GeneratePrompt(CompileResult compileResult)
     {
         var listAllFilesPrompt = await workspace.GetListAllFilesText();
         var promptHelper = new PromptHelper(workspace);
-        var errorView = new StringBuilder();
-        await promptHelper.ShowErrorFiles(compileResult, errorView);
         List<OllamaPromptMessage> messageList =
         [
             // SYSTEM MESSAGE
@@ -25,40 +38,12 @@ public class DebuggingAgent(Workspace workspace) : JsonBaseAgent(workspace), IAg
 {listAllFilesPrompt}")
         ];
 
-        var i = workspace.DebugHistory.Count;
+        // HISTORY MESSAGES
+        AddHistory(messageList, workspace.DebugHistory);
 
-        foreach (var responseResult in workspace.DebugHistory)
-        {
-            // AGENT RESPONSE 
-            messageList.Add(new OllamaPromptMessage(
-                nameof(OllamaAgentRole.assistant),
-                $@"{responseResult.Response.message.content}{string.Join("\n", responseResult.Response.message.tool_calls.Select(b => $@"{{
-  ""tool_call"": ""{b.function.name}"",
-  ""args"": {JsonSerializer.Serialize(b.function.arguments, Program.JsonSerializeOptionsNotIndented)}
-}}"))}"));
-
-            //(TOOL) MCP RESPONSE
-            if (responseResult.ToolResults.Length > 0)
-            {
-                messageList.Add(new OllamaPromptMessage(
-                    nameof(OllamaAgentRole.tool),
-                    $@"{string.Join("\n", responseResult.ToolResults.Select(b => $@"{{
-  ""tool_call"": ""{b.toolCallFunction.name}"",
-  ""args"": {JsonSerializer.Serialize(b.toolCallFunction.arguments, Program.JsonSerializeOptionsNotIndented)}
-}}
-{(i > 1 ? b.result.shortContent : b.result.content)}"))}"));
-            }
-            else
-            {
-                messageList.Add(new OllamaPromptMessage(
-                    nameof(OllamaAgentRole.tool),
-                    $@"Could not find any tool_call"));
-            }
-
-            i--;
-        }
-
-        // ERROR OVERVIEW
+        // ERROR MESSAGE
+        var errorView = new StringBuilder();
+        await promptHelper.ShowErrorFiles(compileResult, errorView);
         messageList.Add(
             new OllamaPromptMessage(nameof(OllamaAgentRole.user), $@"{errorView}GOAL
 Make the code compile successfully.
@@ -71,7 +56,7 @@ Do not change behavior unless required."));
 
     public async Task<bool> ProcessResponse(OllamaPrompt prompt, OllamaResponse agentResponse)
     {
-        var response = await GetAgentResponseResult(prompt, agentResponse);
+        var response = await GetAgentResponseResult(prompt, agentResponse, tools);
         workspace.DebugHistory.Add(response);
         return response.ToolResults.Any(a => a.result.error == false);
     }

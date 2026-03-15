@@ -1,7 +1,6 @@
 ﻿using MyCodingAgent.Interfaces;
 using MyCodingAgent.Models;
 using MyCodingAgent.Ollama;
-using static System.Net.WebRequestMethods;
 
 namespace MyCodingAgent.Tools;
 
