@@ -189,12 +189,15 @@ internal class Program
         Console.ForegroundColor = ConsoleColor.White;
         Console.WriteLine($"{response.message.content}");
         Console.WriteLine();
-        foreach (var call in response.message.tool_calls)
+        if (response.message.tool_calls != null)
         {
-            Console.WriteLine($"tool_call: {call.function.name}:");
-            Console.WriteLine($"{JsonSerializer.Serialize(call.function.arguments, JsonSerializeOptions)}");
+            foreach (var call in response.message.tool_calls)
+            {
+                Console.WriteLine($"tool_call: {call.function.name}:");
+                Console.WriteLine($"{JsonSerializer.Serialize(call.function.arguments, JsonSerializeOptions)}");
+            }
+            Console.WriteLine();
         }
-        Console.WriteLine();
 
         Console.ForegroundColor = previousColor;
         return response;

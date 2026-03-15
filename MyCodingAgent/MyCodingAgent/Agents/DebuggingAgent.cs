@@ -39,7 +39,9 @@ public class DebuggingAgent(Workspace workspace) : Agent(workspace), IAgent
         ];
 
         // HISTORY MESSAGES
-        AddHistory(messageList, workspace.DebugHistory);
+        AddHistory(messageList, workspace.DebugHistory, 
+            maxLongDesciption: 1, 
+            maxHistory: 16);
 
         // ERROR MESSAGE
         var errorView = new StringBuilder();

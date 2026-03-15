@@ -2,4 +2,4 @@
 
 public record OllamaResponseMessage(
     string content,
-    OllamaResponseMessageToolCall[] tool_calls);
+    OllamaResponseMessageToolCall[]? tool_calls);

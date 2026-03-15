@@ -41,9 +41,13 @@ WORKFLOW
 1. Understand the request
 2. Inspect files if needed
 3. Make minimal edits
-4. Verify using search or open_file
+4. Verify using search, use tools 'open_file' or 'compile_workspace'
+5. If the task is completed and the code compiles successfully, call tool 'work_is_done'
 
-Always prefer small incremental steps."),
+IMPORTANT RULE
+
+When the code compiles successfully and the requested functionality is implemented,
+you MUST call the 'work_is_done' tool."),
             // USER ORIGINAL PROMPT
             new OllamaPromptMessage(nameof(OllamaAgentRole.user), workspace.UserPrompt),
         ];
@@ -54,7 +58,10 @@ Always prefer small incremental steps."),
             messageList.Add(new OllamaPromptMessage(nameof(OllamaAgentRole.user), $"Current workspace files:\r\n{listAllFilesPrompt}"));
         }
 
-        AddHistory(messageList, history);
+        // CHAT HISTORY
+        AddHistory(messageList, history, 
+            maxLongDesciption: 4, 
+            maxHistory: 16);
 
         return new OllamaPrompt(
             [.. messageList],
