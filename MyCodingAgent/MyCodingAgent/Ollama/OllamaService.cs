@@ -1,4 +1,5 @@
 ﻿using MyCodingAgent.Interfaces;
+using MyCodingAgent.Models;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -45,24 +46,7 @@ public class OllamaService(
   ""model"": ""{model.Name}"",
   ""messages"": {JsonSerializer.Serialize(prompt.messages, Program.JsonSerializeOptions)},
   ""stream"": false,
-  ""tools"": [{string.Join(",", prompt.tools.Select(tool => $@"
-  {{
-    ""type"": ""function"",
-    ""function"": {{
-      ""name"": ""{tool.Name}"",
-      ""description"": ""{tool.Desciption}"",
-      ""parameters"": {{
-        ""type"": ""object"",
-        ""properties"": {{{string.Join(",", tool.Parameters.Select(parameter => $@"
-          ""{parameter.Name}"": {{
-            ""type"": ""{parameter.Type}"",
-            ""description"": ""{parameter.Description}""
-          }}"))}
-        }},
-        ""required"": [{string.Join(",", tool.Parameters.Select(parameter => $@"""{parameter.Name}"""))}]
-      }}
-    }}
-  }}"))}]
+  ""tools"": [{GetToolsJson(prompt.tools)}]
 }}";
 
         var url = new Uri(OllamaServerUrl, "/api/chat");
@@ -82,6 +66,28 @@ public class OllamaService(
             ?? throw new Exception("Something is not right");
 
         return agentResponse;
+    }
+
+    public static string GetToolsJson(Tool[] tools)
+    {
+        return string.Join(",", tools.Select(tool => $@"
+  {{
+    ""type"": ""function"",
+    ""function"": {{
+      ""name"": ""{tool.Name}"",
+      ""description"": ""{tool.Desciption}"",
+      ""parameters"": {{
+        ""type"": ""object"",
+        ""properties"": {{{string.Join(",", tool.Parameters.Select(parameter => $@"
+          ""{parameter.Name}"": {{
+            ""type"": ""{parameter.Type}"",
+            ""description"": ""{parameter.Description}""
+          }}"))}
+        }},
+        ""required"": [{string.Join(",", tool.Parameters.Select(parameter => $@"""{parameter.Name}"""))}]
+      }}
+    }}
+  }}"));
     }
 
     public void Dispose()

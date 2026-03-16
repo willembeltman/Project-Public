@@ -2,6 +2,7 @@
 
 public class OllamaToolCallFunctionArguments
 {
+    public int? id { get; set; }
     public string? path { get; set; }
     public string? newPath { get; set; }
     public string? searchText { get; set; }

@@ -51,7 +51,7 @@ public class UpdateFile(Workspace workspace) : ITool
         try
         {
             await file.UpdateContent(
-                toolArguments.startLine.Value, 
+                toolArguments.startLine.Value , 
                 toolArguments.endLine.Value, 
                 toolArguments.content);
             return new ToolResult(

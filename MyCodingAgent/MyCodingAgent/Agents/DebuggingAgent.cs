@@ -6,14 +6,16 @@ using MyCodingAgent.Models;
 using MyCodingAgent.Ollama;
 using MyCodingAgent.ToolCalls;
 using System.Text;
+using System.Text.Json;
 
-public class DebuggingAgent(Workspace workspace) : _BaseAgent(workspace), IAgent
+public class DebuggingAgent(Workspace workspace) : BaseAgent(workspace), IAgent
 {
-    protected ITool[] tools { get; } =
+    protected override List<PromptResponseResults> history => workspace.DebugHistory;
+    protected override ITool[] tools { get; } =
     [
         new Search(workspace),
         new SearchAndReplace(workspace),
-        new SearchAndReplaceAll(workspace),
+        new SearchAndReplaceAllFiles(workspace),
         new ShowFile(workspace),
         new CreateFile(workspace),
         new UpdateFile(workspace),
@@ -46,16 +48,22 @@ public class DebuggingAgent(Workspace workspace) : _BaseAgent(workspace), IAgent
                 null)
         ];
 
-        // HISTORY MESSAGES
-        AddHistory(messageList, workspace.DebugHistory, 
-            maxLongDesciptionPrompt: 10,
-            maxLongDescriptionResponse: 10,
-            maxHistory: 10);
+        var currentTask = workspace.GetCurrentTask();
+        if (currentTask != null)
+        {
+            var currentTaskMessage = new OllamaMessage(
+                nameof(OllamaAgentRole.user).ToLower(),
+                null,
+                currentTask.Content,
+                null,
+                null);
+            messageList.Add(currentTaskMessage);
+        }
 
-        // ERROR MESSAGE
+        // HISTORY MESSAGES
         var errorView = new StringBuilder();
         await promptHelper.ShowErrorFiles(compileResult, errorView);
-        messageList.Add(
+        var errorMessage =
             new OllamaMessage(
                 nameof(OllamaAgentRole.user).ToLower(),
                 null,
@@ -63,7 +71,12 @@ public class DebuggingAgent(Workspace workspace) : _BaseAgent(workspace), IAgent
 Make the code compile successfully.
 Do not change behavior unless required.",
                 null,
-                null));
+                null);
+        var errorMessageJson = JsonSerializer.Serialize(errorMessage, Program.JsonSerializeOptions);
+        AddHistoryAndToolCalls(messageList, history, [.. tools.Select(a => a.ToDto())], 128000, errorMessageJson.Length);
+
+        // ERROR MESSAGE
+        messageList.Add(errorMessage);
 
         return new OllamaPrompt(
             [.. messageList],
@@ -73,7 +86,7 @@ Do not change behavior unless required.",
     public async Task<bool> ProcessResponse(OllamaPrompt prompt, OllamaResponse agentResponse)
     {
         var response = await GetAgentResponseResult(prompt, agentResponse, tools);
-        workspace.DebugHistory.Add(response);
+        history.Add(response);
         return response.ToolCallResults.Any(a => a.result.error == false);
     }
 }

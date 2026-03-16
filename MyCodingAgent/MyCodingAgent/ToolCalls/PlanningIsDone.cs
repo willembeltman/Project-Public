@@ -4,16 +4,16 @@ using MyCodingAgent.Ollama;
 
 namespace MyCodingAgent.ToolCalls;
 
-public class WorkIsDone(Workspace workspace) : ITool
+public class PlanningIsDone(Workspace workspace) : ITool
 {
     public string Name
-        => "work_is_done";
+        => "planning_is_done";
     public string Desciption
-        => "indicate all work is done, all user prompts are satisfied";
+        => "indicate all tasks has been planned, and coders can pick up the tasks";
     public ToolParameter[] Parameters { get; } = [];
     public async Task<ToolResult> Invoke(OllamaToolCallFunctionArguments toolArguments)
     {
-        workspace.WorkIsDone = true;
+        workspace.PlanningIsDone = true;
         await workspace.Save();
         return new ToolResult("OK DONE!", "OK DONE!", false);
     }

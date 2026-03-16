@@ -36,7 +36,7 @@ internal class Program
 
         var workspaceDirectory = Path.Combine(Environment.CurrentDirectory, "Source");
         var workspace = await Workspace.TryLoad(workspaceDirectory);
-        if (workspace == null || workspace.UserPromptDone)
+        if (workspace == null || workspace.WorkIsDone)
             workspace = await CreateWorkspace(workspaceDirectory);
 
         Console.WriteLine("Workspace loaded. Creating Ollama service, please wait...");
@@ -51,6 +51,7 @@ internal class Program
         await llmService.InitializeModelAsync(model);
 
         Console.WriteLine($"Model '{model.Name}' initialized, initialising agents, please wait...");
+        var planningAgent = new PlanningAgent(workspace);
         var codingAgent = new CodingAgent(workspace);
         var debuggingAgent = new DebuggingAgent(workspace);
 
@@ -58,7 +59,17 @@ internal class Program
         var compileResult = await workspace.Compile();
 
         Console.WriteLine("Project compile attempt finished, starting lllm-development-cycle, please wait...");
-        while (!workspace.UserPromptDone)
+
+        if (workspace.Tasks.Count == 0)
+        {
+            while (!workspace.PlanningIsDone)
+            {
+                // PLANNING MODE
+                compileResult = await ModifyFlow(workspace, llmService, model, planningAgent, compileResult);
+            }
+        }
+
+        while (!workspace.WorkIsDone)
         {
             while (compileResult.Errors.Count > 0 && workspace.Files.Count > 0)
             {
@@ -74,7 +85,7 @@ internal class Program
             compileResult = await ModifyFlow(workspace, llmService, model, codingAgent, compileResult);
         }
 
-        workspace.UserPromptDone = true;
+        workspace.WorkIsDone = true;
         await workspace.Save();
     }
     private static async Task<CompileResult> ModifyFlow(Workspace workspace, OllamaService llmService, OllamaModel model, IAgent agent, CompileResult compileResult)

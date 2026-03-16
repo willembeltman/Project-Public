@@ -5,10 +5,10 @@ using System.Text.RegularExpressions;
 
 namespace MyCodingAgent.ToolCalls;
 
-public class SearchAndReplaceAll(Workspace workspace) : ITool
+public class SearchAndReplaceAllFiles(Workspace workspace) : ITool
 {
     public string Name
-        => "search_and_replace_all";
+        => "search_and_replace_all_files";
     public string Desciption
         => "search for the search string inside all files of the workspace and replace all instances with the replacement string";
     public ToolParameter[] Parameters { get; } =

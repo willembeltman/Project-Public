@@ -10,14 +10,32 @@ public class Workspace
     public int PromptIndex { get; set; }
     public string RootDirectoryName { get; set; } = string.Empty;
     public string UserPrompt { get; set; } = string.Empty;
-    public bool UserPromptDone { get; set; }
+    public bool PlanningIsDone { get; set; }
+    public bool WorkIsDone { get; set; }
+    public int? CurrentTask { get; set; }
     public List<WorkspaceFile> Files { get; set; } = [];
+    public List<WorkspaceTask> Tasks { get; set; } = [];
+    public List<PromptResponseResults> PlanningHistory { get; set; } = [];
     public List<PromptResponseResults> CodingHistory { get; set; } = [];
     public List<PromptResponseResults> DebugHistory { get; set; } = [];
 
     public WorkspaceFile? GetFile(string path)
         => Files.FirstOrDefault(a => a.RelativePath.Equals(path.Replace("/", "\\"), StringComparison.CurrentCultureIgnoreCase));
-  
+    public WorkspaceTask? GetTask(int id)
+        => Tasks.FirstOrDefault(a => a.Id== id);
+    public WorkspaceTask? GetCurrentTask()
+    {
+        if (CurrentTask == null && Tasks.Count > 0)
+        {
+            var task = Tasks.First();
+            CurrentTask = task.Id;
+            return task;
+        }
+        if (CurrentTask == null)
+            return null;
+        return GetTask(CurrentTask.Value);
+    }
+
     public async static Task<Workspace?> TryLoad(string rootDirectoryName, CancellationToken ct = default)
     {
         var llmFileString = Path.Combine(rootDirectoryName, "workspace.llm");
@@ -126,4 +144,5 @@ public class Workspace
         }
         return sb.ToString();
     }
+
 }

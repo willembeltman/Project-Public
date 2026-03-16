@@ -9,7 +9,7 @@ public class DeleteFile(Workspace workspace) : ITool
     public string Name
         => "delete_file";
     public string Desciption
-        => "deletes a file";
+        => "delete a file from you workspace";
     public ToolParameter[] Parameters { get; } =
     [
         new ("path", "string", "path to the file")
