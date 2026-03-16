@@ -87,4 +87,43 @@ Do not change behavior unless required.",
         history.Add(response);
         return response.ToolCallResults.Any(a => a.result.error == false);
     }
+
+    private async Task ShowErrorFiles(CompileResult compileResult, StringBuilder sb)
+    {
+        sb.AppendLine($"ERRORS (GROUPED BY FILES)");
+        sb.AppendLine();
+        foreach (var fileGroup in compileResult.Errors.GroupBy(a => a.File))
+        {
+            var relativePath = fileGroup.Key;
+            if (string.IsNullOrWhiteSpace(relativePath))
+            {
+                sb.AppendLine("FILE: <null>");
+                foreach (var error in fileGroup)
+                {
+                    sb.AppendLine(error.FullError.TrimEnd('\n').TrimEnd('\r'));
+                }
+                sb.AppendLine();
+                continue;
+            }
+
+            var file = workspace.GetFile(relativePath);
+            if (file != null)
+            {
+                sb.AppendLine($"FILE: {relativePath}");
+                sb.AppendLine("CODE");
+                var fileContent = await file.GetFileContent();
+                foreach (var line in fileContent.GetLines())
+                {
+                    sb.AppendLine($"{line.lineNumber,3}|{line.content}");
+                }
+                sb.AppendLine();
+                sb.AppendLine("ERRORS");
+                foreach (var error in fileGroup)
+                {
+                    sb.AppendLine(error.FullError.TrimEnd('\n').TrimEnd('\r'));
+                }
+                sb.AppendLine();
+            }
+        }
+    }
 }
