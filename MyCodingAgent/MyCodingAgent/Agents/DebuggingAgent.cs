@@ -35,14 +35,14 @@ public class DebuggingAgent(Workspace workspace) : BaseAgent(workspace), IAgent
                 null,
                 null),
 
-            // DIRECTORY OVERVIEW
-            new OllamaMessage(
-                nameof(OllamaAgentRole.user).ToLower(),
-                null,
-                $@"Current workspace files:
-{listAllFilesPrompt}",
-                null,
-                null)
+//            // DIRECTORY OVERVIEW
+//            new OllamaMessage(
+//                nameof(OllamaAgentRole.user).ToLower(),
+//                null,
+//                $@"Current workspace files:
+//{listAllFilesPrompt}",
+//                null,
+//                null)
         ];
 
         var currentTask = workspace.GetCurrentTask();

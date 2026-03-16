@@ -59,17 +59,17 @@ you MUST call the 'work_is_done' tool.",
                 null),
         ];
 
-        // DIRECTORY OVERVIEW
-        if (history.Count < 10 && workspace.Files.Count < 80)
-        {
-            messageList.Add(
-                new OllamaMessage(
-                    nameof(OllamaAgentRole.user).ToLower(),
-                    null,
-                    $"Current workspace files:\r\n{listAllFilesPrompt}",
-                    null,
-                    null));
-        }
+        //// DIRECTORY OVERVIEW
+        //if (history.Count < 10 && workspace.Files.Count < 80)
+        //{
+        //    messageList.Add(
+        //        new OllamaMessage(
+        //            nameof(OllamaAgentRole.user).ToLower(),
+        //            null,
+        //            $"Current workspace files:\r\n{listAllFilesPrompt}",
+        //            null,
+        //            null));
+        //}
 
         var currentTask = workspace.GetCurrentTask();
         var currentTaskMessage = (OllamaMessage?)null;
