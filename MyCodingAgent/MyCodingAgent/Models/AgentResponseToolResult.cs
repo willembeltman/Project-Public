@@ -3,5 +3,5 @@
 namespace MyCodingAgent.Models;
 
 public record AgentResponseToolResult(
-    OllamaResponseMessageToolCallFunction toolCallFunction,
+    OllamaResponseMessageToolCallFunction function,
     ToolResult result);

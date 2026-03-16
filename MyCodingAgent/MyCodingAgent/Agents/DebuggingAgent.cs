@@ -11,7 +11,6 @@ public class DebuggingAgent(Workspace workspace) : Agent(workspace), IAgent
 {
     protected ITool[] tools { get; } =
     [
-        new ListAllFiles(workspace),
         new Find(workspace),
         new FindAndReplace(workspace),
         new FindAndReplaceAll(workspace),
@@ -20,7 +19,6 @@ public class DebuggingAgent(Workspace workspace) : Agent(workspace), IAgent
         new PartialOverwriteFile(workspace),
         new MoveFile(workspace),
         new DeleteFile(workspace),
-        new CompileWorkspace(workspace),
         new AskDeveloperForExtraInformation()
     ];
 
@@ -31,7 +29,7 @@ public class DebuggingAgent(Workspace workspace) : Agent(workspace), IAgent
         List<OllamaPromptMessage> messageList =
         [
             // SYSTEM MESSAGE
-            new OllamaPromptMessage(nameof(OllamaAgentRole.system), $@"You are a .NET 10 compiler repair agent."),
+            new OllamaPromptMessage(nameof(OllamaAgentRole.system), $@"You are a .NET 10 repair agent."),
 
             // DIRECTORY OVERVIEW
             new OllamaPromptMessage(nameof(OllamaAgentRole.user), $@"Current workspace files:
@@ -40,7 +38,8 @@ public class DebuggingAgent(Workspace workspace) : Agent(workspace), IAgent
 
         // HISTORY MESSAGES
         AddHistory(messageList, workspace.DebugHistory, 
-            maxLongDesciption: 1, 
+            maxLongDesciptionPrompt: 4,
+            maxLongDescriptionResponse: 4,
             maxHistory: 16);
 
         // ERROR MESSAGE

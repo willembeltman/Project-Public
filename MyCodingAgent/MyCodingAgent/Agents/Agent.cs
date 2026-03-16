@@ -11,7 +11,7 @@ public class Agent(
 {
     protected Workspace workspace { get; } = workspace;
    
-    protected static void AddHistory(List<OllamaPromptMessage> messageList, List<AgentResponseResult> history, int maxLongDesciption, int maxHistory)
+    protected static void AddHistory(List<OllamaPromptMessage> messageList, List<AgentResponseResult> history, int maxLongDesciptionPrompt, int maxLongDescriptionResponse, int maxHistory)
     {
         var i = history.Count;
         foreach (var responseResult in history)
@@ -27,8 +27,8 @@ public class Agent(
                 responseResult.Response.message.tool_calls == null 
                 ? string.Empty 
                 : string.Join("\n", responseResult.Response.message.tool_calls.Select(b => $@"{{
-  ""tool_call"": ""{b.function.name}"",
-  ""args"": {JsonSerializer.Serialize(b.function.arguments, Program.JsonSerializeOptionsNotIndented)}
+  ""tool_call"": ""{b.function.name}""{(i > maxLongDescriptionResponse ? "" : $@",
+  ""args"": {JsonSerializer.Serialize(b.function.arguments, Program.JsonSerializeOptionsNotIndented)}")}
 }}"));
 
             messageList.Add(new OllamaPromptMessage(
@@ -41,10 +41,10 @@ public class Agent(
                 messageList.Add(new OllamaPromptMessage(
                     nameof(OllamaAgentRole.tool),
                     $@"{string.Join("\n", responseResult.ToolResults.Select(b => $@"{{
-  ""tool_call"": ""{b.toolCallFunction.name}"",
-  ""args"": {JsonSerializer.Serialize(b.toolCallFunction.arguments, Program.JsonSerializeOptionsNotIndented)}
+  ""tool_call"": ""{b.function.name}""{(i > maxLongDescriptionResponse ? "" : $@",
+  ""args"": {JsonSerializer.Serialize(b.function.arguments, Program.JsonSerializeOptionsNotIndented)}")}
 }}
-{(i > maxLongDesciption ? b.result.shortContent : b.result.content)}"))}"));
+{(i > maxLongDesciptionPrompt ? b.result.shortContent : b.result.content)}"))}"));
             }
             else
             {

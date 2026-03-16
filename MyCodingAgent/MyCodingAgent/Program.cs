@@ -179,7 +179,7 @@ internal class Program
 
         var response = await llmService.ChatAsync(model, prompt);
 
-        Console.ForegroundColor = ConsoleColor.White;
+        Console.ForegroundColor = ConsoleColor.Red;
         Console.WriteLine($"{response.message.content}");
         Console.WriteLine();
         if (response.message.tool_calls != null)

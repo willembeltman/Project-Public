@@ -60,8 +60,9 @@ you MUST call the 'work_is_done' tool."),
 
         // CHAT HISTORY
         AddHistory(messageList, history, 
-            maxLongDesciption: 4, 
-            maxHistory: 16);
+            maxLongDesciptionPrompt: 4, 
+            maxLongDescriptionResponse: 4,
+            maxHistory: 12);
 
         return new OllamaPrompt(
             [.. messageList],
