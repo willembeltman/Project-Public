@@ -1,7 +1,5 @@
-﻿using MyCodingAgent.Compile;
-using MyCodingAgent.Interfaces;
+﻿using MyCodingAgent.Interfaces;
 using MyCodingAgent.Models;
-using MyCodingAgent.Ollama;
 using MyCodingAgent.ToolCalls;
 
 namespace MyCodingAgent.Agents;
@@ -11,7 +9,7 @@ public class PlanningAgent(Workspace workspace) : BaseAgent(workspace), IAgent
     protected override List<PromptResponseResults> history => workspace.PlanningHistory;
     protected override ITool[] tools { get; } =
     [
-        //new ListAllFiles(workspace),
+        new ListAllFiles(workspace),
         new Search(workspace),
         new ShowFile(workspace),
         new CompileWorkspace(workspace),

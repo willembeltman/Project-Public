@@ -1,9 +1,7 @@
 ﻿using MyCodingAgent.Agents;
-using MyCodingAgent.Compile;
 using MyCodingAgent.Helpers;
 using MyCodingAgent.Interfaces;
 using MyCodingAgent.Models;
-using MyCodingAgent.Ollama;
 using MyCodingAgent.ToolCalls;
 using System.Text;
 using System.Text.Json;

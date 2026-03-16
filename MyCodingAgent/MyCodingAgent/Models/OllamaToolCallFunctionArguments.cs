@@ -1,4 +1,4 @@
-﻿namespace MyCodingAgent.Ollama;
+﻿namespace MyCodingAgent.Models;
 
 public class OllamaToolCallFunctionArguments
 {

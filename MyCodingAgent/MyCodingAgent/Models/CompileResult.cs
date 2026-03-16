@@ -1,4 +1,4 @@
-﻿namespace MyCodingAgent.Compile;
+﻿namespace MyCodingAgent.Models;
 
 public class CompileResult
 {

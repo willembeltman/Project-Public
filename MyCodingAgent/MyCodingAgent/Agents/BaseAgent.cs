@@ -1,6 +1,6 @@
-﻿using MyCodingAgent.Interfaces;
+﻿using MyCodingAgent.Helpers;
+using MyCodingAgent.Interfaces;
 using MyCodingAgent.Models;
-using MyCodingAgent.Ollama;
 using System.Text.Json;
 
 namespace MyCodingAgent.Agents;
@@ -16,7 +16,7 @@ public abstract class BaseAgent(Workspace workspace)
     {
         var messagesJson = JsonSerializer.Serialize(messageList, Program.JsonSerializeOptions);
         var messagesJsonLength = messagesJson.Length;
-        var toolsJson = OllamaService.GetToolsJson(tools);
+        var toolsJson = OllamaClient.GetToolsJson(tools);
         var toolsJsonLength = toolsJson.Length;
         var maxHistory = 0;
         int maxLongDesciptionPrompt = 0;

@@ -1,6 +1,5 @@
 ﻿using MyCodingAgent.Interfaces;
 using MyCodingAgent.Models;
-using MyCodingAgent.Ollama;
 
 namespace MyCodingAgent.ToolCalls;
 

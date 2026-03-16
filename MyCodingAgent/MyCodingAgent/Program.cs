@@ -1,8 +1,7 @@
 ﻿using MyCodingAgent.Agents;
-using MyCodingAgent.Compile;
+using MyCodingAgent.Helpers;
 using MyCodingAgent.Interfaces;
 using MyCodingAgent.Models;
-using MyCodingAgent.Ollama;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -40,7 +39,7 @@ internal class Program
             workspace = await CreateWorkspace(workspaceDirectory);
 
         Console.WriteLine("Workspace loaded. Creating Ollama service, please wait...");
-        using var llmService = new OllamaService();
+        using var llmService = new OllamaClient();
 
         Console.WriteLine("Ollama service created, getting model list, please wait...");
         var list = await llmService.GetModels();
@@ -88,7 +87,7 @@ internal class Program
         workspace.WorkIsDone = true;
         await workspace.Save();
     }
-    private static async Task<CompileResult> ModifyFlow(Workspace workspace, OllamaService llmService, OllamaModel model, IAgent agent, CompileResult compileResult)
+    private static async Task<CompileResult> ModifyFlow(Workspace workspace, OllamaClient llmService, OllamaModel model, IAgent agent, CompileResult compileResult)
     {
         workspace.PromptIndex++;
         var hasAnswered = false;

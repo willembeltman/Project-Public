@@ -1,6 +1,4 @@
-﻿using MyCodingAgent.Models;
-
-namespace MyCodingAgent.Ollama;
+﻿namespace MyCodingAgent.Models;
 
 public record OllamaPrompt(
     OllamaMessage[] messages,

@@ -33,7 +33,14 @@ public class ConsoleEditor
 
             lastRenderLineCount = lines.Count;
 
-            Console.SetCursorPosition(cursorX, startTop + cursorY);
+            try
+            {
+                Console.SetCursorPosition(cursorX, startTop + cursorY);
+            }
+            catch (Exception ex) 
+            {
+
+            }
         }
 
         Render();

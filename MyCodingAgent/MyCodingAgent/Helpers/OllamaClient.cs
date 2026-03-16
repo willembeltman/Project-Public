@@ -4,9 +4,9 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace MyCodingAgent.Ollama;
+namespace MyCodingAgent.Helpers;
 
-public class OllamaService(
+public class OllamaClient(
     Uri? ollamaServerUrl = null) : IDisposable
 {
     private readonly HttpClient HttpClient = new()

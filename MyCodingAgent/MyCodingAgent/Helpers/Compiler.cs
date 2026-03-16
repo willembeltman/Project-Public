@@ -1,8 +1,9 @@
-﻿using System.Diagnostics;
+﻿using MyCodingAgent.Models;
+using System.Diagnostics;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace MyCodingAgent.Compile;
+namespace MyCodingAgent.Helpers;
 
 public static class Compiler
 {
