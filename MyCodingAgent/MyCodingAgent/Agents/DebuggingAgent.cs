@@ -25,7 +25,6 @@ public class DebuggingAgent(Workspace workspace) : BaseAgent(workspace), IAgent
     public async Task<OllamaPrompt> GeneratePrompt(CompileResult compileResult)
     {
         var listAllFilesPrompt = await workspace.GetListAllFilesText();
-        var promptHelper = new PromptHelper(workspace);
         List<OllamaMessage> messageList =
         [
             // SYSTEM MESSAGE
@@ -59,8 +58,8 @@ public class DebuggingAgent(Workspace workspace) : BaseAgent(workspace), IAgent
         }
 
         // HISTORY MESSAGES
-        var errorView = new StringBuilder();
-        await promptHelper.ShowErrorFiles(compileResult, errorView);
+        
+        var errorView = await ShowErrorFiles(compileResult);
         var errorMessage =
             new OllamaMessage(
                 nameof(OllamaAgentRole.user).ToLower(),
@@ -88,8 +87,10 @@ Do not change behavior unless required.",
         return response.ToolCallResults.Any(a => a.result.error == false);
     }
 
-    private async Task ShowErrorFiles(CompileResult compileResult, StringBuilder sb)
+    private async Task<string> ShowErrorFiles(CompileResult compileResult)
     {
+        StringBuilder sb = new StringBuilder();
+
         sb.AppendLine($"ERRORS (GROUPED BY FILES)");
         sb.AppendLine();
         foreach (var fileGroup in compileResult.Errors.GroupBy(a => a.File))
@@ -125,5 +126,7 @@ Do not change behavior unless required.",
                 sb.AppendLine();
             }
         }
+
+        return sb.ToString();
     }
 }
