@@ -22,94 +22,70 @@ public class ProjectManagerAgent(Workspace Workspace) : BaseAgent(Workspace), IA
         new AnswerCoderQuestion(Workspace),
         new AskDeveloperForExtraInformation()
     ];
-
     public async Task<OllamaPrompt> GeneratePrompt(CompileResult compileResult)
     {
         if (Workspace.WaitingForProjectManagerQuestion == null)
-            throw new Exception("wtf?");
+            throw new Exception("Geen actieve vraag gevonden voor de Project Manager.");
 
-        List<OllamaMessage> messageList = 
+        List<OllamaMessage> messageList =
         [
             // SYSTEM PROMPT
             new OllamaMessage(
-                nameof(OllamaAgentRole.system).ToLower(),
-                null,
-                $@"You are a planning agent inside a .NET 10 development workspace.
+            nameof(OllamaAgentRole.system).ToLower(),
+            null,
+            $@"You are the Project Manager for a .NET 10 development project. 
+Earlier, you created a plan consisting of several subtasks. Now, a Coding Agent is executing one of those tasks and has encountered a blocker or a question.
 
-Your job is to analyze the developer request and create a subtask plan.
+YOUR MISSION:
+1. Analyze the Coding Agent's question in the context of the original project goals and your previous planning.
+2. Provide technical clarification, architectural decisions, or missing information.
+3. If the question reveals that the original plan was flawed, use 'update_subtask' to refine the plan.
+4. Use the 'answer_coder_question' tool to send your definitive answer back to the agent.
 
-You DO NOT modify code.
-You ONLY create and manage subtasks.
-You can reply multiple tool_calls.
+CONSTRAINTS:
+- You do not write code yourself.
+- You provide the guidance so the Coder can continue.
+- Use 'list_all_files' or 'show_file' if you need to double-check the current state of the code before answering.
 
-WORKFLOW
+When you have the answer, you MUST call 'answer_coder_question'.",
+            null,
+            null),
 
-1. Understand the developer request
-2. Inspect the workspace if needed (use list_all_files, search, show_file tools)
-3. Determine what functionality must be implemented
-4. Break the work into clear development subtasks
-5. Create subtasks using the create_subtask tool
-6. When the full plan is complete call the planning_is_done tool
+        // USER ORIGINAL PROMPT (Het grote doel)
+        new OllamaMessage(
+            nameof(OllamaAgentRole.user).ToLower(),
+            null,
+            $"Original Project Goal: {Workspace.UserPrompt}",
+            null,
+            null),
+    ];
 
-TASK RULES
+        // De vraag van de Coder verpakken we als een specifieke User-message
+        var questionContent = $@"--- INCOMING REQUEST FROM CODER AGENT ---
+{Workspace.WaitingForProjectManagerQuestion}
+--- END OF REQUEST ---
+--- CORRESPONDING SUBTASK ---
+{Workspace.GetCurrentSubTask()?.Content}
+--- END OF SUBTASK ---";
 
-- SubTasks must be small and implementable
-- SubTasks must describe concrete developer work
-- SubTasks must be ordered logically
-- Prefer 3-10 subtasks per plan
-
-IMPORTANT
-
-- When you have enough information, STOP investigating and start creating subtasks.
-- When the plan is complete you MUST call the tool planning_is_done.
-
-If the requested functionality already exists in the codebase you may call work_is_already_done.
-
-Example plan:
-
-create_subtask
-Implement API endpoint for creating users
-
-create_subtask
-Add database entity for User
-
-create_subtask
-Add validation logic for user input
-
-create_subtask
-Add integration tests
-
-planning_is_done",
-                null, 
-                null),
-
-            // USER ORIGINAL PROMPT
-            new OllamaMessage(
-                nameof(OllamaAgentRole.user).ToLower(),
-                null,
-                Workspace.UserPrompt,
-                null, 
-                null),
-        ];
-
-
-        // CODER AGENT QUESTION PROMPT
         var question = new OllamaMessage(
             nameof(OllamaAgentRole.user).ToLower(),
             null,
-            Workspace.WaitingForProjectManagerQuestion,
+            questionContent,
             null,
             null);
+
         var questionJson = JsonSerializer.Serialize(question, DefaultJsonSerializerOptions.JsonSerializeOptionsIndented);
 
-        // CHAT HISTORY
+        // CHAT HISTORY (Hier zit je create_subtask historie in)
         AddHistoryAndToolCalls(
-            messageList, 
-            History, 
-            [ ..Tools.Select(a => a.ToDto())],
-            maxTokens: 8192, 
+            messageList,
+            History,
+            [.. Tools.Select(a => a.ToDto())],
+            maxTokens: 8192,
             additionalSizeInBytes: questionJson.Length);
 
+        // Voeg de actuele vraag als laatste toe zodat deze de meeste prioriteit heeft
         messageList.Add(question);
 
         return new OllamaPrompt(
