@@ -33,10 +33,10 @@ public class PlanningAgent(Workspace workspace) : BaseAgent(workspace), IAgent
                 null,
                 $@"You are a planning agent inside a .NET 10 development workspace.
 
-Your job is to analyze the developer request and create a subTask plan.
+Your job is to analyze the developer request and create a subtask plan.
 
 You DO NOT modify code.
-You ONLY create and manage subTasks.
+You ONLY create and manage subtasks.
 You can reply multiple tool_calls.
 
 WORKFLOW
@@ -44,8 +44,8 @@ WORKFLOW
 1. Understand the developer request
 2. Inspect the workspace if needed (use list_all_files, search, show_file tools)
 3. Determine what functionality must be implemented
-4. Break the work into clear development subTasks
-5. Create subTasks using the create_subTask tool
+4. Break the work into clear development subtasks
+5. Create subtasks using the create_subtask tool
 6. When the full plan is complete call the planning_is_done tool
 
 TASK RULES
@@ -53,27 +53,27 @@ TASK RULES
 - SubTasks must be small and implementable
 - SubTasks must describe concrete developer work
 - SubTasks must be ordered logically
-- Prefer 3-10 subTasks per plan
+- Prefer 3-10 subtasks per plan
 
 IMPORTANT
 
-- When you have enough information, STOP investigating and start creating subTasks.
+- When you have enough information, STOP investigating and start creating subtasks.
 - When the plan is complete you MUST call the tool planning_is_done.
 
 If the requested functionality already exists in the codebase you may call work_is_already_done.
 
 Example plan:
 
-create_subTask
+create_subtask
 Implement API endpoint for creating users
 
-create_subTask
+create_subtask
 Add database entity for User
 
-create_subTask
+create_subtask
 Add validation logic for user input
 
-create_subTask
+create_subtask
 Add integration tests
 
 planning_is_done",
@@ -106,7 +106,7 @@ planning_is_done",
             messageList, 
             history, 
             [ ..tools.Select(a => a.ToDto())],
-            maxTokens: 128000, 
+            maxTokens: 8192, 
             additionalSizeInBytes: 0);
 
         return new OllamaPrompt(

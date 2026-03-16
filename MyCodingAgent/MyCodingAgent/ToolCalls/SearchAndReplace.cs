@@ -8,13 +8,13 @@ public class SearchAndReplace(Workspace workspace) : ITool
 {
     public string Name
         => "search_and_replace";
-    public string Desciption
-        => "search for the search string inside given file and replace all instances with the replacement string";
+    public string Description
+        => "Performs a precise find-and-replace operation within a single file. Both search and replacement are case-sensitive.";
     public ToolParameter[] Parameters { get; } =
     [
-        new ("path", "string", "path to the file to search in"),
-        new ("searchText", "string", "the search string, is case-sensitive"),
-        new ("replaceText", "string", "the replacement string, is case-sensitive")
+        new ("path", "string", "Path to the target file."),
+        new ("searchText", "string", "The exact string to find."),
+        new ("replaceText", "string", "The string to replace it with.")
     ];
 
     public async Task<ToolResult> Invoke(OllamaToolCallFunctionArguments toolArguments)

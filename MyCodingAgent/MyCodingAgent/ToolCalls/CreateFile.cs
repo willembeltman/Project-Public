@@ -6,13 +6,15 @@ namespace MyCodingAgent.ToolCalls;
 public class CreateFile(Workspace workspace) : ITool
 {
     public string Name
-        => "create_file";
-    public string Desciption
-        => "create a new file with the provided content";
+    => "create_file";
+
+    public string Description
+        => "Create a new file at the specified path with the provided content. If the file already exists, it will be overwritten. Use this for initial file creation or complete rewrites.";
+
     public ToolParameter[] Parameters { get; } =
     [
-        new ("path", "string", "path to the file"),
-        new ("content", "string", "full content of the file")
+        new ("path", "string", "The relative path from the workspace root where the file should be created (e.g., 'src/main.cs')."),
+    new ("content", "string", "The complete source code or text content to be written into the new file.")
     ];
     public async Task<ToolResult> Invoke(OllamaToolCallFunctionArguments toolArguments)
     {

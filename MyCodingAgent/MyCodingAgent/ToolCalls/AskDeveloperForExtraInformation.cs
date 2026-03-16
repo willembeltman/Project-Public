@@ -7,8 +7,8 @@ public class AskDeveloperForExtraInformation : ITool
 {
     public string Name
         => "ask_developer_extra_information";
-    public string Desciption
-        => "asks the developer for additional information when the subTask cannot continue";
+    public string Description
+        => "asks the developer for additional information when the subtask cannot continue";
     public ToolParameter[] Parameters { get; } =
     [
         new ("content", "string", "question or information request for the developer")

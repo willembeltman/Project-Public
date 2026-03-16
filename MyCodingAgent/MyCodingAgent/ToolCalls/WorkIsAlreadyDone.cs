@@ -7,9 +7,10 @@ public class WorkIsAlreadyDone(Workspace workspace) : ITool
 {
     public string Name
         => "work_is_already_done";
-    public string Desciption
-        => "indicate all work is is already done, all user prompts are satisfied";
+    public string Description
+        => "Signals the final completion of the entire project. Use this tool only when every sub-task is finished, the code is verified (compiled/tested), and all requirements from the user's initial prompt have been fully met.";
     public ToolParameter[] Parameters { get; } = [];
+
     public async Task<ToolResult> Invoke(OllamaToolCallFunctionArguments toolArguments)
     {
         workspace.PlanningIsDone = true;

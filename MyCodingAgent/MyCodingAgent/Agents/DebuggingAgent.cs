@@ -70,7 +70,12 @@ Do not change behavior unless required.",
                 null,
                 null);
         var errorMessageJson = JsonSerializer.Serialize(errorMessage, Program.JsonSerializeOptions);
-        AddHistoryAndToolCalls(messageList, history, [.. tools.Select(a => a.ToDto())], 128000, errorMessageJson.Length);
+        AddHistoryAndToolCalls(
+            messageList, 
+            history, 
+            [.. tools.Select(a => a.ToDto())], 
+            maxTokens: 8192, 
+            additionalSizeInBytes: errorMessageJson.Length);
 
         // ERROR MESSAGE
         messageList.Add(errorMessage);

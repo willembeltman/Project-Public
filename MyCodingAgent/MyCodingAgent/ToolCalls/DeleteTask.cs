@@ -6,12 +6,14 @@ namespace MyCodingAgent.ToolCalls;
 public class DeleteSubTask(Workspace workspace) : ITool
 {
     public string Name
-        => "delete_subTask";
-    public string Desciption
-        => "delete a subTask from the workspace";
+    => "delete_subtask";
+
+    public string Description
+        => "Removes a planned sub-task from the project queue. Use this if a task was created in error, becomes redundant, or if the plan needs to be restructured before execution. Avoid deleting tasks that are currently being processed by a coding agent.";
+
     public ToolParameter[] Parameters { get; } =
     [
-        new ("id", "string", "id to the subTask")
+        new ("id", "string", "The unique identifier of the sub-task to be removed (e.g., 'task_01').")
     ];
 
     public async Task<ToolResult> Invoke(OllamaToolCallFunctionArguments toolArguments)
@@ -24,25 +26,25 @@ public class DeleteSubTask(Workspace workspace) : ITool
 
         try
         {
-            var subTask = workspace.GetSubTask(toolArguments.id.Value);
-            if (subTask != null)
+            var subtask = workspace.GetSubTask(toolArguments.id.Value);
+            if (subtask != null)
             {
-                workspace.SubTasks.Remove(subTask);
+                workspace.SubTasks.Remove(subtask);
                 return new ToolResult(
-                    $"Deleted subTask {toolArguments.id}",
-                    $"Deleted subTask",
+                    $"Deleted subtask {toolArguments.id}",
+                    $"Deleted subtask",
                     false);
             }
             return new ToolResult(
-                $"Error while deleting subTask '{toolArguments.id}': could not find subTask",
-                $"Error while deleting subTask: could not find",
+                $"Error while deleting subtask '{toolArguments.id}': could not find subtask",
+                $"Error while deleting subtask: could not find",
                 true);
         }
         catch (Exception ex)
         {
             return new ToolResult(
-                $"Error while deleting subTask '{toolArguments.id}': {ex.Message}",
-                $"Error while deleting subTask",
+                $"Error while deleting subtask '{toolArguments.id}': {ex.Message}",
+                $"Error while deleting subtask",
                 true);
         }
     }

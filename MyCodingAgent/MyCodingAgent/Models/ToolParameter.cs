@@ -2,5 +2,5 @@
 
 public record ToolParameter(
     string Name,
-    string Description, 
-    string Type);
+    string Type,
+    string Description);

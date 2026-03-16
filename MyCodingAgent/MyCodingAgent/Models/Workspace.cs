@@ -26,9 +26,9 @@ public class Workspace
     {
         if (CurrentSubTask == null && SubTasks.Count > 0)
         {
-            var subTask = SubTasks.First();
-            CurrentSubTask = subTask.Id;
-            return subTask;
+            var subtask = SubTasks.First();
+            CurrentSubTask = subtask.Id;
+            return subtask;
         }
         if (CurrentSubTask == null)
             return null;
@@ -148,17 +148,17 @@ public class Workspace
         StringBuilder sb = new StringBuilder();
         if (SubTasks.Count > 0)
         {
-            foreach (var subTask in SubTasks)
+            foreach (var subtask in SubTasks)
             {
-                var subTaskContent = subTask.Content;
-                sb.AppendLine($"# {subTask.Id}");
-                sb.AppendLine($"{subTask.Content}");
+                var subtaskContent = subtask.Content;
+                sb.AppendLine($"# {subtask.Id}");
+                sb.AppendLine($"{subtask.Content}");
                 sb.AppendLine();
             }
         }
         else
         {
-            sb.AppendLine("<No subTasks found in project>");
+            sb.AppendLine("<No subtasks found in project>");
         }
         return sb.ToString();
     }

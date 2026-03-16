@@ -68,6 +68,10 @@ internal class Program
             }
         }
 
+        //// Rerun for debug
+        //foreach (var resp in workspace.CodingHistory)
+        //    await codingAgent.ProcessResponse(resp.Prompt, resp.Response, false);
+
         while (!workspace.WorkIsDone)
         {
             while (compileResult.Errors.Count > 0 && workspace.Files.Count > 0)

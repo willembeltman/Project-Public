@@ -7,14 +7,14 @@ public class UpdateFile(Workspace workspace) : ITool
 {
     public string Name
         => "update_file";
-    public string Desciption
-        => "overwrites a specific line range inside a file";
+    public string Description
+        => "Updates a file by replacing a range of lines (inclusive). Use this for targeted code modifications.";
     public ToolParameter[] Parameters { get; } =
     [
-        new ("path", "string", "path to the file"),
-        new ("startLine", "number", "first line to overwrite (inclusive)"),
-        new ("endLine", "number", "last line to overwrite (inclusive)"),
-        new ("content", "string", "replacement content for the specified line range")
+        new ("path", "string", "Path to the file."),
+        new ("startLine", "number", "The first line number to replace. (inclusive)"),
+        new ("endLine", "number", "The last line number to replace. (inclusive)"),
+        new ("content", "string", "The new code or text for this range.")
     ]; 
     
     public async Task<ToolResult> Invoke(OllamaToolCallFunctionArguments toolArguments)

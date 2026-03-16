@@ -6,9 +6,9 @@ namespace MyCodingAgent.ToolCalls;
 public class SubTasksPlanningIsDone(Workspace workspace) : ITool
 {
     public string Name
-        => "subTasks_planning_is_done";
-    public string Desciption
-        => "indicate all subTasks has been planned, and coders can pick up the subTasks";
+        => "subtasks_planning_is_done";
+    public string Description
+        => "Finalizes the planning phase and signals that the task breakdown is complete. Use this only after all necessary sub-tasks have been created and the overall strategy is ready for execution by coding agents.";
     public ToolParameter[] Parameters { get; } = [];
     public async Task<ToolResult> Invoke(OllamaToolCallFunctionArguments toolArguments)
     {

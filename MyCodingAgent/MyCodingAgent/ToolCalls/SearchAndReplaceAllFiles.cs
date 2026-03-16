@@ -7,13 +7,15 @@ namespace MyCodingAgent.ToolCalls;
 public class SearchAndReplaceAllFiles(Workspace workspace) : ITool
 {
     public string Name
-        => "search_and_replace_all_files";
-    public string Desciption
-        => "search for the search string inside all files of the workspace and replace all instances with the replacement string";
+    => "search_and_replace_all_files";
+
+    public string Description
+        => "A global refactoring tool that replaces every occurrence of a string across all files in the workspace. Use this with extreme caution for project-wide renames (e.g., namespaces or shared constants). Always verify the search string is unique enough to avoid accidental changes in unrelated files.";
+
     public ToolParameter[] Parameters { get; } =
     [
-        new ("searchText", "string", "the search string, is case-sensitive"),
-        new ("replaceText", "string", "the replacement string, is case-sensitive")
+        new ("searchText", "string", "The exact, case-sensitive string to find. Ensure this is specific enough to avoid false positives."),
+        new ("replaceText", "string", "The exact, case-sensitive string to insert as a replacement.")
     ];
 
     public async Task<ToolResult> Invoke(OllamaToolCallFunctionArguments toolArguments)

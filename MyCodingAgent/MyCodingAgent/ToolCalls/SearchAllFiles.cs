@@ -2,7 +2,6 @@
 using MyCodingAgent.Interfaces;
 using MyCodingAgent.Models;
 using System.Text;
-using static System.Net.WebRequestMethods;
 
 namespace MyCodingAgent.ToolCalls;
 
@@ -10,11 +9,11 @@ public class SearchAllFiles(Workspace workspace) : ITool
 {
     public string Name
         => "search_all_files";
-    public string Desciption
-        => "show the results of a search for the specific string inside all files of the workspace";
+    public string Description
+        => "Searches for a case-insensitive string across the entire workspace. Returns filenames and the context of matching lines.";
     public ToolParameter[] Parameters { get; } =
     [
-        new ("searchText", "string", "the specific string, is case-insensitive")
+        new ("searchText", "string", "The text to search for (case-insensitive).")
     ];
 
     public async Task<ToolResult> Invoke(OllamaToolCallFunctionArguments toolArguments)

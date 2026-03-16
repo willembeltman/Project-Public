@@ -7,8 +7,8 @@ public class CompileWorkspace(Workspace workspace) : ITool
 {
     public string Name 
         => "compile_workspace";
-    public string Desciption
-        => "search the root of your workspace for a .sln or .csproj file and tries to compile it, then return the compilation results";
+    public string Description
+        => "Builds the project using .sln or .csproj in workspace root. Use this to catch errors after making code changes.";
     public ToolParameter[] Parameters { get; } = [];
 
     public async Task<ToolResult> Invoke(OllamaToolCallFunctionArguments toolArguments)

@@ -6,12 +6,16 @@ namespace MyCodingAgent.ToolCalls;
 public class CreateSubTask(Workspace workspace) : ITool
 {
     public string Name
-        => "create_subTask";
-    public string Desciption
-        => "create a new subTask with the provided content";
+    => "create_subtask";
+
+    public string Description
+        => "Strategic tool for the Planning Agent to decompose a complex objective into smaller, manageable tasks. Each sub-task should contain enough technical detail for a Coding Agent to execute it independently.";
+
     public ToolParameter[] Parameters { get; } =
     [
-        new ("content", "string", "full content of the subTask")
+        new ("title", "string", "A short, descriptive name for the task (e.g., 'Update Auth Logic')."),
+    new ("description", "string", "Detailed instructions or technical requirements. Define 'what' needs to be done and 'where' (e.g., 'Modify AuthService.cs to include JWT validation')."),
+    new ("success_criteria", "string", "Specific conditions that must be met to consider this task finished (e.g., 'Compilation successful and unit tests pass').")
     ];
     public async Task<ToolResult> Invoke(OllamaToolCallFunctionArguments toolArguments)
     {

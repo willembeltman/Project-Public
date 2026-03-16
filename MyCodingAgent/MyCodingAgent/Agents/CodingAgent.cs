@@ -15,6 +15,7 @@ public class CodingAgent(Workspace workspace) : BaseAgent(workspace), IAgent
         new SearchAndReplace(workspace),
         new SearchAndReplaceAllFiles(workspace),
         new ShowFile(workspace),
+        new ShowFileWithLineNumbers(workspace),
         new CreateFile(workspace),
         new UpdateFile(workspace),
         new MoveFile(workspace),
@@ -26,7 +27,7 @@ public class CodingAgent(Workspace workspace) : BaseAgent(workspace), IAgent
 
     public async Task<OllamaPrompt> GeneratePrompt(CompileResult compileResult)
     {
-        List<OllamaMessage> messageList = 
+        List<OllamaMessage> messageList =
         [
             // SYSTEM PROMPT
             new OllamaMessage(
@@ -40,22 +41,22 @@ WORKFLOW
 2. Inspect files if needed
 3. Make minimal edits
 4. Verify using search, use tools 'open_file' or 'compile_workspace'
-5. If the subTask is completed and the code compiles successfully, call tool 'work_is_done'
+5. If the subtask is completed and the code compiles successfully, call tool 'work_is_done'
 
 IMPORTANT RULE
 
 When the code compiles successfully and the requested functionality is implemented,
 you MUST call the 'work_is_done' tool.",
-                null, 
+                null,
                 null),
 
-            // USER ORIGINAL PROMPT
-            new OllamaMessage(
-                nameof(OllamaAgentRole.user).ToLower(),
-                null,
-                workspace.UserPrompt,
-                null, 
-                null),
+            //// USER ORIGINAL PROMPT
+            //new OllamaMessage(
+            //    nameof(OllamaAgentRole.user).ToLower(),
+            //    null,
+            //    workspace.UserPrompt,
+            //    null,
+            //    null),
         ];
 
         //// DIRECTORY OVERVIEW
@@ -83,30 +84,33 @@ you MUST call the 'work_is_done' tool.",
                 null,
                 null);
             currentSubTaskMessageJson = JsonSerializer.Serialize(currentSubTaskMessage, Program.JsonSerializeOptions);
+            messageList.Add(currentSubTaskMessage);
         }
 
         // CHAT HISTORY
         AddHistoryAndToolCalls(
-            messageList, 
-            history, 
-            [ ..tools.Select(a => a.ToDto())],
-            maxTokens: 128000, 
+            messageList,
+            history,
+            [.. tools.Select(a => a.ToDto())],
+            maxTokens: 8192,
             additionalSizeInBytes: currentSubTaskMessageJson.Length);
 
-        if (currentSubTaskMessage != null)
-        {
-            messageList.Add(currentSubTaskMessage);
-        }
+        //if (currentSubTaskMessage != null)
+        //{
+        //    messageList.Add(currentSubTaskMessage);
+        //}
 
         return new OllamaPrompt(
             [.. messageList],
             [.. tools.Select(a => a.ToDto())]);
     }
 
-    public async Task<bool> ProcessResponse(OllamaPrompt prompt, OllamaResponse agentResponse)
+    public Task<bool> ProcessResponse(OllamaPrompt prompt, OllamaResponse agentResponse)
+        => ProcessResponse(prompt, agentResponse, true);
+    public async Task<bool> ProcessResponse(OllamaPrompt prompt, OllamaResponse agentResponse, bool save = true)
     {
         var response = await GetAgentResponseResult(prompt, agentResponse, tools);
-        history.Add(response);
+        if (save) history.Add(response);
         return response.ToolCallResults.Any(a => a.result.error == false);
     }
 }

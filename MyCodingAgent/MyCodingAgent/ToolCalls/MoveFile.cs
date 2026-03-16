@@ -7,7 +7,7 @@ public class MoveFile(Workspace workspace) : ITool
 {
     public string Name
         => "move_file";
-    public string Desciption
+    public string Description
         => "move or rename a file";
     public ToolParameter[] Parameters { get; } =
     [

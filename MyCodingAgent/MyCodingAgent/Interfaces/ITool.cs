@@ -5,11 +5,11 @@ namespace MyCodingAgent.Interfaces;
 public interface ITool
 {
     string Name {  get; }
-    string Desciption { get; }
+    string Description { get; }
     ToolParameter[] Parameters { get; }
     Task<ToolResult> Invoke(OllamaToolCallFunctionArguments toolArguments);
     public Tool ToDto()
     {
-        return new Tool(Name, Desciption, Parameters);
+        return new Tool(Name, Description, Parameters);
     }
 }

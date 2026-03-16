@@ -6,15 +6,17 @@ namespace MyCodingAgent.ToolCalls;
 public class UpdateSubTask(Workspace workspace) : ITool
 {
     public string Name
-        => "update_subTask";
-    public string Desciption
-        => "overwrites a specific line range inside a subTask";
+      => "update_subtask";
+
+    public string Description
+        => "Modifies an existing sub-task by overwriting its content. Use this to refine task requirements or add technical notes discovered by the debugger. Note: This action replaces the previous task description with the new content.";
+
     public ToolParameter[] Parameters { get; } =
     [
-        new ("id", "number", "id to the subTask"),
-        new ("content", "string", "replacement content for the subTask")
-    ]; 
-    
+        new ("id", "number", "The numerical ID of the sub-task to be updated."),
+        new ("content", "string", "The new text content for the sub-task. Provide the full updated description to ensure clarity for the coding agents.")
+    ];
+
     public async Task<ToolResult> Invoke(OllamaToolCallFunctionArguments toolArguments)
     {
         if (toolArguments.id == null)
@@ -28,19 +30,19 @@ public class UpdateSubTask(Workspace workspace) : ITool
                 "parameter content is not supplied.",
                 true);
 
-        var subTask = workspace.GetSubTask(toolArguments.id.Value);
-        if (subTask == null)
+        var subtask = workspace.GetSubTask(toolArguments.id.Value);
+        if (subtask == null)
             return new ToolResult(
-                $"Error could not find subTask {toolArguments.id}",
-                $"Error could not find subTask",
+                $"Error could not find subtask {toolArguments.id}",
+                $"Error could not find subtask",
                 true);
 
-        workspace.SubTasks.Remove(subTask);
+        workspace.SubTasks.Remove(subtask);
         var newSubTask = new WorkspaceSubTask(toolArguments.id.Value, toolArguments.content);
         workspace.SubTasks.Add(newSubTask);
         return new ToolResult(
-            $"Updated subTask '{toolArguments.id}'",
-            $"Updated subTask",
+            $"Updated subtask '{toolArguments.id}'",
+            $"Updated subtask",
             false);
     }
 }

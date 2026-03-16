@@ -7,8 +7,9 @@ public class WorkIsDone(Workspace workspace) : ITool
 {
     public string Name
         => "work_is_done";
-    public string Desciption
-        => "indicate all work is done, all user prompts are satisfied";
+
+    public string Description
+        => "The definitive signal that all planned sub-tasks have been successfully executed and verified. Use this tool to submit your final results to the user once you are confident that every requirement in the prompt has been met and the workspace is in a stable state.";
     public ToolParameter[] Parameters { get; } = [];
     public async Task<ToolResult> Invoke(OllamaToolCallFunctionArguments toolArguments)
     {
