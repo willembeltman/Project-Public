@@ -7,7 +7,7 @@ using MyCodingAgent.Ollama;
 using MyCodingAgent.Tools;
 using System.Text;
 
-public class DebuggingAgent(Workspace workspace) : Agent(workspace), IAgent
+public class DebuggingAgent(Workspace workspace) : _BaseAgent(workspace), IAgent
 {
     protected ITool[] tools { get; } =
     [
@@ -26,29 +26,44 @@ public class DebuggingAgent(Workspace workspace) : Agent(workspace), IAgent
     {
         var listAllFilesPrompt = await workspace.GetListAllFilesText();
         var promptHelper = new PromptHelper(workspace);
-        List<OllamaPromptMessage> messageList =
+        List<OllamaMessage> messageList =
         [
             // SYSTEM MESSAGE
-            new OllamaPromptMessage(nameof(OllamaAgentRole.system), $@"You are a .NET 10 repair agent."),
+            new OllamaMessage(
+                nameof(OllamaAgentRole.system).ToLower(),
+                null,
+                $@"You are a .NET 10 repair agent.",
+                null,
+                null),
 
             // DIRECTORY OVERVIEW
-            new OllamaPromptMessage(nameof(OllamaAgentRole.user), $@"Current workspace files:
-{listAllFilesPrompt}")
+            new OllamaMessage(
+                nameof(OllamaAgentRole.user).ToLower(),
+                null,
+                $@"Current workspace files:
+{listAllFilesPrompt}",
+                null,
+                null)
         ];
 
         // HISTORY MESSAGES
         AddHistory(messageList, workspace.DebugHistory, 
-            maxLongDesciptionPrompt: 4,
-            maxLongDescriptionResponse: 4,
-            maxHistory: 16);
+            maxLongDesciptionPrompt: 10,
+            maxLongDescriptionResponse: 10,
+            maxHistory: 10);
 
         // ERROR MESSAGE
         var errorView = new StringBuilder();
         await promptHelper.ShowErrorFiles(compileResult, errorView);
         messageList.Add(
-            new OllamaPromptMessage(nameof(OllamaAgentRole.user), $@"{errorView}GOAL
+            new OllamaMessage(
+                nameof(OllamaAgentRole.user).ToLower(),
+                null,
+                $@"{errorView}GOAL
 Make the code compile successfully.
-Do not change behavior unless required."));
+Do not change behavior unless required.",
+                null,
+                null));
 
         return new OllamaPrompt(
             [.. messageList],

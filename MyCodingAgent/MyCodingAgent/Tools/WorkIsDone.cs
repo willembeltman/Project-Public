@@ -11,7 +11,7 @@ public class WorkIsDone(Workspace workspace) : ITool
     public string Desciption
         => "signals all work is done and needs user validation";
     public ToolParameter[] Parameters { get; } = [];
-    public async Task<ToolResult> Invoke(OllamaResponseMessageToolCallFunctionArguments toolArguments)
+    public async Task<ToolResult> Invoke(OllamaToolCallFunctionArguments toolArguments)
     {
         workspace.UserPromptDone = true;
         await workspace.Save();

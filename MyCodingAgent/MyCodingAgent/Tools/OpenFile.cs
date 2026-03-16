@@ -17,7 +17,7 @@ public class OpenFile(Workspace workspace) : ITool
         new ("path", "string", "path to the file to open")
     ];
 
-    public async Task<ToolResult> Invoke(OllamaResponseMessageToolCallFunctionArguments toolArguments)
+    public async Task<ToolResult> Invoke(OllamaToolCallFunctionArguments toolArguments)
     {
         if (toolArguments.path == null)
             return new ToolResult(

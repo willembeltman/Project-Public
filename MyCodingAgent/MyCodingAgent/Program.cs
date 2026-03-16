@@ -21,6 +21,7 @@ internal class Program
     {
         PropertyNameCaseInsensitive = true
     };
+    static HashSet<OllamaMessage> shownMessages = new HashSet<OllamaMessage>();
 
     private static async Task Main(string[] args)
     {
@@ -84,11 +85,13 @@ internal class Program
         {
             var prompt = await agent.GeneratePrompt(compileResult);
             Console.WriteLine($"#{workspace.PromptIndex} Asking model:");
-            WritePromptToConsole(prompt);
+            foreach (var message in prompt.messages)
+                ShowMessage(message);
             Console.WriteLine();
 
             Console.WriteLine($"#{workspace.PromptIndex} Model answered:");
-            var response = await CallLLM(llmService, model, prompt);
+            var response = await llmService.ChatAsync(model, prompt);
+            ShowMessage(response.message);
             Console.WriteLine();
 
             Console.WriteLine($"#{workspace.PromptIndex} Applying answer...");
@@ -159,40 +162,41 @@ internal class Program
         Console.ForegroundColor = previousColor;
         return model;
     }
-    private static void WritePromptToConsole(OllamaPrompt prompt)
+
+    private static void ShowMessage(OllamaMessage message)
     {
+        if (!shownMessages.Add(message)) return;
+
         var previousColor = Console.ForegroundColor;
 
-        Console.ForegroundColor = ConsoleColor.White;
-        foreach (var message in prompt.messages)
+        Console.WriteLine($"[{message.role.ToUpper()}]");
+        if (message.thinking != null)
         {
-            Console.WriteLine($"[{message.role.ToUpper()}]");
+            Console.ForegroundColor = ConsoleColor.Gray;
+            Console.WriteLine(message.thinking);
+        }
+        if (message.tool_call_id != null)
+        {
+            Console.ForegroundColor = ConsoleColor.DarkGreen;
+            Console.WriteLine(message.tool_call_id);
             Console.WriteLine(message.content);
-            Console.WriteLine();
         }
-
-        Console.ForegroundColor = previousColor;
-    }
-    private static async Task<OllamaResponse> CallLLM(OllamaService llmService, OllamaModel model, OllamaPrompt prompt)
-    {
-        var previousColor = Console.ForegroundColor;
-
-        var response = await llmService.ChatAsync(model, prompt);
-
-        Console.ForegroundColor = ConsoleColor.Red;
-        Console.WriteLine($"{response.message.content}");
-        Console.WriteLine();
-        if (response.message.tool_calls != null)
+        else
         {
-            foreach (var call in response.message.tool_calls)
-            {
-                Console.WriteLine($"tool_call: {call.function.name}:");
-                Console.WriteLine($"{JsonSerializer.Serialize(call.function.arguments, JsonSerializeOptions)}");
-            }
-            Console.WriteLine();
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine(message.content);
         }
+        if (message.tool_calls != null)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            foreach (var call in message.tool_calls)
+            {
+                Console.WriteLine($"{call.id}:");
+                Console.WriteLine($"{call.function.name} {JsonSerializer.Serialize(call.function.arguments, JsonSerializeOptionsNotIndented)}");
+            }
+        }
+        Console.WriteLine();
 
         Console.ForegroundColor = previousColor;
-        return response;
     }
 }

@@ -21,7 +21,7 @@ public class OllamaService(
         response.EnsureSuccessStatusCode();
 
         await using var stream = await response.Content.ReadAsStreamAsync(ct);
-        var data = await JsonSerializer.DeserializeAsync<OllamaTagsResponse>(stream, cancellationToken: ct);
+        var data = await JsonSerializer.DeserializeAsync<OllamaModelRawCollection>(stream, cancellationToken: ct);
 
         if (data?.models == null)
             return [];
@@ -39,10 +39,7 @@ public class OllamaService(
         response.EnsureSuccessStatusCode();
     }
 
-    public async Task<OllamaResponse> ChatAsync(
-        OllamaModel model, 
-        OllamaPrompt prompt, 
-        CancellationToken ct = default)
+    public async Task<OllamaResponse> ChatAsync(OllamaModel model, OllamaPrompt prompt, CancellationToken ct = default)
     {
         var payload = $@"{{
   ""model"": ""{model.Name}"",
@@ -65,8 +62,7 @@ public class OllamaService(
         ""required"": [{string.Join(",", tool.Parameters.Select(parameter => $@"""{parameter.Name}"""))}]
       }}
     }}
-  }}"))}
-]
+  }}"))}]
 }}";
 
         var url = new Uri(OllamaServerUrl, "/api/chat");
@@ -78,8 +74,11 @@ public class OllamaService(
         var response = await HttpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, ct);
         response.EnsureSuccessStatusCode();
 
+        var agentResponseString =
+            await response.Content.ReadAsStringAsync();
+
         var agentResponse = 
-            await response.Content.ReadFromJsonAsync<OllamaResponse>()
+            JsonSerializer.Deserialize<OllamaResponse>(agentResponseString)
             ?? throw new Exception("Something is not right");
 
         return agentResponse;

@@ -11,7 +11,7 @@ public class ListAllFiles(Workspace workspace) : ITool
     public string Desciption
         => "retrieves a list of all files inside the workspace";
     public ToolParameter[] Parameters { get; } = [];
-    public async Task<ToolResult> Invoke(OllamaResponseMessageToolCallFunctionArguments toolArguments)
+    public async Task<ToolResult> Invoke(OllamaToolCallFunctionArguments toolArguments)
     {
         var listAllFilesText = await workspace.GetListAllFilesText();
         return new ToolResult(listAllFilesText, "Shown all files", false);

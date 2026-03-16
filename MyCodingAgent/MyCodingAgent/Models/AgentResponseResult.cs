@@ -4,5 +4,5 @@ namespace MyCodingAgent.Models;
 
 public record AgentResponseResult(
     OllamaPrompt Prompt,
-    OllamaResponse Response,
+    OllamaResponse response,
     AgentResponseToolResult[] ToolResults);

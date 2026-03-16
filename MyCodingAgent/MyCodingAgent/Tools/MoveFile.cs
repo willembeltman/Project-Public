@@ -15,7 +15,7 @@ public class MoveFile(Workspace workspace) : ITool
         new ("path", "string", "current path of the file"),
         new ("newPath", "string", "new path of the file")
     ];
-    public async Task<ToolResult> Invoke(OllamaResponseMessageToolCallFunctionArguments toolArguments)
+    public async Task<ToolResult> Invoke(OllamaToolCallFunctionArguments toolArguments)
     {
         if (toolArguments.path == null)
             return new ToolResult(
