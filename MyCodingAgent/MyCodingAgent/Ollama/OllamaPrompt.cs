@@ -3,5 +3,5 @@
 namespace MyCodingAgent.Ollama;
 
 public record OllamaPrompt(
-    OllamaPromptMessage[] messages,
+    OllamaMessage[] messages,
     Tool[] tools);

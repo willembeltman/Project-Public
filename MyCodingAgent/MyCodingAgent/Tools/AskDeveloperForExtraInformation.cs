@@ -14,7 +14,7 @@ public class AskDeveloperForExtraInformation : ITool
     [
         new ("content", "string", "question or information request for the developer")
     ];
-    public async Task<ToolResult> Invoke(OllamaResponseMessageToolCallFunctionArguments toolArguments)
+    public async Task<ToolResult> Invoke(OllamaToolCallFunctionArguments toolArguments)
     {
         if (toolArguments.content == null)
             return new ToolResult(

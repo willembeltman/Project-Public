@@ -18,7 +18,7 @@ public class PartialOverwriteFile(Workspace workspace) : ITool
         new ("content", "string", "replacement content for the specified line range")
     ]; 
     
-    public async Task<ToolResult> Invoke(OllamaResponseMessageToolCallFunctionArguments toolArguments)
+    public async Task<ToolResult> Invoke(OllamaToolCallFunctionArguments toolArguments)
     {
         if (toolArguments.path == null)
             return new ToolResult(

@@ -3,11 +3,11 @@ using MyCodingAgent.Interfaces;
 using MyCodingAgent.Models;
 using MyCodingAgent.Ollama;
 using MyCodingAgent.Tools;
-using System.Text.Json;
+using System.ComponentModel;
 
 namespace MyCodingAgent.Agents;
 
-public class CodingAgent(Workspace workspace) : Agent(workspace), IAgent
+public class CodingAgent(Workspace workspace) : _BaseAgent(workspace), IAgent
 {
     protected ITool[] tools { get; } =
     [
@@ -25,15 +25,50 @@ public class CodingAgent(Workspace workspace) : Agent(workspace), IAgent
         new WorkIsDone(workspace)
     ];
 
+    // 3. Je hoeft geen complexe JSON meer te bouwen voor tools. 
+    // Je kunt gewoon C# methodes annoteren:
+    [Description("Lijst alle bestanden in de workspace")]
+    public string ListFiles() => string.Join(", ", workspace.Files);
+
     public async Task<OllamaPrompt> GeneratePrompt(CompileResult compileResult)
     {
+
+        //IChatClient client = new OllamaApiClient(new Uri("http://localhost:11434"), "llama3.1");
+
+
+        //// 4. Gebruik de ChatClient om alles aan elkaar te knopen
+        //var chatOptions = new ChatOptions
+        //{
+        //    Tools = [AIFunctionFactory.Create(ListFiles)]
+        //};
+
+        ////var response = await client.GetResponseAsync("Welke bestanden heb ik?", chatOptions);
+
+
+        //// De lijst die je geschiedenis bijhoudt
+        //List<ChatMessage> chatHistory = new();
+
+        //// Voeg het systeemcommando en de gebruikersvraag toe
+        //chatHistory.Add(new ChatMessage(ChatRole.System, "Je bent een .NET agent..."));
+        //chatHistory.Add(new ChatMessage(ChatRole.User, workspace.UserPrompt));
+
+        //// De client afvuren
+        //var response = await client.GetResponseAsync(chatHistory, chatOptions);
+
+        //// De response (inclusief tool calls!) toevoegen aan de geschiedenis
+        //chatHistory.AddRange(response.Messages);
+
+
+
+
         var history = workspace.CodingHistory;
         var listAllFilesPrompt = await workspace.GetListAllFilesText();
-        List<OllamaPromptMessage> messageList = 
+        List<OllamaMessage> messageList = 
         [
             // SYSTEM PROMPT
-            new OllamaPromptMessage(
-                nameof(OllamaAgentRole.system),
+            new OllamaMessage(
+                nameof(OllamaAgentRole.system).ToLower(),
+                null,
                 $@"You are an autonomous software engineering agent operating inside a .NET 10 development workspace.
 
 WORKFLOW
@@ -47,22 +82,36 @@ WORKFLOW
 IMPORTANT RULE
 
 When the code compiles successfully and the requested functionality is implemented,
-you MUST call the 'work_is_done' tool."),
+you MUST call the 'work_is_done' tool.",
+                null, 
+                null),
+
             // USER ORIGINAL PROMPT
-            new OllamaPromptMessage(nameof(OllamaAgentRole.user), workspace.UserPrompt),
+            new OllamaMessage(
+                nameof(OllamaAgentRole.user).ToLower(),
+                null,
+                workspace.UserPrompt,
+                null, 
+                null),
         ];
 
         // DIRECTORY OVERVIEW
         if (history.Count < 10 && workspace.Files.Count < 80)
         {
-            messageList.Add(new OllamaPromptMessage(nameof(OllamaAgentRole.user), $"Current workspace files:\r\n{listAllFilesPrompt}"));
+            messageList.Add(
+                new OllamaMessage(
+                    nameof(OllamaAgentRole.user).ToLower(),
+                    null,
+                    $"Current workspace files:\r\n{listAllFilesPrompt}",
+                    null,
+                    null));
         }
 
         // CHAT HISTORY
         AddHistory(messageList, history, 
-            maxLongDesciptionPrompt: 4, 
-            maxLongDescriptionResponse: 4,
-            maxHistory: 12);
+            maxLongDesciptionPrompt: 10, 
+            maxLongDescriptionResponse: 10,
+            maxHistory: 10);
 
         return new OllamaPrompt(
             [.. messageList],

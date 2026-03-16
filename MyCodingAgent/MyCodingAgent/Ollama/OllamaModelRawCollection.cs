@@ -1,4 +1,4 @@
 ﻿namespace MyCodingAgent.Ollama;
 
-public record OllamaTagsResponse(
+public record OllamaModelRawCollection(
     OllamaModelRaw[]? models);

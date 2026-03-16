@@ -1,6 +1,6 @@
 ﻿namespace MyCodingAgent.Ollama;
 
-public class OllamaResponseMessageToolCallFunctionArguments
+public class OllamaToolCallFunctionArguments
 {
     public string? path { get; set; }
     public string? newPath { get; set; }

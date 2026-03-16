@@ -18,7 +18,7 @@ public class FindAndReplace(Workspace workspace) : ITool
         new ("replaceText", "string", "the replacement string")
     ];
 
-    public async Task<ToolResult> Invoke(OllamaResponseMessageToolCallFunctionArguments toolArguments)
+    public async Task<ToolResult> Invoke(OllamaToolCallFunctionArguments toolArguments)
     {
         if (toolArguments.path == null)
             return new ToolResult(

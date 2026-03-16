@@ -3,4 +3,4 @@
 public record OllamaResponse(
     string model,
     DateTime created_at,
-    OllamaResponseMessage message);
+    OllamaMessage message);

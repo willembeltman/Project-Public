@@ -12,7 +12,7 @@ public class CompileWorkspace(Workspace workspace) : ITool
         => "searches the root of your workspace for a .sln or .csproj file and tries to compile it";
     public ToolParameter[] Parameters { get; } = [];
 
-    public async Task<ToolResult> Invoke(OllamaResponseMessageToolCallFunctionArguments toolArguments)
+    public async Task<ToolResult> Invoke(OllamaToolCallFunctionArguments toolArguments)
     {
         var compileResult = await workspace.Compile();
         return new ToolResult(

@@ -15,7 +15,7 @@ public class CreateOrUpdateFile(Workspace workspace) : ITool
         new ("path", "string", "path to the file"),
         new ("content", "string", "full content of the file")
     ];
-    public async Task<ToolResult> Invoke(OllamaResponseMessageToolCallFunctionArguments toolArguments)
+    public async Task<ToolResult> Invoke(OllamaToolCallFunctionArguments toolArguments)
     {
         if (toolArguments.path == null)
             return new ToolResult(
