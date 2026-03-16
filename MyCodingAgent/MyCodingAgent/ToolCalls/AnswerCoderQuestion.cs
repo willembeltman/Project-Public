@@ -25,20 +25,17 @@ public class AnswerCoderQuestion(Workspace workspace) : ITool
                 "parameter content is not supplied.",
                 true);
 
-        if (workspace.WaitingForProjectManagerQuestion == null)
-            throw new Exception("Oh ooh...");
-        if (workspace.WaitingForProjectManagerToolCallId == null)
+        if (workspace.WaitingForProjectManager == null)
             throw new Exception("Oh ooh...");
 
         var coderToolCall = workspace.CodingHistory
             .SelectMany(a => a.ToolCallResults)
-            .FirstOrDefault(a => a.tool_call.id == workspace.WaitingForProjectManagerToolCallId);
+            .FirstOrDefault(a => a.tool_call.id == workspace.WaitingForProjectManager.ToolCallId);
         if (coderToolCall == null)
             throw new Exception("Oh ooh...");
 
         coderToolCall.result.content = toolArguments.content;
-        workspace.WaitingForProjectManagerQuestion = null;
-        workspace.WaitingForProjectManagerToolCallId = null;
+        workspace.WaitingForProjectManager = null;
 
         return new ToolResult(
             $"Updated subtask '{toolArguments.id}'",

@@ -115,8 +115,7 @@ planning_is_done",
     }
 
     /// <summary>
-    /// Processes the agent's response to the specified prompt and determines whether any tool call completed without
-    /// error.
+    /// Processes the agent's response to the specified prompt and determines whether any tool call completed without error.
     /// </summary>
     /// <param name="prompt">The prompt that was sent to the agent. This provides the context or question for which the response is being
     /// processed.</param>

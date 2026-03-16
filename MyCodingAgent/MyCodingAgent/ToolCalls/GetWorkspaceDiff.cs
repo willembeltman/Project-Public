@@ -16,6 +16,8 @@ public class GetWorkspaceDiff(Workspace workspace) : ITool
     public async Task<ToolResult> Invoke(OllamaToolCall toolCall)
     {
         var toolArguments = toolCall.function.arguments;
+        var bla = workspace;
+
         return new ToolResult("Ja en nu?", "Ja en nu? (kort)", false);
     }
 }

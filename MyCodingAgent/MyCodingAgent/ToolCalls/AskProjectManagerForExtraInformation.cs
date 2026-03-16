@@ -25,8 +25,11 @@ public class AskProjectManagerForExtraInformation(Workspace workspace) : ITool
                 "parameter content is not supplied.",
                 true);
 
-        workspace.WaitingForProjectManagerToolCallId = toolCall.id;
-        workspace.WaitingForProjectManagerQuestion = toolArguments.content;
+        if (toolCall.id == null)
+            throw new Exception("eeeuhm...");
+
+        workspace.WaitingForProjectManager =
+            new(toolCall.id, toolArguments.content);
 
         var answer = "Waiting for answer...";
         return new ToolResult(

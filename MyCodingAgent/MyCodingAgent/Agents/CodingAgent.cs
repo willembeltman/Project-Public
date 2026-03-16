@@ -53,42 +53,20 @@ IMPORTANT RULE
 When the code compiles successfully and the requested functionality is implemented,
 you MUST call the 'work_is_done' tool.",
                 null,
-                null),
-
-            //// USER ORIGINAL PROMPT
-            //new OllamaMessage(
-            //    nameof(OllamaAgentRole.user).ToLower(),
-            //    null,
-            //    workspace.UserPrompt,
-            //    null,
-            //    null),
+                null)
         ];
 
-        //// DIRECTORY OVERVIEW
-        //if (history.Count < 10 && workspace.Files.Count < 80)
-        //{
-        //    var listAllFilesPrompt = await workspace.GetListAllFilesText();
-        //    messageList.Add(
-        //        new OllamaMessage(
-        //            nameof(OllamaAgentRole.user).ToLower(),
-        //            null,
-        //            $"Current workspace files:\r\n{listAllFilesPrompt}",
-        //            null,
-        //            null));
-        //}
-
         var currentSubTask = Workspace.GetCurrentSubTask();
-        var currentSubTaskMessage = (OllamaMessage?)null;
-        var currentSubTaskMessageJson = string.Empty;
         if (currentSubTask != null)
         {
-            currentSubTaskMessage = new OllamaMessage(
+            var currentSubTaskMessage = new OllamaMessage(
                 nameof(OllamaAgentRole.user).ToLower(),
                 null,
-                currentSubTask.Content,
+                $@"--- CURRENT SUBTASK ---
+{currentSubTask.Content}
+--- END OF SUBTASK ---",
                 null,
                 null);
-            currentSubTaskMessageJson = JsonSerializer.Serialize(currentSubTaskMessage, DefaultJsonSerializerOptions.JsonSerializeOptionsIndented);
             messageList.Add(currentSubTaskMessage);
         }
 
@@ -98,21 +76,23 @@ you MUST call the 'work_is_done' tool.",
             History,
             [.. Tools.Select(a => a.ToDto())],
             maxTokens: 8192,
-            additionalSizeInBytes: currentSubTaskMessageJson.Length);
-
-        //if (currentSubTaskMessage != null)
-        //{
-        //    messageList.Add(currentSubTaskMessage);
-        //}
+            additionalSizeInBytes: 0);
 
         return new OllamaPrompt(
             [.. messageList],
             [.. Tools.Select(a => a.ToDto())]);
     }
 
+    /// <summary>
+    /// Processes the agent's response to the specified prompt and determines whether any tool call completed without error.
+    /// </summary>
+    /// <param name="prompt">The prompt that was sent to the agent. This provides the context or question for which the response is being
+    /// processed.</param>
+    /// <param name="agentResponse">The response object returned by the agent, containing the results to be evaluated.</param>
+    /// <returns>if there was any tool call, if not this indicates maybe a different agent should continue</returns>
     public Task<bool> ProcessResponse(OllamaPrompt prompt, OllamaResponse agentResponse)
         => ProcessResponse(prompt, agentResponse, true);
-    public async Task<bool> ProcessResponse(OllamaPrompt prompt, OllamaResponse agentResponse, bool save = true)
+    public async Task<bool> ProcessResponse(OllamaPrompt prompt, OllamaResponse agentResponse, bool save)
     {
         var response = await GetAgentResponseResult(prompt, agentResponse, Tools);
         if (save) History.Add(response);

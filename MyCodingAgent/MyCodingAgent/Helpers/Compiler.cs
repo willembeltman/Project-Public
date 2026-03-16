@@ -15,7 +15,7 @@ public static class Compiler
         if (fileToBuild == null)
             return new CompileResult()
             {
-                Output = "No .sln or .csproj file was found.",
+                Content = "No .sln or .csproj file was found.",
                 Errors = [
                     new CompileError("No .sln or .csproj file was found.")
                 ]
@@ -86,7 +86,7 @@ public static class Compiler
                         result.Errors.Add(error);
                 }
 
-                result.Output = formatted
+                result.Content = formatted
                     .ToString();
             }
             else if (process.ExitCode == 0)
@@ -95,7 +95,7 @@ public static class Compiler
                 var formatted = output
                     .Trim()
                     .Replace(currentDirectory.FullName + "\\", "");
-                result.Output = $"Build successful.\n{formatted}";
+                result.Content = $"Build successful.\n{formatted}";
             }
             else
             {
@@ -103,7 +103,7 @@ public static class Compiler
                 var formatted = $"Build failed (exit code {process.ExitCode}).\n{output}\n{errors}"
                     .Replace(currentDirectory.FullName + "\\", "");
 
-                result.Output = formatted;
+                result.Content = formatted;
                 result.Errors.Add(new CompileError(formatted));
             }
         }
@@ -112,7 +112,7 @@ public static class Compiler
             var formatted = $"Build process threw an exception: {ex.Message}"
                 .Replace(currentDirectory.FullName + "\\", "");
 
-            result.Output = formatted;
+            result.Content = formatted;
             result.Errors.Add(new CompileError(formatted));
         }
 
