@@ -10,20 +10,21 @@ public class PlanningAgent(Workspace workspace) : BaseAgent(workspace), IAgent
     protected override ITool[] tools { get; } =
     [
         new ListAllFiles(workspace),
-        new Search(workspace),
+        new SearchAllFiles(workspace),
         new ShowFile(workspace),
         new CompileWorkspace(workspace),
-        new CreateTask(workspace),
-        new UpdateTask(workspace),
-        new DeleteTask(workspace),
+        new ShowAllSubTasks(workspace),
+        new CreateSubTask(workspace),
+        new UpdateSubTask(workspace),
+        new DeleteSubTask(workspace),
+        new SubTasksPlanningIsDone(workspace),
         new AskDeveloperForExtraInformation(),
-        new PlanningIsDone(workspace),
         new WorkIsAlreadyDone(workspace)
     ];
 
     public async Task<OllamaPrompt> GeneratePrompt(CompileResult compileResult)
     {
-        var listAllFilesPrompt = await workspace.GetListAllFilesText();
+        //var listAllFilesPrompt = await workspace.GetListAllFilesText();
         List<OllamaMessage> messageList = 
         [
             // SYSTEM PROMPT
@@ -32,46 +33,50 @@ public class PlanningAgent(Workspace workspace) : BaseAgent(workspace), IAgent
                 null,
                 $@"You are a planning agent inside a .NET 10 development workspace.
 
-Your job is to analyze the developer request and create a task plan.
+Your job is to analyze the developer request and create a subTask plan.
 
 You DO NOT modify code.
-You ONLY create and manage tasks.
+You ONLY create and manage subTasks.
+You can reply multiple tool_calls.
 
 WORKFLOW
 
 1. Understand the developer request
-2. Inspect the workspace if needed (use list_all_files, search, show_file)
+2. Inspect the workspace if needed (use list_all_files, search, show_file tools)
 3. Determine what functionality must be implemented
-4. Break the work into clear development tasks
-5. Create tasks using the create_task tool
+4. Break the work into clear development subTasks
+5. Create subTasks using the create_subTask tool
 6. When the full plan is complete call the planning_is_done tool
 
 TASK RULES
 
-- Tasks must be small and implementable
-- Tasks must describe concrete developer work
-- Tasks must be ordered logically
-- Prefer 3-10 tasks per plan
+- SubTasks must be small and implementable
+- SubTasks must describe concrete developer work
+- SubTasks must be ordered logically
+- Prefer 3-10 subTasks per plan
 
 IMPORTANT
 
-When the plan is complete you MUST call the tool planning_is_done.
+- When you have enough information, STOP investigating and start creating subTasks.
+- When the plan is complete you MUST call the tool planning_is_done.
 
 If the requested functionality already exists in the codebase you may call work_is_already_done.
 
 Example plan:
 
-Task 1
+create_subTask
 Implement API endpoint for creating users
 
-Task 2
+create_subTask
 Add database entity for User
 
-Task 3
+create_subTask
 Add validation logic for user input
 
-Task 4
-Add integration tests",
+create_subTask
+Add integration tests
+
+planning_is_done",
                 null, 
                 null),
 
@@ -109,6 +114,14 @@ Add integration tests",
             [.. tools.Select(a => a.ToDto())]);
     }
 
+    /// <summary>
+    /// Processes the agent's response to the specified prompt and determines whether any tool call completed without
+    /// error.
+    /// </summary>
+    /// <param name="prompt">The prompt that was sent to the agent. This provides the context or question for which the response is being
+    /// processed.</param>
+    /// <param name="agentResponse">The response object returned by the agent, containing the results to be evaluated.</param>
+    /// <returns>if there was any tool call, if not this indicates maybe a different agent should continue</returns>
     public async Task<bool> ProcessResponse(OllamaPrompt prompt, OllamaResponse agentResponse)
     {
         var response = await GetAgentResponseResult(prompt, agentResponse, tools);

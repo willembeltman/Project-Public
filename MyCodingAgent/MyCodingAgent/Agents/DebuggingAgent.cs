@@ -11,7 +11,7 @@ public class DebuggingAgent(Workspace workspace) : BaseAgent(workspace), IAgent
     protected override List<PromptResponseResults> history => workspace.DebugHistory;
     protected override ITool[] tools { get; } =
     [
-        new Search(workspace),
+        new SearchAllFiles(workspace),
         new SearchAndReplace(workspace),
         new SearchAndReplaceAllFiles(workspace),
         new ShowFile(workspace),
@@ -24,7 +24,7 @@ public class DebuggingAgent(Workspace workspace) : BaseAgent(workspace), IAgent
 
     public async Task<OllamaPrompt> GeneratePrompt(CompileResult compileResult)
     {
-        var listAllFilesPrompt = await workspace.GetListAllFilesText();
+        //var listAllFilesPrompt = await workspace.GetListAllFilesText();
         List<OllamaMessage> messageList =
         [
             // SYSTEM MESSAGE
@@ -45,16 +45,16 @@ public class DebuggingAgent(Workspace workspace) : BaseAgent(workspace), IAgent
 //                null)
         ];
 
-        var currentTask = workspace.GetCurrentTask();
-        if (currentTask != null)
+        var currentSubTask = workspace.GetCurrentSubTask();
+        if (currentSubTask != null)
         {
-            var currentTaskMessage = new OllamaMessage(
+            var currentSubTaskMessage = new OllamaMessage(
                 nameof(OllamaAgentRole.user).ToLower(),
                 null,
-                currentTask.Content,
+                currentSubTask.Content,
                 null,
                 null);
-            messageList.Add(currentTaskMessage);
+            messageList.Add(currentSubTaskMessage);
         }
 
         // HISTORY MESSAGES

@@ -13,8 +13,8 @@ public class SearchAndReplace(Workspace workspace) : ITool
     public ToolParameter[] Parameters { get; } =
     [
         new ("path", "string", "path to the file to search in"),
-        new ("searchText", "string", "the search string"),
-        new ("replaceText", "string", "the replacement string")
+        new ("searchText", "string", "the search string, is case-sensitive"),
+        new ("replaceText", "string", "the replacement string, is case-sensitive")
     ];
 
     public async Task<ToolResult> Invoke(OllamaToolCallFunctionArguments toolArguments)

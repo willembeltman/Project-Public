@@ -3,12 +3,12 @@ using MyCodingAgent.Models;
 
 namespace MyCodingAgent.ToolCalls;
 
-public class PlanningIsDone(Workspace workspace) : ITool
+public class SubTasksPlanningIsDone(Workspace workspace) : ITool
 {
     public string Name
-        => "planning_is_done";
+        => "subTasks_planning_is_done";
     public string Desciption
-        => "indicate all tasks has been planned, and coders can pick up the tasks";
+        => "indicate all subTasks has been planned, and coders can pick up the subTasks";
     public ToolParameter[] Parameters { get; } = [];
     public async Task<ToolResult> Invoke(OllamaToolCallFunctionArguments toolArguments)
     {

@@ -11,28 +11,28 @@ public class Workspace
     public string UserPrompt { get; set; } = string.Empty;
     public bool PlanningIsDone { get; set; }
     public bool WorkIsDone { get; set; }
-    public int? CurrentTask { get; set; }
+    public int? CurrentSubTask { get; set; }
     public List<WorkspaceFile> Files { get; set; } = [];
-    public List<WorkspaceTask> Tasks { get; set; } = [];
+    public List<WorkspaceSubTask> SubTasks { get; set; } = [];
     public List<PromptResponseResults> PlanningHistory { get; set; } = [];
     public List<PromptResponseResults> CodingHistory { get; set; } = [];
     public List<PromptResponseResults> DebugHistory { get; set; } = [];
 
     public WorkspaceFile? GetFile(string path)
         => Files.FirstOrDefault(a => a.RelativePath.Equals(path.Replace("/", "\\"), StringComparison.CurrentCultureIgnoreCase));
-    public WorkspaceTask? GetTask(int id)
-        => Tasks.FirstOrDefault(a => a.Id== id);
-    public WorkspaceTask? GetCurrentTask()
+    public WorkspaceSubTask? GetSubTask(int id)
+        => SubTasks.FirstOrDefault(a => a.Id== id);
+    public WorkspaceSubTask? GetCurrentSubTask()
     {
-        if (CurrentTask == null && Tasks.Count > 0)
+        if (CurrentSubTask == null && SubTasks.Count > 0)
         {
-            var task = Tasks.First();
-            CurrentTask = task.Id;
-            return task;
+            var subTask = SubTasks.First();
+            CurrentSubTask = subTask.Id;
+            return subTask;
         }
-        if (CurrentTask == null)
+        if (CurrentSubTask == null)
             return null;
-        return GetTask(CurrentTask.Value);
+        return GetSubTask(CurrentSubTask.Value);
     }
 
     public async static Task<Workspace?> TryLoad(string rootDirectoryName, CancellationToken ct = default)
@@ -143,5 +143,23 @@ public class Workspace
         }
         return sb.ToString();
     }
-
+    public async Task<string> GetListAllSubTasksText()
+    {
+        StringBuilder sb = new StringBuilder();
+        if (SubTasks.Count > 0)
+        {
+            foreach (var subTask in SubTasks)
+            {
+                var subTaskContent = subTask.Content;
+                sb.AppendLine($"# {subTask.Id}");
+                sb.AppendLine($"{subTask.Content}");
+                sb.AppendLine();
+            }
+        }
+        else
+        {
+            sb.AppendLine("<No subTasks found in project>");
+        }
+        return sb.ToString();
+    }
 }

@@ -1,6 +1,6 @@
 ﻿namespace MyCodingAgent.Models;
 
-public class WorkspaceTask(
+public class WorkspaceSubTask(
     int id, 
     string content)
 {

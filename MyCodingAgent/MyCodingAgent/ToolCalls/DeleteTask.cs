@@ -3,15 +3,15 @@ using MyCodingAgent.Models;
 
 namespace MyCodingAgent.ToolCalls;
 
-public class DeleteTask(Workspace workspace) : ITool
+public class DeleteSubTask(Workspace workspace) : ITool
 {
     public string Name
-        => "delete_task";
+        => "delete_subTask";
     public string Desciption
-        => "deletes a task";
+        => "delete a subTask from the workspace";
     public ToolParameter[] Parameters { get; } =
     [
-        new ("id", "string", "id to the task")
+        new ("id", "string", "id to the subTask")
     ];
 
     public async Task<ToolResult> Invoke(OllamaToolCallFunctionArguments toolArguments)
@@ -24,25 +24,25 @@ public class DeleteTask(Workspace workspace) : ITool
 
         try
         {
-            var task = workspace.GetTask(toolArguments.id.Value);
-            if (task != null)
+            var subTask = workspace.GetSubTask(toolArguments.id.Value);
+            if (subTask != null)
             {
-                workspace.Tasks.Remove(task);
+                workspace.SubTasks.Remove(subTask);
                 return new ToolResult(
-                    $"Deleted task {toolArguments.id}",
-                    $"Deleted task",
+                    $"Deleted subTask {toolArguments.id}",
+                    $"Deleted subTask",
                     false);
             }
             return new ToolResult(
-                $"Error while deleting task '{toolArguments.id}': could not find task",
-                $"Error while deleting task: could not find",
+                $"Error while deleting subTask '{toolArguments.id}': could not find subTask",
+                $"Error while deleting subTask: could not find",
                 true);
         }
         catch (Exception ex)
         {
             return new ToolResult(
-                $"Error while deleting task '{toolArguments.id}': {ex.Message}",
-                $"Error while deleting task",
+                $"Error while deleting subTask '{toolArguments.id}': {ex.Message}",
+                $"Error while deleting subTask",
                 true);
         }
     }

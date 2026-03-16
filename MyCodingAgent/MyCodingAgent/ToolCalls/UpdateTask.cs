@@ -3,16 +3,16 @@ using MyCodingAgent.Models;
 
 namespace MyCodingAgent.ToolCalls;
 
-public class UpdateTask(Workspace workspace) : ITool
+public class UpdateSubTask(Workspace workspace) : ITool
 {
     public string Name
-        => "update_task";
+        => "update_subTask";
     public string Desciption
-        => "overwrites a specific line range inside a task";
+        => "overwrites a specific line range inside a subTask";
     public ToolParameter[] Parameters { get; } =
     [
-        new ("id", "number", "id to the task"),
-        new ("content", "string", "replacement content for the task")
+        new ("id", "number", "id to the subTask"),
+        new ("content", "string", "replacement content for the subTask")
     ]; 
     
     public async Task<ToolResult> Invoke(OllamaToolCallFunctionArguments toolArguments)
@@ -28,19 +28,19 @@ public class UpdateTask(Workspace workspace) : ITool
                 "parameter content is not supplied.",
                 true);
 
-        var task = workspace.GetTask(toolArguments.id.Value);
-        if (task == null)
+        var subTask = workspace.GetSubTask(toolArguments.id.Value);
+        if (subTask == null)
             return new ToolResult(
-                $"Error could not find task {toolArguments.id}",
-                $"Error could not find task",
+                $"Error could not find subTask {toolArguments.id}",
+                $"Error could not find subTask",
                 true);
 
-        workspace.Tasks.Remove(task);
-        var newTask = new WorkspaceTask(toolArguments.id.Value, toolArguments.content);
-        workspace.Tasks.Add(newTask);
+        workspace.SubTasks.Remove(subTask);
+        var newSubTask = new WorkspaceSubTask(toolArguments.id.Value, toolArguments.content);
+        workspace.SubTasks.Add(newSubTask);
         return new ToolResult(
-            $"Updated task '{toolArguments.id}'",
-            $"Updated task",
+            $"Updated subTask '{toolArguments.id}'",
+            $"Updated subTask",
             false);
     }
 }

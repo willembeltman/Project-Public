@@ -59,7 +59,7 @@ internal class Program
 
         Console.WriteLine("Project compile attempt finished, starting lllm-development-cycle, please wait...");
 
-        if (workspace.Tasks.Count == 0)
+        if (workspace.SubTasks.Count == 0)
         {
             while (!workspace.PlanningIsDone)
             {
@@ -187,7 +187,7 @@ internal class Program
         }
         if (message.tool_call_id != null)
         {
-            Console.ForegroundColor = ConsoleColor.DarkGreen;
+            Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine(message.tool_call_id);
             Console.WriteLine(message.content);
         }

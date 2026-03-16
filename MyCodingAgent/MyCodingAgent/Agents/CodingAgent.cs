@@ -11,7 +11,7 @@ public class CodingAgent(Workspace workspace) : BaseAgent(workspace), IAgent
     protected override ITool[] tools { get; } =
     [
         new ListAllFiles(workspace),
-        new Search(workspace),
+        new SearchAllFiles(workspace),
         new SearchAndReplace(workspace),
         new SearchAndReplaceAllFiles(workspace),
         new ShowFile(workspace),
@@ -21,12 +21,11 @@ public class CodingAgent(Workspace workspace) : BaseAgent(workspace), IAgent
         new DeleteFile(workspace),
         new CompileWorkspace(workspace),
         new AskDeveloperForExtraInformation(),
-        new TaskIsFinished(workspace)
+        new SubTaskIsFinished(workspace)
     ];
 
     public async Task<OllamaPrompt> GeneratePrompt(CompileResult compileResult)
     {
-        var listAllFilesPrompt = await workspace.GetListAllFilesText();
         List<OllamaMessage> messageList = 
         [
             // SYSTEM PROMPT
@@ -41,7 +40,7 @@ WORKFLOW
 2. Inspect files if needed
 3. Make minimal edits
 4. Verify using search, use tools 'open_file' or 'compile_workspace'
-5. If the task is completed and the code compiles successfully, call tool 'work_is_done'
+5. If the subTask is completed and the code compiles successfully, call tool 'work_is_done'
 
 IMPORTANT RULE
 
@@ -62,6 +61,7 @@ you MUST call the 'work_is_done' tool.",
         //// DIRECTORY OVERVIEW
         //if (history.Count < 10 && workspace.Files.Count < 80)
         //{
+        //    var listAllFilesPrompt = await workspace.GetListAllFilesText();
         //    messageList.Add(
         //        new OllamaMessage(
         //            nameof(OllamaAgentRole.user).ToLower(),
@@ -71,18 +71,18 @@ you MUST call the 'work_is_done' tool.",
         //            null));
         //}
 
-        var currentTask = workspace.GetCurrentTask();
-        var currentTaskMessage = (OllamaMessage?)null;
-        var currentTaskMessageJson = string.Empty;
-        if (currentTask != null)
+        var currentSubTask = workspace.GetCurrentSubTask();
+        var currentSubTaskMessage = (OllamaMessage?)null;
+        var currentSubTaskMessageJson = string.Empty;
+        if (currentSubTask != null)
         {
-            currentTaskMessage = new OllamaMessage(
+            currentSubTaskMessage = new OllamaMessage(
                 nameof(OllamaAgentRole.user).ToLower(),
                 null,
-                currentTask.Content,
+                currentSubTask.Content,
                 null,
                 null);
-            currentTaskMessageJson = JsonSerializer.Serialize(currentTaskMessage, Program.JsonSerializeOptions);
+            currentSubTaskMessageJson = JsonSerializer.Serialize(currentSubTaskMessage, Program.JsonSerializeOptions);
         }
 
         // CHAT HISTORY
@@ -91,11 +91,11 @@ you MUST call the 'work_is_done' tool.",
             history, 
             [ ..tools.Select(a => a.ToDto())],
             maxTokens: 128000, 
-            additionalSizeInBytes: currentTaskMessageJson.Length);
+            additionalSizeInBytes: currentSubTaskMessageJson.Length);
 
-        if (currentTaskMessage != null)
+        if (currentSubTaskMessage != null)
         {
-            messageList.Add(currentTaskMessage);
+            messageList.Add(currentSubTaskMessage);
         }
 
         return new OllamaPrompt(

@@ -53,7 +53,7 @@ public class ConsoleEditor
             if (key.Key == ConsoleKey.Enter &&
                 key.Modifiers.HasFlag(ConsoleModifiers.Control))
             {
-                Console.SetCursorPosition(0, startTop + lines.Count + 1);
+                //Console.SetCursorPosition(0, startTop + lines.Count + 1);
                 Console.WriteLine();
                 break;
             }

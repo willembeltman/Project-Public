@@ -11,7 +11,7 @@ public class WorkspaceFile(
     {
         return File.ReadAllTextAsync(FullPath);
     }
-    public Task UpdateContent(string content)
+    public async Task UpdateContent(string content)
     {
         var fileInfo = new FileInfo(FullPath);
         if (fileInfo.Directory == null)
@@ -19,7 +19,7 @@ public class WorkspaceFile(
         if (fileInfo.Directory.Exists == false)
             fileInfo.Directory.Create();
 
-        return File.WriteAllTextAsync(FullPath, content);
+        await File.WriteAllTextAsync(FullPath, content);
     }
     public async Task UpdateContent(int startLineNr, int endLineNr, string newContent)
     {

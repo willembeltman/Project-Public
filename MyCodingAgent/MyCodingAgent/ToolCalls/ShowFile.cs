@@ -33,16 +33,17 @@ public class ShowFile(Workspace workspace) : ITool
                 true);
         }
 
-        StringBuilder sb = new StringBuilder();
-        sb.AppendLine(file.RelativePath);
+        //StringBuilder sb = new StringBuilder();
+        //sb.AppendLine(file.RelativePath);
         var fileContent = await file.GetFileContent();
-        foreach (var line in fileContent.GetLines())
-        {
-            sb.AppendLine($"{line.lineNumber,3}|{line.content}");
-        }
+        //foreach (var line in fileContent.GetLines())
+        //{
+        //    sb.AppendLine($"{line.lineNumber,3}|{line.content}");
+        //}
 
         return new ToolResult(
-            sb.ToString(),
+            fileContent,
+            //sb.ToString(),
             $"Showed file '{toolArguments.path}'",
             false);
     }

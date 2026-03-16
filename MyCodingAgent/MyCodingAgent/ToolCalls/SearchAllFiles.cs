@@ -6,15 +6,15 @@ using static System.Net.WebRequestMethods;
 
 namespace MyCodingAgent.ToolCalls;
 
-public class Search(Workspace workspace) : ITool
+public class SearchAllFiles(Workspace workspace) : ITool
 {
     public string Name
-        => "search";
+        => "search_all_files";
     public string Desciption
         => "show the results of a search for the specific string inside all files of the workspace";
     public ToolParameter[] Parameters { get; } =
     [
-        new ("searchText", "string", "the specific string")
+        new ("searchText", "string", "the specific string, is case-insensitive")
     ];
 
     public async Task<ToolResult> Invoke(OllamaToolCallFunctionArguments toolArguments)

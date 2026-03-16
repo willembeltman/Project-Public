@@ -12,8 +12,8 @@ public class SearchAndReplaceAllFiles(Workspace workspace) : ITool
         => "search for the search string inside all files of the workspace and replace all instances with the replacement string";
     public ToolParameter[] Parameters { get; } =
     [
-        new ("searchText", "string", "the search string"),
-        new ("replaceText", "string", "the replacement string")
+        new ("searchText", "string", "the search string, is case-sensitive"),
+        new ("replaceText", "string", "the replacement string, is case-sensitive")
     ];
 
     public async Task<ToolResult> Invoke(OllamaToolCallFunctionArguments toolArguments)
