@@ -5,16 +5,16 @@ using System.Text.Json;
 
 namespace MyCodingAgent.Agents;
 
-public abstract class BaseAgent(Workspace workspace)
+public abstract class BaseAgent(Workspace Workspace)
 {
-    protected abstract List<PromptResponseResults> history { get; }
-    protected abstract ITool[] tools { get; }
+    protected abstract List<PromptResponseResults> History { get; }
+    protected abstract ITool[] Tools { get; }
 
-    protected Workspace workspace { get; } = workspace;
+    protected Workspace Workspace { get; } = Workspace;
 
     protected static void AddHistoryAndToolCalls(List<OllamaMessage> messageList, List<PromptResponseResults> history, Tool[] tools, int maxTokens, int additionalSizeInBytes)
     {
-        var messagesJson = JsonSerializer.Serialize(messageList, Program.JsonSerializeOptions);
+        var messagesJson = JsonSerializer.Serialize(messageList, DefaultJsonSerializerOptions.JsonSerializeOptionsIndented);
         var messagesJsonLength = messagesJson.Length;
         var toolsJson = OllamaClient.GetToolsJson(tools);
         var toolsJsonLength = toolsJson.Length;
@@ -24,7 +24,7 @@ public abstract class BaseAgent(Workspace workspace)
         history.Reverse();
         foreach (var responseResult in history)
         {
-            var messageJson = JsonSerializer.Serialize(responseResult.Response.message, Program.JsonSerializeOptions);
+            var messageJson = JsonSerializer.Serialize(responseResult.Response.message, DefaultJsonSerializerOptions.JsonSerializeOptionsIndented);
             var length = 
                 messagesJsonLength + toolsJsonLength + additionalSizeInBytes +
                 messageJson.Length;
@@ -39,7 +39,7 @@ public abstract class BaseAgent(Workspace workspace)
                     null,
                     null);
 
-                length += JsonSerializer.Serialize(message, Program.JsonSerializeOptions).Length;
+                length += JsonSerializer.Serialize(message, DefaultJsonSerializerOptions.JsonSerializeOptionsIndented).Length;
             }
 
             if (length < maxTokens * 3)
@@ -102,7 +102,7 @@ public abstract class BaseAgent(Workspace workspace)
                 }
                 else
                 {
-                    var toolResult = await tool.Invoke(toolArguments);
+                    var toolResult = await tool.Invoke(tool_call);
                     list.Add(new ToolCallResult(
                         tool_call,
                         toolResult));

@@ -16,8 +16,9 @@ public class ShowFileWithLineNumbers(Workspace workspace) : ITool
         new ("path", "string", "Path to the file.")
     ];
 
-    public async Task<ToolResult> Invoke(OllamaToolCallFunctionArguments toolArguments)
+    public async Task<ToolResult> Invoke(OllamaToolCall toolCall)
     {
+        var toolArguments = toolCall.function.arguments;
         if (toolArguments.path == null)
             return new ToolResult(
                 "parameter path is not supplied.",

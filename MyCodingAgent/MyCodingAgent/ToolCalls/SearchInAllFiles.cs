@@ -5,10 +5,10 @@ using System.Text;
 
 namespace MyCodingAgent.ToolCalls;
 
-public class SearchAllFiles(Workspace workspace) : ITool
+public class SearchInAllFiles(Workspace workspace) : ITool
 {
     public string Name
-        => "search_all_files";
+        => "search_in_all_files";
     public string Description
         => "Searches for a case-insensitive string across the entire workspace. Returns filenames and the context of matching lines.";
     public ToolParameter[] Parameters { get; } =
@@ -16,8 +16,9 @@ public class SearchAllFiles(Workspace workspace) : ITool
         new ("searchText", "string", "The text to search for (case-insensitive).")
     ];
 
-    public async Task<ToolResult> Invoke(OllamaToolCallFunctionArguments toolArguments)
+    public async Task<ToolResult> Invoke(OllamaToolCall toolCall)
     {
+        var toolArguments = toolCall.function.arguments;
         if (toolArguments.searchText == null)
             return new ToolResult(
                 "parameter searchText is not supplied.",

@@ -14,8 +14,9 @@ public class SubTaskIsFinished(Workspace workspace) : ITool
         new ("id", "string", "id to the subtask")
     ];
 
-    public async Task<ToolResult> Invoke(OllamaToolCallFunctionArguments toolArguments)
+    public async Task<ToolResult> Invoke(OllamaToolCall toolCall)
     {
+        var toolArguments = toolCall.function.arguments;
         if (toolArguments.id == null)
             return new ToolResult(
                 "parameter id is not supplied.",

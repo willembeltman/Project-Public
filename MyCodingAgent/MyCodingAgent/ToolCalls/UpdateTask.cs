@@ -17,8 +17,9 @@ public class UpdateSubTask(Workspace workspace) : ITool
         new ("content", "string", "The new text content for the sub-task. Provide the full updated description to ensure clarity for the coding agents.")
     ];
 
-    public async Task<ToolResult> Invoke(OllamaToolCallFunctionArguments toolArguments)
+    public async Task<ToolResult> Invoke(OllamaToolCall toolCall)
     {
+        var toolArguments = toolCall.function.arguments;
         if (toolArguments.id == null)
             return new ToolResult(
                 "parameter id is not supplied.",

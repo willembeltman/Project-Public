@@ -3,22 +3,25 @@ using MyCodingAgent.Models;
 
 namespace MyCodingAgent.ToolCalls;
 
-public class UpdateFile(Workspace workspace) : ITool
+public class ReplaceLinesInFile(Workspace workspace) : ITool
 {
     public string Name
-        => "update_file";
+        => "replace_lines_in_file";
+
     public string Description
-        => "Updates a file by replacing a range of lines (inclusive). Use this for targeted code modifications.";
+        => "Replaces a range of lines from 'startLine' to 'endLine' (inclusive) with new content. Use this to modify existing logic. To delete lines, provide an empty string as content.";
+
     public ToolParameter[] Parameters { get; } =
     [
         new ("path", "string", "Path to the file."),
-        new ("startLine", "number", "The first line number to replace. (inclusive)"),
-        new ("endLine", "number", "The last line number to replace. (inclusive)"),
-        new ("content", "string", "The new code or text for this range.")
-    ]; 
-    
-    public async Task<ToolResult> Invoke(OllamaToolCallFunctionArguments toolArguments)
+        new ("startLine", "number", "The first line to be replaced (1-based)."),
+        new ("endLine", "number", "The last line to be replaced (inclusive)."),
+        new ("content", "string", "The new code or text that will occupy this range.")
+    ];
+
+    public async Task<ToolResult> Invoke(OllamaToolCall toolCall)
     {
+        var toolArguments = toolCall.function.arguments;
         if (toolArguments.path == null)
             return new ToolResult(
                 "parameter path is not supplied.",

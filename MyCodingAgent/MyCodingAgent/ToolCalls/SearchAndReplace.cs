@@ -17,8 +17,9 @@ public class SearchAndReplace(Workspace workspace) : ITool
         new ("replaceText", "string", "The string to replace it with.")
     ];
 
-    public async Task<ToolResult> Invoke(OllamaToolCallFunctionArguments toolArguments)
+    public async Task<ToolResult> Invoke(OllamaToolCall toolCall)
     {
+        var toolArguments = toolCall.function.arguments;
         if (toolArguments.path == null)
             return new ToolResult(
                 "parameter path is not supplied.",

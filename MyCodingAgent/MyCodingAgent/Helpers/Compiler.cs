@@ -67,19 +67,23 @@ public static class Compiler
                 {
                     var fullError = $"[{m.Groups["type"].Value.ToUpper()} {m.Groups["code"].Value}] {m.Groups["file"].Value}({m.Groups["line"].Value},{m.Groups["col"].Value}): {m.Groups["msg"].Value}"
                         .Replace(currentDirectory.FullName + "\\", "");
-
-                    formatted.AppendLine(fullError);
-                    result.Errors.Add(new CompileError(
+                    var error = new CompileError(
                         fullError,
                         m.Groups["type"].Value,
                         m.Groups["code"].Value
                             .Replace(currentDirectory.FullName + "\\", ""),
                         m.Groups["file"].Value
-                    .       Replace(currentDirectory.FullName + "\\", ""),
+                    .Replace(currentDirectory.FullName + "\\", ""),
                         m.Groups["line"].Value,
                         m.Groups["col"].Value,
                         m.Groups["msg"].Value
-                            .Replace(currentDirectory.FullName + "\\", "")));
+                            .Replace(currentDirectory.FullName + "\\", ""));
+
+                    formatted.AppendLine(fullError);
+                    if (error.Type?.ToLower() == "warning")
+                        result.Warnings.Add(error);
+                    else
+                        result.Errors.Add(error);
                 }
 
                 result.Output = formatted

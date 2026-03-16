@@ -18,8 +18,9 @@ public class ShowFile(Workspace workspace) : ITool
         new ("path", "string", "The relative path to the file you want to read (e.g., 'src/api/auth.js').")
     ];
 
-    public async Task<ToolResult> Invoke(OllamaToolCallFunctionArguments toolArguments)
+    public async Task<ToolResult> Invoke(OllamaToolCall toolCall)
     {
+        var toolArguments = toolCall.function.arguments;
         if (toolArguments.path == null)
             return new ToolResult(
                 "parameter path is not supplied.",

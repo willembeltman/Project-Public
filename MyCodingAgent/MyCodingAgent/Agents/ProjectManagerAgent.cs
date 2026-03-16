@@ -1,10 +1,12 @@
-﻿using MyCodingAgent.Interfaces;
+﻿using MyCodingAgent.Helpers;
+using MyCodingAgent.Interfaces;
 using MyCodingAgent.Models;
 using MyCodingAgent.ToolCalls;
+using System.Text.Json;
 
 namespace MyCodingAgent.Agents;
 
-public class PlanningAgent(Workspace Workspace) : BaseAgent(Workspace), IAgent
+public class ProjectManagerAgent(Workspace Workspace) : BaseAgent(Workspace), IAgent
 {
     protected override List<PromptResponseResults> History => Workspace.PlanningHistory;
     protected override ITool[] Tools { get; } =
@@ -17,14 +19,15 @@ public class PlanningAgent(Workspace Workspace) : BaseAgent(Workspace), IAgent
         new CreateSubTask(Workspace),
         new UpdateSubTask(Workspace),
         new DeleteSubTask(Workspace),
-        new SubTasksPlanningIsDone(Workspace),
-        new AskDeveloperForExtraInformation(),
-        new WorkIsAlreadyDone(Workspace)
+        new AnswerCoderQuestion(Workspace),
+        new AskDeveloperForExtraInformation()
     ];
 
     public async Task<OllamaPrompt> GeneratePrompt(CompileResult compileResult)
     {
-        //var listAllFilesPrompt = await workspace.GetListAllFilesText();
+        if (Workspace.WaitingForProjectManagerQuestion == null)
+            throw new Exception("wtf?");
+
         List<OllamaMessage> messageList = 
         [
             // SYSTEM PROMPT
@@ -89,17 +92,15 @@ planning_is_done",
                 null),
         ];
 
-        //// DIRECTORY OVERVIEW
-        ////if (history.Count < 10 && workspace.Files.Count < 80)
-        //{
-        //    messageList.Add(
-        //        new OllamaMessage(
-        //            nameof(OllamaAgentRole.user).ToLower(),
-        //            null,
-        //            $"Current workspace files:\r\n{listAllFilesPrompt}",
-        //            null,
-        //            null));
-        //}
+
+        // CODER AGENT QUESTION PROMPT
+        var question = new OllamaMessage(
+            nameof(OllamaAgentRole.user).ToLower(),
+            null,
+            Workspace.WaitingForProjectManagerQuestion,
+            null,
+            null);
+        var questionJson = JsonSerializer.Serialize(question, DefaultJsonSerializerOptions.JsonSerializeOptionsIndented);
 
         // CHAT HISTORY
         AddHistoryAndToolCalls(
@@ -107,7 +108,9 @@ planning_is_done",
             History, 
             [ ..Tools.Select(a => a.ToDto())],
             maxTokens: 8192, 
-            additionalSizeInBytes: 0);
+            additionalSizeInBytes: questionJson.Length);
+
+        messageList.Add(question);
 
         return new OllamaPrompt(
             [.. messageList],

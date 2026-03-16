@@ -1,28 +1,31 @@
-﻿using MyCodingAgent.Interfaces;
+﻿using MyCodingAgent.Helpers;
+using MyCodingAgent.Interfaces;
 using MyCodingAgent.Models;
 using MyCodingAgent.ToolCalls;
 using System.Text.Json;
 
 namespace MyCodingAgent.Agents;
 
-public class CodingAgent(Workspace workspace) : BaseAgent(workspace), IAgent
+public class CodingAgent(Workspace Workspace) : BaseAgent(Workspace), IAgent
 {
-    protected override List<PromptResponseResults> history => workspace.CodingHistory;
-    protected override ITool[] tools { get; } =
+    protected override List<PromptResponseResults> History => Workspace.CodingHistory;
+    protected override ITool[] Tools { get; } =
     [
-        new ListAllFiles(workspace),
-        new SearchAllFiles(workspace),
-        new SearchAndReplace(workspace),
-        new SearchAndReplaceAllFiles(workspace),
-        new ShowFile(workspace),
-        new ShowFileWithLineNumbers(workspace),
-        new CreateFile(workspace),
-        new UpdateFile(workspace),
-        new MoveFile(workspace),
-        new DeleteFile(workspace),
-        new CompileWorkspace(workspace),
+        new ListAllFiles(Workspace),
+        new SearchInAllFiles(Workspace),
+        new SearchAndReplace(Workspace),
+        new SearchAndReplaceInAllFiles(Workspace),
+        new ShowFile(Workspace),
+        new ShowFileWithLineNumbers(Workspace),
+        new CreateFile(Workspace),
+        new MoveFile(Workspace),
+        new DeleteFile(Workspace),
+        new ReplaceLinesInFile(Workspace),
+        new InsertLinesInFile(Workspace),
+        new CompileWorkspace(Workspace),
+        new AskProjectManagerForExtraInformation(Workspace),
         new AskDeveloperForExtraInformation(),
-        new SubTaskIsFinished(workspace)
+        new SubTaskIsFinished(Workspace)
     ];
 
     public async Task<OllamaPrompt> GeneratePrompt(CompileResult compileResult)
@@ -33,7 +36,9 @@ public class CodingAgent(Workspace workspace) : BaseAgent(workspace), IAgent
             new OllamaMessage(
                 nameof(OllamaAgentRole.system).ToLower(),
                 null,
-                $@"You are an autonomous software engineering agent operating inside a .NET 10 development workspace.
+                $@"You are an autonomous software engineering agent operating inside a .NET 10 development workspace. 
+You have been assigned a subtask for the project in your workspace.
+You must complete this subtask by applying all changes
 
 WORKFLOW
 
@@ -72,7 +77,7 @@ you MUST call the 'work_is_done' tool.",
         //            null));
         //}
 
-        var currentSubTask = workspace.GetCurrentSubTask();
+        var currentSubTask = Workspace.GetCurrentSubTask();
         var currentSubTaskMessage = (OllamaMessage?)null;
         var currentSubTaskMessageJson = string.Empty;
         if (currentSubTask != null)
@@ -83,15 +88,15 @@ you MUST call the 'work_is_done' tool.",
                 currentSubTask.Content,
                 null,
                 null);
-            currentSubTaskMessageJson = JsonSerializer.Serialize(currentSubTaskMessage, Program.JsonSerializeOptions);
+            currentSubTaskMessageJson = JsonSerializer.Serialize(currentSubTaskMessage, DefaultJsonSerializerOptions.JsonSerializeOptionsIndented);
             messageList.Add(currentSubTaskMessage);
         }
 
         // CHAT HISTORY
         AddHistoryAndToolCalls(
             messageList,
-            history,
-            [.. tools.Select(a => a.ToDto())],
+            History,
+            [.. Tools.Select(a => a.ToDto())],
             maxTokens: 8192,
             additionalSizeInBytes: currentSubTaskMessageJson.Length);
 
@@ -102,15 +107,15 @@ you MUST call the 'work_is_done' tool.",
 
         return new OllamaPrompt(
             [.. messageList],
-            [.. tools.Select(a => a.ToDto())]);
+            [.. Tools.Select(a => a.ToDto())]);
     }
 
     public Task<bool> ProcessResponse(OllamaPrompt prompt, OllamaResponse agentResponse)
         => ProcessResponse(prompt, agentResponse, true);
     public async Task<bool> ProcessResponse(OllamaPrompt prompt, OllamaResponse agentResponse, bool save = true)
     {
-        var response = await GetAgentResponseResult(prompt, agentResponse, tools);
-        if (save) history.Add(response);
+        var response = await GetAgentResponseResult(prompt, agentResponse, Tools);
+        if (save) History.Add(response);
         return response.ToolCallResults.Any(a => a.result.error == false);
     }
 }

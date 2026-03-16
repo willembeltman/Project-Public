@@ -21,14 +21,15 @@ public class WorkspaceFile(
 
         await File.WriteAllTextAsync(FullPath, content);
     }
-    public async Task UpdateContent(int startLineNr, int endLineNr, string newContent)
+    public async Task UpdateContent(int startLine, int endLine, string newContent)
     {
         var fileContent = await GetFileContent();
         var lines = fileContent.Split('\n').ToList();
         var newLines = newContent.Split('\n');
 
-        lines.RemoveRange(startLineNr - 1, endLineNr - startLineNr + 1);
-        lines.InsertRange(startLineNr - 1, newLines);
+        if (endLine >= 0)
+            lines.RemoveRange(startLine - 1, endLine - startLine + 1);
+        lines.InsertRange(startLine - 1, newLines);
 
         var content = string.Join("\n", lines);
         await File.WriteAllTextAsync(FullPath, content);

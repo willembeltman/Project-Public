@@ -15,8 +15,9 @@ public class DeleteFile(Workspace workspace) : ITool
     [
         new ("path", "string", "The relative path of the file to be deleted (e.g., 'old_logic.cs'). Ensure the file is not a critical project configuration file.")
     ];
-    public async Task<ToolResult> Invoke(OllamaToolCallFunctionArguments toolArguments)
+    public async Task<ToolResult> Invoke(OllamaToolCall toolCall)
     {
+        var toolArguments = toolCall.function.arguments;
         if (toolArguments.path == null)
             return new ToolResult(
                 "parameter path is not supplied.",

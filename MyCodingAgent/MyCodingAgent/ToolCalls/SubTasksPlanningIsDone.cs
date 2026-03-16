@@ -10,8 +10,9 @@ public class SubTasksPlanningIsDone(Workspace workspace) : ITool
     public string Description
         => "Finalizes the planning phase and signals that the task breakdown is complete. Use this only after all necessary sub-tasks have been created and the overall strategy is ready for execution by coding agents.";
     public ToolParameter[] Parameters { get; } = [];
-    public async Task<ToolResult> Invoke(OllamaToolCallFunctionArguments toolArguments)
+    public async Task<ToolResult> Invoke(OllamaToolCall toolCall)
     {
+        var toolArguments = toolCall.function.arguments;
         workspace.PlanningIsDone = true;
         await workspace.Save();
         return new ToolResult("OK DONE!", "OK DONE!", false);

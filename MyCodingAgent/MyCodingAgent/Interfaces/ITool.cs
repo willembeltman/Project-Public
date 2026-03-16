@@ -7,7 +7,7 @@ public interface ITool
     string Name {  get; }
     string Description { get; }
     ToolParameter[] Parameters { get; }
-    Task<ToolResult> Invoke(OllamaToolCallFunctionArguments toolArguments);
+    Task<ToolResult> Invoke(OllamaToolCall toolArguments);
     public Tool ToDto()
     {
         return new Tool(Name, Description, Parameters);

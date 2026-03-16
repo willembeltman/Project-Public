@@ -16,8 +16,9 @@ public class DeleteSubTask(Workspace workspace) : ITool
         new ("id", "string", "The unique identifier of the sub-task to be removed (e.g., 'task_01').")
     ];
 
-    public async Task<ToolResult> Invoke(OllamaToolCallFunctionArguments toolArguments)
+    public async Task<ToolResult> Invoke(OllamaToolCall toolCall)
     {
+        var toolArguments = toolCall.function.arguments;
         if (toolArguments.id == null)
             return new ToolResult(
                 "parameter id is not supplied.",

@@ -13,8 +13,9 @@ public class AskDeveloperForExtraInformation : ITool
     [
         new ("content", "string", "question or information request for the developer")
     ];
-    public async Task<ToolResult> Invoke(OllamaToolCallFunctionArguments toolArguments)
+    public async Task<ToolResult> Invoke(OllamaToolCall toolCall)
     {
+        var toolArguments = toolCall.function.arguments;
         if (toolArguments.content == null)
             return new ToolResult(
                 "parameter content is not supplied.",

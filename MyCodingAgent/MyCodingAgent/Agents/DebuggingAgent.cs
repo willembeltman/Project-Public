@@ -6,19 +6,19 @@ using MyCodingAgent.ToolCalls;
 using System.Text;
 using System.Text.Json;
 
-public class DebuggingAgent(Workspace workspace) : BaseAgent(workspace), IAgent
+public class DebuggingAgent(Workspace Workspace) : BaseAgent(Workspace), IAgent
 {
-    protected override List<PromptResponseResults> history => workspace.DebugHistory;
-    protected override ITool[] tools { get; } =
+    protected override List<PromptResponseResults> History => Workspace.DebugHistory;
+    protected override ITool[] Tools { get; } =
     [
-        new SearchAllFiles(workspace),
-        new SearchAndReplace(workspace),
-        new SearchAndReplaceAllFiles(workspace),
-        new ShowFile(workspace),
-        new CreateFile(workspace),
-        new UpdateFile(workspace),
-        new MoveFile(workspace),
-        new DeleteFile(workspace),
+        new SearchInAllFiles(Workspace),
+        new SearchAndReplace(Workspace),
+        new SearchAndReplaceInAllFiles(Workspace),
+        new ShowFile(Workspace),
+        new CreateFile(Workspace),
+        new ReplaceLinesInFile(Workspace),
+        new MoveFile(Workspace),
+        new DeleteFile(Workspace),
         new AskDeveloperForExtraInformation()
     ];
 
@@ -45,7 +45,7 @@ public class DebuggingAgent(Workspace workspace) : BaseAgent(workspace), IAgent
 //                null)
         ];
 
-        var currentSubTask = workspace.GetCurrentSubTask();
+        var currentSubTask = Workspace.GetCurrentSubTask();
         if (currentSubTask != null)
         {
             var currentSubTaskMessage = new OllamaMessage(
@@ -69,11 +69,11 @@ Make the code compile successfully.
 Do not change behavior unless required.",
                 null,
                 null);
-        var errorMessageJson = JsonSerializer.Serialize(errorMessage, Program.JsonSerializeOptions);
+        var errorMessageJson = JsonSerializer.Serialize(errorMessage, DefaultJsonSerializerOptions.JsonSerializeOptionsIndented);
         AddHistoryAndToolCalls(
             messageList, 
-            history, 
-            [.. tools.Select(a => a.ToDto())], 
+            History, 
+            [.. Tools.Select(a => a.ToDto())], 
             maxTokens: 8192, 
             additionalSizeInBytes: errorMessageJson.Length);
 
@@ -82,13 +82,13 @@ Do not change behavior unless required.",
 
         return new OllamaPrompt(
             [.. messageList],
-            [.. tools.Select(a => a.ToDto())]);
+            [.. Tools.Select(a => a.ToDto())]);
     }
 
     public async Task<bool> ProcessResponse(OllamaPrompt prompt, OllamaResponse agentResponse)
     {
-        var response = await GetAgentResponseResult(prompt, agentResponse, tools);
-        history.Add(response);
+        var response = await GetAgentResponseResult(prompt, agentResponse, Tools);
+        History.Add(response);
         return response.ToolCallResults.Any(a => a.result.error == false);
     }
 
@@ -112,7 +112,7 @@ Do not change behavior unless required.",
                 continue;
             }
 
-            var file = workspace.GetFile(relativePath);
+            var file = Workspace.GetFile(relativePath);
             if (file != null)
             {
                 sb.AppendLine($"FILE: {relativePath}");

@@ -51,7 +51,7 @@ public class OpenAiClient : IDisposable
     {
         var payload = $@"{{
   ""model"": ""{model.Name}"",
-  ""messages"": {JsonSerializer.Serialize(prompt.messages, Program.JsonSerializeOptions)},
+  ""messages"": {JsonSerializer.Serialize(prompt.messages, DefaultJsonSerializerOptions.JsonSerializeOptionsIndented)},
   ""stream"": false,
   ""tools"": [{GetToolsJson(prompt.tools)}]
 }}";

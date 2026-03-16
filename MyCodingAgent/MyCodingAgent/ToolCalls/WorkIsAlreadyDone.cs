@@ -11,8 +11,9 @@ public class WorkIsAlreadyDone(Workspace workspace) : ITool
         => "Signals the final completion of the entire project. Use this tool only when every sub-task is finished, the code is verified (compiled/tested), and all requirements from the user's initial prompt have been fully met.";
     public ToolParameter[] Parameters { get; } = [];
 
-    public async Task<ToolResult> Invoke(OllamaToolCallFunctionArguments toolArguments)
+    public async Task<ToolResult> Invoke(OllamaToolCall toolCall)
     {
+        var toolArguments = toolCall.function.arguments;
         workspace.PlanningIsDone = true;
         workspace.WorkIsDone = true;
         await workspace.Save();

@@ -16,8 +16,9 @@ public class CreateFile(Workspace workspace) : ITool
         new ("path", "string", "The relative path from the workspace root where the file should be created (e.g., 'src/main.cs')."),
     new ("content", "string", "The complete source code or text content to be written into the new file.")
     ];
-    public async Task<ToolResult> Invoke(OllamaToolCallFunctionArguments toolArguments)
+    public async Task<ToolResult> Invoke(OllamaToolCall toolCall)
     {
+        var toolArguments = toolCall.function.arguments;
         if (toolArguments.path == null)
             return new ToolResult(
                 "parameter path is not supplied.",

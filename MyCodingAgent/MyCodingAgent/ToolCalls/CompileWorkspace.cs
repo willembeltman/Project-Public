@@ -11,8 +11,9 @@ public class CompileWorkspace(Workspace workspace) : ITool
         => "Builds the project using .sln or .csproj in workspace root. Use this to catch errors after making code changes.";
     public ToolParameter[] Parameters { get; } = [];
 
-    public async Task<ToolResult> Invoke(OllamaToolCallFunctionArguments toolArguments)
+    public async Task<ToolResult> Invoke(OllamaToolCall toolCall)
     {
+        var toolArguments = toolCall.function.arguments;
         var compileResult = await workspace.Compile();
         return new ToolResult(
             compileResult.Output,

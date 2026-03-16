@@ -17,6 +17,8 @@ public class Workspace
     public List<PromptResponseResults> PlanningHistory { get; set; } = [];
     public List<PromptResponseResults> CodingHistory { get; set; } = [];
     public List<PromptResponseResults> DebugHistory { get; set; } = [];
+    public string? WaitingForProjectManagerToolCallId { get; set; }
+    public string? WaitingForProjectManagerQuestion { get; set; }
 
     public WorkspaceFile? GetFile(string path)
         => Files.FirstOrDefault(a => a.RelativePath.Equals(path.Replace("/", "\\"), StringComparison.CurrentCultureIgnoreCase));

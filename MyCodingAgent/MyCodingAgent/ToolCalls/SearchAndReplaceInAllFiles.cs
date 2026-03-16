@@ -4,10 +4,10 @@ using System.Text.RegularExpressions;
 
 namespace MyCodingAgent.ToolCalls;
 
-public class SearchAndReplaceAllFiles(Workspace workspace) : ITool
+public class SearchAndReplaceInAllFiles(Workspace workspace) : ITool
 {
     public string Name
-    => "search_and_replace_all_files";
+    => "search_and_replace_in_all_files";
 
     public string Description
         => "A global refactoring tool that replaces every occurrence of a string across all files in the workspace. Use this with extreme caution for project-wide renames (e.g., namespaces or shared constants). Always verify the search string is unique enough to avoid accidental changes in unrelated files.";
@@ -18,8 +18,9 @@ public class SearchAndReplaceAllFiles(Workspace workspace) : ITool
         new ("replaceText", "string", "The exact, case-sensitive string to insert as a replacement.")
     ];
 
-    public async Task<ToolResult> Invoke(OllamaToolCallFunctionArguments toolArguments)
+    public async Task<ToolResult> Invoke(OllamaToolCall toolCall)
     {
+        var toolArguments = toolCall.function.arguments;
         if (toolArguments.searchText == null)
             return new ToolResult(
                 "parameter searchText is not supplied.",

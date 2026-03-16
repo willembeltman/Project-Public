@@ -5,24 +5,20 @@ using MyCodingAgent.Models;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-internal class Program
+internal class Program : IDisposable
 {
-    public static JsonSerializerOptions JsonSerializeOptions = new JsonSerializerOptions
-    {
-        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-        WriteIndented = true,
-    }; 
-    public static JsonSerializerOptions JsonSerializeOptionsNotIndented = new JsonSerializerOptions
-    {
-        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-    };
-    public static JsonSerializerOptions JsonDeserializerOptions = new JsonSerializerOptions
-    {
-        PropertyNameCaseInsensitive = true
-    };
-    static HashSet<OllamaMessage> shownMessages = new HashSet<OllamaMessage>();
+    readonly CancellationTokenSource Cts;
+    readonly HashSet<OllamaMessage> ShownMessages;
+    readonly OllamaClient LlmService;
 
-    private static async Task Main(string[] args)
+    private Program()
+    {
+        Cts = new CancellationTokenSource();
+        ShownMessages = new HashSet<OllamaMessage>();
+        LlmService = new OllamaClient();
+    }
+
+    private async Task StartAsync()
     {
         Console.Clear();
 
@@ -38,33 +34,34 @@ internal class Program
         if (workspace == null || workspace.WorkIsDone)
             workspace = await CreateWorkspace(workspaceDirectory);
 
-        Console.WriteLine("Workspace loaded. Creating Ollama service, please wait...");
-        using var llmService = new OllamaClient();
-
         Console.WriteLine("Ollama service created, getting model list, please wait...");
-        var list = await llmService.GetModels();
+        var list = await LlmService.GetModels();
 
         var model = ChooseModel(list);
 
         Console.WriteLine($"Initialising model '{model.Name}', please wait...");
-        await llmService.InitializeModelAsync(model);
+        await LlmService.InitializeModelAsync(model);
 
         Console.WriteLine($"Model '{model.Name}' initialized, initialising agents, please wait...");
         var planningAgent = new PlanningAgent(workspace);
         var codingAgent = new CodingAgent(workspace);
         var debuggingAgent = new DebuggingAgent(workspace);
+        var projectManagerAgent = new ProjectManagerAgent(workspace);
 
         Console.WriteLine("Agents initialized, attempting to compile project, please wait...");
         var compileResult = await workspace.Compile();
 
         Console.WriteLine("Project compile attempt finished, starting lllm-development-cycle, please wait...");
-
+        await MainFlow(workspace, model, planningAgent, codingAgent, debuggingAgent, projectManagerAgent, compileResult);
+    }
+    private async Task MainFlow(Workspace workspace, OllamaModel model, PlanningAgent planningAgent, CodingAgent codingAgent, DebuggingAgent debuggingAgent, ProjectManagerAgent projectManagerAgent, CompileResult compileResult)
+    {
         if (workspace.SubTasks.Count == 0)
         {
             while (!workspace.PlanningIsDone)
             {
                 // PLANNING MODE
-                compileResult = await ModifyFlow(workspace, llmService, model, planningAgent, compileResult);
+                compileResult = await AgentFlow(workspace, model, planningAgent, compileResult);
             }
         }
 
@@ -77,21 +74,28 @@ internal class Program
             while (compileResult.Errors.Count > 0 && workspace.Files.Count > 0)
             {
                 // DEBUG MODE
-                compileResult = await ModifyFlow(workspace, llmService, model, debuggingAgent, compileResult);
+                compileResult = await AgentFlow(workspace, model, debuggingAgent, compileResult);
             }
 
             // CLEAR DEBUG HISTORY
             workspace.DebugHistory.Clear();
             await workspace.Save();
 
+            while (workspace.WaitingForProjectManagerQuestion != null &&
+                workspace.WaitingForProjectManagerToolCallId != null)
+            {
+                // QUESTION FOR PROJECT MANAGER -MODE
+                compileResult = await AgentFlow(workspace, model, projectManagerAgent, compileResult);
+            }
+
             // FEATURE MODE
-            compileResult = await ModifyFlow(workspace, llmService, model, codingAgent, compileResult);
+            compileResult = await AgentFlow(workspace, model, codingAgent, compileResult);
         }
 
         workspace.WorkIsDone = true;
         await workspace.Save();
     }
-    private static async Task<CompileResult> ModifyFlow(Workspace workspace, OllamaClient llmService, OllamaModel model, IAgent agent, CompileResult compileResult)
+    private async Task<CompileResult> AgentFlow(Workspace workspace, OllamaModel model, IAgent agent, CompileResult compileResult)
     {
         workspace.PromptIndex++;
         var hasAnswered = false;
@@ -104,7 +108,7 @@ internal class Program
             Console.WriteLine();
 
             Console.WriteLine($"#{workspace.PromptIndex} Model answered:");
-            var response = await llmService.ChatAsync(model, prompt);
+            var response = await LlmService.ChatAsync(model, prompt);
             ShowMessage(response.message);
             Console.WriteLine();
 
@@ -119,8 +123,8 @@ internal class Program
 
         return compileResult;
     }
-   
-    private static async Task<Workspace> CreateWorkspace(string workspaceDirectory)
+
+    private async Task<Workspace> CreateWorkspace(string workspaceDirectory)
     {
         var previousColor = Console.ForegroundColor;
         Console.ForegroundColor = ConsoleColor.White;
@@ -142,7 +146,7 @@ internal class Program
         Console.ForegroundColor = previousColor;
         return workspace;
     }
-    private static OllamaModel ChooseModel(OllamaModel[] list)
+    private OllamaModel ChooseModel(OllamaModel[] list)
     {
         var previousColor = Console.ForegroundColor;
         OllamaModel? model = null;
@@ -176,10 +180,9 @@ internal class Program
         Console.ForegroundColor = previousColor;
         return model;
     }
-
-    private static void ShowMessage(OllamaMessage message)
+    private void ShowMessage(OllamaMessage message)
     {
-        if (!shownMessages.Add(message)) return;
+        if (!ShownMessages.Add(message)) return;
 
         var previousColor = Console.ForegroundColor;
 
@@ -206,11 +209,25 @@ internal class Program
             foreach (var call in message.tool_calls)
             {
                 Console.WriteLine($"{call.id}:");
-                Console.WriteLine($"{call.function.name} {JsonSerializer.Serialize(call.function.arguments, JsonSerializeOptionsNotIndented)}");
+                Console.WriteLine($"{call.function.name} {JsonSerializer.Serialize(call.function.arguments, DefaultJsonSerializerOptions.JsonSerializeOptions)}");
             }
         }
         Console.WriteLine();
 
         Console.ForegroundColor = previousColor;
+    }
+
+    public void Dispose()
+    {
+        Cts.Cancel();
+        Cts.Dispose();
+        LlmService.Dispose();
+    }
+
+    // Main entry point for application
+    private static async Task Main(string[] args)
+    {
+        using var program = new Program();
+        await program.StartAsync();
     }
 }

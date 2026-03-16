@@ -13,8 +13,9 @@ public class GetWorkspaceDiff(Workspace workspace) : ITool
 
     public ToolParameter[] Parameters { get; } = []; // Geen parameters nodig voor een globale status
 
-    public async Task<ToolResult> Invoke(OllamaToolCallFunctionArguments toolArguments)
+    public async Task<ToolResult> Invoke(OllamaToolCall toolCall)
     {
+        var toolArguments = toolCall.function.arguments;
         return new ToolResult("Ja en nu?", "Ja en nu? (kort)", false);
     }
 }

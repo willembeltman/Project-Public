@@ -17,8 +17,9 @@ public class CreateSubTask(Workspace workspace) : ITool
     new ("description", "string", "Detailed instructions or technical requirements. Define 'what' needs to be done and 'where' (e.g., 'Modify AuthService.cs to include JWT validation')."),
     new ("success_criteria", "string", "Specific conditions that must be met to consider this task finished (e.g., 'Compilation successful and unit tests pass').")
     ];
-    public async Task<ToolResult> Invoke(OllamaToolCallFunctionArguments toolArguments)
+    public async Task<ToolResult> Invoke(OllamaToolCall toolCall)
     {
+        var toolArguments = toolCall.function.arguments;
         if (toolArguments.content == null)
             return new ToolResult(
                 "parameter content is not supplied.",
