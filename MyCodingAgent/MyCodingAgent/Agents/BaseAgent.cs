@@ -20,11 +20,12 @@ public abstract class BaseAgent(Workspace Workspace)
         var toolsJsonLength = toolsJson.Length;
         var maxHistory = 0;
         int maxLongDesciptionPrompt = 0;
+        var useShortContent = false;
 
         history.Reverse();
         foreach (var responseResult in history)
         {
-            var messageJson = JsonSerializer.Serialize(responseResult.Response.message, DefaultJsonSerializerOptions.JsonSerializeOptionsIndented);
+            var messageJson = JsonSerializer.Serialize(responseResult.Response.message, DefaultJsonSerializerOptions.JsonSerializeOptions);
             var length = 
                 messagesJsonLength + toolsJsonLength + additionalSizeInBytes +
                 messageJson.Length;
@@ -35,7 +36,7 @@ public abstract class BaseAgent(Workspace Workspace)
                 var message = new OllamaMessage(
                     nameof(OllamaAgentRole.tool).ToLower(),
                     toolCall.tool_call.id,
-                    maxHistory > maxLongDesciptionPrompt ? toolCall.result.shortContent : toolCall.result.content,
+                    useShortContent ? toolCall.result.shortContent : toolCall.result.content,
                     null,
                     null);
 
@@ -44,11 +45,17 @@ public abstract class BaseAgent(Workspace Workspace)
 
             if (length < maxTokens * 3)
                 maxLongDesciptionPrompt++;
+            else
+            {
+                useShortContent = true;
+            }
 
             if (length < maxTokens * 4)
                 maxHistory++;
             else
-                break;
+            {
+
+            }
         }
 
         history.Reverse();

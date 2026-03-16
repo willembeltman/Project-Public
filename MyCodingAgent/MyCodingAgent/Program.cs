@@ -139,23 +139,20 @@ internal class Program : IDisposable
         while (!hasAnswered)
         {
             var prompt = await agent.GeneratePrompt(compileResult);
-            Console.WriteLine($"#{workspace.PromptIndex} Asking model:");
+            //Console.WriteLine($"#{workspace.PromptIndex} Asking model:");
             foreach (var message in prompt.messages)
                 ShowMessage(message);
             Console.WriteLine();
 
-            Console.WriteLine($"#{workspace.PromptIndex} Model answered:");
+            //Console.WriteLine($"#{workspace.PromptIndex} Model answered:");
             var response = await LlmService.ChatAsync(model, prompt);
             ShowMessage(response.message);
             Console.WriteLine();
 
-            Console.WriteLine($"#{workspace.PromptIndex} Applying answer...");
+            //Console.WriteLine($"#{workspace.PromptIndex} Applying answer...");
             hasAnswered = await agent.ProcessResponse(prompt, response);
 
             await workspace.Save();
-
-            Console.WriteLine($"#{workspace.PromptIndex} Compiling...");
-            compileResult = await workspace.Compile();
         }
 
         return compileResult;
@@ -223,7 +220,7 @@ internal class Program : IDisposable
 
         var previousColor = Console.ForegroundColor;
 
-        Console.ForegroundColor = ConsoleColor.Magenta;
+        Console.ForegroundColor = ConsoleColor.Green;
         Console.WriteLine($"[{message.role.ToUpper()}]");
         if (message.thinking != null)
         {
@@ -232,7 +229,7 @@ internal class Program : IDisposable
         }
         if (message.tool_call_id != null)
         {
-            Console.ForegroundColor = ConsoleColor.Green;
+            Console.ForegroundColor = ConsoleColor.Blue;
             Console.WriteLine(message.tool_call_id);
             Console.WriteLine(message.content);
         }

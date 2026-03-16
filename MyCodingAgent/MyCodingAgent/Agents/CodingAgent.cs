@@ -75,7 +75,7 @@ you MUST call the 'work_is_done' tool.",
             messageList,
             History,
             [.. Tools.Select(a => a.ToDto())],
-            maxTokens: 8192,
+            maxTokens: 3200,
             additionalSizeInBytes: 0);
 
         return new OllamaPrompt(

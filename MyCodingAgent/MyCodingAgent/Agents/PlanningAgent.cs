@@ -24,7 +24,6 @@ public class PlanningAgent(Workspace Workspace) : BaseAgent(Workspace), IAgent
 
     public async Task<OllamaPrompt> GeneratePrompt(CompileResult compileResult)
     {
-        //var listAllFilesPrompt = await workspace.GetListAllFilesText();
         List<OllamaMessage> messageList = 
         [
             // SYSTEM PROMPT
@@ -84,29 +83,19 @@ planning_is_done",
             new OllamaMessage(
                 nameof(OllamaAgentRole.user).ToLower(),
                 null,
-                Workspace.UserPrompt,
+                $@"--- CURRENT MAIN TASK ---
+{Workspace.UserPrompt}
+--- END OF MAIN TASK ---",
                 null, 
                 null),
         ];
-
-        //// DIRECTORY OVERVIEW
-        ////if (history.Count < 10 && workspace.Files.Count < 80)
-        //{
-        //    messageList.Add(
-        //        new OllamaMessage(
-        //            nameof(OllamaAgentRole.user).ToLower(),
-        //            null,
-        //            $"Current workspace files:\r\n{listAllFilesPrompt}",
-        //            null,
-        //            null));
-        //}
 
         // CHAT HISTORY
         AddHistoryAndToolCalls(
             messageList, 
             History, 
             [ ..Tools.Select(a => a.ToDto())],
-            maxTokens: 8192, 
+            maxTokens: 3200, 
             additionalSizeInBytes: 0);
 
         return new OllamaPrompt(

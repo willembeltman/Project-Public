@@ -57,75 +57,17 @@ Do not change behavior unless required.",
             messageList.Add(currentSubTaskMessage);
         }
 
-        //        // HISTORY MESSAGES        
-        //        var errorView = await ShowErrorFiles(compileResult);
-        //        var errorMessage =
-        //            new OllamaMessage(
-        //                nameof(OllamaAgentRole.user).ToLower(),
-        //                null,
-        //                $@"{errorView}GOAL
-        //Make the code compile successfully.
-        //Do not change behavior unless required.",
-        //                null,
-        //                null);
-        //        var errorMessageJson = JsonSerializer.Serialize(errorMessage, DefaultJsonSerializerOptions.JsonSerializeOptionsIndented);
-
         AddHistoryAndToolCalls(
             messageList,
             History,
             [.. Tools.Select(a => a.ToDto())],
-            maxTokens: 8192,
-            additionalSizeInBytes: 0);//errorMessageJson.Length);
-
-        // ERROR MESSAGE
-        //messageList.Add(errorMessage);
+            maxTokens: 3200,
+            additionalSizeInBytes: 0);
 
         return new OllamaPrompt(
             [.. messageList],
             [.. Tools.Select(a => a.ToDto())]);
     }
-    //private async Task<string> ShowErrorFiles(CompileResult compileResult)
-    //{
-    //    StringBuilder sb = new StringBuilder();
-
-    //    sb.AppendLine($"ERRORS (GROUPED BY FILES)");
-    //    sb.AppendLine();
-    //    foreach (var fileGroup in compileResult.Errors.GroupBy(a => a.File))
-    //    {
-    //        var relativePath = fileGroup.Key;
-    //        if (string.IsNullOrWhiteSpace(relativePath))
-    //        {
-    //            sb.AppendLine("FILE: <null>");
-    //            foreach (var error in fileGroup)
-    //            {
-    //                sb.AppendLine(error.FullError.TrimEnd('\n').TrimEnd('\r'));
-    //            }
-    //            sb.AppendLine();
-    //            continue;
-    //        }
-
-    //        var file = Workspace.GetFile(relativePath);
-    //        if (file != null)
-    //        {
-    //            sb.AppendLine($"FILE: {relativePath}");
-    //            sb.AppendLine("CODE");
-    //            var fileContent = await file.GetFileContent();
-    //            foreach (var line in fileContent.GetLines())
-    //            {
-    //                sb.AppendLine($"{line.lineNumber,3}|{line.content}");
-    //            }
-    //            sb.AppendLine();
-    //            sb.AppendLine("ERRORS");
-    //            foreach (var error in fileGroup)
-    //            {
-    //                sb.AppendLine(error.FullError.TrimEnd('\n').TrimEnd('\r'));
-    //            }
-    //            sb.AppendLine();
-    //        }
-    //    }
-
-    //    return sb.ToString();
-    //}
 
     /// <summary>
     /// Processes the agent's response to the specified prompt and determines whether any tool call completed without error.

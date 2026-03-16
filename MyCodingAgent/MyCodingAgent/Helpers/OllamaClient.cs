@@ -1,8 +1,6 @@
-﻿using MyCodingAgent.Interfaces;
-using MyCodingAgent.Models;
+﻿using MyCodingAgent.Models;
 using System.Net.Http.Json;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace MyCodingAgent.Helpers;
 
