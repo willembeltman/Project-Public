@@ -2,14 +2,14 @@
 using MyCodingAgent.Models;
 using MyCodingAgent.Ollama;
 
-namespace MyCodingAgent.Tools;
+namespace MyCodingAgent.ToolCalls;
 
 public class CompileWorkspace(Workspace workspace) : ITool
 {
     public string Name 
         => "compile_workspace";
     public string Desciption
-        => "searches the root of your workspace for a .sln or .csproj file and tries to compile it";
+        => "search the root of your workspace for a .sln or .csproj file and tries to compile it, then return the compilation results";
     public ToolParameter[] Parameters { get; } = [];
 
     public async Task<ToolResult> Invoke(OllamaToolCallFunctionArguments toolArguments)

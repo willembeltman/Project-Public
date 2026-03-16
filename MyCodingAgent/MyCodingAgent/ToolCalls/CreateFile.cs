@@ -2,14 +2,14 @@
 using MyCodingAgent.Models;
 using MyCodingAgent.Ollama;
 
-namespace MyCodingAgent.Tools;
+namespace MyCodingAgent.ToolCalls;
 
-public class CreateOrUpdateFile(Workspace workspace) : ITool
+public class CreateFile(Workspace workspace) : ITool
 {
     public string Name
-        => "create_or_update_file";
+        => "create_file";
     public string Desciption
-        => "creates a new file or overwrites an existing file with the provided content";
+        => "create a new file with the provided content";
     public ToolParameter[] Parameters { get; } =
     [
         new ("path", "string", "path to the file"),
@@ -35,13 +35,17 @@ public class CreateOrUpdateFile(Workspace workspace) : ITool
             var file = workspace.GetFile(toolArguments.path);
             if (file == null)
             {
-                var newFile = new WorkspaceFile(toolArguments.path, fullPath);
-                await newFile.UpdateContent(toolArguments.content);
-                workspace.Files.Add(newFile);
                 return new ToolResult(
-                    $"Created {toolArguments.path}",
-                    $"Created {toolArguments.path}",
-                    false);
+                    $"Error while updating '{toolArguments.path}': file already exists",
+                    $"Error while updating",
+                    true);
+                //var newFile = new WorkspaceFile(toolArguments.path, fullPath);
+                //await newFile.UpdateContent(toolArguments.content);
+                //workspace.Files.Add(newFile);
+                //return new ToolResult(
+                //    $"Created {toolArguments.path}",
+                //    $"Created {toolArguments.path}",
+                //    false);
             }
             else
             {

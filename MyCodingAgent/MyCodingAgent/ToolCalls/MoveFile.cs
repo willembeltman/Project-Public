@@ -2,14 +2,14 @@
 using MyCodingAgent.Models;
 using MyCodingAgent.Ollama;
 
-namespace MyCodingAgent.Tools;
+namespace MyCodingAgent.ToolCalls;
 
 public class MoveFile(Workspace workspace) : ITool
 {
     public string Name
         => "move_file";
     public string Desciption
-        => "moves or renames a file";
+        => "move or rename a file";
     public ToolParameter[] Parameters { get; } =
     [
         new ("path", "string", "current path of the file"),

@@ -9,7 +9,7 @@ public class _BaseAgent(
 {
     protected Workspace workspace { get; } = workspace;
 
-    protected static void AddHistory(List<OllamaMessage> messageList, List<AgentResponseResult> history, int maxLongDesciptionPrompt, int maxLongDescriptionResponse, int maxHistory)
+    protected static void AddHistory(List<OllamaMessage> messageList, List<PromptResponseResults> history, int maxLongDesciptionPrompt, int maxLongDescriptionResponse, int maxHistory)
     {
         var i = history.Count;
         foreach (var responseResult in history)
@@ -21,10 +21,10 @@ public class _BaseAgent(
             }
 
             // AGENT RESPONSE 
-            messageList.Add(responseResult.response.message);
+            messageList.Add(responseResult.Response.message);
 
             // TOOL CALLS REPLIES
-            foreach (var toolCall in responseResult.ToolResults)
+            foreach (var toolCall in responseResult.ToolCallResults)
             {
                 messageList.Add(new OllamaMessage(
                     nameof(OllamaAgentRole.tool).ToLower(),
@@ -39,9 +39,9 @@ public class _BaseAgent(
     }
 
 
-    protected async Task<AgentResponseResult> GetAgentResponseResult(OllamaPrompt prompt, OllamaResponse response, ITool[] tools)
+    protected async Task<PromptResponseResults> GetAgentResponseResult(OllamaPrompt prompt, OllamaResponse response, ITool[] tools)
     {
-        var list = new List<AgentResponseToolResult>();
+        var list = new List<ToolCallResult>();
         if (response.message.tool_calls != null)
         {
             foreach (var tool_call in response.message.tool_calls)
@@ -52,7 +52,7 @@ public class _BaseAgent(
                 var tool = tools.FirstOrDefault(a => a.Name == toolName);
                 if (tool == null)
                 {
-                    list.Add(new AgentResponseToolResult(
+                    list.Add(new ToolCallResult(
                         tool_call,
                         new ToolResult(
                             $"Could not find tool '{toolName}'",
@@ -63,13 +63,13 @@ public class _BaseAgent(
                 else
                 {
                     var toolResult = await tool.Invoke(toolArguments);
-                    list.Add(new AgentResponseToolResult(
+                    list.Add(new ToolCallResult(
                         tool_call,
                         toolResult));
                 }
             }
         }
-        return new AgentResponseResult(
+        return new PromptResponseResults(
             prompt,
             response,
             [.. list]);

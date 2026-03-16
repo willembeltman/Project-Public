@@ -3,14 +3,14 @@ using MyCodingAgent.Models;
 using MyCodingAgent.Ollama;
 using System.Text.RegularExpressions;
 
-namespace MyCodingAgent.Tools;
+namespace MyCodingAgent.ToolCalls;
 
-public class FindAndReplace(Workspace workspace) : ITool
+public class SearchAndReplace(Workspace workspace) : ITool
 {
     public string Name
-        => "find_and_replace";
+        => "search_and_replace";
     public string Desciption
-        => "searches for a specific string inside given file and replaces it with the replacement string";
+        => "search for the search string inside given file and replace all instances with the replacement string";
     public ToolParameter[] Parameters { get; } =
     [
         new ("path", "string", "path to the file to search in"),

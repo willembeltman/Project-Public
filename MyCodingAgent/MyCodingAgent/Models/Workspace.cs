@@ -12,8 +12,8 @@ public class Workspace
     public string UserPrompt { get; set; } = string.Empty;
     public bool UserPromptDone { get; set; }
     public List<WorkspaceFile> Files { get; set; } = [];
-    public List<AgentResponseResult> CodingHistory { get; set; } = [];
-    public List<AgentResponseResult> DebugHistory { get; set; } = [];
+    public List<PromptResponseResults> CodingHistory { get; set; } = [];
+    public List<PromptResponseResults> DebugHistory { get; set; } = [];
 
     public WorkspaceFile? GetFile(string path)
         => Files.FirstOrDefault(a => a.RelativePath.Equals(path.Replace("/", "\\"), StringComparison.CurrentCultureIgnoreCase));

@@ -5,14 +5,14 @@ using MyCodingAgent.Ollama;
 using System.Text;
 using static System.Net.WebRequestMethods;
 
-namespace MyCodingAgent.Tools;
+namespace MyCodingAgent.ToolCalls;
 
-public class Find(Workspace workspace) : ITool
+public class Search(Workspace workspace) : ITool
 {
     public string Name 
-        => "find";
+        => "search";
     public string Desciption
-        => "search for a specific string inside all files, result will be in next message";
+        => "show the results of a search for the specific string inside all files of the workspace";
     public ToolParameter[] Parameters { get; } =
     [
         new ("searchText", "string", "the specific string")

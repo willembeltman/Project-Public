@@ -2,14 +2,14 @@
 using MyCodingAgent.Models;
 using MyCodingAgent.Ollama;
 
-namespace MyCodingAgent.Tools;
+namespace MyCodingAgent.ToolCalls;
 
 public class ListAllFiles(Workspace workspace) : ITool
 {
     public string Name
         => "list_all_files";
     public string Desciption
-        => "retrieves a list of all files inside the workspace";
+        => "retrieve a list of all files inside the workspace";
     public ToolParameter[] Parameters { get; } = [];
     public async Task<ToolResult> Invoke(OllamaToolCallFunctionArguments toolArguments)
     {

@@ -2,7 +2,7 @@
 using MyCodingAgent.Interfaces;
 using MyCodingAgent.Models;
 using MyCodingAgent.Ollama;
-using MyCodingAgent.Tools;
+using MyCodingAgent.ToolCalls;
 using System.ComponentModel;
 
 namespace MyCodingAgent.Agents;
@@ -12,12 +12,12 @@ public class CodingAgent(Workspace workspace) : _BaseAgent(workspace), IAgent
     protected ITool[] tools { get; } =
     [
         new ListAllFiles(workspace),
-        new Find(workspace),
-        new FindAndReplace(workspace),
-        new FindAndReplaceAll(workspace),
-        new OpenFile(workspace),
-        new CreateOrUpdateFile(workspace),
-        new PartialOverwriteFile(workspace),
+        new Search(workspace),
+        new SearchAndReplace(workspace),
+        new SearchAndReplaceAll(workspace),
+        new ShowFile(workspace),
+        new CreateFile(workspace),
+        new UpdateFile(workspace),
         new MoveFile(workspace),
         new DeleteFile(workspace),
         new CompileWorkspace(workspace),
@@ -122,6 +122,6 @@ you MUST call the 'work_is_done' tool.",
     {
         var response = await GetAgentResponseResult(prompt, agentResponse, tools);
         workspace.CodingHistory.Add(response);
-        return response.ToolResults.Any(a => a.result.error == false);
+        return response.ToolCallResults.Any(a => a.result.error == false);
     }
 }

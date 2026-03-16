@@ -4,14 +4,14 @@ using MyCodingAgent.Models;
 using MyCodingAgent.Ollama;
 using System.Text;
 
-namespace MyCodingAgent.Tools;
+namespace MyCodingAgent.ToolCalls;
 
-public class OpenFile(Workspace workspace) : ITool
+public class ShowFile(Workspace workspace) : ITool
 {
     public string Name
-        => "open_file";
+        => "show_file";
     public string Desciption
-        => "opens a file and returns its content";
+        => "return the file content of specified file";
     public ToolParameter[] Parameters { get; } =
     [
         new ("path", "string", "path to the file to open")

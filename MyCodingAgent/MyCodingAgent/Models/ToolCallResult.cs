@@ -2,6 +2,6 @@
 
 namespace MyCodingAgent.Models;
 
-public record AgentResponseToolResult(
+public record ToolCallResult(
     OllamaToolCall tool_call,
     ToolResult result);

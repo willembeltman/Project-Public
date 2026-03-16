@@ -2,14 +2,14 @@
 using MyCodingAgent.Models;
 using MyCodingAgent.Ollama;
 
-namespace MyCodingAgent.Tools;
+namespace MyCodingAgent.ToolCalls;
 
 public class WorkIsDone(Workspace workspace) : ITool
 {
     public string Name
         => "work_is_done";
     public string Desciption
-        => "signals all work is done and needs user validation";
+        => "indicate all work is done, all user prompts are satisfied";
     public ToolParameter[] Parameters { get; } = [];
     public async Task<ToolResult> Invoke(OllamaToolCallFunctionArguments toolArguments)
     {

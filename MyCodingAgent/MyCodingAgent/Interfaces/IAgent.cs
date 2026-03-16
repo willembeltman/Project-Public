@@ -1,5 +1,4 @@
 ﻿using MyCodingAgent.Compile;
-using MyCodingAgent.Models;
 using MyCodingAgent.Ollama;
 
 namespace MyCodingAgent.Interfaces;

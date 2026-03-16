@@ -2,7 +2,7 @@
 using MyCodingAgent.Models;
 using MyCodingAgent.Ollama;
 
-namespace MyCodingAgent.Tools;
+namespace MyCodingAgent.ToolCalls;
 
 public class AskDeveloperForExtraInformation : ITool
 {

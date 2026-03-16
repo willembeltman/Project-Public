@@ -2,12 +2,12 @@
 using MyCodingAgent.Models;
 using MyCodingAgent.Ollama;
 
-namespace MyCodingAgent.Tools;
+namespace MyCodingAgent.ToolCalls;
 
-public class PartialOverwriteFile(Workspace workspace) : ITool
+public class UpdateFile(Workspace workspace) : ITool
 {
     public string Name
-        => "partial_overwrite_file";
+        => "update_file";
     public string Desciption
         => "overwrites a specific line range inside a file";
     public ToolParameter[] Parameters { get; } =
