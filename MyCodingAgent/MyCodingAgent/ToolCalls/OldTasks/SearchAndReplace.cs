@@ -2,7 +2,7 @@
 using MyCodingAgent.Models;
 using System.Text.RegularExpressions;
 
-namespace MyCodingAgent.ToolCalls;
+namespace MyCodingAgent.ToolCalls.OldTasks;
 
 public class SearchAndReplace(Workspace workspace) : IToolCall
 {
@@ -13,7 +13,7 @@ public class SearchAndReplace(Workspace workspace) : IToolCall
     public ToolParameter[] Parameters { get; } =
     [
         new ("path", "string", "Path to the target file."),
-        new ("searchText", "string", "The exact string to find."),
+        new ("query", "string", "The exact string to find."),
         new ("replaceText", "string", "The string to replace it with.")
     ];
 
@@ -25,10 +25,10 @@ public class SearchAndReplace(Workspace workspace) : IToolCall
                 "parameter path is not supplied.",
                 "parameter path is not supplied.",
                 true);
-        if (toolArguments.searchText == null)
+        if (toolArguments.query == null)
             return new ToolResult(
-                "parameter searchText is not supplied.",
-                "parameter searchText is not supplied.",
+                "parameter query is not supplied.",
+                "parameter query is not supplied.",
                 true);
         if (toolArguments.replaceText == null)
             return new ToolResult(
@@ -44,8 +44,8 @@ public class SearchAndReplace(Workspace workspace) : IToolCall
                 true);
 
         var content = await file.GetFileContent();
-        var fileChanges = Regex.Matches(content, Regex.Escape(toolArguments.searchText)).Count;
-        content = content.Replace(toolArguments.searchText, toolArguments.replaceText);
+        var fileChanges = Regex.Matches(content, Regex.Escape(toolArguments.query)).Count;
+        content = content.Replace(toolArguments.query, toolArguments.replaceText);
 
         if (fileChanges > 0)
         {

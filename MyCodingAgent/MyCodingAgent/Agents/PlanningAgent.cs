@@ -10,17 +10,10 @@ public class PlanningAgent(Workspace Workspace, OllamaClient Client) : BaseAgent
     protected override List<PromptResponseResults> History => Workspace.PlanningHistory;
     protected override IToolCall[] Tools { get; } =
     [
-        new ListAllFiles(Workspace),
-        new SearchInAllFiles(Workspace),
-        new ShowFile(Workspace),
-        new CompileWorkspace(Workspace),
-        new ShowAllSubTasks(Workspace),
-        new CreateSubTask(Workspace),
-        new UpdateSubTask(Workspace),
-        new DeleteSubTask(Workspace),
-        new SubTasksPlanningIsDone(Workspace),
-        new AskDeveloperForExtraInformation(),
-        new WorkIsAlreadyDone(Workspace)
+        new WorkspaceReadonly_Tool(Workspace),
+        new SubTasks_Tool(Workspace),
+        new AskHumanDeveloper_Tool(),
+        new WorkIsAlreadyDone_Tool(Workspace)
     ];
 
     public async Task<OllamaPrompt> GeneratePrompt(CompileResult compileResult)
@@ -59,6 +52,8 @@ IMPORTANT
 
 - When you have enough information, STOP investigating and start creating subtasks.
 - When the plan is complete you MUST call the tool planning_is_done.
+- The compiler expects a .csproj, .sln or .slnx file in the root of the workspace
+- You must target .NET 10 for projects. Do not forget!
 
 If the requested functionality already exists in the codebase you may call work_is_already_done.",
                 null, 

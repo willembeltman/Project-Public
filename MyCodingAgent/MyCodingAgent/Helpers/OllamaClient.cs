@@ -147,10 +147,11 @@ public class OllamaClient(
         ""properties"": {{{string.Join(",", tool.Parameters.Select(parameter => $@"
           ""{parameter.Name}"": {{
             ""type"": ""{parameter.Type}"",
-            ""description"": ""{parameter.Description}""
+            ""description"": ""{parameter.Description}""{(parameter.Enum == null ? "" : $@",
+            ""enum"": [{string.Join(", ", parameter.Enum.Select(e => $@"""{e}"""))}]")}
           }}"))}
         }},
-        ""required"": [{string.Join(",", tool.Parameters.Select(parameter => $@"""{parameter.Name}"""))}]
+        ""required"": [{string.Join(", ", tool.Parameters.Where(p => p.Optional == false).Select(parameter => $@"""{parameter.Name}"""))}]
       }}
     }}
   }}"));

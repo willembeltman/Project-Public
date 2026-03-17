@@ -6,4 +6,5 @@ public class WorkspaceSubTask(
 {
     public int Id { get; set; } = id;
     public string Content { get; set; } = content;
+    public bool Finished { get; set; }
 }

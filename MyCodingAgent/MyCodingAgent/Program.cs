@@ -47,7 +47,7 @@ internal class Program : IDisposable
         var debuggingAgent = new DebuggingAgent(workspace, LlmService);
         var projectManagerAgent = new ProjectManagerAgent(workspace, LlmService);
 
-        Console.WriteLine("Agents initialized, attempting to compile project, please wait...");
+        Console.WriteLine("Agents initialized, attempting to compile workspace, please wait...");
         var compileResult = await workspace.Compile();
 
         //// Rerun for debug

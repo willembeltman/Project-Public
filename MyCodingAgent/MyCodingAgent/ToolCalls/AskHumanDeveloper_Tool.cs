@@ -3,15 +3,15 @@ using MyCodingAgent.Models;
 
 namespace MyCodingAgent.ToolCalls;
 
-public class AskDeveloperForExtraInformation : IToolCall
+public class AskHumanDeveloper_Tool : IToolCall
 {
     public string Name
-        => "ask_developer_extra_information";
+        => "ask_human_developer";
     public string Description
-        => "asks the developer for additional information when the subtask cannot continue";
+        => "asks the human developer using this tool for additional information when the development cannot continue";
     public ToolParameter[] Parameters { get; } =
     [
-        new ("content", "string", "question or information request for the developer")
+        new ("content", "string", "question or information request for the human developer")
     ];
     public async Task<ToolResult> Invoke(OllamaToolCall toolCall)
     {

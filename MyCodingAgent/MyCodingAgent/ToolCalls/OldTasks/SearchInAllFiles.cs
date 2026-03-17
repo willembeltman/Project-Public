@@ -3,7 +3,7 @@ using MyCodingAgent.Interfaces;
 using MyCodingAgent.Models;
 using System.Text;
 
-namespace MyCodingAgent.ToolCalls;
+namespace MyCodingAgent.ToolCalls.OldTasks;
 
 public class SearchInAllFiles(Workspace workspace) : IToolCall
 {
@@ -13,27 +13,27 @@ public class SearchInAllFiles(Workspace workspace) : IToolCall
         => "Searches for a case-insensitive string across the entire workspace. Returns filenames and the context of matching lines.";
     public ToolParameter[] Parameters { get; } =
     [
-        new ("searchText", "string", "The text to search for (case-insensitive).")
+        new ("query", "string", "The text to search for (case-insensitive).")
     ];
 
     public async Task<ToolResult> Invoke(OllamaToolCall toolCall)
     {
         var toolArguments = toolCall.function.arguments;
-        if (toolArguments.searchText == null)
+        if (toolArguments.query == null)
             return new ToolResult(
-                "parameter searchText is not supplied.",
-                "parameter searchText is not supplied.",
+                "parameter query is not supplied.",
+                "parameter query is not supplied.",
                 true);
 
         StringBuilder sb = new StringBuilder();
         var found = 0;
-        sb.AppendLine($"searchText: '{toolArguments.searchText}'");
+        sb.AppendLine($"query: '{toolArguments.query}'");
         foreach (var file in workspace.Files)
         {
             var fileContent = await file.GetFileContent();
             foreach (var line in fileContent.GetLines())
             {
-                var index = line.content.ToLower().IndexOf(toolArguments.searchText.ToLower());
+                var index = line.content.ToLower().IndexOf(toolArguments.query.ToLower());
                 if (index < 0)
                     continue;
 

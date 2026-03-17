@@ -11,21 +11,9 @@ public class CodingAgent(Workspace Workspace, OllamaClient Client) : BaseAgent(W
     protected override List<PromptResponseResults> History => Workspace.CodingHistory;
     protected override IToolCall[] Tools { get; } =
     [
-        new ListAllFiles(Workspace),
-        new SearchInAllFiles(Workspace),
-        new SearchAndReplace(Workspace),
-        new SearchAndReplaceInAllFiles(Workspace),
-        new ShowFile(Workspace),
-        new ShowFileWithLineNumbers(Workspace),
-        new CreateFile(Workspace),
-        new MoveFile(Workspace),
-        new DeleteFile(Workspace),
-        new ReplaceLinesInFile(Workspace),
-        new InsertLinesInFile(Workspace),
-        new CompileWorkspace(Workspace),
-        new AskProjectManagerForExtraInformation(Workspace),
-        new AskDeveloperForExtraInformation(),
-        new SubTaskIsFinished(Workspace)
+        new Workspace_Tool(Workspace),
+        new AskProjectManager_Tool(Workspace),
+        new CurrentSubTaskIsFinished_Tool(Workspace)
     ];
 
     public async Task<OllamaPrompt> GeneratePrompt(CompileResult compileResult)
@@ -38,20 +26,27 @@ public class CodingAgent(Workspace Workspace, OllamaClient Client) : BaseAgent(W
                 null,
                 $@"You are an autonomous software engineering agent operating inside a .NET 10 development workspace. 
 You have been assigned a subtask for the project in your workspace.
-You must complete this subtask by applying all changes
+You must complete this subtask by applying all required changes.
 
 WORKFLOW
 
-1. Understand the request
-2. Inspect files if needed
-3. Make minimal edits
-4. Verify using search, use tools 'open_file' or 'compile_workspace'
-5. If the subtask is completed and the code compiles successfully, call tool 'work_is_done'
+1. Understand the request.
+2. Inspect files before changing them.
+3. Try to make minimal edits.
+4. Ask project manager for advice using 'ask_project_manager' tool, if you are unsure.
+5. Verify your edits using 'workspace' tool.
+6. If the subtask is completed and the code compiles successfully, call tool 'current_subtask_is_done'.
 
-IMPORTANT RULE
+RULES
 
-When the code compiles successfully and the requested functionality is implemented,
-you MUST call the 'work_is_done' tool.",
+- The compiler expects a .csproj, .sln or .slnx file in the root of the workspace.
+- You can compile using 'path' parameter for specific projects.
+
+IMPORTANT RULES
+
+- When the code compiles successfully and the requested functionality is implemented,
+  you MUST call the 'work_is_done' tool.
+- You must target .NET 10 for projects. Do not forget!",
                 null,
                 null)
         ];

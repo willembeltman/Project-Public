@@ -1,7 +1,7 @@
 ﻿using MyCodingAgent.Interfaces;
 using MyCodingAgent.Models;
 
-namespace MyCodingAgent.ToolCalls;
+namespace MyCodingAgent.ToolCalls.OldTasks;
 
 public class DeleteFile(Workspace workspace) : IToolCall
 {
@@ -9,11 +9,11 @@ public class DeleteFile(Workspace workspace) : IToolCall
     => "delete_file";
 
     public string Description
-        => "Permanently removes a file from the workspace. Use this only when a file is no longer needed or was created by mistake. Warning: This action cannot be undone.";
+        => "Removes a file from the workspace. Use this only when a file is no longer needed or was created by mistake.";
 
     public ToolParameter[] Parameters { get; } =
     [
-        new ("path", "string", "The relative path of the file to be deleted (e.g., 'old_logic.cs'). Ensure the file is not a critical project configuration file.")
+        new ("path", "string", "The relative path of the file to be deleted (e.g., 'old_logic.cs').")
     ];
     public async Task<ToolResult> Invoke(OllamaToolCall toolCall)
     {

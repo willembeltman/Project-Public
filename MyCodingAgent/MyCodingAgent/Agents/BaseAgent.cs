@@ -21,46 +21,39 @@ public abstract class BaseAgent(Workspace Workspace, OllamaClient Client)
         var toolsJsonLength = toolsJson.Length;
         var maxHistory = 0;
         int maxLongDesciptionPrompt = 0;
-        var useShortContent = false;
-        var length = messagesJsonLength + toolsJsonLength + additionalSizeInBytes;
+        var totalLength = messagesJsonLength + toolsJsonLength + additionalSizeInBytes;
 
-        history.Reverse();
+        history.Reverse(); // Lijst omdraaien zodat we vanaf het begin tellen
+        var useShortContent = false;
         foreach (var responseResult in history)
         {
             var responseJson = JsonSerializer.Serialize(responseResult.Response.message, DefaultJsonSerializerOptions.JsonSerializeOptionsIndented);
-            length += responseJson.Length;
+            totalLength += responseJson.Length;
 
             // TOOL CALLS REPLIES
             foreach (var toolCall in responseResult.ToolCallResults)
             {
-                var message = new OllamaMessage(
-                    nameof(OllamaAgentRole.tool).ToLower(),
-                    toolCall.tool_call.id,
-                    useShortContent ? toolCall.result.shortContent : toolCall.result.content,
-                    null,
-                    null);
-                var messageJson = JsonSerializer.Serialize(message, DefaultJsonSerializerOptions.JsonSerializeOptionsIndented);
-
-                length += messageJson.Length;
+                var messageJson = JsonSerializer.Serialize(CreateToolCallbackMessage(useShortContent, toolCall), DefaultJsonSerializerOptions.JsonSerializeOptionsIndented);
+                totalLength += messageJson.Length;
             }
 
-            if (length < maxTokens * 3)
+            if (totalLength < maxTokens * 3)
                 maxLongDesciptionPrompt++;
             else
             {
                 useShortContent = true;
             }
 
-            if (length < maxTokens * 4)
+            if (totalLength < maxTokens * 4)
                 maxHistory++;
             else
             {
-
+                break;
             }
         }
 
-        history.Reverse();
-        var i = history.Count;
+        history.Reverse(); // Lijst weer normaal maken
+        var i = history.Count; // Dan terug tellen
         foreach (var responseResult in history)
         {
             if (i > maxHistory)
@@ -75,16 +68,21 @@ public abstract class BaseAgent(Workspace Workspace, OllamaClient Client)
             // TOOL CALLS REPLIES
             foreach (var toolCall in responseResult.ToolCallResults)
             {
-                messageList.Add(new OllamaMessage(
-                    nameof(OllamaAgentRole.tool).ToLower(),
-                    toolCall.tool_call.id,
-                    i > maxLongDesciptionPrompt ? toolCall.result.shortContent : toolCall.result.content,
-                    null,
-                    null));
+                messageList.Add(CreateToolCallbackMessage(i > maxLongDesciptionPrompt, toolCall));
             }
 
             i--;
         }
+    }
+
+    private static OllamaMessage CreateToolCallbackMessage(bool useShortContent, ToolCallResult toolCall)
+    {
+        return new OllamaMessage(
+            nameof(OllamaAgentRole.tool).ToLower(),
+            toolCall.tool_call.id,
+            useShortContent ? toolCall.result.shortContent : toolCall.result.content,
+            null,
+            null);
     }
 
     protected async Task<PromptResponseResults> GetAgentResponseResult(OllamaPrompt prompt, OllamaResponse response, IToolCall[] tools)

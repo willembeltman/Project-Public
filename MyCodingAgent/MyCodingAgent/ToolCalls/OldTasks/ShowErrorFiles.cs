@@ -3,7 +3,7 @@ using MyCodingAgent.Interfaces;
 using MyCodingAgent.Models;
 using System.Text;
 
-namespace MyCodingAgent.ToolCalls;
+namespace MyCodingAgent.ToolCalls.OldTasks;
 
 public class ShowErrorFiles(Workspace workspace) : IToolCall
 {

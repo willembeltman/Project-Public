@@ -1,22 +1,21 @@
 ﻿using MyCodingAgent.Interfaces;
 using MyCodingAgent.Models;
 
-namespace MyCodingAgent.ToolCalls;
+namespace MyCodingAgent.ToolCalls.OldTasks;
 
 public class CreateSubTask(Workspace workspace) : IToolCall
 {
     public string Name
-    => "create_subtask";
+     => "create_subtask";
 
     public string Description
-        => "Strategic tool for the Planning Agent to decompose a complex objective into smaller, manageable tasks. Each sub-task should contain enough technical detail for a Coding Agent to execute it independently.";
+        => "Creates a new subtask for the current project. Use this to break down the user request into smaller development steps.";
 
     public ToolParameter[] Parameters { get; } =
     [
-        new ("title", "string", "A short, descriptive name for the task (e.g., 'Update Auth Logic')."),
-    new ("description", "string", "Detailed instructions or technical requirements. Define 'what' needs to be done and 'where' (e.g., 'Modify AuthService.cs to include JWT validation')."),
-    new ("success_criteria", "string", "Specific conditions that must be met to consider this task finished (e.g., 'Compilation successful and unit tests pass').")
+        new ("content", "string", "The full description of the task, including technical details and what needs to be changed.")
     ];
+
     public async Task<ToolResult> Invoke(OllamaToolCall toolCall)
     {
         var toolArguments = toolCall.function.arguments;

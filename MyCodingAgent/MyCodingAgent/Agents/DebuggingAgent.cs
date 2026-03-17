@@ -3,28 +3,14 @@ using MyCodingAgent.Helpers;
 using MyCodingAgent.Interfaces;
 using MyCodingAgent.Models;
 using MyCodingAgent.ToolCalls;
-using System.Text;
-using System.Text.Json;
 
 public class DebuggingAgent(Workspace Workspace, OllamaClient Client) : BaseAgent(Workspace, Client), IAgent
 {
     protected override List<PromptResponseResults> History => Workspace.DebugHistory;
     protected override IToolCall[] Tools { get; } =
     [
-        new ListAllFiles(Workspace),
-        new SearchInAllFiles(Workspace),
-        new SearchAndReplace(Workspace),
-        new SearchAndReplaceInAllFiles(Workspace),
-        new ShowFile(Workspace),
-        new ShowFileWithLineNumbers(Workspace),
-        new CreateFile(Workspace),
-        new MoveFile(Workspace),
-        new DeleteFile(Workspace),
-        new ReplaceLinesInFile(Workspace),
-        new InsertLinesInFile(Workspace),
-        new CompileWorkspace(Workspace),
-        new AskProjectManagerForExtraInformation(Workspace),
-        new AskDeveloperForExtraInformation()
+        new Workspace_Tool(Workspace),
+        new AskProjectManager_Tool(Workspace)
     ];
 
     public async Task<OllamaPrompt> GeneratePrompt(CompileResult compileResult)
@@ -35,27 +21,29 @@ public class DebuggingAgent(Workspace Workspace, OllamaClient Client) : BaseAgen
             new OllamaMessage(
                 nameof(OllamaAgentRole.system).ToLower(),
                 null,
-                $@"You are a .NET 10 repair agent.",
+                $@"You are a .NET 10 repair agent.
+
+RULES
+
+- The compiler expects a .csproj, .sln or .slnx file in the ROOT of the workspace, it does not search sub-directories
+- You must target .NET 10 for projects. Do not forget!",
                 null,
                 null),
         ];
 
-        var currentSubTask = Workspace.GetCurrentSubTask();
-        if (currentSubTask != null)
-        {
-            var currentSubTaskMessage = new OllamaMessage(
-                nameof(OllamaAgentRole.user).ToLower(),
-                null,
-                $@"--- CURRENT COMPILATION RESULT ---
+        var currentSubTaskMessage = new OllamaMessage(
+            nameof(OllamaAgentRole.user).ToLower(),
+            null,
+            $@"--- CURRENT COMPILATION RESULT ---
 {compileResult.Content}
 --- END OF COMPILATION RESULT ---
+
 GOAL
 Make the code compile successfully.
 Do not change behavior unless required.",
-                null,
-                null);
-            messageList.Add(currentSubTaskMessage);
-        }
+            null,
+            null);
+        messageList.Add(currentSubTaskMessage);
 
         AddHistoryAndToolCalls(
             messageList,

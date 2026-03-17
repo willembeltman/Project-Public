@@ -2,7 +2,7 @@
 using MyCodingAgent.Models;
 using System.Text.RegularExpressions;
 
-namespace MyCodingAgent.ToolCalls;
+namespace MyCodingAgent.ToolCalls.OldTasks;
 
 public class SearchAndReplaceInAllFiles(Workspace workspace) : IToolCall
 {
@@ -14,17 +14,17 @@ public class SearchAndReplaceInAllFiles(Workspace workspace) : IToolCall
 
     public ToolParameter[] Parameters { get; } =
     [
-        new ("searchText", "string", "The exact, case-sensitive string to find. Ensure this is specific enough to avoid false positives."),
+        new ("query", "string", "The exact, case-sensitive string to find. Ensure this is specific enough to avoid false positives."),
         new ("replaceText", "string", "The exact, case-sensitive string to insert as a replacement.")
     ];
 
     public async Task<ToolResult> Invoke(OllamaToolCall toolCall)
     {
         var toolArguments = toolCall.function.arguments;
-        if (toolArguments.searchText == null)
+        if (toolArguments.query == null)
             return new ToolResult(
-                "parameter searchText is not supplied.",
-                "parameter searchText is not supplied.",
+                "parameter query is not supplied.",
+                "parameter query is not supplied.",
                 true);
         if (toolArguments.replaceText == null)
             return new ToolResult(
@@ -36,8 +36,8 @@ public class SearchAndReplaceInAllFiles(Workspace workspace) : IToolCall
         foreach (var file in workspace.Files)
         {
             var content = await file.GetFileContent();
-            var fileChanges = Regex.Matches(content, Regex.Escape(toolArguments.searchText)).Count;
-            content = content.Replace(toolArguments.searchText, toolArguments.replaceText);
+            var fileChanges = Regex.Matches(content, Regex.Escape(toolArguments.query)).Count;
+            content = content.Replace(toolArguments.query, toolArguments.replaceText);
 
             if (fileChanges > 0)
             {

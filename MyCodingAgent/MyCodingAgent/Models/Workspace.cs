@@ -21,8 +21,8 @@ public class Workspace
 
     public WorkspaceFile? GetFile(string path)
         => Files.FirstOrDefault(a => a.RelativePath.Equals(path.Replace("/", "\\"), StringComparison.CurrentCultureIgnoreCase));
-    public WorkspaceSubTask? GetSubTask(int id)
-        => SubTasks.FirstOrDefault(a => a.Id== id);
+    public WorkspaceSubTask? GetSubTask(string? id)
+        => SubTasks.FirstOrDefault(a => a.Id.ToString() == id);
     public WorkspaceSubTask? GetCurrentSubTask()
     {
         if (CurrentSubTask == null && SubTasks.Count > 0)
@@ -33,7 +33,7 @@ public class Workspace
         }
         if (CurrentSubTask == null)
             return null;
-        return GetSubTask(CurrentSubTask.Value);
+        return GetSubTask(CurrentSubTask.Value.ToString());
     }
 
     public async static Task<Workspace?> TryLoad(string rootDirectoryName, CancellationToken ct = default)
@@ -53,7 +53,7 @@ public class Workspace
                 workspace.Files.Clear();
 
                 // For when the developer has changed the source code
-                await workspace.InitializeDirectory(rootDirectory); 
+                await workspace.InitializeDirectory(rootDirectory);
                 await workspace.Save();
             }
         }
@@ -88,13 +88,6 @@ public class Workspace
         await JsonSerializer.SerializeAsync(stream, this);
     }
 
-    public async Task<CompileResult> Compile()
-    {
-        var currentDirectory = new DirectoryInfo(RootDirectoryName);
-        var compileResult = await Compiler.Compile(currentDirectory);
-        return compileResult;
-    }
-        
     private async Task InitializeDirectory(DirectoryInfo directoryInfo, bool isRoot = true, CancellationToken ct = default)
     {
         foreach (var dir in directoryInfo.GetDirectories())
@@ -127,6 +120,35 @@ public class Workspace
             throw new Exception($"LLM path escape detected: {path}");
     }
 
+    public async Task<CompileResult> Compile(string? relativePath = null)
+    {
+        if (relativePath == null)
+        {
+            var currentDirectory = new DirectoryInfo(RootDirectoryName);
+            var compileResult = await Compiler.Compile(currentDirectory);
+            return compileResult;
+        }
+        else
+        {
+            TryParseFullPath(relativePath, out var fullPath);
+            var solutionOrProjectFile = new FileInfo(fullPath);
+            if (solutionOrProjectFile == null)
+            {
+                return new CompileResult()
+                {
+                    Content = $"No .sln, .slnx or .csproj file was found on '{relativePath}'.",
+                    Errors = [
+                        new CompileError(
+                        $"No .sln, .slnx or .csproj file was found on '{relativePath}'."
+                        )
+                    ]
+                };
+            }
+            var compileResult = await Compiler.Compile(solutionOrProjectFile);
+            return compileResult;
+        }
+    }
+
     public async Task<string> GetListAllFilesText()
     {
         StringBuilder sb = new StringBuilder();
@@ -140,7 +162,7 @@ public class Workspace
         }
         else
         {
-            sb.AppendLine("<No files found in project>");
+            sb.AppendLine("<No files found in workspace>");
         }
         return sb.ToString();
     }
@@ -159,7 +181,7 @@ public class Workspace
         }
         else
         {
-            sb.AppendLine("<No subtasks found in project>");
+            sb.AppendLine("<No subtasks found in current project>");
         }
         return sb.ToString();
     }

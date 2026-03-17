@@ -3,10 +3,10 @@ using MyCodingAgent.Models;
 
 namespace MyCodingAgent.ToolCalls;
 
-public class AskProjectManagerForExtraInformation(Workspace workspace) : IToolCall
+public class AskProjectManager_Tool(Workspace workspace) : IToolCall
 {
     public string Name
-        => "ask_project_manager_for_extra_information";
+        => "ask_project_manager";
 
     public string Description
         => "Requests clarification or missing technical details from the Project Manager. Use this when a sub-task is ambiguous, a dependency is missing, or you encounter an architectural decision you cannot make alone. This pauses your execution until feedback is provided.";

@@ -2,12 +2,14 @@
 
 public class OllamaToolCallFunctionArguments
 {
-    public int? id { get; set; }
+    public string? id { get; set; }
+    public string? action { get; set; }
     public string? path { get; set; }
     public string? newPath { get; set; }
-    public string? searchText { get; set; }
+    public string? query { get; set; }
     public string? replaceText { get; set; }
     public string? content { get; set; }
+    public int? lineNumber { get; set; }
     public int? startLine { get; set; }
     public int? endLine { get; set; }
 }

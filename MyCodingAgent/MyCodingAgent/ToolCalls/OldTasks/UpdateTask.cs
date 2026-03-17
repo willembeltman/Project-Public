@@ -1,7 +1,7 @@
 ﻿using MyCodingAgent.Interfaces;
 using MyCodingAgent.Models;
 
-namespace MyCodingAgent.ToolCalls;
+namespace MyCodingAgent.ToolCalls.OldTasks;
 
 public class UpdateSubTask(Workspace workspace) : IToolCall
 {
@@ -31,7 +31,7 @@ public class UpdateSubTask(Workspace workspace) : IToolCall
                 "parameter content is not supplied.",
                 true);
 
-        var subtask = workspace.GetSubTask(toolArguments.id.Value);
+        var subtask = workspace.GetSubTask(toolArguments.id);
         if (subtask == null)
             return new ToolResult(
                 $"Error could not find subtask {toolArguments.id}",
@@ -39,7 +39,7 @@ public class UpdateSubTask(Workspace workspace) : IToolCall
                 true);
 
         workspace.SubTasks.Remove(subtask);
-        var newSubTask = new WorkspaceSubTask(toolArguments.id.Value, toolArguments.content);
+        var newSubTask = new WorkspaceSubTask(subtask.Id, toolArguments.content);
         workspace.SubTasks.Add(newSubTask);
         return new ToolResult(
             $"Updated subtask '{toolArguments.id}'",

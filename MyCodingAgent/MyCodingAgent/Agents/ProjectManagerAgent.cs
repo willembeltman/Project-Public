@@ -11,16 +11,10 @@ public class ProjectManagerAgent(Workspace Workspace, OllamaClient Client) : Bas
     protected override List<PromptResponseResults> History => Workspace.PlanningHistory;
     protected override IToolCall[] Tools { get; } =
     [
-        new ListAllFiles(Workspace),
-        new SearchInAllFiles(Workspace),
-        new ShowFile(Workspace),
-        new CompileWorkspace(Workspace),
-        new ShowAllSubTasks(Workspace),
-        new CreateSubTask(Workspace),
-        new UpdateSubTask(Workspace),
-        new DeleteSubTask(Workspace),
-        new AnswerCoderQuestion(Workspace),
-        new AskDeveloperForExtraInformation()
+        new WorkspaceReadonly_Tool(Workspace),
+        new SubTasks_Tool(Workspace),
+        new AnswerCoderAgentQuestion_Tool(Workspace),
+        new AskHumanDeveloper_Tool()
     ];
     public async Task<OllamaPrompt> GeneratePrompt(CompileResult compileResult)
     {
@@ -37,15 +31,19 @@ public class ProjectManagerAgent(Workspace Workspace, OllamaClient Client) : Bas
 Earlier, you created a plan consisting of several subtasks. Now, a Coding Agent is executing one of those tasks and has encountered a blocker or a question.
 
 YOUR MISSION:
-1. Analyze the Coding Agent's question in the context of the original project goals and your previous planning.
+1. Analyze the Coding/Debugger Agent's question in the context of the original project goals and your previous planning.
 2. Provide technical clarification, architectural decisions, or missing information.
 3. If the question reveals that the original plan was flawed, use 'update_subtask' to refine the plan.
 4. Use the 'answer_coder_question' tool to send your definitive answer back to the agent.
 
 CONSTRAINTS:
 - You do not write code yourself.
-- You provide the guidance so the Coder can continue.
+- You provide the guidance so the Coder/Debugger can continue.
 - Use 'list_all_files' or 'show_file' if you need to double-check the current state of the code before answering.
+
+RULES:
+- You must target .NET 10 for projects. Do not forget!
+- Only if it is really unclear you can ask the developer for extra information
 
 When you have the answer, you MUST call 'answer_coder_question'.",
                 null,

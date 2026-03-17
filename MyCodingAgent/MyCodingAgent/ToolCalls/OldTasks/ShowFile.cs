@@ -3,17 +3,19 @@ using MyCodingAgent.Interfaces;
 using MyCodingAgent.Models;
 using System.Text;
 
-namespace MyCodingAgent.ToolCalls;
+namespace MyCodingAgent.ToolCalls.OldTasks;
 
-public class ShowFileWithLineNumbers(Workspace workspace) : IToolCall
+public class ShowFile(Workspace workspace) : IToolCall
 {
     public string Name
-        => "show_file_with_linenumbers";
+    => "show_file";
+
     public string Description
-        => "Reads the content of a file with line numbers. Essential before using update_file to ensure correct line ranges.";
+        => "Reads and returns the full raw content of a file. Use this to understand existing code, review logic, or gather context before planning sub-tasks. For precise editing, consider using show_file_with_linenumbers instead.";
+
     public ToolParameter[] Parameters { get; } =
     [
-        new ("path", "string", "Path to the file.")
+        new ("path", "string", "The relative path to the file you want to read (e.g., 'src/api/auth.js').")
     ];
 
     public async Task<ToolResult> Invoke(OllamaToolCall toolCall)
@@ -34,17 +36,17 @@ public class ShowFileWithLineNumbers(Workspace workspace) : IToolCall
                 true);
         }
 
-        StringBuilder sb = new StringBuilder();
-        sb.AppendLine(file.RelativePath);
+        //StringBuilder sb = new StringBuilder();
+        //sb.AppendLine(file.RelativePath);
         var fileContent = await file.GetFileContent();
-        foreach (var line in fileContent.GetLines())
-        {
-            sb.AppendLine($"{line.lineNumber,3}|{line.content}");
-        }
+        //foreach (var line in fileContent.GetLines())
+        //{
+        //    sb.AppendLine($"{line.lineNumber,3}|{line.content}");
+        //}
 
         return new ToolResult(
-            //fileContent,
-            sb.ToString(),
+            fileContent,
+            //sb.ToString(),
             $"Showed file '{toolArguments.path}'",
             false);
     }

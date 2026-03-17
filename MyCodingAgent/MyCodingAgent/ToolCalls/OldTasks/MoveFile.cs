@@ -1,7 +1,7 @@
 ﻿using MyCodingAgent.Interfaces;
 using MyCodingAgent.Models;
 
-namespace MyCodingAgent.ToolCalls;
+namespace MyCodingAgent.ToolCalls.OldTasks;
 
 public class MoveFile(Workspace workspace) : IToolCall
 {

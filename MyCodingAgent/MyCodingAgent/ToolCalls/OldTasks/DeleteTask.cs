@@ -1,7 +1,7 @@
 ﻿using MyCodingAgent.Interfaces;
 using MyCodingAgent.Models;
 
-namespace MyCodingAgent.ToolCalls;
+namespace MyCodingAgent.ToolCalls.OldTasks;
 
 public class DeleteSubTask(Workspace workspace) : IToolCall
 {
@@ -27,7 +27,7 @@ public class DeleteSubTask(Workspace workspace) : IToolCall
 
         try
         {
-            var subtask = workspace.GetSubTask(toolArguments.id.Value);
+            var subtask = workspace.GetSubTask(toolArguments.id);
             if (subtask != null)
             {
                 workspace.SubTasks.Remove(subtask);

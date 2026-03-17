@@ -1,14 +1,14 @@
 ﻿using MyCodingAgent.Interfaces;
 using MyCodingAgent.Models;
 
-namespace MyCodingAgent.ToolCalls;
+namespace MyCodingAgent.ToolCalls.OldTasks;
 
 public class CompileWorkspace(Workspace workspace) : IToolCall
 {
     public string Name 
         => "get_compilation_result";
     public string Description
-        => "Builds the project using .sln or .csproj in workspace root. Use this to catch errors after making code changes.";
+        => "Builds the solution/project(s) using the .sln, .slnx or .csproj file in your workspace root. Use this to catch errors after making code changes.";
     public ToolParameter[] Parameters { get; } = [];
 
     public async Task<ToolResult> Invoke(OllamaToolCall toolCall)

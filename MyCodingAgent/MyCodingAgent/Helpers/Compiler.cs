@@ -10,17 +10,24 @@ public static class Compiler
     public static async Task<CompileResult> Compile(DirectoryInfo currentDirectory)
     {
         var slnFile = currentDirectory.GetFiles("*.sln", SearchOption.TopDirectoryOnly).FirstOrDefault();
+        var slnxFile = currentDirectory.GetFiles("*.slnx", SearchOption.TopDirectoryOnly).FirstOrDefault();
         var csprojFile = currentDirectory.GetFiles("*.csproj", SearchOption.TopDirectoryOnly).FirstOrDefault();
-        var fileToBuild = slnFile?.FullName ?? csprojFile?.FullName;
+        var fileToBuild = slnFile ?? slnxFile ?? csprojFile;
         if (fileToBuild == null)
             return new CompileResult()
             {
-                Content = "No .sln or .csproj file was found.",
+                Content = "No .sln, .slnx or .csproj file was found in ROOT of workspace.",
                 Errors = [
-                    new CompileError("No .sln or .csproj file was found.")
+                    new CompileError("No .sln or .csproj file was found in ROOT of workspace.")
                 ]
             };
+        return await Compile(fileToBuild);
+    }
 
+    public static async Task<CompileResult> Compile(FileInfo solutionOrProjectFile)
+    {
+        DirectoryInfo currentDirectory = solutionOrProjectFile.Directory!;
+        string fileToBuild = solutionOrProjectFile.FullName;
         var startInfo = new ProcessStartInfo
         {
             FileName = "dotnet",
@@ -73,7 +80,7 @@ public static class Compiler
                         m.Groups["code"].Value
                             .Replace(currentDirectory.FullName + "\\", ""),
                         m.Groups["file"].Value
-                    .Replace(currentDirectory.FullName + "\\", ""),
+                            .Replace(currentDirectory.FullName + "\\", ""),
                         m.Groups["line"].Value,
                         m.Groups["col"].Value,
                         m.Groups["msg"].Value

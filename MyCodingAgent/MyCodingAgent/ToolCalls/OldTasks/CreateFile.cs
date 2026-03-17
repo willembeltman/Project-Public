@@ -1,7 +1,7 @@
 ﻿using MyCodingAgent.Interfaces;
 using MyCodingAgent.Models;
 
-namespace MyCodingAgent.ToolCalls;
+namespace MyCodingAgent.ToolCalls.OldTasks;
 
 public class CreateFile(Workspace workspace) : IToolCall
 {
@@ -37,25 +37,25 @@ public class CreateFile(Workspace workspace) : IToolCall
             var file = workspace.GetFile(toolArguments.path);
             if (file == null)
             {
+                var newFile = new WorkspaceFile(toolArguments.path, fullPath);
+                await newFile.UpdateContent(toolArguments.content);
+                workspace.Files.Add(newFile);
+                return new ToolResult(
+                    $"Created {toolArguments.path}",
+                    $"Created {toolArguments.path}",
+                    false);
+            }
+            else
+            {
+                //await file.UpdateContent(toolArguments.content);
+                //return new ToolResult(
+                //    $"Updated {toolArguments.path}",
+                //    $"Updated {toolArguments.path}",
+                //    false);
                 return new ToolResult(
                     $"Error while updating '{toolArguments.path}': file already exists",
                     $"Error while updating",
                     true);
-                //var newFile = new WorkspaceFile(toolArguments.path, fullPath);
-                //await newFile.UpdateContent(toolArguments.content);
-                //workspace.Files.Add(newFile);
-                //return new ToolResult(
-                //    $"Created {toolArguments.path}",
-                //    $"Created {toolArguments.path}",
-                //    false);
-            }
-            else
-            {
-                await file.UpdateContent(toolArguments.content);
-                return new ToolResult(
-                    $"Updated {toolArguments.path}",
-                    $"Updated {toolArguments.path}",
-                    false);
             }
         }
         catch (Exception ex)

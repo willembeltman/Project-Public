@@ -3,10 +3,10 @@ using MyCodingAgent.Models;
 
 namespace MyCodingAgent.ToolCalls;
 
-public class AnswerCoderQuestion(Workspace workspace) : IToolCall
+public class AnswerCoderAgentQuestion_Tool(Workspace workspace) : IToolCall
 {
     public string Name
-        => "answer_coder_question";
+        => "answer_coder_agent_question";
 
     public string Description
         => "Provides the official response or missing technical details to a Coding Agent's request. Use this to clarify requirements, provide architectural guidance, or resolve blockers that prevent the coder from proceeding.";
