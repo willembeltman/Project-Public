@@ -11,7 +11,7 @@ public abstract class BaseAgent(Workspace Workspace, OllamaClient Client)
     protected abstract IToolCall[] Tools { get; }
 
     protected Workspace Workspace { get; } = Workspace;
-    protected OllamaClient Client { get; } = Client;
+    protected OllamaClient Wlient { get; } = Client;
 
     protected static void AddHistoryAndToolCalls(List<OllamaMessage> messageList, List<PromptResponseResults> history, Tool[] tools, int maxTokens, int additionalSizeInBytes)
     {
@@ -37,14 +37,14 @@ public abstract class BaseAgent(Workspace Workspace, OllamaClient Client)
                 totalLength += messageJson.Length;
             }
 
-            if (totalLength < maxTokens * 3)
+            if (totalLength < maxTokens * 2)
                 maxLongDesciptionPrompt++;
             else
             {
                 useShortContent = true;
             }
 
-            if (totalLength < maxTokens * 4)
+            if (totalLength < maxTokens * 3)
                 maxHistory++;
             else
             {

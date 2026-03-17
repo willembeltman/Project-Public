@@ -6,22 +6,34 @@ using System.Text.RegularExpressions;
 
 namespace MyCodingAgent.ToolCalls;
 
-public class Workspace_Tool(Workspace workspace) : IToolCall
+public class Workspace_Tool(Workspace Workspace) : WorkspaceReadonly_Tool(Workspace)
 {
-    public string Name => "workspace";
-    public string Description => "Interact with the workspace.";
+    public override string Name => "workspace";
+    public override string Description => "Interact with the workspace.";
 
-    public ToolParameter[] Parameters { get; } =
+    public override ToolParameter[] Parameters { get; } =
     [
-        new ("action", "string", "Action to perform", ["files_list", "read", "write", "append", "text_search", "text_search_and_replace", "delete", "move", "compile"]),
-        new ("path", "string", "The relative path from the workspace root (for all actions except 'files_list', optional for compile)", null, true),
+        new ("action", "string", "Action to perform", 
+        [
+            "files_list",
+            "read", 
+            "write", 
+            "append", 
+            "text_search", 
+            "text_search_and_replace", 
+            "delete", 
+            "move",
+            "compile", 
+            "diff_with_original"
+        ]),
+        new ("path", "string", "The relative path from the workspace root (for all actions except 'files_list', optional for 'compile')", null, true),
         new ("query", "string", "Exact text to find (for 'text_search' and 'text_search_and_replace' action)", null, true),
         new ("content", "string", "Content (for 'write', 'append' and 'text_search_and_replace' action)", null, true),
         new ("newPath", "string", "The new relative path from the workspace root (for 'move' action)", null, true),
         new ("lineNumber", "number", "Line number (optional for 'append' action)", null, true)
     ];
 
-    public async Task<ToolResult> Invoke(OllamaToolCall toolCall)
+    public override async Task<ToolResult> Invoke(OllamaToolCall toolCall)
     {
         var toolArguments = toolCall.function.arguments;
         if (toolArguments.action == null)
@@ -40,6 +52,7 @@ public class Workspace_Tool(Workspace workspace) : IToolCall
             "delete" => await Delete(toolCall),
             "move" => await Move(toolCall),
             "compile" => await Compile(toolCall),
+            "diff_with_original" => await Diff(toolCall),
             _ => new ToolResult(
                 $"Error could not find action '{toolArguments.action}'",
                 $"Error could not find action '{toolArguments.action}'",
@@ -47,37 +60,7 @@ public class Workspace_Tool(Workspace workspace) : IToolCall
         };
     }
 
-    public async Task<ToolResult> FilesList(OllamaToolCall toolCall)
-    {
-        var toolArguments = toolCall.function.arguments;
-        var listAllFilesText = await workspace.GetListAllFilesText();
-        return new ToolResult(listAllFilesText, "Shown all files", false);
-    }
-    public async Task<ToolResult> Read(OllamaToolCall toolCall)
-    {
-        var toolArguments = toolCall.function.arguments;
-        if (toolArguments.path == null)
-            return new ToolResult(
-                "Error parameter path is not supplied.",
-                "Error parameter path is not supplied.",
-                true);
-
-        var file = workspace.GetFile(toolArguments.path);
-        if (file == null)
-        {
-            return new ToolResult(
-                $"Error opening file '{toolArguments.path}': file not found",
-                $"Error opening file '{toolArguments.path}': file not found",
-                true);
-        }
-
-        var fileContent = await file.GetFileContent();
-        return new ToolResult(
-            fileContent,
-            $"Showed file '{toolArguments.path}'",
-            false);
-    }
-    public async Task<ToolResult> Write(OllamaToolCall toolCall)
+    private async Task<ToolResult> Write(OllamaToolCall toolCall)
     {
         var toolArguments = toolCall.function.arguments;
         if (toolArguments.path == null)
@@ -91,16 +74,16 @@ public class Workspace_Tool(Workspace workspace) : IToolCall
                 "Error parameter content is not supplied.",
                 true);
 
-        workspace.TryParseFullPath(toolArguments.path, out var fullPath);
+        Workspace.GaurdParseFullPath(toolArguments.path, out var fullPath);
 
         try
         {
-            var file = workspace.GetFile(toolArguments.path);
+            var file = Workspace.GetFile(toolArguments.path);
             if (file == null)
             {
                 var newFile = new WorkspaceFile(toolArguments.path, fullPath);
                 await newFile.UpdateContent(toolArguments.content);
-                workspace.Files.Add(newFile);
+                Workspace.Files.Add(newFile);
                 return new ToolResult(
                     $"Created {toolArguments.path}",
                     $"Created {toolArguments.path}",
@@ -122,56 +105,8 @@ public class Workspace_Tool(Workspace workspace) : IToolCall
                 $"Error while updating",
                 true);
         }
-    }
-    public async Task<ToolResult> TextSearch(OllamaToolCall toolCall)
-    {
-        var toolArguments = toolCall.function.arguments;
-        if (toolArguments.query == null)
-            return new ToolResult(
-                "Error parameter query is not supplied.",
-                "Error parameter query is not supplied.",
-                true);
-        var files = workspace.Files;
-        if (string.IsNullOrEmpty(toolArguments.path) == false)
-        {
-            var file = workspace.GetFile(toolArguments.path);
-            if (file != null)
-            {
-                files = [file];
-            }
-            else
-            {
-                return new ToolResult(
-                    $"Error could not find file '{toolArguments.path}'",
-                    $"Error could not find file",
-                    true);
-            }
-        }
-
-        StringBuilder sb = new StringBuilder();
-        var found = 0;
-        sb.AppendLine($"query: '{toolArguments.query}'");
-        foreach (var file in files)
-        {
-            var fileContent = await file.GetFileContent();
-            foreach (var line in fileContent.GetLines())
-            {
-                var index = line.content.ToLower().IndexOf(toolArguments.query.ToLower());
-                if (index < 0)
-                    continue;
-
-                sb.AppendLine($"{file.RelativePath}:{line.lineNumber} {line.content}");
-                found++;
-            }
-        }
-        sb.AppendLine($"Found {found} instances.");
-
-        return new ToolResult(
-            sb.ToString(),
-            $"Showed search results",
-            false);
-    }
-    public async Task<ToolResult> TextSearchAndReplace(OllamaToolCall toolCall)
+    }    
+    private async Task<ToolResult> TextSearchAndReplace(OllamaToolCall toolCall)
     {
         var toolArguments = toolCall.function.arguments;
         if (toolArguments.path == null)
@@ -190,7 +125,7 @@ public class Workspace_Tool(Workspace workspace) : IToolCall
                 "parameter replaceText is not supplied.",
                 true);
 
-        var file = workspace.GetFile(toolArguments.path);
+        var file = Workspace.GetFile(toolArguments.path);
         if (file == null)
             return new ToolResult(
                 $"Error could not find path '{toolArguments.path}'",
@@ -211,7 +146,7 @@ public class Workspace_Tool(Workspace workspace) : IToolCall
             $"Replaced {fileChanges} instances",
             false);
     }
-    public async Task<ToolResult> Delete(OllamaToolCall toolCall)
+    private async Task<ToolResult> Delete(OllamaToolCall toolCall)
     {
         var toolArguments = toolCall.function.arguments;
         if (toolArguments.path == null)
@@ -220,15 +155,15 @@ public class Workspace_Tool(Workspace workspace) : IToolCall
                 "Error parameter path is not supplied.",
                 true);
 
-        workspace.TryParseFullPath(toolArguments.path, out var fullPath);
+        Workspace.GaurdParseFullPath(toolArguments.path, out var fullPath);
 
         try
         {
-            var file = workspace.GetFile(toolArguments.path);
+            var file = Workspace.GetFile(toolArguments.path);
             if (file != null)
             {
                 file.Delete();
-                workspace.Files.Remove(file);
+                Workspace.Files.Remove(file);
                 return new ToolResult(
                     $"Deleted file {toolArguments.path}",
                     $"Deleted file",
@@ -247,7 +182,7 @@ public class Workspace_Tool(Workspace workspace) : IToolCall
                 true);
         }
     }
-    public async Task<ToolResult> Move(OllamaToolCall toolCall)
+    private async Task<ToolResult> Move(OllamaToolCall toolCall)
     {
         var toolArguments = toolCall.function.arguments;
         if (toolArguments.path == null)
@@ -261,11 +196,11 @@ public class Workspace_Tool(Workspace workspace) : IToolCall
                 "Error parameter newPath is not supplied.",
                 true);
 
-        workspace.TryParseFullPath(toolArguments.newPath, out var newFullPath);
+        Workspace.GaurdParseFullPath(toolArguments.newPath, out var newFullPath);
 
         try
         {
-            var file = workspace.GetFile(toolArguments.path);
+            var file = Workspace.GetFile(toolArguments.path);
             if (file != null && file.Exists())
             {
                 file.Move(toolArguments.newPath, newFullPath);
@@ -287,14 +222,93 @@ public class Workspace_Tool(Workspace workspace) : IToolCall
                 true);
         }
     }
-    public async Task<ToolResult> Compile(OllamaToolCall toolCall)
-    {
-        var toolArguments = toolCall.function.arguments;
-        var compileResult = await workspace.Compile(toolArguments.path);
 
-        return new ToolResult(
-            compileResult.Content,
-            compileResult.Errors.Count > 0 ? "Compiled with error(s)" : compileResult.Errors.Count > 0 ? "Compiled with warning(s)" : "Compiled succesfully",
-            false);
-    }
+    //public async Task<ToolResult> FilesList(OllamaToolCall toolCall)
+    //{
+    //    var toolArguments = toolCall.function.arguments;
+    //    var listAllFilesText = await Workspace.GetListAllFilesText();
+    //    return new ToolResult(listAllFilesText, "Shown all files", false);
+    //}
+    //public async Task<ToolResult> Read(OllamaToolCall toolCall)
+    //{
+    //    var toolArguments = toolCall.function.arguments;
+    //    if (toolArguments.path == null)
+    //        return new ToolResult(
+    //            "Error parameter path is not supplied.",
+    //            "Error parameter path is not supplied.",
+    //            true);
+
+    //    var file = Workspace.GetFile(toolArguments.path);
+    //    if (file == null)
+    //    {
+    //        return new ToolResult(
+    //            $"Error opening file '{toolArguments.path}': file not found",
+    //            $"Error opening file '{toolArguments.path}': file not found",
+    //            true);
+    //    }
+
+    //    var fileContent = await file.GetFileContent();
+    //    return new ToolResult(
+    //        fileContent,
+    //        $"Showed file '{toolArguments.path}'",
+    //        false);
+    //}
+    //public async Task<ToolResult> TextSearch(OllamaToolCall toolCall)
+    //{
+    //    var toolArguments = toolCall.function.arguments;
+    //    if (toolArguments.query == null)
+    //        return new ToolResult(
+    //            "Error parameter query is not supplied.",
+    //            "Error parameter query is not supplied.",
+    //            true);
+    //    var files = Workspace.Files;
+    //    if (string.IsNullOrEmpty(toolArguments.path) == false)
+    //    {
+    //        var file = Workspace.GetFile(toolArguments.path);
+    //        if (file != null)
+    //        {
+    //            files = [file];
+    //        }
+    //        else
+    //        {
+    //            return new ToolResult(
+    //                $"Error could not find file '{toolArguments.path}'",
+    //                $"Error could not find file",
+    //                true);
+    //        }
+    //    }
+
+    //    StringBuilder sb = new StringBuilder();
+    //    var found = 0;
+    //    sb.AppendLine($"query: '{toolArguments.query}'");
+    //    foreach (var file in files)
+    //    {
+    //        var fileContent = await file.GetFileContent();
+    //        foreach (var line in fileContent.GetLines())
+    //        {
+    //            var index = line.content.ToLower().IndexOf(toolArguments.query.ToLower());
+    //            if (index < 0)
+    //                continue;
+
+    //            sb.AppendLine($"{file.RelativePath}:{line.lineNumber} {line.content}");
+    //            found++;
+    //        }
+    //    }
+    //    sb.AppendLine($"Found {found} instances.");
+
+    //    return new ToolResult(
+    //        sb.ToString(),
+    //        $"Showed search results",
+    //        false);
+    //}
+    //public async Task<ToolResult> Compile(OllamaToolCall toolCall)
+    //{
+    //    var toolArguments = toolCall.function.arguments;
+    //    var compileResult = await Workspace.Compile(toolArguments.path);
+
+    //    return new ToolResult(
+    //        compileResult.Content,
+    //        compileResult.Errors.Count > 0 ? "Compiled with error(s)" : compileResult.Errors.Count > 0 ? "Compiled with warning(s)" : "Compiled succesfully",
+    //        false);
+    //}
 }

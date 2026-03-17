@@ -10,30 +10,42 @@ public class Workspace
     public string RootDirectoryName { get; set; } = string.Empty;
     public string UserPrompt { get; set; } = string.Empty;
     public bool PlanningIsDone { get; set; }
-    public bool WorkIsDone { get; set; }
+    public bool Debugging { get; set; }
     public int? CurrentSubTask { get; set; }
+    public bool WorkIsDone { get; set; }
+    public List<WorkspaceOriginalFile> OriginalFiles { get; set; } = [];
     public List<WorkspaceFile> Files { get; set; } = [];
     public List<WorkspaceSubTask> SubTasks { get; set; } = [];
     public List<PromptResponseResults> PlanningHistory { get; set; } = [];
     public List<PromptResponseResults> CodingHistory { get; set; } = [];
     public List<PromptResponseResults> DebugHistory { get; set; } = [];
-    public WaitingForProjectManager? WaitingForProjectManager { get; set; }
+    public Question_CodingAgent_WaitingFor_ProjectManagerAgent_Answer? CodingAgent_WaitingFor_ProjectManagerAgent_Answer { get; set; }
+    public Question_DebugAgent_WaitingFor_ProjectManagerAgent_Answer? DebugAgent_WaitingFor_ProjectManagerAgent_Answer { get; set; }
+    public Question_DebugAgent_WaitingFor_CoderAgent_Answer? DebugAgent_WaitingFor_CoderAgent_Answer { get; set; }
 
     public WorkspaceFile? GetFile(string path)
         => Files.FirstOrDefault(a => a.RelativePath.Equals(path.Replace("/", "\\"), StringComparison.CurrentCultureIgnoreCase));
+    public WorkspaceOriginalFile? GetOriginalFile(string path)
+        => OriginalFiles.FirstOrDefault(a => a.RelativePath.Equals(path.Replace("/", "\\"), StringComparison.CurrentCultureIgnoreCase));
     public WorkspaceSubTask? GetSubTask(string? id)
         => SubTasks.FirstOrDefault(a => a.Id.ToString() == id);
     public WorkspaceSubTask? GetCurrentSubTask()
     {
         if (CurrentSubTask == null && SubTasks.Count > 0)
         {
-            var subtask = SubTasks.First();
+            var subtask = SubTasks.First(a => a.Finished == false);
             CurrentSubTask = subtask.Id;
             return subtask;
         }
         if (CurrentSubTask == null)
             return null;
-        return GetSubTask(CurrentSubTask.Value.ToString());
+        var current = GetSubTask(CurrentSubTask.Value.ToString());
+        if (current?.Finished == true)
+        {
+            current = SubTasks.FirstOrDefault(a => a.Finished == false);
+            CurrentSubTask = current?.Id;
+        }
+        return current;
     }
 
     public async static Task<Workspace?> TryLoad(string rootDirectoryName, CancellationToken ct = default)
@@ -46,18 +58,11 @@ public class Workspace
             {
                 workspace = JsonSerializer.Deserialize<Workspace>(stream);
             }
-
             if (workspace != null)
             {
-                var rootDirectory = new DirectoryInfo(rootDirectoryName);
-                workspace.Files.Clear();
-
-                // For when the developer has changed the source code
-                await workspace.InitializeDirectory(rootDirectory);
-                await workspace.Save();
+                await InitializeWorkspace(workspace);
             }
         }
-
         return workspace;
     }
     public async static Task<Workspace> Create(string rootDirectoryName, string userPrompt)
@@ -67,27 +72,22 @@ public class Workspace
             RootDirectoryName = rootDirectoryName,
             UserPrompt = userPrompt,
         };
-
-        var rootDirectory = new DirectoryInfo(rootDirectoryName);
+        await InitializeWorkspace(workspace);
+        return workspace;
+    }
+    private static async Task InitializeWorkspace(Workspace workspace)
+    {
+        var rootDirectory = new DirectoryInfo(workspace.RootDirectoryName);
         if (!rootDirectory.Exists)
             rootDirectory.Create();
 
         // For when the developer has already setup a project and the workspace.llm file is just missing
+        workspace.Files.Clear();
+        workspace.OriginalFiles.Clear();
         await workspace.InitializeDirectory(rootDirectory);
         await workspace.Save();
-
-        return workspace;
     }
-    public async Task Save()
-    {
-        var llmFileString = Path.Combine(RootDirectoryName, "workspace.llm");
-        if (File.Exists(llmFileString))
-            File.Delete(llmFileString);
-
-        using var stream = File.OpenWrite(llmFileString);
-        await JsonSerializer.SerializeAsync(stream, this);
-    }
-
+    
     private async Task InitializeDirectory(DirectoryInfo directoryInfo, bool isRoot = true, CancellationToken ct = default)
     {
         foreach (var dir in directoryInfo.GetDirectories())
@@ -105,11 +105,15 @@ public class Workspace
                 continue;
             var relativePath = Path.GetRelativePath(RootDirectoryName, file.FullName);
             var fullPath = file.FullName;
+            var content = await File.ReadAllTextAsync(fullPath);
             var workspaceFile = new WorkspaceFile(relativePath, fullPath);
             Files.Add(workspaceFile);
+            var workspaceOriginalFile = new WorkspaceOriginalFile(relativePath, fullPath, content);
+            OriginalFiles.Add(workspaceOriginalFile);
         }
     }
-    public void TryParseFullPath(string path, out string fullPath)
+
+    public void GaurdParseFullPath(string path, out string fullPath)
     {
         var currentDirectory = new DirectoryInfo(RootDirectoryName);
 
@@ -119,7 +123,15 @@ public class Workspace
         if (!fullPath.StartsWith(currentDirectory.FullName + Path.DirectorySeparatorChar))
             throw new Exception($"LLM path escape detected: {path}");
     }
+    public async Task Save()
+    {
+        var llmFileString = Path.Combine(RootDirectoryName, "workspace.llm");
+        if (File.Exists(llmFileString))
+            File.Delete(llmFileString);
 
+        using var stream = File.OpenWrite(llmFileString);
+        await JsonSerializer.SerializeAsync(stream, this);
+    }
     public async Task<CompileResult> Compile(string? relativePath = null)
     {
         if (relativePath == null)
@@ -130,7 +142,7 @@ public class Workspace
         }
         else
         {
-            TryParseFullPath(relativePath, out var fullPath);
+            GaurdParseFullPath(relativePath, out var fullPath);
             var solutionOrProjectFile = new FileInfo(fullPath);
             if (solutionOrProjectFile == null)
             {
@@ -148,7 +160,6 @@ public class Workspace
             return compileResult;
         }
     }
-
     public async Task<string> GetListAllFilesText()
     {
         StringBuilder sb = new StringBuilder();

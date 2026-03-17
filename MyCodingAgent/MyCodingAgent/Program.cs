@@ -44,8 +44,8 @@ internal class Program : IDisposable
         Console.WriteLine($"Model '{model.Name}' initialized, initialising agents, please wait...");
         var planningAgent = new PlanningAgent(workspace, LlmService);
         var codingAgent = new CodingAgent(workspace, LlmService);
-        var debuggingAgent = new DebuggingAgent(workspace, LlmService);
-        var projectManagerAgent = new ProjectManagerAgent(workspace, LlmService);
+        var debuggingAgent = new DebugAgent(workspace, LlmService);
+        var projectManagerAgent = new ProjectManagerAgentForCodingAgent(workspace, LlmService);
 
         Console.WriteLine("Agents initialized, attempting to compile workspace, please wait...");
         var compileResult = await workspace.Compile();
@@ -62,8 +62,8 @@ internal class Program : IDisposable
         OllamaModel model, 
         PlanningAgent planningAgent,
         CodingAgent codingAgent, 
-        DebuggingAgent debuggingAgent,
-        ProjectManagerAgent projectManagerAgent, 
+        DebugAgent debuggingAgent,
+        ProjectManagerAgentForCodingAgent projectManagerAgent, 
         CompileResult compileResult)
     {
         // -------------------------
@@ -88,7 +88,6 @@ internal class Program : IDisposable
             if (NeedsDebugging(workspace, compileResult))
             {
                 compileResult = await RunDebugLoop(workspace, model, debuggingAgent, compileResult);
-                workspace.CodingHistory.Clear();
                 ShownMessages.Clear();
                 Console.Clear();
                 continue;
@@ -112,7 +111,7 @@ internal class Program : IDisposable
 
         await workspace.Save();
     }
-    private async Task<CompileResult> RunDebugLoop(Workspace workspace, OllamaModel model, DebuggingAgent debuggingAgent, CompileResult compileResult)
+    private async Task<CompileResult> RunDebugLoop(Workspace workspace, OllamaModel model, DebugAgent debuggingAgent, CompileResult compileResult)
     {
         while (NeedsDebugging(workspace, compileResult))
         {
@@ -121,24 +120,37 @@ internal class Program : IDisposable
 
         return compileResult;
     }
-    private async Task<CompileResult> RunProjectManagerLoop(Workspace workspace, OllamaModel model, ProjectManagerAgent projectManagerAgent, CompileResult compileResult)
+    private async Task<CompileResult> RunProjectManagerLoop(Workspace workspace, OllamaModel model, ProjectManagerAgentForCodingAgent projectManagerAgent, CompileResult compileResult)
     {
-        while (workspace.WaitingForProjectManager != null)
+        while (workspace.CodingAgent_WaitingFor_ProjectManagerAgent_Answer != null)
         {
             compileResult = await AgentFlow(workspace, model, projectManagerAgent, compileResult);
         }
 
         return compileResult;
     }
-    private static bool NeedsProjectManager(Workspace workspace)
+    private bool NeedsProjectManager(Workspace workspace)
     {
-        return workspace.WaitingForProjectManager != null;
+        return workspace.CodingAgent_WaitingFor_ProjectManagerAgent_Answer != null;
     }
-    private static bool NeedsDebugging(Workspace workspace, CompileResult compileResult)
+    private bool NeedsDebugging(Workspace workspace, CompileResult compileResult)
     {
-        return compileResult.Errors.Count > 0 &&
+        if (workspace.DebugAgent_WaitingFor_CoderAgent_Answer != null ||
+            workspace.DebugAgent_WaitingFor_ProjectManagerAgent_Answer != null)
+            return false;
+        if (workspace.Debugging) 
+            return true;
+
+        var res = compileResult.Errors.Count > 0 &&
                workspace.Files.Count > 0 &&
-               workspace.WaitingForProjectManager == null;
+               workspace.CodingAgent_WaitingFor_ProjectManagerAgent_Answer == null;
+        if (res)
+        {
+            workspace.Debugging = true;
+            ShownMessages.Clear();
+            Console.Clear();
+        }
+        return res;
     }
 
     private async Task<CompileResult> AgentFlow(Workspace workspace, OllamaModel model, IAgent agent, CompileResult compileResult)

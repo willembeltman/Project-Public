@@ -3,7 +3,7 @@ using MyCodingAgent.Models;
 
 namespace MyCodingAgent.ToolCalls;
 
-public class AnswerCoderAgentQuestion_Tool(Workspace workspace) : IToolCall
+public class Answer_ProjectManagerAgent_To_CoderAgent_Tool(Workspace workspace) : IToolCall
 {
     public string Name
         => "answer_coder_agent_question";
@@ -25,17 +25,17 @@ public class AnswerCoderAgentQuestion_Tool(Workspace workspace) : IToolCall
                 "parameter content is not supplied.",
                 true);
 
-        if (workspace.WaitingForProjectManager == null)
+        if (workspace.CodingAgent_WaitingFor_ProjectManagerAgent_Answer == null)
             throw new Exception("Oh ooh...");
 
         var coderToolCall = workspace.CodingHistory
             .SelectMany(a => a.ToolCallResults)
-            .FirstOrDefault(a => a.tool_call.id == workspace.WaitingForProjectManager.ToolCallId);
+            .FirstOrDefault(a => a.tool_call.id == workspace.CodingAgent_WaitingFor_ProjectManagerAgent_Answer.ToolCallId);
         if (coderToolCall == null)
             throw new Exception("Oh ooh...");
 
         coderToolCall.result.content = toolArguments.content;
-        workspace.WaitingForProjectManager = null;
+        workspace.CodingAgent_WaitingFor_ProjectManagerAgent_Answer = null;
 
         return new ToolResult(
             $"Updated subtask '{toolArguments.id}'",

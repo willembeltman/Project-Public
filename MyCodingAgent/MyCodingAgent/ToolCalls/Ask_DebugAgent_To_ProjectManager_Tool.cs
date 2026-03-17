@@ -3,7 +3,7 @@ using MyCodingAgent.Models;
 
 namespace MyCodingAgent.ToolCalls;
 
-public class AskProjectManager_Tool(Workspace workspace) : IToolCall
+public class Ask_DebugAgent_To_ProjectManager_Tool(Workspace workspace) : IToolCall
 {
     public string Name
         => "ask_project_manager";
@@ -28,7 +28,7 @@ public class AskProjectManager_Tool(Workspace workspace) : IToolCall
         if (toolCall.id == null)
             throw new Exception("eeeuhm...");
 
-        workspace.WaitingForProjectManager =
+        workspace.DebugAgent_WaitingFor_ProjectManagerAgent_Answer =
             new(toolCall.id, toolArguments.content);
 
         var answer = "Waiting for answer...";

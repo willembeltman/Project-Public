@@ -3,4 +3,4 @@
 public record PromptResponseResults(
     OllamaPrompt Prompt,
     OllamaResponse Response,
-    ToolCallResult[] ToolCallResults);
+    List<ToolCallResult> ToolCallResults);

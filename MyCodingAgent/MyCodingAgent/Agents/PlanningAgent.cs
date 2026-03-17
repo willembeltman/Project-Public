@@ -12,9 +12,17 @@ public class PlanningAgent(Workspace Workspace, OllamaClient Client) : BaseAgent
     [
         new WorkspaceReadonly_Tool(Workspace),
         new SubTasks_Tool(Workspace),
-        new AskHumanDeveloper_Tool(),
+        new Ask_HumanDeveloper_Tool(),
         new WorkIsAlreadyDone_Tool(Workspace)
     ];
+    public WorkspaceReadonly_Tool WorkspaceTool
+        => (Tools.First(a => a is WorkspaceReadonly_Tool) as WorkspaceReadonly_Tool)!;
+    public SubTasks_Tool SubTasksTool
+        => (Tools.First(a => a is SubTasks_Tool) as SubTasks_Tool)!;
+    public Ask_HumanDeveloper_Tool AskHumanDeveloperTool
+        => (Tools.First(a => a is Ask_HumanDeveloper_Tool) as Ask_HumanDeveloper_Tool)!;
+    public WorkIsAlreadyDone_Tool WorkIsAlreadyDoneTool
+        => (Tools.First(a => a is WorkIsAlreadyDone_Tool) as WorkIsAlreadyDone_Tool)!;
 
     public async Task<OllamaPrompt> GeneratePrompt(CompileResult compileResult)
     {
@@ -35,11 +43,11 @@ You can reply multiple tool_calls.
 WORKFLOW
 
 1. Understand the developer request
-2. Inspect the workspace if needed (use list_all_files, search, show_file tools)
+2. Inspect the workspace if needed (use '{WorkspaceTool.Name}' tools)
 3. Determine what functionality must be implemented
 4. Break the work into clear development subtasks
-5. Create subtasks using the create_subtask tool
-6. When the full plan is complete call the planning_is_done tool
+5. Create subtasks using the '{SubTasksTool.Name}' tool
+6. When the full plan is complete call the 'planning_is_done' action of the '{SubTasksTool.Name}' tool
 
 TASK RULES
 
@@ -51,11 +59,11 @@ TASK RULES
 IMPORTANT
 
 - When you have enough information, STOP investigating and start creating subtasks.
-- When the plan is complete you MUST call the tool planning_is_done.
+- When the plan is complete you MUST call the 'planning_is_done' action of the '{SubTasksTool.Name}' tool.
 - The compiler expects a .csproj, .sln or .slnx file in the root of the workspace
 - You must target .NET 10 for projects. Do not forget!
 
-If the requested functionality already exists in the codebase you may call work_is_already_done.",
+If the requested functionality already exists in the codebase you may call {WorkIsAlreadyDoneTool.Name}.",
                 null, 
                 null),
 

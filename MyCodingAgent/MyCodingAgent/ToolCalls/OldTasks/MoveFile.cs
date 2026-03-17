@@ -28,7 +28,7 @@ public class MoveFile(Workspace workspace) : IToolCall
                 "parameter newPath is not supplied.",
                 true);
 
-        workspace.TryParseFullPath(toolArguments.newPath, out var newFullPath);
+        workspace.GaurdParseFullPath(toolArguments.newPath, out var newFullPath);
 
         try
         {

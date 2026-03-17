@@ -6,19 +6,27 @@ using System.Text.RegularExpressions;
 
 namespace MyCodingAgent.ToolCalls;
 
-public class WorkspaceReadonly_Tool(Workspace workspace) : IToolCall
+public class WorkspaceReadonly_Tool(Workspace Workspace) : IToolCall
 {
-    public string Name => "workspace";
-    public string Description => "Interact with the workspace.";
+    protected Workspace Workspace = Workspace;
+    public virtual string Name => "workspace";
+    public virtual string Description => "Interact with the workspace.";
 
-    public ToolParameter[] Parameters { get; } =
+    public virtual ToolParameter[] Parameters { get; } =
     [
-        new ("action", "string", "Action to perform", ["files_list", "read", "text_search", "compile"]),
+        new ("action", "string", "Action to perform", 
+        [
+            "files_list", 
+            "read", 
+            "text_search",
+            "compile", 
+            "diff_with_original"
+        ]),
         new ("path", "string", "The relative path from the workspace root (for all actions except 'files_list')", null, true),
         new ("query", "string", "Exact text to find (for 'text_search' and 'text_search_and_replace' action)", null, true),
     ];
 
-    public async Task<ToolResult> Invoke(OllamaToolCall toolCall)
+    public virtual async Task<ToolResult> Invoke(OllamaToolCall toolCall)
     {
         var toolArguments = toolCall.function.arguments;
         if (toolArguments.action == null)
@@ -33,6 +41,7 @@ public class WorkspaceReadonly_Tool(Workspace workspace) : IToolCall
             "read" => await Read(toolCall),
             "text_search" => await TextSearch(toolCall),
             "compile" => await Compile(toolCall),
+            "diff_with_original" => await Diff(toolCall),
             _ => new ToolResult(
                 $"Error could not find action '{toolArguments.action}'",
                 $"Error could not find action '{toolArguments.action}'",
@@ -40,13 +49,13 @@ public class WorkspaceReadonly_Tool(Workspace workspace) : IToolCall
         };
     }
 
-    public async Task<ToolResult> FilesList(OllamaToolCall toolCall)
+    protected async Task<ToolResult> FilesList(OllamaToolCall toolCall)
     {
         var toolArguments = toolCall.function.arguments;
-        var listAllFilesText = await workspace.GetListAllFilesText();
+        var listAllFilesText = await Workspace.GetListAllFilesText();
         return new ToolResult(listAllFilesText, "Shown all files", false);
     }
-    public async Task<ToolResult> Read(OllamaToolCall toolCall)
+    protected async Task<ToolResult> Read(OllamaToolCall toolCall)
     {
         var toolArguments = toolCall.function.arguments;
         if (toolArguments.path == null)
@@ -55,7 +64,7 @@ public class WorkspaceReadonly_Tool(Workspace workspace) : IToolCall
                 "Error parameter path is not supplied.",
                 true);
 
-        var file = workspace.GetFile(toolArguments.path);
+        var file = Workspace.GetFile(toolArguments.path);
         if (file == null)
         {
             return new ToolResult(
@@ -70,7 +79,17 @@ public class WorkspaceReadonly_Tool(Workspace workspace) : IToolCall
             $"Showed file '{toolArguments.path}'",
             false);
     }
-    public async Task<ToolResult> TextSearch(OllamaToolCall toolCall)
+    protected async Task<ToolResult> Compile(OllamaToolCall toolCall)
+    {
+        var toolArguments = toolCall.function.arguments;
+        var compileResult = await Workspace.Compile(toolArguments.path);
+
+        return new ToolResult(
+            compileResult.Content,
+            compileResult.Errors.Count > 0 ? "Compiled with error(s)" : compileResult.Errors.Count > 0 ? "Compiled with warning(s)" : "Compiled succesfully",
+            false);
+    }
+    protected async Task<ToolResult> TextSearch(OllamaToolCall toolCall)
     {
         var toolArguments = toolCall.function.arguments;
         if (toolArguments.query == null)
@@ -78,10 +97,10 @@ public class WorkspaceReadonly_Tool(Workspace workspace) : IToolCall
                 "Error parameter query is not supplied.",
                 "Error parameter query is not supplied.",
                 true);
-        var files = workspace.Files;
+        var files = Workspace.Files;
         if (string.IsNullOrEmpty(toolArguments.path) == false)
         {
-            var file = workspace.GetFile(toolArguments.path);
+            var file = Workspace.GetFile(toolArguments.path);
             if (file != null)
             {
                 files = [file];
@@ -118,14 +137,67 @@ public class WorkspaceReadonly_Tool(Workspace workspace) : IToolCall
             $"Showed search results",
             false);
     }
-    public async Task<ToolResult> Compile(OllamaToolCall toolCall)
+    protected async Task<ToolResult> Diff(OllamaToolCall toolCall)
     {
         var toolArguments = toolCall.function.arguments;
-        var compileResult = await workspace.Compile(toolArguments.path);
+        if (toolArguments.path == null)
+            return new ToolResult(
+                "Error parameter path is not supplied.",
+                "Error parameter path is not supplied.",
+                true);
+
+        // 2. Haal het bestaande bestand op
+        var file = Workspace.GetFile(toolArguments.path);
+        if (file == null)
+        {
+            return new ToolResult(
+                $"Error: file '{toolArguments.path}' not found.",
+                "Error file not found",
+                true);
+        }
+        var orginalfile = Workspace.GetOriginalFile(toolArguments.path);
+        if (orginalfile == null)
+        {
+            return new ToolResult(
+                $"Error: orginal file '{toolArguments.path}' not found. This file has been added.",
+                "Error file not found",
+                true);
+        }
+
+        // 3. Bereken het verschil
+        var oldContent = orginalfile.Content;
+        var newContent = await file.GetFileContent();
+        var diffBuilder = new DiffPlex.DiffBuilder.SideBySideDiffBuilder(new DiffPlex.Differ());
+        var model = diffBuilder.BuildDiffModel(
+            oldContent ?? string.Empty, 
+            newContent ?? string.Empty);
+
+        // 4. Formatteer de output (vergelijkbaar met git diff stijl)
+        var sb = new StringBuilder();
+        sb.AppendLine($"Diff for file: {toolArguments.path}");
+        sb.AppendLine("--- Old");
+        sb.AppendLine("+++ New");
+
+        // We lopen door de regels van het 'Old' model om de verwijderingen en ongewijzigde regels te zien,
+        // en het 'New' model voor toevoegingen.
+        foreach (var line in model.OldText.Lines)
+        {
+            if (line.Type == DiffPlex.DiffBuilder.Model.ChangeType.Deleted)
+                sb.AppendLine($"- {line.Text}");
+            else if (line.Type == DiffPlex.DiffBuilder.Model.ChangeType.Unchanged && !string.IsNullOrEmpty(line.Text))
+                sb.AppendLine($"  {line.Text}");
+        }
+
+        foreach (var line in model.NewText.Lines)
+        {
+            if (line.Type == DiffPlex.DiffBuilder.Model.ChangeType.Inserted)
+                sb.AppendLine($"+ {line.Text}");
+        }
 
         return new ToolResult(
-            compileResult.Content,
-            compileResult.Errors.Count > 0 ? "Compiled with error(s)" : compileResult.Errors.Count > 0 ? "Compiled with warning(s)" : "Compiled succesfully",
+            sb.ToString(),
+            $"Diff generated for {toolArguments.path}",
             false);
     }
+
 }

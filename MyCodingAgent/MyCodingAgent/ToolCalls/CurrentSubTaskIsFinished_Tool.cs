@@ -32,6 +32,9 @@ public class CurrentSubTaskIsFinished_Tool(Workspace workspace) : IToolCall
             }
 
             subtask.Finished = true;
+            workspace.CodingHistory.Clear();
+
+
             return new ToolResult(
                 $"Finished subtask '{toolArguments.id}'",
                 $"Finished subtask",

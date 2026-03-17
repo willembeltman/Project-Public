@@ -15,7 +15,6 @@ public class WorkIsDone_Tool(Workspace workspace) : IToolCall
     {
         var toolArguments = toolCall.function.arguments;
         workspace.WorkIsDone = true;
-        await workspace.Save();
         return new ToolResult("OK DONE!", "OK DONE!", false);
     }
 }

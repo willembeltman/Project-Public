@@ -30,7 +30,7 @@ public class CreateFile(Workspace workspace) : IToolCall
                 "parameter content is not supplied.",
                 true);
 
-        workspace.TryParseFullPath(toolArguments.path, out var fullPath);
+        workspace.GaurdParseFullPath(toolArguments.path, out var fullPath);
 
         try
         {

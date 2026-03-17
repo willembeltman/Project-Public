@@ -4,14 +4,24 @@ using MyCodingAgent.Interfaces;
 using MyCodingAgent.Models;
 using MyCodingAgent.ToolCalls;
 
-public class DebuggingAgent(Workspace Workspace, OllamaClient Client) : BaseAgent(Workspace, Client), IAgent
+public class DebugAgent(Workspace workspace, OllamaClient client) : BaseAgent(workspace, client), IAgent
 {
     protected override List<PromptResponseResults> History => Workspace.DebugHistory;
     protected override IToolCall[] Tools { get; } =
     [
-        new Workspace_Tool(Workspace),
-        new AskProjectManager_Tool(Workspace)
+        new Workspace_Tool(workspace),
+        new DebugAgentIsDone_Tool(workspace),
+        new Ask_DebugAgent_To_CoderAgent_Tool(workspace),
+        new Ask_DebugAgent_To_ProjectManager_Tool(workspace)
     ];
+    public Workspace_Tool WorkspaceTool
+        => (Tools.First(a => a is Workspace_Tool) as Workspace_Tool)!;
+    public DebugAgentIsDone_Tool DebugAgentIsDoneTool
+        => (Tools.First(a => a is DebugAgentIsDone_Tool) as DebugAgentIsDone_Tool)!;
+    public Ask_DebugAgent_To_CoderAgent_Tool AskCoderAgentTool
+        => (Tools.First(a => a is Ask_DebugAgent_To_CoderAgent_Tool) as Ask_DebugAgent_To_CoderAgent_Tool)!;
+    public Ask_DebugAgent_To_ProjectManager_Tool AskProjectManagerTool
+        => (Tools.First(a => a is Ask_DebugAgent_To_ProjectManager_Tool) as Ask_DebugAgent_To_ProjectManager_Tool)!;
 
     public async Task<OllamaPrompt> GeneratePrompt(CompileResult compileResult)
     {
@@ -23,10 +33,27 @@ public class DebuggingAgent(Workspace Workspace, OllamaClient Client) : BaseAgen
                 null,
                 $@"You are a .NET 10 repair agent.
 
-RULES
+GOAL
+Fix compilation errors with minimal changes.
 
-- The compiler expects a .csproj, .sln or .slnx file in the ROOT of the workspace, it does not search sub-directories
-- You must target .NET 10 for projects. Do not forget!",
+WORKFLOW
+1. Analyze the error.
+2. Find the root cause.
+3. Read relevant files using '{WorkspaceTool.Name}'.
+4. Apply the smallest possible fix.
+5. Recompile using '{WorkspaceTool.Name}'.
+6. Repeat until it compiles.
+7. Call '{DebugAgentIsDoneTool.Name}' when done.
+
+RULES
+- A .csproj, .sln, or .slnx must exist in the ROOT (no sub-directory search).
+- Always read a file before modifying it.
+- Do not overwrite entire files unless necessary.
+- Use '{WorkspaceTool.Name}' for ALL file operations.
+- Target .NET 10 only.
+
+IF UNSURE
+Use '{AskCoderAgentTool.Name}' or '{AskProjectManagerTool.Name}'. Do not guess.",
                 null,
                 null),
         ];
@@ -37,6 +64,7 @@ RULES
             $@"--- CURRENT COMPILATION RESULT ---
 {compileResult.Content}
 --- END OF COMPILATION RESULT ---
+Note: this is up-to-date.
 
 GOAL
 Make the code compile successfully.
