@@ -67,9 +67,9 @@ If the requested functionality already exists in the codebase you may call work_
             new OllamaMessage(
                 nameof(OllamaAgentRole.user).ToLower(),
                 null,
-                $@"--- CURRENT MAIN TASK ---
+                $@"--- DEVELOPER REQUEST ---
 {Workspace.UserPrompt}
---- END OF MAIN TASK ---",
+--- END OF DEVELOPER REQUEST ---",
                 null, 
                 null),
         ];
@@ -79,7 +79,7 @@ If the requested functionality already exists in the codebase you may call work_
             messageList, 
             History, 
             [ ..Tools.Select(a => a.ToDto())],
-            maxTokens: 4096, 
+            maxTokens: 4096,
             additionalSizeInBytes: 0);
 
         return new OllamaPrompt(

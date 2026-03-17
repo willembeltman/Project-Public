@@ -34,7 +34,7 @@ internal class Program : IDisposable
         if (workspace == null || workspace.WorkIsDone)
             workspace = await CreateWorkspace(workspaceDirectory);
 
-        Console.WriteLine("Ollama service created, getting model list, please wait...");
+        Console.WriteLine("Workspace loaded, getting model list, please wait...");
         var list = await LlmService.GetModels();
 
         var model = ChooseModel(list);
@@ -58,7 +58,14 @@ internal class Program : IDisposable
         Console.WriteLine("Project compile attempt finished, starting lllm-development-cycle, please wait...");
         await RunMainLoop(workspace, model, planningAgent, codingAgent, debuggingAgent, projectManagerAgent, compileResult);
     }
-    private async Task RunMainLoop(Workspace workspace, OllamaModel model, PlanningAgent planningAgent, CodingAgent codingAgent, DebuggingAgent debuggingAgent, ProjectManagerAgent projectManagerAgent, CompileResult compileResult)
+    private async Task RunMainLoop(
+        Workspace workspace,
+        OllamaModel model, 
+        PlanningAgent planningAgent,
+        CodingAgent codingAgent, 
+        DebuggingAgent debuggingAgent,
+        ProjectManagerAgent projectManagerAgent, 
+        CompileResult compileResult)
     {
         // -------------------------
         // PLANNING
@@ -135,8 +142,8 @@ internal class Program : IDisposable
     private async Task<CompileResult> AgentFlow(Workspace workspace, OllamaModel model, IAgent agent, CompileResult compileResult)
     {
         workspace.PromptIndex++;
-        var hasAnswered = false;
-        while (!hasAnswered)
+        var hasToolCalls = false;
+        while (!hasToolCalls)
         {
             var prompt = await agent.GeneratePrompt(compileResult);
             //Console.WriteLine($"#{workspace.PromptIndex} Asking model:");
@@ -150,7 +157,7 @@ internal class Program : IDisposable
             Console.WriteLine();
 
             //Console.WriteLine($"#{workspace.PromptIndex} Applying answer...");
-            hasAnswered = await agent.ProcessResponse(prompt, response);
+            hasToolCalls = await agent.ProcessResponse(prompt, response);
 
             await workspace.Save();
         }
