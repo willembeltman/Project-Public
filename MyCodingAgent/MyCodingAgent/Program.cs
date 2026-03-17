@@ -42,10 +42,10 @@ internal class Program : IDisposable
         await LlmService.InitializeModelAsync(model);
 
         Console.WriteLine($"Model '{model.Name}' initialized, initialising agents, please wait...");
-        var planningAgent = new PlanningAgent(workspace);
-        var codingAgent = new CodingAgent(workspace);
-        var debuggingAgent = new DebuggingAgent(workspace);
-        var projectManagerAgent = new ProjectManagerAgent(workspace);
+        var planningAgent = new PlanningAgent(workspace, LlmService);
+        var codingAgent = new CodingAgent(workspace, LlmService);
+        var debuggingAgent = new DebuggingAgent(workspace, LlmService);
+        var projectManagerAgent = new ProjectManagerAgent(workspace, LlmService);
 
         Console.WriteLine("Agents initialized, attempting to compile project, please wait...");
         var compileResult = await workspace.Compile();
