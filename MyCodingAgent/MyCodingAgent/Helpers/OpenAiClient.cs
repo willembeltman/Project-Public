@@ -1,12 +1,98 @@
-﻿using MyCodingAgent.Interfaces;
-using MyCodingAgent.Models;
+﻿using MyCodingAgent.Models;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace MyCodingAgent.Helpers;
 
+/// <summary>
+/// BE CAREFULL
+/// This class is not used, and not working.
+/// I just copyed it from OllamaClient and changed name and endpoints
+///
+/// To support OpenAi, we need to detach the 'Ollama'-models from the engine further.
+/// I already tried to do this while developing the engine but I had trouble with the OllamaMessage.
+/// Off the top of my head we need to duplicate all the 'Message'-models, and map them inside the OllamaService calls.
+/// Then we can make a specific implementation
+/// 
+/// 1. Base URL voor ChatGPT API
+/// De base url wordt:
+/// https://api.openai.com/v1/
+/// Dus bijvoorbeeld:
+/// Ollama OpenAI
+/// /api/chat	/v1/chat/completions
+/// /api/tags	/v1/models
+/// 
+/// 2. API key toevoegen
+/// Je moet een header toevoegen:
+/// Authorization: Bearer YOUR_API_KEY
+/// In C# kan dat zo:
+/// private readonly HttpClient HttpClient = new()
+/// {
+/// Timeout = TimeSpan.FromSeconds(3600)
+/// };
+/// public OllamaClient(string apiKey)
+/// {
+/// HttpClient.DefaultRequestHeaders.Authorization =
+///     new AuthenticationHeaderValue("Bearer", apiKey);
+/// }
+/// Je moet ook deze namespace toevoegen:
+/// using System.Net.Http.Headers;
+/// 
+/// 3. Chat endpoint aanpassen
+/// Bij OpenAI wordt dit endpoint:
+/// POST https://api.openai.com/v1/chat/completions
+/// En payload bijvoorbeeld:
+/// {
+///   "model": "gpt-5-mini",
+///   "messages": [
+///     {"role": "system", "content": "You are helpful"},
+///     {"role": "user", "content": "Hello"}
+///   ],
+///   "tools": [...]
+/// }
+/// Dus jouw URL moet veranderen naar:
+/// var url = "https://api.openai.com/v1/chat/completions";
+/// 4.Groot verschil met Ollama
+/// Ollama response:
+/// response.message.content
+/// OpenAI response:
+/// choices[0].message.content
+/// Dus je response model moet anders zijn.
+/// 5. Models ophalen
+/// Ollama:
+/// GET / api / tags
+/// OpenAI:
+/// GET / v1 / models
+/// 6.Handige truc(provider abstraction)
+/// Omdat je al een client hebt, zou ik eigenlijk dit doen:
+/// interface ILLMClient
+/// {
+///     Task<LLMResponse> ChatAsync(...);
+///     Task<LLMModel[]> GetModels();
+/// }
+/// 
+/// Dan implementaties:
+/// OllamaClient
+/// OpenAIClient
+/// DeepSeekClient
+/// 
+/// Dan kun je alle providers pluggen.
+/// Dit is precies hoe frameworks zoals LangChain het doen.
+/// 💡 Belangrijk voor jouw agentsysteem
+/// Omdat jij MCP tools gebruikt:
+/// OpenAI gebruikt:
+/// tools
+/// tool_choice
+/// tool_calls
+/// 
+/// Ollama gebruikt:
+/// tools
+/// tool_calls
+/// 
+/// Dus je tool JSON kan bijna 1-op-1 blijven.
+/// 
+/// </summary>
 public class OpenAiClient : IDisposable
 {
     private readonly Uri OpenAiServerUrl;

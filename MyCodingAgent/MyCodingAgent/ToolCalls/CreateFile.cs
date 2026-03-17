@@ -3,7 +3,7 @@ using MyCodingAgent.Models;
 
 namespace MyCodingAgent.ToolCalls;
 
-public class CreateFile(Workspace workspace) : ITool
+public class CreateFile(Workspace workspace) : IToolCall
 {
     public string Name
     => "create_file";
@@ -14,7 +14,7 @@ public class CreateFile(Workspace workspace) : ITool
     public ToolParameter[] Parameters { get; } =
     [
         new ("path", "string", "The relative path from the workspace root where the file should be created (e.g., 'src/main.cs')."),
-    new ("content", "string", "The complete source code or text content to be written into the new file.")
+        new ("content", "string", "The complete source code or text content to be written into the new file.")
     ];
     public async Task<ToolResult> Invoke(OllamaToolCall toolCall)
     {

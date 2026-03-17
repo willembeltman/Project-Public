@@ -3,7 +3,7 @@ using MyCodingAgent.Models;
 
 namespace MyCodingAgent.ToolCalls;
 
-public class CompileWorkspace(Workspace workspace) : ITool
+public class CompileWorkspace(Workspace workspace) : IToolCall
 {
     public string Name 
         => "get_compilation_result";

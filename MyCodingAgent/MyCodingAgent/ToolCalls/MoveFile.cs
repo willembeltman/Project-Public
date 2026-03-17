@@ -3,7 +3,7 @@ using MyCodingAgent.Models;
 
 namespace MyCodingAgent.ToolCalls;
 
-public class MoveFile(Workspace workspace) : ITool
+public class MoveFile(Workspace workspace) : IToolCall
 {
     public string Name
         => "move_file";

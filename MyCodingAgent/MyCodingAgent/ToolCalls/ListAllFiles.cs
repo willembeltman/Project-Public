@@ -3,7 +3,7 @@ using MyCodingAgent.Models;
 
 namespace MyCodingAgent.ToolCalls;
 
-public class ListAllFiles(Workspace workspace) : ITool
+public class ListAllFiles(Workspace workspace) : IToolCall
 {
     public string Name
         => "list_all_files";

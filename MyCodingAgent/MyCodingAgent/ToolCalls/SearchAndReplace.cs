@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 
 namespace MyCodingAgent.ToolCalls;
 
-public class SearchAndReplace(Workspace workspace) : ITool
+public class SearchAndReplace(Workspace workspace) : IToolCall
 {
     public string Name
         => "search_and_replace";

@@ -1,13 +1,14 @@
-﻿using MyCodingAgent.Interfaces;
+﻿using MyCodingAgent.Helpers;
+using MyCodingAgent.Interfaces;
 using MyCodingAgent.Models;
 using MyCodingAgent.ToolCalls;
 
 namespace MyCodingAgent.Agents;
 
-public class PlanningAgent(Workspace Workspace) : BaseAgent(Workspace), IAgent
+public class PlanningAgent(Workspace Workspace, OllamaClient Client) : BaseAgent(Workspace, Client), IAgent
 {
     protected override List<PromptResponseResults> History => Workspace.PlanningHistory;
-    protected override ITool[] Tools { get; } =
+    protected override IToolCall[] Tools { get; } =
     [
         new ListAllFiles(Workspace),
         new SearchInAllFiles(Workspace),

@@ -3,7 +3,7 @@ using MyCodingAgent.Models;
 
 namespace MyCodingAgent.ToolCalls;
 
-public class DeleteFile(Workspace workspace) : ITool
+public class DeleteFile(Workspace workspace) : IToolCall
 {
     public string Name
     => "delete_file";

@@ -3,7 +3,7 @@ using MyCodingAgent.Models;
 
 namespace MyCodingAgent.ToolCalls;
 
-public class AskDeveloperForExtraInformation : ITool
+public class AskDeveloperForExtraInformation : IToolCall
 {
     public string Name
         => "ask_developer_extra_information";

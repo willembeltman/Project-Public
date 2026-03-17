@@ -6,10 +6,10 @@ using MyCodingAgent.ToolCalls;
 using System.Text;
 using System.Text.Json;
 
-public class DebuggingAgent(Workspace Workspace) : BaseAgent(Workspace), IAgent
+public class DebuggingAgent(Workspace Workspace, OllamaClient Client) : BaseAgent(Workspace, Client), IAgent
 {
     protected override List<PromptResponseResults> History => Workspace.DebugHistory;
-    protected override ITool[] Tools { get; } =
+    protected override IToolCall[] Tools { get; } =
     [
         new ListAllFiles(Workspace),
         new SearchInAllFiles(Workspace),

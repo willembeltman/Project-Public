@@ -1,5 +1,6 @@
 ﻿using MyCodingAgent.Models;
 using System.Net.Http.Json;
+using System.Text;
 using System.Text.Json;
 
 namespace MyCodingAgent.Helpers;
@@ -12,6 +13,7 @@ public class OllamaClient(
         Timeout = TimeSpan.FromSeconds(3600)
     };
     private readonly Uri OllamaServerUrl = ollamaServerUrl ?? new Uri("http://localhost:11434");
+    private readonly Dictionary<Language, Dictionary<string, string>> Dictionaries = new Dictionary<Language, Dictionary<string, string>>();
 
     public async Task<OllamaModel[]> GetModels(CancellationToken ct = default)
     {
@@ -44,7 +46,7 @@ public class OllamaClient(
   ""model"": ""{model.Name}"",
   ""messages"": {JsonSerializer.Serialize(prompt.messages, DefaultJsonSerializerOptions.JsonSerializeOptionsIndented)},
   ""stream"": false,
-  ""tools"": [{GetToolsJson(prompt.tools)}]
+  ""tools"": [{CreateToolsJson(prompt.tools)}]
 }}";
 
         var url = new Uri(OllamaServerUrl, "/api/chat");
@@ -59,14 +61,80 @@ public class OllamaClient(
         var agentResponseString =
             await response.Content.ReadAsStringAsync();
 
-        var agentResponse = 
+        var agentResponse =
             JsonSerializer.Deserialize<OllamaResponse>(agentResponseString)
             ?? throw new Exception("Something is not right");
 
         return agentResponse;
     }
 
-    public static string GetToolsJson(Tool[] tools)
+    public async Task<string> Translate(OllamaModel model, Language toLanguage, string content, bool overwrite, CancellationToken ct = default)
+    {
+        if (!Dictionaries.TryGetValue(toLanguage, out var dictionary))
+        {
+            dictionary = new Dictionary<string, string>();
+            Dictionaries[toLanguage] = dictionary;
+        }
+
+        if (!overwrite && dictionary.TryGetValue(content, out var translation))
+        {
+            return translation;
+        }
+
+        var messages = new[]
+        {
+            new
+            {
+                role = "system",
+                content = $"You are a translator. Translate everything to {Enum.GetName(toLanguage)}. Only return the translated text, nothing else."
+            },
+            new
+            {
+                role = "user",
+                content = content
+            }
+        };
+
+        var payloadObject = new
+        {
+            model = model.Name,
+            messages = messages,
+            stream = false
+        };
+
+        var payload = JsonSerializer.Serialize(
+            payloadObject,
+            DefaultJsonSerializerOptions.JsonSerializeOptionsIndented);
+
+        var url = new Uri(OllamaServerUrl, "/api/chat");
+
+        var request = new HttpRequestMessage(HttpMethod.Post, url)
+        {
+            Content = new StringContent(payload, Encoding.UTF8, "application/json")
+        };
+
+        var response = await HttpClient.SendAsync(
+            request,
+            HttpCompletionOption.ResponseHeadersRead,
+            ct);
+
+        response.EnsureSuccessStatusCode();
+
+        var json = await response.Content.ReadAsStringAsync(ct);
+
+        var result = JsonSerializer.Deserialize<OllamaResponse>(json)
+            ?? throw new Exception("Invalid response from Ollama");
+
+        // 🔥 Dit is wat je zoekt
+        var agentTranslation = result.message?.content?.Trim()
+            ?? throw new Exception("No content returned");
+
+        dictionary[content] = agentTranslation;
+
+        return agentTranslation;
+    }
+
+    public static string CreateToolsJson(Tool[] tools)
     {
         return string.Join(",", tools.Select(tool => $@"
   {{

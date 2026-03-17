@@ -6,10 +6,10 @@ using System.Text.Json;
 
 namespace MyCodingAgent.Agents;
 
-public class ProjectManagerAgent(Workspace Workspace) : BaseAgent(Workspace), IAgent
+public class ProjectManagerAgent(Workspace Workspace, OllamaClient Client) : BaseAgent(Workspace, Client), IAgent
 {
     protected override List<PromptResponseResults> History => Workspace.PlanningHistory;
-    protected override ITool[] Tools { get; } =
+    protected override IToolCall[] Tools { get; } =
     [
         new ListAllFiles(Workspace),
         new SearchInAllFiles(Workspace),
@@ -25,7 +25,7 @@ public class ProjectManagerAgent(Workspace Workspace) : BaseAgent(Workspace), IA
     public async Task<OllamaPrompt> GeneratePrompt(CompileResult compileResult)
     {
         if (Workspace.WaitingForProjectManager == null)
-            throw new Exception("Geen actieve vraag gevonden voor de Project Manager.");
+            throw new Exception("No active job found for Project Manager.");
 
         List<OllamaMessage> messageList =
         [
@@ -65,7 +65,6 @@ When you have the answer, you MUST call 'answer_coder_question'.",
 {Workspace.WaitingForProjectManager.Question}
 
 ### CONTEXT: CURRENT SUBTASK DEFINITION
-ID: {Workspace.GetCurrentSubTask()?.Id}
 {Workspace.GetCurrentSubTask()?.Content}
 
 ### GUIDANCE

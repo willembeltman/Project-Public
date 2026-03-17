@@ -2,7 +2,7 @@
 
 namespace MyCodingAgent.Interfaces;
 
-public interface ITool
+public interface IToolCall
 {
     string Name {  get; }
     string Description { get; }

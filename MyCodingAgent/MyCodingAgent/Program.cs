@@ -35,9 +35,8 @@ internal class Program : IDisposable
             workspace = await CreateWorkspace(workspaceDirectory);
 
         Console.WriteLine("Workspace loaded, getting model list, please wait...");
-        var list = await LlmService.GetModels();
-
-        var model = ChooseModel(list);
+        var modelList = await LlmService.GetModels();
+        var model = ChooseModel(modelList);
 
         Console.WriteLine($"Initialising model '{model.Name}', please wait...");
         await LlmService.InitializeModelAsync(model);
@@ -96,7 +95,7 @@ internal class Program : IDisposable
             }
 
             // PROJECT MANAGER MODE
-            if (workspace.WaitingForProjectManager != null)
+            if (NeedsProjectManager(workspace))
             {
                 compileResult = await RunProjectManagerLoop(workspace, model, projectManagerAgent, compileResult);
                 ShownMessages.Clear();
@@ -111,7 +110,6 @@ internal class Program : IDisposable
             compileResult = await AgentFlow(workspace, model, codingAgent, compileResult);
         }
 
-        workspace.WorkIsDone = true;
         await workspace.Save();
     }
     private async Task<CompileResult> RunDebugLoop(Workspace workspace, OllamaModel model, DebuggingAgent debuggingAgent, CompileResult compileResult)
@@ -131,6 +129,10 @@ internal class Program : IDisposable
         }
 
         return compileResult;
+    }
+    private static bool NeedsProjectManager(Workspace workspace)
+    {
+        return workspace.WaitingForProjectManager != null;
     }
     private static bool NeedsDebugging(Workspace workspace, CompileResult compileResult)
     {

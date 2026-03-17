@@ -5,18 +5,19 @@ using System.Text.Json;
 
 namespace MyCodingAgent.Agents;
 
-public abstract class BaseAgent(Workspace Workspace)
+public abstract class BaseAgent(Workspace Workspace, OllamaClient Client)
 {
     protected abstract List<PromptResponseResults> History { get; }
-    protected abstract ITool[] Tools { get; }
+    protected abstract IToolCall[] Tools { get; }
 
     protected Workspace Workspace { get; } = Workspace;
+    protected OllamaClient Client { get; } = Client;
 
     protected static void AddHistoryAndToolCalls(List<OllamaMessage> messageList, List<PromptResponseResults> history, Tool[] tools, int maxTokens, int additionalSizeInBytes)
     {
         var messagesJson = JsonSerializer.Serialize(messageList, DefaultJsonSerializerOptions.JsonSerializeOptionsIndented);
         var messagesJsonLength = messagesJson.Length;
-        var toolsJson = OllamaClient.GetToolsJson(tools);
+        var toolsJson = OllamaClient.CreateToolsJson(tools);
         var toolsJsonLength = toolsJson.Length;
         var maxHistory = 0;
         int maxLongDesciptionPrompt = 0;
@@ -86,7 +87,7 @@ public abstract class BaseAgent(Workspace Workspace)
         }
     }
 
-    protected async Task<PromptResponseResults> GetAgentResponseResult(OllamaPrompt prompt, OllamaResponse response, ITool[] tools)
+    protected async Task<PromptResponseResults> GetAgentResponseResult(OllamaPrompt prompt, OllamaResponse response, IToolCall[] tools)
     {
         var list = new List<ToolCallResult>();
         if (response.message.tool_calls != null)

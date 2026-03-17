@@ -3,7 +3,7 @@ using MyCodingAgent.Models;
 
 namespace MyCodingAgent.ToolCalls;
 
-public class DeleteSubTask(Workspace workspace) : ITool
+public class DeleteSubTask(Workspace workspace) : IToolCall
 {
     public string Name
     => "delete_subtask";

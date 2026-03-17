@@ -5,7 +5,7 @@ using System.Text;
 
 namespace MyCodingAgent.ToolCalls;
 
-public class ShowFileWithLineNumbers(Workspace workspace) : ITool
+public class ShowFileWithLineNumbers(Workspace workspace) : IToolCall
 {
     public string Name
         => "show_file_with_linenumbers";

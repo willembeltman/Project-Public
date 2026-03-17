@@ -6,10 +6,10 @@ using System.Text.Json;
 
 namespace MyCodingAgent.Agents;
 
-public class CodingAgent(Workspace Workspace) : BaseAgent(Workspace), IAgent
+public class CodingAgent(Workspace Workspace, OllamaClient Client) : BaseAgent(Workspace, Client), IAgent
 {
     protected override List<PromptResponseResults> History => Workspace.CodingHistory;
-    protected override ITool[] Tools { get; } =
+    protected override IToolCall[] Tools { get; } =
     [
         new ListAllFiles(Workspace),
         new SearchInAllFiles(Workspace),

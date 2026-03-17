@@ -5,7 +5,7 @@ using System.Text;
 
 namespace MyCodingAgent.ToolCalls;
 
-public class SearchInAllFiles(Workspace workspace) : ITool
+public class SearchInAllFiles(Workspace workspace) : IToolCall
 {
     public string Name
         => "search_in_all_files";

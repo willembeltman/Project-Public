@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 
 namespace MyCodingAgent.ToolCalls;
 
-public class SearchAndReplaceInAllFiles(Workspace workspace) : ITool
+public class SearchAndReplaceInAllFiles(Workspace workspace) : IToolCall
 {
     public string Name
     => "search_and_replace_in_all_files";

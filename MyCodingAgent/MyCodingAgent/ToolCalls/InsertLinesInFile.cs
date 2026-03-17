@@ -3,7 +3,7 @@ using MyCodingAgent.Models;
 
 namespace MyCodingAgent.ToolCalls;
 
-public class InsertLinesInFile(Workspace workspace) : ITool
+public class InsertLinesInFile(Workspace workspace) : IToolCall
 {
     public string Name
         => "insert_lines_into_file";

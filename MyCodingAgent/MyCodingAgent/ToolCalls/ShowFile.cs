@@ -5,7 +5,7 @@ using System.Text;
 
 namespace MyCodingAgent.ToolCalls;
 
-public class ShowFile(Workspace workspace) : ITool
+public class ShowFile(Workspace workspace) : IToolCall
 {
     public string Name
     => "show_file";

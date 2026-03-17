@@ -3,7 +3,7 @@ using MyCodingAgent.Models;
 
 namespace MyCodingAgent.ToolCalls;
 
-public class ReplaceLinesInFile(Workspace workspace) : ITool
+public class ReplaceLinesInFile(Workspace workspace) : IToolCall
 {
     public string Name
         => "replace_lines_in_file";

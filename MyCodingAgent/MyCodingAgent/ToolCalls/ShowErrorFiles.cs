@@ -5,7 +5,7 @@ using System.Text;
 
 namespace MyCodingAgent.ToolCalls;
 
-public class ShowErrorFiles(Workspace workspace) : ITool
+public class ShowErrorFiles(Workspace workspace) : IToolCall
 {
     public string Name
         => "show_error_files";

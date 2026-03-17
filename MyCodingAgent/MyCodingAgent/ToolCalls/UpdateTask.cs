@@ -3,7 +3,7 @@ using MyCodingAgent.Models;
 
 namespace MyCodingAgent.ToolCalls;
 
-public class UpdateSubTask(Workspace workspace) : ITool
+public class UpdateSubTask(Workspace workspace) : IToolCall
 {
     public string Name
       => "update_subtask";
