@@ -85,7 +85,7 @@ Please analyze the request above against the subtask definition and provide the 
             messageList,
             History,
             [.. Tools.Select(a => a.ToDto())],
-            maxTokens: 3200,
+            maxTokens: 4096,
             additionalSizeInBytes: questionJson.Length);
 
         // Voeg de actuele vraag als laatste toe zodat deze de meeste prioriteit heeft

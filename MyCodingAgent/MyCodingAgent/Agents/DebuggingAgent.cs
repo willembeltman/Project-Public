@@ -61,7 +61,7 @@ Do not change behavior unless required.",
             messageList,
             History,
             [.. Tools.Select(a => a.ToDto())],
-            maxTokens: 3200,
+            maxTokens: 4096,
             additionalSizeInBytes: 0);
 
         return new OllamaPrompt(

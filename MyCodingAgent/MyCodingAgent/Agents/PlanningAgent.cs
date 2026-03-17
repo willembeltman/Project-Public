@@ -59,23 +59,7 @@ IMPORTANT
 - When you have enough information, STOP investigating and start creating subtasks.
 - When the plan is complete you MUST call the tool planning_is_done.
 
-If the requested functionality already exists in the codebase you may call work_is_already_done.
-
-Example plan:
-
-create_subtask
-Implement API endpoint for creating users
-
-create_subtask
-Add database entity for User
-
-create_subtask
-Add validation logic for user input
-
-create_subtask
-Add integration tests
-
-planning_is_done",
+If the requested functionality already exists in the codebase you may call work_is_already_done.",
                 null, 
                 null),
 
@@ -95,7 +79,7 @@ planning_is_done",
             messageList, 
             History, 
             [ ..Tools.Select(a => a.ToDto())],
-            maxTokens: 3200, 
+            maxTokens: 4096, 
             additionalSizeInBytes: 0);
 
         return new OllamaPrompt(

@@ -21,14 +21,13 @@ public abstract class BaseAgent(Workspace Workspace)
         var maxHistory = 0;
         int maxLongDesciptionPrompt = 0;
         var useShortContent = false;
+        var length = messagesJsonLength + toolsJsonLength + additionalSizeInBytes;
 
         history.Reverse();
         foreach (var responseResult in history)
         {
-            var messageJson = JsonSerializer.Serialize(responseResult.Response.message, DefaultJsonSerializerOptions.JsonSerializeOptions);
-            var length = 
-                messagesJsonLength + toolsJsonLength + additionalSizeInBytes +
-                messageJson.Length;
+            var responseJson = JsonSerializer.Serialize(responseResult.Response.message, DefaultJsonSerializerOptions.JsonSerializeOptionsIndented);
+            length += responseJson.Length;
 
             // TOOL CALLS REPLIES
             foreach (var toolCall in responseResult.ToolCallResults)
@@ -39,8 +38,9 @@ public abstract class BaseAgent(Workspace Workspace)
                     useShortContent ? toolCall.result.shortContent : toolCall.result.content,
                     null,
                     null);
+                var messageJson = JsonSerializer.Serialize(message, DefaultJsonSerializerOptions.JsonSerializeOptionsIndented);
 
-                length += JsonSerializer.Serialize(message, DefaultJsonSerializerOptions.JsonSerializeOptionsIndented).Length;
+                length += messageJson.Length;
             }
 
             if (length < maxTokens * 3)
