@@ -16,7 +16,8 @@ public class WorkspaceReadonly_Tool(Workspace Workspace) : IToolCall
     [
         new ("action", "string", "Action to perform", 
         [
-            "files_list", 
+            "files_list",
+            "open",
             "read", 
             "text_search",
             "compile", 
@@ -38,6 +39,7 @@ public class WorkspaceReadonly_Tool(Workspace Workspace) : IToolCall
         return toolArguments.action.ToLower() switch
         {
             "files_list" => await FilesList(toolCall),
+            "open" => await Read(toolCall),
             "read" => await Read(toolCall),
             "text_search" => await TextSearch(toolCall),
             "compile" => await Compile(toolCall),
@@ -68,8 +70,8 @@ public class WorkspaceReadonly_Tool(Workspace Workspace) : IToolCall
         if (file == null)
         {
             return new ToolResult(
-                $"Error opening file '{toolArguments.path}': file not found",
-                $"Error opening file '{toolArguments.path}': file not found",
+                $"Error reading file '{toolArguments.path}': file not found",
+                $"Error reading file '{toolArguments.path}': file not found",
                 true);
         }
 

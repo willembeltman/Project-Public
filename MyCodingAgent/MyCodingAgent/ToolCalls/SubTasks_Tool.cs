@@ -136,7 +136,6 @@ public class SubTasks_Tool(Workspace workspace) : IToolCall
     {
         var toolArguments = toolCall.function.arguments;
         workspace.PlanningIsDone = true;
-        await workspace.Save();
         return new ToolResult("OK DONE!", "OK DONE!", false);
     }
 }

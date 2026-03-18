@@ -7,4 +7,6 @@ public record CacheMessage(
     string? path, 
     string? newPath,
     string? query,
+    string? content,
+    string? replaceText,
     int? lineNumber);

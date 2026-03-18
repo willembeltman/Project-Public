@@ -15,6 +15,7 @@ public class Workspace_Tool(Workspace Workspace) : WorkspaceReadonly_Tool(Worksp
         new ("action", "string", "Action to perform",
         [
             "files_list",
+            "open",
             "read",
             "write",
             "append",
@@ -25,11 +26,11 @@ public class Workspace_Tool(Workspace Workspace) : WorkspaceReadonly_Tool(Worksp
             "compile",
             "diff_with_original"
         ]),
-        new ("path", "string", "File path, not used for files_list", null, true),
-        new ("query", "string", "Exact text to find, for text_search/text_search_and_replace", null, true),
-        new ("content", "string", "Content for write/append/text_search_and_replace", null, true),
-        new ("newPath", "string", "Destination path for move", null, true),
-        new ("lineNumber", "number", "Line number for append (optional)", null, true)
+        new ("path", "string", "File path, not used for 'files_list' action", null, true),
+        new ("query", "string", "Exact text to find, for 'text_search' and 'text_search_and_replace' action", null, true),
+        new ("content", "string", "Content for 'write', 'append' and 'text_search_and_replace' action", null, true),
+        new ("newPath", "string", "Destination path for 'move' action", null, true),
+        new ("lineNumber", "number", "Line number for 'append' action (optional)", null, true)
     ];
 
     public override async Task<ToolResult> Invoke(OllamaToolCall toolCall)
@@ -44,6 +45,7 @@ public class Workspace_Tool(Workspace Workspace) : WorkspaceReadonly_Tool(Worksp
         return toolArguments.action.ToLower() switch
         {
             "files_list" => await FilesList(toolCall),
+            "open" => await Read(toolCall),
             "read" => await Read(toolCall),
             "write" => await Write(toolCall),
             "text_search" => await TextSearch(toolCall),

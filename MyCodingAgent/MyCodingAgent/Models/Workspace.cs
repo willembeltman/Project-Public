@@ -22,6 +22,8 @@ public class Workspace
     public CodingAgent_To_ProjectManagerAgent_Question? CodingAgent_To_ProjectManagerAgent_Question { get; set; }
     public DebugAgent_To_ProjectManagerAgent_Question? DebugAgent_To_ProjectManagerAgent_Question { get; set; }
     public DebugAgent_To_CoderAgent_Question? DebugAgent_To_CoderAgent_Question { get; set; }
+    public bool ClearCodingHistory { get; internal set; }
+    public bool ClearDebugHistory { get; internal set; }
 
     public WorkspaceFile? GetFile(string path)
         => Files.FirstOrDefault(a => a.RelativePath.Equals(path.Replace("/", "\\"), StringComparison.CurrentCultureIgnoreCase));
@@ -134,13 +136,10 @@ public class Workspace
     }
     public async Task<CompileResult> Compile(string? relativePath = null)
     {
-        if (string.IsNullOrWhiteSpace(relativePath))
-        {
-            var currentDirectory = new DirectoryInfo(RootDirectoryName);
-            var compileResult = await Compiler.Compile(currentDirectory);
-            return compileResult;
-        }
-        else
+        if (!string.IsNullOrWhiteSpace(relativePath) &&
+            relativePath.ToLower().EndsWith(".csproj") &&
+            relativePath.ToLower().EndsWith(".sln") &&
+            relativePath.ToLower().EndsWith(".slnx"))
         {
             GaurdParseFullPath(relativePath, out var fullPath);
             var solutionOrProjectFile = new FileInfo(fullPath);
@@ -157,6 +156,12 @@ public class Workspace
                 };
             }
             var compileResult = await Compiler.Compile(solutionOrProjectFile);
+            return compileResult;
+        }
+        else
+        {
+            var currentDirectory = new DirectoryInfo(RootDirectoryName);
+            var compileResult = await Compiler.Compile(currentDirectory);
             return compileResult;
         }
     }

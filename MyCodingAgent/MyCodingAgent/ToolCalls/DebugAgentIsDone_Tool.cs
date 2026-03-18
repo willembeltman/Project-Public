@@ -33,6 +33,7 @@ public class DebugAgentIsDone_Tool(Workspace workspace) : IToolCall
                         false)));
         }
         workspace.Debugging = false;
+        workspace.ClearDebugHistory = true;
 
         return new ToolResult("OK DONE!", "OK DONE!", false);
     }

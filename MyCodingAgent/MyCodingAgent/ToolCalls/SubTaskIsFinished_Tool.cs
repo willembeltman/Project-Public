@@ -3,7 +3,7 @@ using MyCodingAgent.Models;
 
 namespace MyCodingAgent.ToolCalls;
 
-public class CurrentSubTaskIsFinished_Tool(Workspace workspace) : IToolCall
+public class SubTaskIsFinished_Tool(Workspace workspace) : IToolCall
 {
     public string Name
         => "subtask_is_done";
@@ -32,18 +32,17 @@ public class CurrentSubTaskIsFinished_Tool(Workspace workspace) : IToolCall
             }
 
             subtask.Finished = true;
-            workspace.CodingHistory.Clear();
-            await workspace.Save();
+            workspace.ClearCodingHistory = true;
 
             return new ToolResult(
-                $"Finished subtask '{toolArguments.id}'",
+                $"Finished subtask '{subtask.Id}'",
                 $"Finished subtask",
                 false);
         }
         catch (Exception ex)
         {
             return new ToolResult(
-                $"Error exception while finishing subtask '{toolArguments.id}': {ex.Message}",
+                $"Error exception while finishing subtask '{subtask.Id}': {ex.Message}",
                 $"Error exception while finishing subtask ",
                 true);
         }

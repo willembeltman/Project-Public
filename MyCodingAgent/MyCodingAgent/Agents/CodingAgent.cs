@@ -13,7 +13,7 @@ public class CodingAgent : BaseAgent, IAgent
     {
         WorkspaceTool = new Workspace_Tool(workspace);
         AskProjectManagerTool = new CodingAgent_To_ProjectManager_Question_Tool(workspace);
-        CurrentSubTaskIsFinishedTool = new CurrentSubTaskIsFinished_Tool(workspace);
+        CurrentSubTaskIsFinishedTool = new SubTaskIsFinished_Tool(workspace);
 
         Tools =
         [
@@ -25,7 +25,7 @@ public class CodingAgent : BaseAgent, IAgent
 
     public Workspace_Tool WorkspaceTool { get; }
     public CodingAgent_To_ProjectManager_Question_Tool AskProjectManagerTool { get; }
-    public CurrentSubTaskIsFinished_Tool CurrentSubTaskIsFinishedTool { get; }
+    public SubTaskIsFinished_Tool CurrentSubTaskIsFinishedTool { get; }
 
     protected override List<PromptResponseResults> History => Workspace.CodingHistory;
     protected override IToolCall[] Tools { get; }

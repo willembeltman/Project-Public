@@ -52,6 +52,8 @@ public abstract class BaseAgent(Workspace Workspace, OllamaClient Client)
                         toolCall.tool_call.function.arguments.path,
                         toolCall.tool_call.function.arguments.newPath,
                         toolCall.tool_call.function.arguments.query,
+                        toolCall.tool_call.function.arguments.content,
+                        toolCall.tool_call.function.arguments.replaceText,
                         toolCall.tool_call.function.arguments.lineNumber);
                     if (!shownMessages.Add(cacheMessage)) // Todo, als het model ooit meerdere actions gaat uitvoeren
                     {
