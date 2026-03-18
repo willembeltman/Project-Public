@@ -8,7 +8,7 @@ public class CurrentSubTaskIsFinished_Tool(Workspace workspace) : IToolCall
     public string Name
         => "current_subtask_is_done";
     public string Description
-        => "Marks the current sub-task as completed. Only call this when all objectives for the sub-task have been verified.";
+        => "Marks the current subtask as completed, only call this when all objectives for the subtask have been verified";
     public ToolParameter[] Parameters { get; } =
     [
     ];

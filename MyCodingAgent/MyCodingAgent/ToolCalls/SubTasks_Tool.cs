@@ -8,19 +8,19 @@ public class SubTasks_Tool(Workspace workspace) : IToolCall
     public string Name => "subtasks";
 
     public string Description
-        => "Returns a complete overview of the current plan, including all sub-tasks, their status, and unique IDs. Use this to track progress, identify remaining work, or before making changes to the task list. Use planning_is_done action to signal we can start building.";
+        => "Shows the full plan with sub-tasks, status, and IDs; use it to track progress or review before changes, use planning_is_done action to signal readiness to build";
     public ToolParameter[] Parameters { get; } = [
         new ("action", "string", "Action to perform", ["list_all", "create", "update", "delete", "planning_is_done"]),
-        new ("id", "number", "The numerical ID of the sub-task to be updated (used in 'update' and 'delete' action).", null, true),
-        new ("content", "string", "The text content for the sub-task (used in 'create' and 'update' action). Provide the full updated description to ensure clarity for the coding agents.", null, true)
+        new ("id", "number", "The numerical ID of the sub-task to be updated (used in 'update' and 'delete' action)", null, true),
+        new ("content", "string", "The text content for the sub-task (used in 'create' and 'update' action). Provide the full updated description to ensure clarity for the coding agents", null, true)
     ];
     public async Task<ToolResult> Invoke(OllamaToolCall toolCall)
     {
         var toolArguments = toolCall.function.arguments;
         if (toolArguments.action == null)
             return new ToolResult(
-                "parameter action is not supplied.",
-                "parameter action is not supplied.",
+                "parameter action is not supplied",
+                "parameter action is not supplied",
                 true);
 
 
@@ -49,8 +49,8 @@ public class SubTasks_Tool(Workspace workspace) : IToolCall
         var toolArguments = toolCall.function.arguments;
         if (toolArguments.content == null)
             return new ToolResult(
-                "parameter content is not supplied.",
-                "parameter content is not supplied.",
+                "parameter content is not supplied",
+                "parameter content is not supplied",
                 true);
         try
         {
@@ -75,13 +75,13 @@ public class SubTasks_Tool(Workspace workspace) : IToolCall
         var toolArguments = toolCall.function.arguments;
         if (toolArguments.id == null)
             return new ToolResult(
-                "parameter id is not supplied.",
-                "parameter id is not supplied.",
+                "parameter id is not supplied",
+                "parameter id is not supplied",
                 true);
         if (toolArguments.content == null)
             return new ToolResult(
-                "parameter content is not supplied.",
-                "parameter content is not supplied.",
+                "parameter content is not supplied",
+                "parameter content is not supplied",
                 true);
 
         var subtask = workspace.GetSubTask(toolArguments.id);
@@ -104,8 +104,8 @@ public class SubTasks_Tool(Workspace workspace) : IToolCall
         var toolArguments = toolCall.function.arguments;
         if (toolArguments.id == null)
             return new ToolResult(
-                "parameter id is not supplied.",
-                "parameter id is not supplied.",
+                "parameter id is not supplied",
+                "parameter id is not supplied",
                 true);
 
         try

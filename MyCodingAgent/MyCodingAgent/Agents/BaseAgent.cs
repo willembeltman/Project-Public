@@ -11,10 +11,16 @@ public abstract class BaseAgent(Workspace Workspace, OllamaClient Client)
     protected abstract IToolCall[] Tools { get; }
 
     protected Workspace Workspace { get; } = Workspace;
-    protected OllamaClient Wlient { get; } = Client;
+    protected OllamaClient Client { get; } = Client;
 
     protected static void AddHistoryAndToolCalls(List<OllamaMessage> messageList, List<PromptResponseResults> history, Tool[] tools, int maxTokens, int additionalSizeInBytes)
     {
+        var notNullHistory = history
+            .Where(a =>
+                string.IsNullOrWhiteSpace(a.Response.message.content) == false ||
+                (a.Response.message.tool_calls != null && a.Response.message.tool_calls.Any()))
+            .ToList();
+
         var messagesJson = JsonSerializer.Serialize(messageList, DefaultJsonSerializerOptions.JsonSerializeOptionsIndented);
         var messagesJsonLength = messagesJson.Length;
         var toolsJson = OllamaClient.CreateToolsJson(tools);
@@ -23,21 +29,29 @@ public abstract class BaseAgent(Workspace Workspace, OllamaClient Client)
         int maxLongDesciptionPrompt = 0;
         var totalLength = messagesJsonLength + toolsJsonLength + additionalSizeInBytes;
 
-        history.Reverse(); // Lijst omdraaien zodat we vanaf het begin tellen
+        notNullHistory.Reverse(); // Lijst omdraaien zodat we vanaf het begin tellen
         var useShortContent = false;
-        foreach (var responseResult in history)
+        foreach (var responseResult in notNullHistory)
         {
-            var responseJson = JsonSerializer.Serialize(responseResult.Response.message, DefaultJsonSerializerOptions.JsonSerializeOptionsIndented);
+            var responseJson = JsonSerializer.Serialize(CleanMessage(responseResult.Response.message), DefaultJsonSerializerOptions.JsonSerializeOptionsIndented);
             totalLength += responseJson.Length;
 
             // TOOL CALLS REPLIES
-            foreach (var toolCall in responseResult.ToolCallResults)
+            if (responseResult.ToolCallResults.Any())
             {
-                var messageJson = JsonSerializer.Serialize(CreateToolCallbackMessage(useShortContent, toolCall), DefaultJsonSerializerOptions.JsonSerializeOptionsIndented);
+                foreach (var toolCall in responseResult.ToolCallResults)
+                {
+                    var messageJson = JsonSerializer.Serialize(CreateToolCallbackMessage(useShortContent, toolCall), DefaultJsonSerializerOptions.JsonSerializeOptionsIndented);
+                    totalLength += messageJson.Length;
+                }
+            }
+            else
+            {
+                var messageJson = JsonSerializer.Serialize(CreateToolCallbackMessage(useShortContent, null), DefaultJsonSerializerOptions.JsonSerializeOptionsIndented);
                 totalLength += messageJson.Length;
             }
 
-            if (totalLength < maxTokens * 2)
+            if (totalLength < maxTokens * 5 / 2)
                 maxLongDesciptionPrompt++;
             else
             {
@@ -52,9 +66,9 @@ public abstract class BaseAgent(Workspace Workspace, OllamaClient Client)
             }
         }
 
-        history.Reverse(); // Lijst weer normaal maken
-        var i = history.Count; // Dan terug tellen
-        foreach (var responseResult in history)
+        notNullHistory.Reverse(); // Lijst weer normaal maken
+        var i = notNullHistory.Count; // Dan terug tellen
+        foreach (var responseResult in notNullHistory)
         {
             if (i > maxHistory)
             {
@@ -63,24 +77,57 @@ public abstract class BaseAgent(Workspace Workspace, OllamaClient Client)
             }
 
             // AGENT RESPONSE 
-            messageList.Add(responseResult.Response.message);
+            messageList.Add(CleanMessage(responseResult.Response.message));
 
             // TOOL CALLS REPLIES
-            foreach (var toolCall in responseResult.ToolCallResults)
+            if (responseResult.ToolCallResults.Any())
             {
-                messageList.Add(CreateToolCallbackMessage(i > maxLongDesciptionPrompt, toolCall));
+                foreach (var toolCall in responseResult.ToolCallResults)
+                {
+                    messageList.Add(CreateToolCallbackMessage(i > maxLongDesciptionPrompt, toolCall));
+                }
+            }
+            else
+            {
+                messageList.Add(
+                    CreateToolCallbackMessage(i > maxLongDesciptionPrompt, null));
             }
 
             i--;
         }
+
+        messagesJson = JsonSerializer.Serialize(messageList, DefaultJsonSerializerOptions.JsonSerializeOptionsIndented);
+        messagesJsonLength = messagesJson.Length;
+        totalLength = messagesJsonLength + toolsJsonLength + additionalSizeInBytes;
+
     }
 
-    private static OllamaMessage CreateToolCallbackMessage(bool useShortContent, ToolCallResult toolCall)
+    private static OllamaMessage CleanMessage(OllamaMessage message)
+    {
+        var content = "Use tool_calls";
+        if (message.tool_calls?.Any() == true)
+        {
+            content = string.Join(", ", message.tool_calls.Select(a => a.id));
+        }
+        if (!string.IsNullOrWhiteSpace(message.content))
+        {
+            content = message.content;
+        }
+
+        return new OllamaMessage(
+            message.role,
+            message.tool_call_id,
+            content,
+            null,
+            message.tool_calls);
+    }
+
+    private static OllamaMessage CreateToolCallbackMessage(bool useShortContent, ToolCallResult? toolCall)
     {
         return new OllamaMessage(
             nameof(OllamaAgentRole.tool).ToLower(),
-            toolCall.tool_call.id,
-            useShortContent ? toolCall.result.shortContent : toolCall.result.content,
+            toolCall?.tool_call.id,
+            toolCall == null ? "No tool_calls found" : useShortContent ? toolCall.result.shortContent : toolCall.result.content,
             null,
             null);
     }

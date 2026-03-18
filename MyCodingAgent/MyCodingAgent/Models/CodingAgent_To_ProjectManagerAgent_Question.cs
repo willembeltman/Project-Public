@@ -1,5 +1,5 @@
 ﻿namespace MyCodingAgent.Models;
 
-public record Question_DebugAgent_WaitingFor_CoderAgent_Answer(
+public record CodingAgent_To_ProjectManagerAgent_Question(
     string ToolCallId,
     string Question);

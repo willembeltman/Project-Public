@@ -8,7 +8,7 @@ public class Ask_HumanDeveloper_Tool : IToolCall
     public string Name
         => "ask_human_developer";
     public string Description
-        => "asks the human developer using this tool for additional information when the development cannot continue";
+        => "Asks the human developer using this coding agent for additional information when the development cannot continue";
     public ToolParameter[] Parameters { get; } =
     [
         new ("content", "string", "question or information request for the human developer")
@@ -18,8 +18,8 @@ public class Ask_HumanDeveloper_Tool : IToolCall
         var toolArguments = toolCall.function.arguments;
         if (toolArguments.content == null)
             return new ToolResult(
-                "parameter content is not supplied.",
-                "parameter content is not supplied.",
+                "parameter content is not supplied",
+                "parameter content is not supplied",
                 true);
 
         var previousColor = Console.ForegroundColor;

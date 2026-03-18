@@ -8,13 +8,13 @@ using System.Text.Json.Serialization;
 internal class Program : IDisposable
 {
     readonly CancellationTokenSource Cts;
-    readonly HashSet<OllamaMessage> ShownMessages;
+    //readonly HashSet<OllamaMessage> ShownMessages;
     readonly OllamaClient LlmService;
 
     private Program()
     {
         Cts = new CancellationTokenSource();
-        ShownMessages = new HashSet<OllamaMessage>();
+        //ShownMessages = new HashSet<OllamaMessage>();
         LlmService = new OllamaClient();
     }
 
@@ -42,7 +42,7 @@ internal class Program : IDisposable
         await LlmService.InitializeModelAsync(model);
 
         Console.WriteLine($"Model '{model.Name}' initialized, initialising agents, please wait...");
-        var planningAgent = new PlanningAgent(workspace, LlmService);
+        var planningAgent = new ProjectManagerAgent(workspace, LlmService);
         var codingAgent = new CodingAgent(workspace, LlmService);
         var debuggingAgent = new DebugAgent(workspace, LlmService);
         var projectManagerAgent = new ProjectManagerAgentForCodingAgent(workspace, LlmService);
@@ -54,16 +54,19 @@ internal class Program : IDisposable
         //foreach (var resp in workspace.CodingHistory)
         //    await codingAgent.ProcessResponse(resp.Prompt, resp.Response, false);
 
+        //foreach (var resp in workspace.DebugHistory.ToArray())
+        //    await debuggingAgent.ProcessResponse(resp.Prompt, resp.Response, false);
+
         Console.WriteLine("Project compile attempt finished, starting lllm-development-cycle, please wait...");
         await RunMainLoop(workspace, model, planningAgent, codingAgent, debuggingAgent, projectManagerAgent, compileResult);
     }
     private async Task RunMainLoop(
         Workspace workspace,
-        OllamaModel model, 
-        PlanningAgent planningAgent,
-        CodingAgent codingAgent, 
+        OllamaModel model,
+        ProjectManagerAgent planningAgent,
+        CodingAgent codingAgent,
         DebugAgent debuggingAgent,
-        ProjectManagerAgentForCodingAgent projectManagerAgent, 
+        ProjectManagerAgentForCodingAgent projectManagerAgent,
         CompileResult compileResult)
     {
         // -------------------------
@@ -88,8 +91,8 @@ internal class Program : IDisposable
             if (NeedsDebugging(workspace, compileResult))
             {
                 compileResult = await RunDebugLoop(workspace, model, debuggingAgent, compileResult);
-                ShownMessages.Clear();
-                Console.Clear();
+                //ShownMessages.Clear();
+                //Console.Clear();
                 continue;
             }
 
@@ -97,8 +100,8 @@ internal class Program : IDisposable
             if (NeedsProjectManager(workspace))
             {
                 compileResult = await RunProjectManagerLoop(workspace, model, projectManagerAgent, compileResult);
-                ShownMessages.Clear();
-                Console.Clear();
+                //ShownMessages.Clear();
+                //Console.Clear();
                 continue;
             }
 
@@ -122,7 +125,7 @@ internal class Program : IDisposable
     }
     private async Task<CompileResult> RunProjectManagerLoop(Workspace workspace, OllamaModel model, ProjectManagerAgentForCodingAgent projectManagerAgent, CompileResult compileResult)
     {
-        while (workspace.CodingAgent_WaitingFor_ProjectManagerAgent_Answer != null)
+        while (workspace.CodingAgent_To_ProjectManagerAgent_Question != null)
         {
             compileResult = await AgentFlow(workspace, model, projectManagerAgent, compileResult);
         }
@@ -131,24 +134,24 @@ internal class Program : IDisposable
     }
     private bool NeedsProjectManager(Workspace workspace)
     {
-        return workspace.CodingAgent_WaitingFor_ProjectManagerAgent_Answer != null;
+        return workspace.CodingAgent_To_ProjectManagerAgent_Question != null;
     }
     private bool NeedsDebugging(Workspace workspace, CompileResult compileResult)
     {
-        if (workspace.DebugAgent_WaitingFor_CoderAgent_Answer != null ||
-            workspace.DebugAgent_WaitingFor_ProjectManagerAgent_Answer != null)
+        if (workspace.DebugAgent_To_CoderAgent_Question != null ||
+            workspace.DebugAgent_To_ProjectManagerAgent_Question != null)
             return false;
-        if (workspace.Debugging) 
+        if (workspace.Debugging)
             return true;
 
         var res = compileResult.Errors.Count > 0 &&
                workspace.Files.Count > 0 &&
-               workspace.CodingAgent_WaitingFor_ProjectManagerAgent_Answer == null;
+               workspace.CodingAgent_To_ProjectManagerAgent_Question == null;
         if (res)
         {
             workspace.Debugging = true;
-            ShownMessages.Clear();
-            Console.Clear();
+            //ShownMessages.Clear();
+            //Console.Clear();
         }
         return res;
     }
@@ -159,6 +162,11 @@ internal class Program : IDisposable
         var hasToolCalls = false;
         while (!hasToolCalls)
         {
+            Console.Clear();
+            Console.CursorLeft = 0;
+            Console.CursorTop = 0;
+            Console.Clear();
+
             var prompt = await agent.GeneratePrompt(compileResult);
             //Console.WriteLine($"#{workspace.PromptIndex} Asking model:");
             foreach (var message in prompt.messages)
@@ -237,7 +245,7 @@ internal class Program : IDisposable
     }
     private void ShowMessage(OllamaMessage message)
     {
-        if (!ShownMessages.Add(message)) return;
+        //if (!ShownMessages.Add(message)) return;
 
         var previousColor = Console.ForegroundColor;
 
@@ -265,7 +273,32 @@ internal class Program : IDisposable
             foreach (var call in message.tool_calls)
             {
                 Console.WriteLine($"{call.id}:");
-                Console.WriteLine($"{call.function.name} {JsonSerializer.Serialize(call.function.arguments, DefaultJsonSerializerOptions.JsonSerializeOptions)}");
+                //Console.WriteLine($"{call.function.name} {JsonSerializer.Serialize(call.function.arguments, DefaultJsonSerializerOptions.JsonSerializeOptions)}");
+                Console.WriteLine($"{call.function.name}");
+
+                if (call.function.arguments.action != null)
+                    Console.WriteLine($"action: {call.function.arguments.action}");
+
+                if (call.function.arguments.id != null)
+                    Console.WriteLine($"id: {call.function.arguments.id}");
+
+                if (call.function.arguments.path != null)
+                    Console.WriteLine($"path: {call.function.arguments.path}");
+
+                if (call.function.arguments.query != null)
+                    Console.WriteLine($"query: {call.function.arguments.query}");
+
+                if (call.function.arguments.lineNumber != null)
+                    Console.WriteLine($"lineNumber: {call.function.arguments.lineNumber}");
+
+                if (call.function.arguments.newPath != null)
+                    Console.WriteLine($"newPath: {call.function.arguments.newPath}");
+
+                if (call.function.arguments.content != null)
+                    Console.WriteLine($"content: {call.function.arguments.content}");
+
+                if (call.function.arguments.replaceText != null)
+                    Console.WriteLine($"replaceText: {call.function.arguments.replaceText}");
             }
         }
         Console.WriteLine();

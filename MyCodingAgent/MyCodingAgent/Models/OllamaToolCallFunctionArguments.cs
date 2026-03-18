@@ -10,6 +10,4 @@ public class OllamaToolCallFunctionArguments
     public string? replaceText { get; set; }
     public string? content { get; set; }
     public int? lineNumber { get; set; }
-    public int? startLine { get; set; }
-    public int? endLine { get; set; }
 }

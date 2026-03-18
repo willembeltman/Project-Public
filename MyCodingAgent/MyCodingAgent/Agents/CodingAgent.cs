@@ -2,25 +2,33 @@
 using MyCodingAgent.Interfaces;
 using MyCodingAgent.Models;
 using MyCodingAgent.ToolCalls;
+using MyCodingAgent.ToolCalls.AgentCommunication;
 using System.Text.Json;
 
 namespace MyCodingAgent.Agents;
 
-public class CodingAgent(Workspace Workspace, OllamaClient Client) : BaseAgent(Workspace, Client), IAgent
+public class CodingAgent : BaseAgent, IAgent
 {
+    public CodingAgent(Workspace workspace, OllamaClient client) : base(workspace, client)
+    {
+        WorkspaceTool = new Workspace_Tool(workspace);
+        AskProjectManagerTool = new CodingAgent_To_ProjectManager_Question_Tool(workspace);
+        CurrentSubTaskIsFinishedTool = new CurrentSubTaskIsFinished_Tool(workspace);
+
+        Tools =
+        [
+            WorkspaceTool,
+            AskProjectManagerTool,
+            CurrentSubTaskIsFinishedTool
+        ];
+    }
+
+    public Workspace_Tool WorkspaceTool { get; }
+    public CodingAgent_To_ProjectManager_Question_Tool AskProjectManagerTool { get; }
+    public CurrentSubTaskIsFinished_Tool CurrentSubTaskIsFinishedTool { get; }
+
     protected override List<PromptResponseResults> History => Workspace.CodingHistory;
-    protected override IToolCall[] Tools { get; } =
-    [
-        new Workspace_Tool(Workspace),
-        new Ask_CodingAgent_To_ProjectManager_Tool(Workspace),
-        new CurrentSubTaskIsFinished_Tool(Workspace)
-    ];
-    public Workspace_Tool WorkspaceTool
-        => (Tools.First(a => a is Workspace_Tool) as Workspace_Tool)!;
-    public Ask_CodingAgent_To_ProjectManager_Tool AskProjectManagerTool
-        => (Tools.First(a => a is Ask_CodingAgent_To_ProjectManager_Tool) as Ask_CodingAgent_To_ProjectManager_Tool)!;
-    public CurrentSubTaskIsFinished_Tool CurrentSubTaskIsFinishedTool
-        => (Tools.First(a => a is CurrentSubTaskIsFinished_Tool) as CurrentSubTaskIsFinished_Tool)!;
+    protected override IToolCall[] Tools { get; }
 
     public async Task<OllamaPrompt> GeneratePrompt(CompileResult compileResult)
     {
@@ -55,7 +63,7 @@ IMPORTANT RULES
 - When the code compiles successfully and the requested functionality is implemented,
   you MUST call the '{CurrentSubTaskIsFinishedTool.Name}' tool.
 - You MUST read a file using the '{WorkspaceTool.Name}' tool before modifying it.
-- You MUST target .NET 10 for projects. Do not forget!",
+- You MUST target .NET 10 (net10.0) for projects. Do not forget!",
                 null,
                 null)
         ];

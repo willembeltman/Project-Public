@@ -42,11 +42,21 @@ public class OllamaClient(
 
     public async Task<OllamaResponse> ChatAsync(OllamaModel model, OllamaPrompt prompt, CancellationToken ct = default)
     {
+        //var messages = prompt.messages
+        //    .Select(message => 
+        //        new OllamaMessage(
+        //            message.role, 
+        //            message.tool_call_id,
+        //            message.content,
+        //            null, 
+        //            message.tool_calls));
+
+        var tools = CreateToolsJson(prompt.tools);
         var payload = $@"{{
   ""model"": ""{model.Name}"",
   ""messages"": {JsonSerializer.Serialize(prompt.messages, DefaultJsonSerializerOptions.JsonSerializeOptionsIndented)},
   ""stream"": false,
-  ""tools"": [{CreateToolsJson(prompt.tools)}]
+  ""tools"": [{tools}]
 }}";
 
         var url = new Uri(OllamaServerUrl, "/api/chat");
@@ -140,21 +150,46 @@ public class OllamaClient(
   {{
     ""type"": ""function"",
     ""function"": {{
-      ""name"": ""{tool.Name}"",
-      ""description"": ""{tool.Desciption}"",
+      ""name"": ""{JsonEscape(tool.Name)}"",
+      ""description"": ""{JsonEscape(tool.Desciption)}"",
       ""parameters"": {{
         ""type"": ""object"",
         ""properties"": {{{string.Join(",", tool.Parameters.Select(parameter => $@"
-          ""{parameter.Name}"": {{
+          ""{JsonEscape(parameter.Name)}"": {{
             ""type"": ""{parameter.Type}"",
-            ""description"": ""{parameter.Description}""{(parameter.Enum == null ? "" : $@",
-            ""enum"": [{string.Join(", ", parameter.Enum.Select(e => $@"""{e}"""))}]")}
+            ""description"": ""{JsonEscape(parameter.Description)}""{(parameter.Enum == null ? "" : $@",
+            ""enum"": [{string.Join(", ", parameter.Enum.Select(e => $@"""{JsonEscape(e)}"""))}]")}
           }}"))}
         }},
-        ""required"": [{string.Join(", ", tool.Parameters.Where(p => p.Optional == false).Select(parameter => $@"""{parameter.Name}"""))}]
+        ""required"": [{string.Join(", ", tool.Parameters.Where(p => p.Optional == false).Select(parameter => $@"""{JsonEscape(parameter.Name)}"""))}]
       }}
     }}
   }}"));
+    }
+    public static string? JsonEscape(string? s)
+    {
+        if (s == null) return null;
+        var sb = new System.Text.StringBuilder();
+        foreach (var c in s)
+        {
+            switch (c)
+            {
+                case '\"': sb.Append("\\\""); break;
+                case '\\': sb.Append("\\\\"); break;
+                case '\b': sb.Append("\\b"); break;
+                case '\f': sb.Append("\\f"); break;
+                case '\n': sb.Append("\\n"); break;
+                case '\r': sb.Append("\\r"); break;
+                case '\t': sb.Append("\\t"); break;
+                default:
+                    if (char.IsControl(c))
+                        sb.Append("\\u" + ((int)c).ToString("x4"));
+                    else
+                        sb.Append(c);
+                    break;
+            }
+        }
+        return sb.ToString();
     }
 
     public void Dispose()

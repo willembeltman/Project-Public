@@ -2,26 +2,34 @@
 using MyCodingAgent.Interfaces;
 using MyCodingAgent.Models;
 using MyCodingAgent.ToolCalls;
+using MyCodingAgent.ToolCalls.AgentCommunication;
 using System.Text.Json;
 
 namespace MyCodingAgent.Agents;
 
-public class CodingAgentForDebugAgent(Workspace Workspace, OllamaClient Client) : BaseAgent(Workspace, Client), IAgent
+public class CodingAgentForDebugAgent : BaseAgent, IAgent
 {
+    public CodingAgentForDebugAgent(Workspace workspace, OllamaClient client) : base(workspace, client)
+    {
+        WorkspaceTool = new WorkspaceReadonly_Tool(workspace);
+        AnswerDebugAgentTool = new Answer_DebugAgent_From_CoderAgent_Tool(workspace);
+
+        Tools =
+        [
+            WorkspaceTool,
+            AnswerDebugAgentTool
+        ];
+    }
+
+    public WorkspaceReadonly_Tool WorkspaceTool { get; }
+    public Answer_DebugAgent_From_CoderAgent_Tool AnswerDebugAgentTool { get; }
+
     protected override List<PromptResponseResults> History => Workspace.PlanningHistory;
-    protected override IToolCall[] Tools { get; } =
-    [
-        new WorkspaceReadonly_Tool(Workspace),
-        new Answer_CodingAgent_To_DebugAgent_Tool(Workspace)
-    ];
-    public WorkspaceReadonly_Tool WorkspaceTool
-        => (Tools.First(a => a is WorkspaceReadonly_Tool) as WorkspaceReadonly_Tool)!;
-    public Answer_CodingAgent_To_DebugAgent_Tool AnswerDebugAgentTool
-        => (Tools.First(a => a is Answer_CodingAgent_To_DebugAgent_Tool) as Answer_CodingAgent_To_DebugAgent_Tool)!;
+    protected override IToolCall[] Tools { get; }
 
     public async Task<OllamaPrompt> GeneratePrompt(CompileResult compileResult)
     {
-        if (Workspace.CodingAgent_WaitingFor_ProjectManagerAgent_Answer == null)
+        if (Workspace.CodingAgent_To_ProjectManagerAgent_Question == null)
             throw new Exception("No active job found for Project Manager.");
 
         List<OllamaMessage> messageList =
@@ -58,7 +66,7 @@ When you have the answer, you MUST call '{AnswerDebugAgentTool.Name}'.",
 
         // De vraag van de DebugAgent verpakken we als een specifieke User-message
         var questionContent = $@"### INCOMING DEBUG AGENT REQUEST
-{Workspace.CodingAgent_WaitingFor_ProjectManagerAgent_Answer.Question}
+{Workspace.CodingAgent_To_ProjectManagerAgent_Question.Question}
 
 ### CONTEXT: CURRENT SUBTASK DEFINITION
 {Workspace.GetCurrentSubTask()?.Content}

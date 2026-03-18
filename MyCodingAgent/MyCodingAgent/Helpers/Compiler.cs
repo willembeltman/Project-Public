@@ -42,81 +42,67 @@ public static class Compiler
 
         var result = new CompileResult();
 
-        try
+        using var process = new Process { StartInfo = startInfo };
+        var outputBuilder = new StringBuilder();
+
+        process.OutputDataReceived += (_, e) => { if (e.Data != null) outputBuilder.AppendLine(e.Data); };
+
+        process.Start();
+        process.BeginOutputReadLine();
+        process.BeginErrorReadLine();
+        process.WaitForExit();
+
+        string output = outputBuilder.ToString();
+
+        // Try to extract compiler errors using regex
+        // Example line: "Program.cs(10,5): error CS1002: ; expected [MyApp -> MyApp.csproj]"
+        var matches = Regex.Matches(output, @"^(?<file>.+?)\((?<line>\d+),(?<col>\d+)\):\s*(?<type>error|warning)\s*(?<code>CS\d+):\s*(?<msg>.+)$",
+            RegexOptions.Multiline);
+
+        if (matches.Count > 0)
         {
-            using var process = new Process { StartInfo = startInfo };
-            var outputBuilder = new StringBuilder();
-            var errorBuilder = new StringBuilder();
+            // Errors matched
+            var formatted = new StringBuilder();
+            formatted.AppendLine($"Build failed ({matches.Count} issue{(matches.Count == 1 ? "" : "s")}):");
 
-            process.OutputDataReceived += (_, e) => { if (e.Data != null) outputBuilder.AppendLine(e.Data); };
-            process.ErrorDataReceived += (_, e) => { if (e.Data != null) errorBuilder.AppendLine(e.Data); };
-
-            process.Start();
-            process.BeginOutputReadLine();
-            process.BeginErrorReadLine();
-            process.WaitForExit();
-
-            string output = outputBuilder.ToString();
-            string errors = errorBuilder.ToString();
-
-            // Try to extract compiler errors using regex
-            // Example line: "Program.cs(10,5): error CS1002: ; expected [MyApp -> MyApp.csproj]"
-            var matches = Regex.Matches(output + errors, @"^(?<file>.+?)\((?<line>\d+),(?<col>\d+)\):\s*(?<type>error|warning)\s*(?<code>CS\d+):\s*(?<msg>.+)$",
-                RegexOptions.Multiline);
-
-            if (matches.Count > 0)
+            foreach (Match m in matches)
             {
-                // Errors matched
-                var formatted = new StringBuilder();
-                formatted.AppendLine($"Build failed ({matches.Count} issue{(matches.Count == 1 ? "" : "s")}):");
-
-                foreach (Match m in matches)
-                {
-                    var fullError = $"[{m.Groups["type"].Value.ToUpper()} {m.Groups["code"].Value}] {m.Groups["file"].Value}({m.Groups["line"].Value},{m.Groups["col"].Value}): {m.Groups["msg"].Value}"
-                        .Replace(currentDirectory.FullName + "\\", "");
-                    var error = new CompileError(
-                        fullError,
-                        m.Groups["type"].Value,
-                        m.Groups["code"].Value
-                            .Replace(currentDirectory.FullName + "\\", ""),
-                        m.Groups["file"].Value
-                            .Replace(currentDirectory.FullName + "\\", ""),
-                        m.Groups["line"].Value,
-                        m.Groups["col"].Value,
-                        m.Groups["msg"].Value
-                            .Replace(currentDirectory.FullName + "\\", ""));
-
-                    formatted.AppendLine(fullError);
-                    if (error.Type?.ToLower() == "warning")
-                        result.Warnings.Add(error);
-                    else
-                        result.Errors.Add(error);
-                }
-
-                result.Content = formatted
-                    .ToString();
-            }
-            else if (process.ExitCode == 0)
-            {
-                // Build succesful
-                var formatted = output
-                    .Trim()
+                var fullError = $"[{m.Groups["type"].Value.ToUpper()} {m.Groups["code"].Value}] {m.Groups["file"].Value}({m.Groups["line"].Value},{m.Groups["col"].Value}): {m.Groups["msg"].Value}"
                     .Replace(currentDirectory.FullName + "\\", "");
-                result.Content = $"Build successful.\n{formatted}";
-            }
-            else
-            {
-                // No regex matches but nonzero exit: return raw logs
-                var formatted = $"Build failed (exit code {process.ExitCode}).\n{output}\n{errors}"
-                    .Replace(currentDirectory.FullName + "\\", "");
+                var error = new CompileError(
+                    fullError,
+                    m.Groups["type"].Value,
+                    m.Groups["code"].Value
+                        .Replace(currentDirectory.FullName + "\\", ""),
+                    m.Groups["file"].Value
+                        .Replace(currentDirectory.FullName + "\\", ""),
+                    m.Groups["line"].Value,
+                    m.Groups["col"].Value,
+                    m.Groups["msg"].Value
+                        .Replace(currentDirectory.FullName + "\\", ""));
 
-                result.Content = formatted;
-                result.Errors.Add(new CompileError(formatted));
+                formatted.AppendLine(fullError);
+                if (error.Type?.ToLower() == "warning")
+                    result.Warnings.Add(error);
+                else
+                    result.Errors.Add(error);
             }
+
+            result.Content = formatted
+                .ToString();
         }
-        catch (Exception ex)
+        else if (process.ExitCode == 0)
         {
-            var formatted = $"Build process threw an exception: {ex.Message}"
+            // Build succesful
+            var formatted = output
+                .Trim()
+                .Replace(currentDirectory.FullName + "\\", "");
+            result.Content = $"Build successful.\n{formatted}";
+        }
+        else
+        {
+            // No regex matches but nonzero exit: return raw logs
+            var formatted = $"Build failed (exit code {process.ExitCode}).\n{output}"
                 .Replace(currentDirectory.FullName + "\\", "");
 
             result.Content = formatted;

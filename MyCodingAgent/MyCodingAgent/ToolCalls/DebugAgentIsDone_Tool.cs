@@ -6,9 +6,9 @@ namespace MyCodingAgent.ToolCalls;
 public class DebugAgentIsDone_Tool(Workspace workspace) : IToolCall
 {
     public string Name
-        => "debugger_is_done";
+        => "debug_is_done";
     public string Description
-        => "The definitive signal that all bugs have been successfully executed and verified. Use this tool to submit your final results to the coding agent.";
+        => "The definitive signal that all bugs are fixed and verified, use this to submit final results to the coding agent";
     public ToolParameter[] Parameters { get; } = 
     [
         new ("content", "string", "Review of your fixes", null, true)
@@ -18,8 +18,8 @@ public class DebugAgentIsDone_Tool(Workspace workspace) : IToolCall
         var toolArguments = toolCall.function.arguments;
         if (toolArguments.content == null)
             return new ToolResult(
-                "Error parameter content is not supplied.",
-                "Error parameter content is not supplied.",
+                "Error parameter content is not supplied",
+                "Error parameter content is not supplied",
                 true);
 
         var history = workspace.CodingHistory.LastOrDefault();
@@ -28,8 +28,8 @@ public class DebugAgentIsDone_Tool(Workspace workspace) : IToolCall
             history.ToolCallResults.Add(
                 new ToolCallResult(toolCall,
                     new ToolResult(
-                        $"Your changes resulted in a error, so the debugger agent has fixed them.\r\nThis is his rapport about the fix:\r\n{toolArguments.content}",
-                        $"Your changes resulted in a error, so the debugger agent has fixed them.",
+                        $"Your changes resulted in a error, so the debug agent has fixed them.\r\nThis is his rapport about the fix:\r\n{toolArguments.content}",
+                        $"Your changes resulted in a error, so the debug agent has fixed them",
                         false)));
         }
         workspace.Debugging = false;

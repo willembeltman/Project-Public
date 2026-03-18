@@ -2,32 +2,40 @@
 using MyCodingAgent.Interfaces;
 using MyCodingAgent.Models;
 using MyCodingAgent.ToolCalls;
+using MyCodingAgent.ToolCalls.AgentCommunication;
 using System.Text.Json;
 
 namespace MyCodingAgent.Agents;
 
-public class ProjectManagerAgentForDebugAgent(Workspace Workspace, OllamaClient Client) : BaseAgent(Workspace, Client), IAgent
+public class ProjectManagerAgentForDebugAgent : BaseAgent, IAgent
 {
+    public ProjectManagerAgentForDebugAgent(Workspace workspace, OllamaClient client) : base(workspace, client)
+    {
+        AnswerDebugAgentTool = new Answer_DebugAgent_From_ProjectManager_Tool(workspace);
+        SubTasksTool = new SubTasks_Tool(workspace);
+        WorkspaceTool = new WorkspaceReadonly_Tool(workspace);
+        AskHumanDeveloperTool = new Ask_HumanDeveloper_Tool();
+
+        Tools =
+        [
+            AnswerDebugAgentTool,
+            SubTasksTool,
+            WorkspaceTool,
+            AskHumanDeveloperTool
+        ];
+    }
+
+    public Answer_DebugAgent_From_ProjectManager_Tool AnswerDebugAgentTool { get; }
+    public SubTasks_Tool SubTasksTool { get; }
+    public WorkspaceReadonly_Tool WorkspaceTool { get; }
+    public Ask_HumanDeveloper_Tool AskHumanDeveloperTool { get; }
+
     protected override List<PromptResponseResults> History => Workspace.PlanningHistory;
-    protected override IToolCall[] Tools { get; } =
-    [
-        new WorkspaceReadonly_Tool(Workspace),
-        new SubTasks_Tool(Workspace),
-        new Answer_ProjectManagerAgent_To_DebugAgent_Tool(Workspace),
-        new Ask_HumanDeveloper_Tool()
-    ];
-    public Answer_ProjectManagerAgent_To_DebugAgent_Tool AnswerDebugAgentTool
-        => (Tools.First(a => a is Answer_ProjectManagerAgent_To_DebugAgent_Tool) as Answer_ProjectManagerAgent_To_DebugAgent_Tool)!;
-    public SubTasks_Tool SubTasksTool
-        => (Tools.First(a => a is SubTasks_Tool) as SubTasks_Tool)!;
-    public WorkspaceReadonly_Tool WorkspaceTool
-        => (Tools.First(a => a is WorkspaceReadonly_Tool) as WorkspaceReadonly_Tool)!;
-    public Ask_HumanDeveloper_Tool AskHumanDeveloperTool
-        => (Tools.First(a => a is Ask_HumanDeveloper_Tool) as Ask_HumanDeveloper_Tool)!;
+    protected override IToolCall[] Tools { get; }
 
     public async Task<OllamaPrompt> GeneratePrompt(CompileResult compileResult)
     {
-        if (Workspace.DebugAgent_WaitingFor_ProjectManagerAgent_Answer == null)
+        if (Workspace.DebugAgent_To_ProjectManagerAgent_Question == null)
             throw new Exception("No active job found for Project Manager.");
 
         List<OllamaMessage> messageList =
@@ -36,7 +44,7 @@ public class ProjectManagerAgentForDebugAgent(Workspace Workspace, OllamaClient 
             new OllamaMessage(
                 nameof(OllamaAgentRole.system).ToLower(),
                 null,
-                $@"You are the Project Manager for a .NET 10 development project. 
+                $@"You are the Project Manager for a .NET 10 (net10.0) development project. 
 Earlier, you created a plan consisting of several subtasks. Now, a Debug Agent is executing one of those tasks and has encountered a blocker or a question.
 
 YOUR MISSION:
@@ -51,7 +59,7 @@ CONSTRAINTS:
 - Use '{WorkspaceTool.Name}' tools, if you need to double-check the current state of the code before answering.
 
 RULES:
-- You must target .NET 10 for projects. Do not forget!
+- You must target .NET 10 (net10.0) for projects. Do not forget!
 - Only if it is really unclear you can ask the developer for extra information
 
 When you have the answer, you MUST call '{AnswerDebugAgentTool.Name}' tool.",
@@ -69,7 +77,7 @@ When you have the answer, you MUST call '{AnswerDebugAgentTool.Name}' tool.",
 
         // De vraag van de Debugg verpakken we als een specifieke User-message
         var questionContent = $@"### INCOMING DEBUG AGENT REQUEST
-{Workspace.DebugAgent_WaitingFor_ProjectManagerAgent_Answer.Question}
+{Workspace.DebugAgent_To_ProjectManagerAgent_Question.Question}
 
 ### CONTEXT: CURRENT SUBTASK DEFINITION
 {Workspace.GetCurrentSubTask()?.Content}

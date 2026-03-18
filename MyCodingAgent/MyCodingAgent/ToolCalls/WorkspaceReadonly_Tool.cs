@@ -10,7 +10,7 @@ public class WorkspaceReadonly_Tool(Workspace Workspace) : IToolCall
 {
     protected Workspace Workspace = Workspace;
     public virtual string Name => "workspace";
-    public virtual string Description => "Interact with the workspace.";
+    public virtual string Description => "Interact with the workspace";
 
     public virtual ToolParameter[] Parameters { get; } =
     [
@@ -22,8 +22,8 @@ public class WorkspaceReadonly_Tool(Workspace Workspace) : IToolCall
             "compile", 
             "diff_with_original"
         ]),
-        new ("path", "string", "The relative path from the workspace root (for all actions except 'files_list')", null, true),
-        new ("query", "string", "Exact text to find (for 'text_search' and 'text_search_and_replace' action)", null, true),
+        new ("path", "string", "The relative path from the workspace root, for all actions except files_list", null, true),
+        new ("query", "string", "Exact text to find, for text_search action", null, true),
     ];
 
     public virtual async Task<ToolResult> Invoke(OllamaToolCall toolCall)
@@ -31,8 +31,8 @@ public class WorkspaceReadonly_Tool(Workspace Workspace) : IToolCall
         var toolArguments = toolCall.function.arguments;
         if (toolArguments.action == null)
             return new ToolResult(
-                "Error parameter action is not supplied.",
-                "Error parameter action is not supplied.",
+                "Error parameter action is not supplied",
+                "Error parameter action is not supplied",
                 true);
 
         return toolArguments.action.ToLower() switch
@@ -60,8 +60,8 @@ public class WorkspaceReadonly_Tool(Workspace Workspace) : IToolCall
         var toolArguments = toolCall.function.arguments;
         if (toolArguments.path == null)
             return new ToolResult(
-                "Error parameter path is not supplied.",
-                "Error parameter path is not supplied.",
+                "Error parameter path is not supplied",
+                "Error parameter path is not supplied",
                 true);
 
         var file = Workspace.GetFile(toolArguments.path);
@@ -94,8 +94,8 @@ public class WorkspaceReadonly_Tool(Workspace Workspace) : IToolCall
         var toolArguments = toolCall.function.arguments;
         if (toolArguments.query == null)
             return new ToolResult(
-                "Error parameter query is not supplied.",
-                "Error parameter query is not supplied.",
+                "Error parameter query is not supplied",
+                "Error parameter query is not supplied",
                 true);
         var files = Workspace.Files;
         if (string.IsNullOrEmpty(toolArguments.path) == false)
@@ -130,7 +130,7 @@ public class WorkspaceReadonly_Tool(Workspace Workspace) : IToolCall
                 found++;
             }
         }
-        sb.AppendLine($"Found {found} instances.");
+        sb.AppendLine($"Found {found} instances");
 
         return new ToolResult(
             sb.ToString(),
@@ -142,16 +142,15 @@ public class WorkspaceReadonly_Tool(Workspace Workspace) : IToolCall
         var toolArguments = toolCall.function.arguments;
         if (toolArguments.path == null)
             return new ToolResult(
-                "Error parameter path is not supplied.",
-                "Error parameter path is not supplied.",
+                "Error parameter path is not supplied",
+                "Error parameter path is not supplied",
                 true);
 
-        // 2. Haal het bestaande bestand op
         var file = Workspace.GetFile(toolArguments.path);
         if (file == null)
         {
             return new ToolResult(
-                $"Error: file '{toolArguments.path}' not found.",
+                $"Error: file '{toolArguments.path}' not found",
                 "Error file not found",
                 true);
         }
@@ -159,12 +158,11 @@ public class WorkspaceReadonly_Tool(Workspace Workspace) : IToolCall
         if (orginalfile == null)
         {
             return new ToolResult(
-                $"Error: orginal file '{toolArguments.path}' not found. This file has been added.",
+                $"Error: orginal file '{toolArguments.path}' not found. This file has been added",
                 "Error file not found",
                 true);
         }
 
-        // 3. Bereken het verschil
         var oldContent = orginalfile.Content;
         var newContent = await file.GetFileContent();
         var diffBuilder = new DiffPlex.DiffBuilder.SideBySideDiffBuilder(new DiffPlex.Differ());
@@ -172,14 +170,11 @@ public class WorkspaceReadonly_Tool(Workspace Workspace) : IToolCall
             oldContent ?? string.Empty, 
             newContent ?? string.Empty);
 
-        // 4. Formatteer de output (vergelijkbaar met git diff stijl)
         var sb = new StringBuilder();
         sb.AppendLine($"Diff for file: {toolArguments.path}");
         sb.AppendLine("--- Old");
         sb.AppendLine("+++ New");
 
-        // We lopen door de regels van het 'Old' model om de verwijderingen en ongewijzigde regels te zien,
-        // en het 'New' model voor toevoegingen.
         foreach (var line in model.OldText.Lines)
         {
             if (line.Type == DiffPlex.DiffBuilder.Model.ChangeType.Deleted)

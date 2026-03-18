@@ -19,9 +19,9 @@ public class Workspace
     public List<PromptResponseResults> PlanningHistory { get; set; } = [];
     public List<PromptResponseResults> CodingHistory { get; set; } = [];
     public List<PromptResponseResults> DebugHistory { get; set; } = [];
-    public Question_CodingAgent_WaitingFor_ProjectManagerAgent_Answer? CodingAgent_WaitingFor_ProjectManagerAgent_Answer { get; set; }
-    public Question_DebugAgent_WaitingFor_ProjectManagerAgent_Answer? DebugAgent_WaitingFor_ProjectManagerAgent_Answer { get; set; }
-    public Question_DebugAgent_WaitingFor_CoderAgent_Answer? DebugAgent_WaitingFor_CoderAgent_Answer { get; set; }
+    public CodingAgent_To_ProjectManagerAgent_Question? CodingAgent_To_ProjectManagerAgent_Question { get; set; }
+    public DebugAgent_To_ProjectManagerAgent_Question? DebugAgent_To_ProjectManagerAgent_Question { get; set; }
+    public DebugAgent_To_CoderAgent_Question? DebugAgent_To_CoderAgent_Question { get; set; }
 
     public WorkspaceFile? GetFile(string path)
         => Files.FirstOrDefault(a => a.RelativePath.Equals(path.Replace("/", "\\"), StringComparison.CurrentCultureIgnoreCase));

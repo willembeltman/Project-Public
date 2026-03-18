@@ -3,25 +3,33 @@ using MyCodingAgent.Helpers;
 using MyCodingAgent.Interfaces;
 using MyCodingAgent.Models;
 using MyCodingAgent.ToolCalls;
+using MyCodingAgent.ToolCalls.AgentCommunication;
 
-public class DebugAgent(Workspace workspace, OllamaClient client) : BaseAgent(workspace, client), IAgent
+public class DebugAgent : BaseAgent, IAgent
 {
+    public DebugAgent(Workspace workspace, OllamaClient client) : base(workspace, client)
+    {
+        WorkspaceTool = new Workspace_Tool(workspace);
+        DebugAgentIsDoneTool = new DebugAgentIsDone_Tool(workspace);
+        AskCoderAgentTool = new DebugAgent_To_CoderAgent_Question_Tool(workspace);
+        //AskProjectManagerTool = new DebugAgent_To_ProjectManager_Question_Tool(workspace);
+
+        Tools =
+        [
+            WorkspaceTool,
+            DebugAgentIsDoneTool,
+            AskCoderAgentTool,
+            //AskProjectManagerTool
+        ];
+    }
+
+    public Workspace_Tool WorkspaceTool { get; }
+    public DebugAgentIsDone_Tool DebugAgentIsDoneTool { get; }
+    public DebugAgent_To_CoderAgent_Question_Tool AskCoderAgentTool { get; }
+    //public DebugAgent_To_ProjectManager_Question_Tool AskProjectManagerTool { get; }
+
     protected override List<PromptResponseResults> History => Workspace.DebugHistory;
-    protected override IToolCall[] Tools { get; } =
-    [
-        new Workspace_Tool(workspace),
-        new DebugAgentIsDone_Tool(workspace),
-        new Ask_DebugAgent_To_CoderAgent_Tool(workspace),
-        new Ask_DebugAgent_To_ProjectManager_Tool(workspace)
-    ];
-    public Workspace_Tool WorkspaceTool
-        => (Tools.First(a => a is Workspace_Tool) as Workspace_Tool)!;
-    public DebugAgentIsDone_Tool DebugAgentIsDoneTool
-        => (Tools.First(a => a is DebugAgentIsDone_Tool) as DebugAgentIsDone_Tool)!;
-    public Ask_DebugAgent_To_CoderAgent_Tool AskCoderAgentTool
-        => (Tools.First(a => a is Ask_DebugAgent_To_CoderAgent_Tool) as Ask_DebugAgent_To_CoderAgent_Tool)!;
-    public Ask_DebugAgent_To_ProjectManager_Tool AskProjectManagerTool
-        => (Tools.First(a => a is Ask_DebugAgent_To_ProjectManager_Tool) as Ask_DebugAgent_To_ProjectManager_Tool)!;
+    protected override IToolCall[] Tools { get; }
 
     public async Task<OllamaPrompt> GeneratePrompt(CompileResult compileResult)
     {
@@ -39,21 +47,17 @@ Fix compilation errors with minimal changes.
 WORKFLOW
 1. Analyze the error.
 2. Find the root cause.
-3. Read relevant files using '{WorkspaceTool.Name}'.
+3. Read relevant files using '{WorkspaceTool.Name}' tool.
 4. Apply the smallest possible fix.
-5. Recompile using '{WorkspaceTool.Name}'.
-6. Repeat until it compiles.
-7. Call '{DebugAgentIsDoneTool.Name}' when done.
+5. Repeat until it compiles.
+6. Call '{DebugAgentIsDoneTool.Name}' tool when done. DO NOT FORGET!
 
 RULES
 - A .csproj, .sln, or .slnx must exist in the ROOT (no sub-directory search).
 - Always read a file before modifying it.
 - Do not overwrite entire files unless necessary.
-- Use '{WorkspaceTool.Name}' for ALL file operations.
-- Target .NET 10 only.
-
-IF UNSURE
-Use '{AskCoderAgentTool.Name}' or '{AskProjectManagerTool.Name}'. Do not guess.",
+- Use '{WorkspaceTool.Name}' tool for ALL file operations.
+- Target .NET 10 (net10.0) only.",
                 null,
                 null),
         ];
@@ -68,7 +72,9 @@ Note: this is up-to-date.
 
 GOAL
 Make the code compile successfully.
-Do not change behavior unless required.",
+Do not change behavior unless required.
+
+If there are 0 errors in the compilation result, immediately call '{DebugAgentIsDoneTool.Name}' and do not make any changes.",
             null,
             null);
         messageList.Add(currentSubTaskMessage);
@@ -92,10 +98,12 @@ Do not change behavior unless required.",
     /// processed.</param>
     /// <param name="agentResponse">The response object returned by the agent, containing the results to be evaluated.</param>
     /// <returns>if there was any tool call, if not this indicates maybe a different agent should continue</returns>
-    public async Task<bool> ProcessResponse(OllamaPrompt prompt, OllamaResponse agentResponse)
+    public Task<bool> ProcessResponse(OllamaPrompt prompt, OllamaResponse agentResponse)
+        => ProcessResponse(prompt, agentResponse, true);
+    public async Task<bool> ProcessResponse(OllamaPrompt prompt, OllamaResponse agentResponse, bool save)
     {
         var response = await GetAgentResponseResult(prompt, agentResponse, Tools);
-        History.Add(response);
+        if (save) History.Add(response);
         return response.ToolCallResults.Any(a => a.result.error == false);
     }
 }
