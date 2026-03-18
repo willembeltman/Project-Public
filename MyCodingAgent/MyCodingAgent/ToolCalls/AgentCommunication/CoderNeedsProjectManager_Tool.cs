@@ -3,7 +3,7 @@ using MyCodingAgent.Models;
 
 namespace MyCodingAgent.ToolCalls.AgentCommunication;
 
-public class CodingAgent_To_ProjectManager_Question_Tool(Workspace workspace) : IToolCall
+public class CoderNeedsProjectManager_Tool(Workspace workspace) : IToolCall
 {
     public string Name
         => "ask_project_manager_agent";

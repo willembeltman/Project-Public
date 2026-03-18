@@ -7,77 +7,66 @@ using System.Text.Json;
 
 namespace MyCodingAgent.Agents;
 
-public class ProjectManagerAgentForDebugAgent : BaseAgent, IAgent
+public class CoderForDebugger_Agent : BaseAgent, IAgent
 {
-    public ProjectManagerAgentForDebugAgent(Workspace workspace, OllamaClient client) : base(workspace, client)
+    public CoderForDebugger_Agent(Workspace workspace, OllamaClient client) : base(workspace, client)
     {
-        AnswerDebugAgentTool = new Answer_DebugAgent_From_ProjectManager_Tool(workspace);
-        SubTasksTool = new SubTasks_Tool(workspace);
         WorkspaceTool = new WorkspaceReadonly_Tool(workspace);
-        AskHumanDeveloperTool = new Ask_HumanDeveloper_Tool();
+        AnswerDebugAgentTool = new DebuggerNeedsCoderAnswer_Tool(workspace);
 
         Tools =
         [
-            AnswerDebugAgentTool,
-            SubTasksTool,
             WorkspaceTool,
-            AskHumanDeveloperTool
+            AnswerDebugAgentTool
         ];
     }
 
-    public Answer_DebugAgent_From_ProjectManager_Tool AnswerDebugAgentTool { get; }
-    public SubTasks_Tool SubTasksTool { get; }
     public WorkspaceReadonly_Tool WorkspaceTool { get; }
-    public Ask_HumanDeveloper_Tool AskHumanDeveloperTool { get; }
+    public DebuggerNeedsCoderAnswer_Tool AnswerDebugAgentTool { get; }
 
     protected override List<PromptResponseResults> History => Workspace.PlanningHistory;
     protected override IToolCall[] Tools { get; }
 
-    public async Task<OllamaPrompt> GeneratePrompt(CompileResult compileResult)
+    public async Task<OllamaPrompt> GeneratePrompt()
     {
-        if (Workspace.DebugAgent_To_ProjectManagerAgent_Question == null)
+        if (Workspace.CodingAgent_To_ProjectManagerAgent_Question == null)
             throw new Exception("No active job found for Project Manager.");
 
         List<OllamaMessage> messageList =
         [
             // SYSTEM PROMPT
             new OllamaMessage(
-                nameof(OllamaAgentRole.system).ToLower(),
+                nameof(OllamaAgentRole.System).ToLower(),
                 null,
-                $@"You are the Project Manager for a .NET 10 (net10.0) development project. 
-Earlier, you created a plan consisting of several subtasks. Now, a Debug Agent is executing one of those tasks and has encountered a blocker or a question.
+                $@"You are the Coder Agent for a .NET 10 development project. 
+Earlier, you've made some changes to the project that broke compilation. Now, a Debug Agent is solving your errors and has encountered a blocker or a question.
 
 YOUR MISSION:
 1. Analyze the Debug Agent's question in the context of the original project goals and your previous planning.
 2. Provide technical clarification, architectural decisions, or missing information.
-3. If the question reveals that the original plan was flawed, use '{SubTasksTool.Name}' to refine the plan.
-4. Use the '{AnswerDebugAgentTool.Name}' tool to send your definitive answer back to the agent.
+3. Use the '{AnswerDebugAgentTool.Name}' tool to send your definitive answer back to the agent.
 
 CONSTRAINTS:
 - You do not write code yourself.
-- You provide the guidance so the Debug can continue.
+- You provide the guidance so the Debug Agent can continue.
 - Use '{WorkspaceTool.Name}' tools, if you need to double-check the current state of the code before answering.
 
-RULES:
-- You must target .NET 10 (net10.0) for projects. Do not forget!
-- Only if it is really unclear you can ask the developer for extra information
-
-When you have the answer, you MUST call '{AnswerDebugAgentTool.Name}' tool.",
+When you have the answer, you MUST call '{AnswerDebugAgentTool.Name}'.",
                 null,
                 null),
 
             // USER ORIGINAL PROMPT (Het grote doel)
             new OllamaMessage(
-                nameof(OllamaAgentRole.user).ToLower(),
+                nameof(OllamaAgentRole.User).ToLower(),
                 null,
                 $"Original Project Goal: {Workspace.UserPrompt}",
                 null,
                 null),
         ];
 
-        // De vraag van de Debugg verpakken we als een specifieke User-message
+        // De vraag van de DebugAgent verpakken we als een specifieke User-message
         var questionContent = $@"### INCOMING DEBUG AGENT REQUEST
-{Workspace.DebugAgent_To_ProjectManagerAgent_Question.Question}
+{Workspace.CodingAgent_To_ProjectManagerAgent_Question.Question}
 
 ### CONTEXT: CURRENT SUBTASK DEFINITION
 {Workspace.GetCurrentSubTask()?.Content}
@@ -86,7 +75,7 @@ When you have the answer, you MUST call '{AnswerDebugAgentTool.Name}' tool.",
 Please analyze the request above against the subtask definition and provide the necessary information to unblock the Debug Agent.";
 
         var question = new OllamaMessage(
-            nameof(OllamaAgentRole.user).ToLower(),
+            nameof(OllamaAgentRole.User).ToLower(),
             null,
             questionContent,
             null,

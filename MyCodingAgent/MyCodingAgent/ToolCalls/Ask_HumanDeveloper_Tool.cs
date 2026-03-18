@@ -3,7 +3,7 @@ using MyCodingAgent.Models;
 
 namespace MyCodingAgent.ToolCalls;
 
-public class Ask_HumanDeveloper_Tool : IToolCall
+public class Ask_HumanDeveloper_Tool(Workspace workspace) : IToolCall
 {
     public string Name
         => "ask_human_developer";
@@ -22,24 +22,45 @@ public class Ask_HumanDeveloper_Tool : IToolCall
                 "parameter content is not supplied",
                 true);
 
-        var previousColor = Console.ForegroundColor;
+        if (toolCall.id == null)
+            throw new Exception("eeeuhm..");
 
-        Console.ForegroundColor = ConsoleColor.White;
-        Console.WriteLine();
-        Console.WriteLine("The llm model want more information, can you answer his question?");
-        Console.WriteLine("The question:");
-        Console.WriteLine(toolArguments.content);
-        Console.WriteLine();
-        Console.WriteLine("Your answer:");
-        var answer = ConsoleEditor.ReadMultilineInput();
-        Console.WriteLine();
-        Console.WriteLine();
+        workspace.CodingAgent_To_ProjectManagerAgent_Question =
+            new(toolCall.id, toolArguments.content);
 
-        Console.ForegroundColor = previousColor;
-
+        var answer = "Waiting for answer..";
         return new ToolResult(
             answer,
             answer,
             false);
     }
+    //public async Task<ToolResult> Invoke(OllamaToolCall toolCall)
+    //{
+    //    var toolArguments = toolCall.function.arguments;
+    //    if (toolArguments.content == null)
+    //        return new ToolResult(
+    //            "parameter content is not supplied",
+    //            "parameter content is not supplied",
+    //            true);
+
+    //    var previousColor = Console.ForegroundColor;
+
+    //    Console.ForegroundColor = ConsoleColor.White;
+    //    Console.WriteLine();
+    //    Console.WriteLine("The llm model want more information, can you answer his question?");
+    //    Console.WriteLine("The question:");
+    //    Console.WriteLine(toolArguments.content);
+    //    Console.WriteLine();
+    //    Console.WriteLine("Your answer:");
+    //    var answer = ConsoleEditor.ReadMultilineInput();
+    //    Console.WriteLine();
+    //    Console.WriteLine();
+
+    //    Console.ForegroundColor = previousColor;
+
+    //    return new ToolResult(
+    //        answer,
+    //        answer,
+    //        false);
+    //}
 }

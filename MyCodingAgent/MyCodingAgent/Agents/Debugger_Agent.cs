@@ -5,13 +5,13 @@ using MyCodingAgent.Models;
 using MyCodingAgent.ToolCalls;
 using MyCodingAgent.ToolCalls.AgentCommunication;
 
-public class DebugAgent : BaseAgent, IAgent
+public class Debugger_Agent : BaseAgent, IAgent
 {
-    public DebugAgent(Workspace workspace, OllamaClient client) : base(workspace, client)
+    public Debugger_Agent(Workspace workspace, OllamaClient client) : base(workspace, client)
     {
         WorkspaceTool = new Workspace_Tool(workspace);
-        DebugAgentIsDoneTool = new DebugAgentIsDone_Tool(workspace);
-        AskCoderAgentTool = new DebugAgent_To_CoderAgent_Question_Tool(workspace);
+        DebugAgentIsDoneTool = new DebuggingIsDone_Tool(workspace);
+        AskCoderAgentTool = new DebuggerNeedsCoder_Tool(workspace);
         //AskProjectManagerTool = new DebugAgent_To_ProjectManager_Question_Tool(workspace);
 
         Tools =
@@ -24,20 +24,21 @@ public class DebugAgent : BaseAgent, IAgent
     }
 
     public Workspace_Tool WorkspaceTool { get; }
-    public DebugAgentIsDone_Tool DebugAgentIsDoneTool { get; }
-    public DebugAgent_To_CoderAgent_Question_Tool AskCoderAgentTool { get; }
+    public DebuggingIsDone_Tool DebugAgentIsDoneTool { get; }
+    public DebuggerNeedsCoder_Tool AskCoderAgentTool { get; }
     //public DebugAgent_To_ProjectManager_Question_Tool AskProjectManagerTool { get; }
 
     protected override List<PromptResponseResults> History => Workspace.DebugHistory;
     protected override IToolCall[] Tools { get; }
 
-    public async Task<OllamaPrompt> GeneratePrompt(CompileResult compileResult)
+    public async Task<OllamaPrompt> GeneratePrompt()
     {
-        List<OllamaMessage> messageList =
+        var compileResult = await Workspace.Compile();
+        List <OllamaMessage> messageList =
         [
             // SYSTEM MESSAGE
             new OllamaMessage(
-                nameof(OllamaAgentRole.system).ToLower(),
+                nameof(OllamaAgentRole.System).ToLower(),
                 null,
                 $@"You are a .NET 10 repair agent.
 
@@ -63,7 +64,7 @@ RULES
         ];
 
         var currentSubTaskMessage = new OllamaMessage(
-            nameof(OllamaAgentRole.user).ToLower(),
+            nameof(OllamaAgentRole.User).ToLower(),
             null,
             $@"--- CURRENT COMPILATION RESULT ---
 {compileResult.Content}

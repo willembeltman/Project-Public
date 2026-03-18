@@ -3,7 +3,7 @@ using MyCodingAgent.Models;
 
 namespace MyCodingAgent.ToolCalls;
 
-public class DebugAgentIsDone_Tool(Workspace workspace) : IToolCall
+public class DebuggingIsDone_Tool(Workspace workspace) : IToolCall
 {
     public string Name
         => "debug_is_done";
@@ -32,8 +32,9 @@ public class DebugAgentIsDone_Tool(Workspace workspace) : IToolCall
                         $"Your changes resulted in a error, so the debug agent has fixed them",
                         false)));
         }
-        workspace.Debugging = false;
-        workspace.ClearDebugHistory = true;
+        workspace.Flags.IsDebuggingFlag = false;
+        workspace.Flags.NeedClearDebugHistoryFlag = true;
+        await workspace.Save();
 
         return new ToolResult("OK DONE!", "OK DONE!", false);
     }

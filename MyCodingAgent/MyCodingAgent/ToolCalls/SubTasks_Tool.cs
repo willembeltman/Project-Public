@@ -135,7 +135,7 @@ public class SubTasks_Tool(Workspace workspace) : IToolCall
     public async Task<ToolResult> PlanningIsDone(OllamaToolCall toolCall)
     {
         var toolArguments = toolCall.function.arguments;
-        workspace.PlanningIsDone = true;
+        workspace.Flags.PlanningIsDoneFlag = true;
         return new ToolResult("OK DONE!", "OK DONE!", false);
     }
 }

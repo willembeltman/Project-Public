@@ -3,13 +3,13 @@ using MyCodingAgent.Models;
 
 namespace MyCodingAgent.ToolCalls.AgentCommunication;
 
-public class DebugAgent_To_CoderAgent_Question_Tool(Workspace workspace) : IToolCall
+public class DebuggerNeedsProjectManager_Tool(Workspace workspace) : IToolCall
 {
     public string Name
-        => "ask_coder_agent";
+        => "ask_project_manager_agent";
 
     public string Description
-        => "Ask the coder agent for clarification or missing details";
+        => "Ask the project manager for clarification or missing details";
 
     public ToolParameter[] Parameters { get; } =
     [
@@ -28,7 +28,7 @@ public class DebugAgent_To_CoderAgent_Question_Tool(Workspace workspace) : ITool
         if (toolCall.id == null)
             throw new Exception("eeeuhm..");
 
-        workspace.DebugAgent_To_CoderAgent_Question =
+        workspace.DebugAgent_To_ProjectManagerAgent_Question =
             new(toolCall.id, toolArguments.content);
 
         var answer = "Waiting for answer..";

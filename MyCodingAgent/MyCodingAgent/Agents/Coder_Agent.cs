@@ -7,12 +7,12 @@ using System.Text.Json;
 
 namespace MyCodingAgent.Agents;
 
-public class CodingAgent : BaseAgent, IAgent
+public class Coder_Agent : BaseAgent, IAgent
 {
-    public CodingAgent(Workspace workspace, OllamaClient client) : base(workspace, client)
+    public Coder_Agent(Workspace workspace, OllamaClient client) : base(workspace, client)
     {
         WorkspaceTool = new Workspace_Tool(workspace);
-        AskProjectManagerTool = new CodingAgent_To_ProjectManager_Question_Tool(workspace);
+        AskProjectManagerTool = new CoderNeedsProjectManager_Tool(workspace);
         CurrentSubTaskIsFinishedTool = new SubTaskIsFinished_Tool(workspace);
 
         Tools =
@@ -24,19 +24,19 @@ public class CodingAgent : BaseAgent, IAgent
     }
 
     public Workspace_Tool WorkspaceTool { get; }
-    public CodingAgent_To_ProjectManager_Question_Tool AskProjectManagerTool { get; }
+    public CoderNeedsProjectManager_Tool AskProjectManagerTool { get; }
     public SubTaskIsFinished_Tool CurrentSubTaskIsFinishedTool { get; }
 
     protected override List<PromptResponseResults> History => Workspace.CodingHistory;
     protected override IToolCall[] Tools { get; }
 
-    public async Task<OllamaPrompt> GeneratePrompt(CompileResult compileResult)
+    public async Task<OllamaPrompt> GeneratePrompt()
     {
         List<OllamaMessage> messageList =
         [
             // SYSTEM PROMPT
             new OllamaMessage(
-                nameof(OllamaAgentRole.system).ToLower(),
+                nameof(OllamaAgentRole.System).ToLower(),
                 null,
                 $@"You are an autonomous software engineering agent operating inside a .NET 10 development workspace. 
 You have been assigned a subtask for the project in your workspace.
@@ -67,7 +67,7 @@ RULES
         if (currentSubTask != null)
         {
             var currentSubTaskMessage = new OllamaMessage(
-                nameof(OllamaAgentRole.user).ToLower(),
+                nameof(OllamaAgentRole.User).ToLower(),
                 null,
                 $@"--- CURRENT SUBTASK ---
 {currentSubTask.Content}

@@ -3,13 +3,13 @@ using MyCodingAgent.Models;
 
 namespace MyCodingAgent.ToolCalls.AgentCommunication;
 
-public class Answer_DebugAgent_From_CoderAgent_Tool(Workspace workspace) : IToolCall
+public class DebuggerNeedsProjectManagerAnswer_Tool(Workspace workspace) : IToolCall
 {
     public string Name
         => "answer_debug_question";
 
     public string Description
-        => "Provide the official response or missing technical details to a Debug Agent question";
+        => "Provides the official response or missing technical details to a Coding Agent request";
 
     public ToolParameter[] Parameters { get; } =
     [
@@ -25,17 +25,17 @@ public class Answer_DebugAgent_From_CoderAgent_Tool(Workspace workspace) : ITool
                 "parameter content is not supplied",
                 true);
 
-        if (workspace.DebugAgent_To_CoderAgent_Question == null)
+        if (workspace.DebugAgent_To_ProjectManagerAgent_Question == null)
             throw new Exception("Oh ooh..");
 
-        var debugToolCall = workspace.DebugHistory
+        var coderToolCall = workspace.CodingHistory
             .SelectMany(a => a.ToolCallResults)
-            .FirstOrDefault(a => a.tool_call.id == workspace.DebugAgent_To_CoderAgent_Question.ToolCallId);
-        if (debugToolCall == null)
+            .FirstOrDefault(a => a.tool_call.id == workspace.DebugAgent_To_ProjectManagerAgent_Question.ToolCallId);
+        if (coderToolCall == null)
             throw new Exception("Oh ooh..");
 
-        debugToolCall.result.content = toolArguments.content;
-        workspace.DebugAgent_To_CoderAgent_Question = null;
+        coderToolCall.result.content = toolArguments.content;
+        workspace.DebugAgent_To_ProjectManagerAgent_Question = null;
 
         return new ToolResult(
             $"Updated subtask '{toolArguments.id}'",

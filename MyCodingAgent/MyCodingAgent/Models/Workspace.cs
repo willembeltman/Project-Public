@@ -1,4 +1,5 @@
 ﻿using MyCodingAgent.Helpers;
+using MyCodingAgent.ToolCalls.AgentCommunication.Models;
 using System.Text;
 using System.Text.Json;
 
@@ -9,21 +10,17 @@ public class Workspace
     public int PromptIndex { get; set; }
     public string RootDirectoryName { get; set; } = string.Empty;
     public string UserPrompt { get; set; } = string.Empty;
-    public bool PlanningIsDone { get; set; }
-    public bool Debugging { get; set; }
     public int? CurrentSubTask { get; set; }
-    public bool WorkIsDone { get; set; }
+    public WorkspaceFlags Flags { get; set; } = new();
     public List<WorkspaceOriginalFile> OriginalFiles { get; set; } = [];
     public List<WorkspaceFile> Files { get; set; } = [];
     public List<WorkspaceSubTask> SubTasks { get; set; } = [];
     public List<PromptResponseResults> PlanningHistory { get; set; } = [];
     public List<PromptResponseResults> CodingHistory { get; set; } = [];
     public List<PromptResponseResults> DebugHistory { get; set; } = [];
-    public CodingAgent_To_ProjectManagerAgent_Question? CodingAgent_To_ProjectManagerAgent_Question { get; set; }
-    public DebugAgent_To_ProjectManagerAgent_Question? DebugAgent_To_ProjectManagerAgent_Question { get; set; }
-    public DebugAgent_To_CoderAgent_Question? DebugAgent_To_CoderAgent_Question { get; set; }
-    public bool ClearCodingHistory { get; internal set; }
-    public bool ClearDebugHistory { get; internal set; }
+    public CoderNeedsProjectManager_Question? CodingAgent_To_ProjectManagerAgent_Question { get; set; }
+    public DebuggerNeedsProjectManager_Question? DebugAgent_To_ProjectManagerAgent_Question { get; set; }
+    public DebuggerNeedsCoder_Question? DebugAgent_To_CoderAgent_Question { get; set; }
 
     public WorkspaceFile? GetFile(string path)
         => Files.FirstOrDefault(a => a.RelativePath.Equals(path.Replace("/", "\\"), StringComparison.CurrentCultureIgnoreCase));

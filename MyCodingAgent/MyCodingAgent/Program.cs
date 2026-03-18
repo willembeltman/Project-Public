@@ -31,7 +31,7 @@ internal class Program : IDisposable
 
         var workspaceDirectory = Path.Combine(Environment.CurrentDirectory, "Source");
         var workspace = await Workspace.TryLoad(workspaceDirectory);
-        if (workspace == null || workspace.WorkIsDone)
+        if (workspace == null || workspace.Flags.WorkIsDoneFlag)
             workspace = await CreateWorkspace(workspaceDirectory);
 
         Console.WriteLine("Workspace loaded, getting model list, please wait...");
@@ -42,13 +42,10 @@ internal class Program : IDisposable
         await LlmService.InitializeModelAsync(model);
 
         Console.WriteLine($"Model '{model.Name}' initialized, initialising agents, please wait...");
-        var planningAgent = new ProjectManagerAgent(workspace, LlmService);
-        var codingAgent = new CodingAgent(workspace, LlmService);
-        var debuggingAgent = new DebugAgent(workspace, LlmService);
-        var projectManagerAgent = new ProjectManagerAgentForCodingAgent(workspace, LlmService);
+        var team = new Team(workspace, LlmService);
 
-        Console.WriteLine("Agents initialized, attempting to compile workspace, please wait...");
-        var compileResult = await workspace.Compile();
+        //Console.WriteLine("Agents initialized, attempting to compile workspace, please wait...");
+        //var compileResult = await workspace.Compile();
 
         //// Rerun for debug
         //foreach (var resp in workspace.CodingHistory)
@@ -57,97 +54,133 @@ internal class Program : IDisposable
         //    await debuggingAgent.ProcessResponse(resp.Prompt, resp.Response, false);
 
         Console.WriteLine("Project compile attempt finished, starting lllm-development-cycle, please wait...");
-        await RunMainLoop(workspace, model, planningAgent, codingAgent, debuggingAgent, projectManagerAgent, compileResult);
+        await RunMainLoop(workspace, model, team);
     }
     private async Task RunMainLoop(
         Workspace workspace,
         OllamaModel model,
-        ProjectManagerAgent planningAgent,
-        CodingAgent codingAgent,
-        DebugAgent debuggingAgent,
-        ProjectManagerAgentForCodingAgent projectManagerAgent,
-        CompileResult compileResult)
+        Team team)
     {
         Console.Clear();
-        
-        while (!workspace.WorkIsDone)
+
+        while (!workspace.Flags.WorkIsDoneFlag)
         {
-            // PLANNING MODE
             if (NeedsPlanner(workspace))
-                compileResult = await RunPlanningLoop(workspace, model, planningAgent, compileResult);
-
-            // PROJECT MANAGER MODE
-            if (NeedsProjectManager(workspace))
-                compileResult = await RunProjectManagerLoop(workspace, model, projectManagerAgent, compileResult);
-
-            // DEBUG MODE
+            {
+                // PLANNING MODE
+                await RunPlanningLoop(workspace, model, team.projectManagerPlannerAgent);
+                continue;
+            }
+            if (CoderNeedsProjectManager(workspace))
+            {
+                // CODER NEEDS PROJECT MANAGER MODE
+                await RunCoderNeedsProjectManagerLoop(workspace, model, team.projectManagerForCodingAgent);
+                continue;
+            }
+            if (DebuggerNeedsProjectManager(workspace))
+            {
+                // DEBUGGER NEEDS PROJECT MANAGER MODE
+                await RunDebuggerNeedsProjectManagerLoop(workspace, model, team.projectManagerForDebuggerAgent);
+                continue;
+            }
+            if (DebuggerNeedsCoder(workspace))
+            {
+                // DEBUGGER NEEDS CODER MODE
+                await RunDebuggerNeedsCoderLoop(workspace, model, team.codingForDebugAgent);
+                continue;
+            }
+            var compileResult = await workspace.Compile();
             if (NeedsDebugging(workspace, compileResult))
-                compileResult = await RunDebugLoop(workspace, model, debuggingAgent, compileResult);
-
-            // CODER MODE
+            {
+                // DEBUGGER MODE
+                await RunDebuggerLoop(workspace, model, team.debuggerAgent, compileResult);
+                continue;
+            }
             if (NeedsCoder(workspace, compileResult))
-                compileResult = await RunCoderLoop(workspace, model, codingAgent, compileResult);
-
-            // FINISHED?
-            if (IsFinished(workspace))
-                workspace.WorkIsDone = true;
+            {
+                // CODER MODE
+                await RunCoderLoop(workspace, model, team.codingAgent, compileResult);
+                continue;
+            }
+            if (NeedsCodeReview(workspace, compileResult))
+                // CODE REVIEW MODE
+                await RunCodeReviewLoop(workspace, model, team.projectManagerCodeReviewerAgent, compileResult);
         }
 
         await workspace.Save();
     }
 
-    private async Task<CompileResult> RunPlanningLoop(Workspace workspace, OllamaModel model, ProjectManagerAgent planningAgent, CompileResult compileResult)
+    private async Task RunPlanningLoop(Workspace workspace, OllamaModel model, ProjectManagerPlanner_Agent planningAgent)
     {
         while (NeedsPlanner(workspace))
         {
-            compileResult = await AgentFlow(workspace, model, planningAgent, compileResult);
+            await AgentFlow(workspace, model, planningAgent);
         }
         await workspace.Save();
         Console.Clear();
-        return compileResult;
     }
-    private async Task<CompileResult> RunProjectManagerLoop(Workspace workspace, OllamaModel model, ProjectManagerAgentForCodingAgent projectManagerAgent, CompileResult compileResult)
+    private async Task RunCoderNeedsProjectManagerLoop(Workspace workspace, OllamaModel model, ProjectManagerForCoding_Agent projectManagerAgent)
     {
-        while (workspace.CodingAgent_To_ProjectManagerAgent_Question != null)
+        while (CoderNeedsProjectManager(workspace))
         {
-            compileResult = await AgentFlow(workspace, model, projectManagerAgent, compileResult);
+            await AgentFlow(workspace, model, projectManagerAgent);
         }
         await workspace.Save();
         Console.Clear();
-        return compileResult;
     }
-    private async Task<CompileResult> RunDebugLoop(Workspace workspace, OllamaModel model, DebugAgent debuggingAgent, CompileResult compileResult)
+    private async Task RunDebuggerNeedsProjectManagerLoop(Workspace workspace, OllamaModel model, ProjectManagerForDebugger_Agent projectManagerForCodingAgent)
+    {
+        while (DebuggerNeedsProjectManager(workspace))
+        {
+            await AgentFlow(workspace, model, projectManagerForCodingAgent);
+        }
+        await workspace.Save();
+        Console.Clear();
+    }
+    private async Task RunDebuggerNeedsCoderLoop(Workspace workspace, OllamaModel model, CoderForDebugger_Agent codingForDebugAgent)
+    {
+        while (DebuggerNeedsCoder(workspace))
+        {
+            await AgentFlow(workspace, model, codingForDebugAgent);
+        }
+        await workspace.Save();
+        Console.Clear();
+    }
+    private async Task RunDebuggerLoop(Workspace workspace, OllamaModel model, Debugger_Agent debuggingAgent, CompileResult compileResult)
     {
         while (NeedsDebugging(workspace, compileResult))
         {
-            compileResult = await AgentFlow(workspace, model, debuggingAgent, compileResult);
+            await AgentFlow(workspace, model, debuggingAgent); 
+            compileResult = await workspace.Compile();
         }
         await workspace.Save();
         Console.Clear();
-        return compileResult;
     }
-    private async Task<CompileResult> RunCoderLoop(Workspace workspace, OllamaModel model, CodingAgent codingAgent, CompileResult compileResult)
+    private async Task RunCoderLoop(Workspace workspace, OllamaModel model, Coder_Agent codingAgent, CompileResult compileResult)
     {
         while (NeedsCoder(workspace, compileResult))
         {
-            compileResult = await AgentFlow(workspace, model, codingAgent, compileResult);
+            await AgentFlow(workspace, model, codingAgent);
+            compileResult = await workspace.Compile();
         }
         await workspace.Save();
         Console.Clear();
-        return compileResult;
+    }
+    private async Task RunCodeReviewLoop(Workspace workspace, OllamaModel model, ProjectManagerCodeReviewer_Agent projectManagerCodeReviewerAgent, CompileResult compileResult)
+    {
+        while (NeedsCodeReview(workspace, compileResult))
+        {
+            await AgentFlow(workspace, model, projectManagerCodeReviewerAgent);
+        }
+        await workspace.Save();
+        Console.Clear();
     }
 
     private bool NeedsPlanner(Workspace workspace)
     {
-        return 
-            workspace.SubTasks.Count == 0 || 
-            workspace.PlanningIsDone == false;
-    }
-    private bool NeedsProjectManager(Workspace workspace)
-    {
         return
-            workspace.CodingAgent_To_ProjectManagerAgent_Question != null ||
-            workspace.DebugAgent_To_ProjectManagerAgent_Question != null;
+            workspace.SubTasks.Count == 0 ||
+            workspace.Flags.PlanningIsDoneFlag == false;
     }
     private bool NeedsDebugging(Workspace workspace, CompileResult compileResult)
     {
@@ -155,7 +188,7 @@ internal class Program : IDisposable
             workspace.DebugAgent_To_ProjectManagerAgent_Question != null)
             return false;
 
-        if (workspace.Debugging)
+        if (workspace.Flags.IsDebuggingFlag)
             return true;
 
         var res = compileResult.Errors.Count > 0 &&
@@ -164,29 +197,57 @@ internal class Program : IDisposable
                workspace.DebugAgent_To_ProjectManagerAgent_Question == null;
         if (res)
         {
-            workspace.Debugging = true;
+            workspace.Flags.IsDebuggingFlag = true;
             Console.Clear();
         }
         return res;
     }
+    private bool CoderNeedsProjectManager(Workspace workspace)
+    {
+        return
+            workspace.CodingAgent_To_ProjectManagerAgent_Question != null;
+    }
+    private bool DebuggerNeedsCoder(Workspace workspace)
+    {
+        return
+            workspace.DebugAgent_To_CoderAgent_Question != null;
+    }
+    private bool DebuggerNeedsProjectManager(Workspace workspace)
+    {
+        return
+            workspace.DebugAgent_To_ProjectManagerAgent_Question != null;
+    }
     private bool NeedsCoder(Workspace workspace, CompileResult compileResult)
     {
-        return 
+        return
+            workspace.CodingAgent_To_ProjectManagerAgent_Question != null ||
             workspace.DebugAgent_To_CoderAgent_Question != null ||
+            workspace.DebugAgent_To_ProjectManagerAgent_Question != null ||
             (
-                workspace.GetCurrentSubTask() != null && 
-                workspace.Debugging == false &&
+                workspace.GetCurrentSubTask() != null &&
+                workspace.Flags.IsDebuggingFlag == false &&
                 compileResult.Errors.Count == 0 &&
                 workspace.CodingAgent_To_ProjectManagerAgent_Question == null &&
                 workspace.DebugAgent_To_ProjectManagerAgent_Question == null
             );
     }
-    private bool IsFinished(Workspace workspace)
+    private bool NeedsCodeReview(Workspace workspace, CompileResult compileResult)
     {
-        return workspace.PlanningIsDone == true && workspace.SubTasks.Any() && workspace.SubTasks.Any(a => a.Finished == false) == false;
+        if (workspace.Flags.IsCodeReviewingFlag)
+            return true;
+
+        if (workspace.Flags.PlanningIsDoneFlag &&
+            workspace.SubTasks.Any() &&
+            workspace.SubTasks.Any(a => a.Finished == false) == false)
+        {
+            workspace.Flags.IsCodeReviewingFlag = true;
+            return true;
+        }
+
+        return false;
     }
 
-    private async Task<CompileResult> AgentFlow(Workspace workspace, OllamaModel model, IAgent agent, CompileResult compileResult)
+    private async Task AgentFlow(Workspace workspace, OllamaModel model, IAgent agent)
     {
         workspace.PromptIndex++;
         var hasToolCalls = false;
@@ -196,7 +257,7 @@ internal class Program : IDisposable
             await Task.Delay(250);
             Console.Clear();
 
-            var prompt = await agent.GeneratePrompt(compileResult);
+            var prompt = await agent.GeneratePrompt();
             foreach (var message in prompt.messages)
                 ShowMessage(message);
             Console.WriteLine();
@@ -206,21 +267,23 @@ internal class Program : IDisposable
             Console.WriteLine();
 
             hasToolCalls = await agent.ProcessResponse(prompt, response);
-            if (workspace.ClearCodingHistory)
+            await workspace.Save();
+
+            if (workspace.Flags.NeedClearCodingHistoryFlag)
             {
                 workspace.CodingHistory.Clear();
-                workspace.ClearCodingHistory = false;
+                workspace.Flags.NeedClearCodingHistoryFlag = false;
+                await workspace.Save();
             }
-            if (workspace.ClearDebugHistory)
+            if (workspace.Flags.NeedClearDebugHistoryFlag)
             {
                 workspace.DebugHistory.Clear();
-                workspace.ClearDebugHistory = false;
+                workspace.Flags.NeedClearDebugHistoryFlag = false;
+                await workspace.Save();
             }
-            await workspace.Save();
         }
-
-        return compileResult;
     }
+
 
     private async Task<Workspace> CreateWorkspace(string workspaceDirectory)
     {

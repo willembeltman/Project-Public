@@ -2,8 +2,8 @@
 
 public enum OllamaAgentRole
 {
-    system, 
-    user, 
-    assistant, 
-    tool
+    System, 
+    User, 
+    Assistant, 
+    Tool
 }

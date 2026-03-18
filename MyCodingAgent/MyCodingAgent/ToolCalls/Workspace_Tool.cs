@@ -86,15 +86,20 @@ public class Workspace_Tool(Workspace Workspace) : WorkspaceReadonly_Tool(Worksp
                 await newFile.UpdateContent(toolArguments.content);
                 Workspace.Files.Add(newFile);
                 return new ToolResult(
-                    $"Created {toolArguments.path}",
+                    $"Created {toolArguments.path}:\r\n{toolArguments.content}",
                     $"Created {toolArguments.path}",
                     false);
             }
             else
             {
+                var originalFile = Workspace.GetOriginalFile(toolArguments.path);
+                var oldContent = originalFile?.Content ?? string.Empty;
+                var newContent = await file.GetFileContent() ?? string.Empty;
+                var sb = GetDiffText(toolArguments, oldContent, newContent);
+
                 await file.UpdateContent(toolArguments.content);
                 return new ToolResult(
-                    $"Updated {toolArguments.path}",
+                    $"Updated {toolArguments.path} Changes:\r\n{sb}",
                     $"Updated {toolArguments.path}",
                     false);
             }

@@ -142,54 +142,31 @@ public class WorkspaceReadonly_Tool(Workspace Workspace) : IToolCall
     protected async Task<ToolResult> Diff(OllamaToolCall toolCall)
     {
         var toolArguments = toolCall.function.arguments;
-        if (toolArguments.path == null)
+
+        if (string.IsNullOrEmpty(toolArguments.path))
             return new ToolResult(
-                "Error parameter path is not supplied",
-                "Error parameter path is not supplied",
+                "Error: parameter 'path' is not supplied",
+                "Error: parameter 'path' is missing",
                 true);
 
         var file = Workspace.GetFile(toolArguments.path);
+        var originalFile = Workspace.GetOriginalFile(toolArguments.path);
+
         if (file == null)
-        {
             return new ToolResult(
                 $"Error: file '{toolArguments.path}' not found",
-                "Error file not found",
+                "Error: file not found",
                 true);
-        }
-        var orginalfile = Workspace.GetOriginalFile(toolArguments.path);
-        if (orginalfile == null)
-        {
+
+        if (originalFile == null)
             return new ToolResult(
-                $"Error: orginal file '{toolArguments.path}' not found. This file has been added",
-                "Error file not found",
+                $"Error: original file '{toolArguments.path}' not found. This file may have been added",
+                "Error: original file not found",
                 true);
-        }
 
-        var oldContent = orginalfile.Content;
-        var newContent = await file.GetFileContent();
-        var diffBuilder = new DiffPlex.DiffBuilder.SideBySideDiffBuilder(new DiffPlex.Differ());
-        var model = diffBuilder.BuildDiffModel(
-            oldContent ?? string.Empty, 
-            newContent ?? string.Empty);
-
-        var sb = new StringBuilder();
-        sb.AppendLine($"Diff for file: {toolArguments.path}");
-        sb.AppendLine("--- Old");
-        sb.AppendLine("+++ New");
-
-        foreach (var line in model.OldText.Lines)
-        {
-            if (line.Type == DiffPlex.DiffBuilder.Model.ChangeType.Deleted)
-                sb.AppendLine($"- {line.Text}");
-            else if (line.Type == DiffPlex.DiffBuilder.Model.ChangeType.Unchanged && !string.IsNullOrEmpty(line.Text))
-                sb.AppendLine($"  {line.Text}");
-        }
-
-        foreach (var line in model.NewText.Lines)
-        {
-            if (line.Type == DiffPlex.DiffBuilder.Model.ChangeType.Inserted)
-                sb.AppendLine($"+ {line.Text}");
-        }
+        var oldContent = originalFile.Content ?? string.Empty;
+        var newContent = await file.GetFileContent() ?? string.Empty;
+        var sb = GetDiffText(toolArguments, oldContent, newContent);
 
         return new ToolResult(
             sb.ToString(),
@@ -197,4 +174,38 @@ public class WorkspaceReadonly_Tool(Workspace Workspace) : IToolCall
             false);
     }
 
+    protected static StringBuilder GetDiffText(OllamaToolCallFunctionArguments toolArguments, string oldContent, string newContent)
+    {
+        var diffBuilder = new DiffPlex.DiffBuilder.SideBySideDiffBuilder(new DiffPlex.Differ());
+        var model = diffBuilder.BuildDiffModel(oldContent, newContent);
+
+        var sb = new StringBuilder();
+        sb.AppendLine($"Diff for file: {toolArguments.path}");
+        sb.AppendLine("--- Old");
+        sb.AppendLine("+++ New");
+
+        int maxLines = Math.Max(model.OldText.Lines.Count, model.NewText.Lines.Count);
+
+        for (int i = 0; i < maxLines; i++)
+        {
+            var oldLine = i < model.OldText.Lines.Count ? model.OldText.Lines[i] : null;
+            var newLine = i < model.NewText.Lines.Count ? model.NewText.Lines[i] : null;
+
+            if (oldLine != null && oldLine.Type == DiffPlex.DiffBuilder.Model.ChangeType.Deleted)
+            {
+                sb.AppendLine($"- {oldLine.Text}");
+            }
+            else if (oldLine != null && oldLine.Type == DiffPlex.DiffBuilder.Model.ChangeType.Unchanged)
+            {
+                sb.AppendLine($"  {oldLine.Text}");
+            }
+
+            if (newLine != null && newLine.Type == DiffPlex.DiffBuilder.Model.ChangeType.Inserted)
+            {
+                sb.AppendLine($"+ {newLine.Text}");
+            }
+        }
+
+        return sb;
+    }
 }

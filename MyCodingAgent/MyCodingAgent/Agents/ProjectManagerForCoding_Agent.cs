@@ -7,11 +7,11 @@ using System.Text.Json;
 
 namespace MyCodingAgent.Agents;
 
-public class ProjectManagerAgentForCodingAgent : BaseAgent, IAgent
+public class ProjectManagerForCoding_Agent : BaseAgent, IAgent
 {
-    public ProjectManagerAgentForCodingAgent(Workspace workspace, OllamaClient client) : base(workspace, client)
+    public ProjectManagerForCoding_Agent(Workspace workspace, OllamaClient client) : base(workspace, client)
     {
-        AnswerCoderAgentTool = new Answer_CodingAgent_From_ProjectManager_Tool(workspace);
+        AnswerCoderAgentTool = new CoderNeedsProjectManagerAnswer_Tool(workspace);
         SubTasksTool = new SubTasks_Tool(workspace);
         WorkspaceReadonlyTool = new WorkspaceReadonly_Tool(workspace);
 
@@ -23,14 +23,14 @@ public class ProjectManagerAgentForCodingAgent : BaseAgent, IAgent
         ];
     }
 
-    public Answer_CodingAgent_From_ProjectManager_Tool AnswerCoderAgentTool { get; }
+    public CoderNeedsProjectManagerAnswer_Tool AnswerCoderAgentTool { get; }
     public SubTasks_Tool SubTasksTool { get; }
     public WorkspaceReadonly_Tool WorkspaceReadonlyTool { get; }
 
     protected override List<PromptResponseResults> History => Workspace.PlanningHistory;
     protected override IToolCall[] Tools { get; }
 
-    public async Task<OllamaPrompt> GeneratePrompt(CompileResult compileResult)
+    public async Task<OllamaPrompt> GeneratePrompt()
     {
         if (Workspace.CodingAgent_To_ProjectManagerAgent_Question == null)
             throw new Exception("No active job found for Project Manager.");
@@ -39,7 +39,7 @@ public class ProjectManagerAgentForCodingAgent : BaseAgent, IAgent
         [
             // SYSTEM PROMPT
             new OllamaMessage(
-                nameof(OllamaAgentRole.system).ToLower(),
+                nameof(OllamaAgentRole.System).ToLower(),
                 null,
                 $@"You are the Project Manager for a .NET 10 development project. 
 Earlier, you created a plan consisting of several subtasks. Now, a Coder Agent is executing one of those tasks and has encountered a blocker or a question.
@@ -65,7 +65,7 @@ When you have the answer, you MUST call '{AnswerCoderAgentTool.Name}'.",
 
             // USER ORIGINAL PROMPT (Het grote doel)
             new OllamaMessage(
-                nameof(OllamaAgentRole.user).ToLower(),
+                nameof(OllamaAgentRole.User).ToLower(),
                 null,
                 $"Original Project Goal: {Workspace.UserPrompt}",
                 null,
@@ -83,7 +83,7 @@ When you have the answer, you MUST call '{AnswerCoderAgentTool.Name}'.",
 Please analyze the request above against the subtask definition and provide the necessary information to unblock the Coder.";
 
         var question = new OllamaMessage(
-            nameof(OllamaAgentRole.user).ToLower(),
+            nameof(OllamaAgentRole.User).ToLower(),
             null,
             questionContent,
             null,

@@ -5,39 +5,39 @@ using MyCodingAgent.ToolCalls;
 
 namespace MyCodingAgent.Agents;
 
-public class ProjectManagerAgent : BaseAgent, IAgent
+public class ProjectManagerCodeReviewer_Agent : BaseAgent, IAgent
 {
-    public ProjectManagerAgent(Workspace workspace, OllamaClient client) : base(workspace, client)
+    public ProjectManagerCodeReviewer_Agent(Workspace workspace, OllamaClient client) : base(workspace, client)
     {
         WorkspaceTool = new WorkspaceReadonly_Tool(workspace);
         SubTasksTool = new SubTasks_Tool(workspace);
-        AskHumanDeveloperTool = new Ask_HumanDeveloper_Tool();
-        WorkIsAlreadyDoneTool = new WorkIsAlreadyDone_Tool(workspace);
+        AskHumanDeveloperTool = new Ask_HumanDeveloper_Tool(workspace);
+        CodeReviewIsDoneTool = new CodeReviewIsDone_Tool(workspace);
 
         Tools =
         [
             WorkspaceTool,
             SubTasksTool,
             AskHumanDeveloperTool,
-            WorkIsAlreadyDoneTool
+            CodeReviewIsDoneTool
         ];
     }
 
     public WorkspaceReadonly_Tool WorkspaceTool { get; }
     public SubTasks_Tool SubTasksTool { get; }
     public Ask_HumanDeveloper_Tool AskHumanDeveloperTool { get; }
-    public WorkIsAlreadyDone_Tool WorkIsAlreadyDoneTool { get; }
+    public CodeReviewIsDone_Tool CodeReviewIsDoneTool { get; }
 
     protected override List<PromptResponseResults> History => Workspace.PlanningHistory;
     protected override IToolCall[] Tools { get; }
 
-    public async Task<OllamaPrompt> GeneratePrompt(CompileResult compileResult)
+    public async Task<OllamaPrompt> GeneratePrompt()
     {
         List<OllamaMessage> messageList = 
         [
             // SYSTEM PROMPT
             new OllamaMessage(
-                nameof(OllamaAgentRole.system).ToLower(),
+                nameof(OllamaAgentRole.System).ToLower(),
                 null,
                 $@"You are a planning agent inside a .NET 10 development workspace.
 
@@ -70,13 +70,13 @@ IMPORTANT
 - The compiler expects a .csproj, .sln or .slnx file in the root of the workspace
 - You must target .NET 10 (net10.0) for projects. Do not forget!
 
-If the requested functionality already exists in the codebase you may call {WorkIsAlreadyDoneTool.Name}.",
+If the requested functionality already exists in the codebase you may call {CodeReviewIsDoneTool.Name}.",
                 null, 
                 null),
 
             // USER ORIGINAL PROMPT
             new OllamaMessage(
-                nameof(OllamaAgentRole.user).ToLower(),
+                nameof(OllamaAgentRole.User).ToLower(),
                 null,
                 $@"--- DEVELOPER REQUEST ---
 {Workspace.UserPrompt}

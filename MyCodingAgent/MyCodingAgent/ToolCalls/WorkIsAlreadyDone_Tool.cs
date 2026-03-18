@@ -14,8 +14,9 @@ public class WorkIsAlreadyDone_Tool(Workspace workspace) : IToolCall
     public async Task<ToolResult> Invoke(OllamaToolCall toolCall)
     {
         var toolArguments = toolCall.function.arguments;
-        workspace.PlanningIsDone = true;
-        workspace.WorkIsDone = true;
+        workspace.Flags.PlanningIsDoneFlag = true;
+        workspace.Flags.IsCodeReviewingFlag = true;
+        await workspace.Save();
         return new ToolResult("OK DONE!", "OK DONE!", false);
     }
 }

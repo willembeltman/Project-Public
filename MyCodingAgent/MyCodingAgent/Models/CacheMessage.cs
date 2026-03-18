@@ -1,4 +1,4 @@
-﻿namespace MyCodingAgent.Agents;
+﻿namespace MyCodingAgent.Models;
 
 public record CacheMessage(
     string toolName,

@@ -4,6 +4,6 @@ namespace MyCodingAgent.Interfaces;
 
 public interface IAgent
 {
-    Task<OllamaPrompt> GeneratePrompt(CompileResult compileResult);
+    Task<OllamaPrompt> GeneratePrompt();
     Task<bool> ProcessResponse(OllamaPrompt prompt, OllamaResponse agentResponse);
 }

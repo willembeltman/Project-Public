@@ -145,7 +145,7 @@ public abstract class BaseAgent(Workspace Workspace, OllamaClient Client)
     private static OllamaMessage CreateToolCallbackMessage(bool useShortContent, ToolCallResult? toolCall)
     {
         return new OllamaMessage(
-            nameof(OllamaAgentRole.tool).ToLower(),
+            nameof(OllamaAgentRole.Tool).ToLower(),
             toolCall?.tool_call.id,
             toolCall == null ? "Error: no tool_calls found" : useShortContent ? toolCall.result.shortContent : toolCall.result.content,
             null,
