@@ -9,7 +9,7 @@ public class CodingAgent_To_ProjectManager_Question_Tool(Workspace workspace) : 
         => "ask_project_manager_agent";
 
     public string Description
-        => "Ask clarification or missing technical details from the Project Manager";
+        => "Use when blocked by missing info or unclear requirements";
 
     public ToolParameter[] Parameters { get; } =
     [

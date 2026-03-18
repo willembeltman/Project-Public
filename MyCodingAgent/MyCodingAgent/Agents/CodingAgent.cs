@@ -47,23 +47,18 @@ WORKFLOW
 1. Understand the request.
 2. Inspect files before changing them.
 3. Make the smallest possible change to achieve the goal. Do not rewrite entire files unless absolutely necessary.
-4. Ask project manager for advice using '{AskProjectManagerTool.Name}' tool, if you are unsure.
-5. Compile the project using the '{WorkspaceTool.Name}' tool.
+4. Ask project manager for advice using '{AskProjectManagerTool.Name}' tool_call, if you are unsure.
+5. Compile the project using the '{WorkspaceTool.Name}' tool_call.
 6. Fix any compilation warnings if they occur.
-7. Verify your edits using 'diff_with_original' action of the '{WorkspaceTool.Name}' tool.
-8. If everything is correct, call '{CurrentSubTaskIsFinishedTool.Name}'.
+7. Verify your edits using 'diff_with_original' action of the '{WorkspaceTool.Name}' tool_call.
+8. If everything is correct, call the '{CurrentSubTaskIsFinishedTool.Name}' tool_call.
 
 RULES
 
 - The compiler expects a .csproj, .sln or .slnx file in the root of the workspace.
-- You can compile using 'path' parameter for specific projects.
-
-IMPORTANT RULES
-
 - When the code compiles successfully and the requested functionality is implemented,
-  you MUST call the '{CurrentSubTaskIsFinishedTool.Name}' tool.
-- You MUST read a file using the '{WorkspaceTool.Name}' tool before modifying it.
-- You MUST target .NET 10 (net10.0) for projects. Do not forget!",
+  you can call the '{CurrentSubTaskIsFinishedTool.Name}' tool_call.
+- You must target .NET 10 (net10.0) for projects.",
                 null,
                 null)
         ];
@@ -96,12 +91,12 @@ IMPORTANT RULES
     }
 
     /// <summary>
-    /// Processes the agent's response to the specified prompt and determines whether any tool call completed without error.
+    /// Processes the agent's response to the specified prompt and determines whether any tool_call call completed without error.
     /// </summary>
     /// <param name="prompt">The prompt that was sent to the agent. This provides the context or question for which the response is being
     /// processed.</param>
     /// <param name="agentResponse">The response object returned by the agent, containing the results to be evaluated.</param>
-    /// <returns>if there was any tool call, if not this indicates maybe a different agent should continue</returns>
+    /// <returns>if there was any tool_call call, if not this indicates maybe a different agent should continue</returns>
     public Task<bool> ProcessResponse(OllamaPrompt prompt, OllamaResponse agentResponse)
         => ProcessResponse(prompt, agentResponse, true);
     public async Task<bool> ProcessResponse(OllamaPrompt prompt, OllamaResponse agentResponse, bool save)

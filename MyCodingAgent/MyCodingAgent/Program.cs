@@ -92,7 +92,7 @@ internal class Program : IDisposable
             {
                 compileResult = await RunDebugLoop(workspace, model, debuggingAgent, compileResult);
                 //ShownMessages.Clear();
-                //Console.Clear();
+                Console.Clear();
                 continue;
             }
 
@@ -101,7 +101,7 @@ internal class Program : IDisposable
             {
                 compileResult = await RunProjectManagerLoop(workspace, model, projectManagerAgent, compileResult);
                 //ShownMessages.Clear();
-                //Console.Clear();
+                Console.Clear();
                 continue;
             }
 
@@ -165,6 +165,7 @@ internal class Program : IDisposable
             Console.Clear();
             Console.CursorLeft = 0;
             Console.CursorTop = 0;
+            await Task.Delay(250);
             Console.Clear();
 
             var prompt = await agent.GeneratePrompt(compileResult);
@@ -269,16 +270,15 @@ internal class Program : IDisposable
         }
         if (message.tool_calls != null)
         {
-            Console.ForegroundColor = ConsoleColor.Red;
             foreach (var call in message.tool_calls)
             {
-                Console.WriteLine($"{call.id}:");
-                //Console.WriteLine($"{call.function.name} {JsonSerializer.Serialize(call.function.arguments, DefaultJsonSerializerOptions.JsonSerializeOptions)}");
-                Console.WriteLine($"{call.function.name}");
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.WriteLine($"{call.function.name.ToUpper()}");
 
                 if (call.function.arguments.action != null)
-                    Console.WriteLine($"action: {call.function.arguments.action}");
+                    Console.WriteLine($"action: {call.function.arguments.action.ToUpper()}");
 
+                Console.ForegroundColor = ConsoleColor.Red;
                 if (call.function.arguments.id != null)
                     Console.WriteLine($"id: {call.function.arguments.id}");
 

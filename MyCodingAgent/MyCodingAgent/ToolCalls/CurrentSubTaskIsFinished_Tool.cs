@@ -6,9 +6,9 @@ namespace MyCodingAgent.ToolCalls;
 public class CurrentSubTaskIsFinished_Tool(Workspace workspace) : IToolCall
 {
     public string Name
-        => "current_subtask_is_done";
+        => "subtask_is_done";
     public string Description
-        => "Marks the current subtask as completed, only call this when all objectives for the subtask have been verified";
+        => "Call when the current subtask is fully completed and verified, with no remaining work";
     public ToolParameter[] Parameters { get; } =
     [
     ];
@@ -33,7 +33,7 @@ public class CurrentSubTaskIsFinished_Tool(Workspace workspace) : IToolCall
 
             subtask.Finished = true;
             workspace.CodingHistory.Clear();
-
+            await workspace.Save();
 
             return new ToolResult(
                 $"Finished subtask '{toolArguments.id}'",

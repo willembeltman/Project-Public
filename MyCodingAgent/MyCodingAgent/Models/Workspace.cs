@@ -87,7 +87,7 @@ public class Workspace
         await workspace.InitializeDirectory(rootDirectory);
         await workspace.Save();
     }
-    
+
     private async Task InitializeDirectory(DirectoryInfo directoryInfo, bool isRoot = true, CancellationToken ct = default)
     {
         foreach (var dir in directoryInfo.GetDirectories())
@@ -134,7 +134,7 @@ public class Workspace
     }
     public async Task<CompileResult> Compile(string? relativePath = null)
     {
-        if (relativePath == null)
+        if (string.IsNullOrWhiteSpace(relativePath))
         {
             var currentDirectory = new DirectoryInfo(RootDirectoryName);
             var compileResult = await Compiler.Compile(currentDirectory);

@@ -29,11 +29,15 @@ public abstract class BaseAgent(Workspace Workspace, OllamaClient Client)
         int maxLongDesciptionPrompt = 0;
         var totalLength = messagesJsonLength + toolsJsonLength + additionalSizeInBytes;
 
-        notNullHistory.Reverse(); // Lijst omdraaien zodat we vanaf het begin tellen
         var useShortContent = false;
-        foreach (var responseResult in notNullHistory)
+
+        HashSet<CacheMessage> shownMessages = [];
+
+        foreach (var responseResult in notNullHistory.ToArray().Reverse())
         {
-            var responseJson = JsonSerializer.Serialize(CleanMessage(responseResult.Response.message), DefaultJsonSerializerOptions.JsonSerializeOptionsIndented);
+            var response = CleanMessage(responseResult.Response.message);
+
+            var responseJson = JsonSerializer.Serialize(response, DefaultJsonSerializerOptions.JsonSerializeOptionsIndented);
             totalLength += responseJson.Length;
 
             // TOOL CALLS REPLIES
@@ -41,17 +45,32 @@ public abstract class BaseAgent(Workspace Workspace, OllamaClient Client)
             {
                 foreach (var toolCall in responseResult.ToolCallResults)
                 {
-                    var messageJson = JsonSerializer.Serialize(CreateToolCallbackMessage(useShortContent, toolCall), DefaultJsonSerializerOptions.JsonSerializeOptionsIndented);
+                    var cacheMessage = new CacheMessage(
+                        toolCall.tool_call.function.name,
+                        toolCall.tool_call.function.arguments.id,
+                        toolCall.tool_call.function.arguments.action,
+                        toolCall.tool_call.function.arguments.path,
+                        toolCall.tool_call.function.arguments.newPath,
+                        toolCall.tool_call.function.arguments.query,
+                        toolCall.tool_call.function.arguments.lineNumber);
+                    if (!shownMessages.Add(cacheMessage)) // Todo, als het model ooit meerdere actions gaat uitvoeren
+                    {
+                        notNullHistory.Remove(responseResult);
+                    }
+
+                    var message = CreateToolCallbackMessage(useShortContent, toolCall);
+                    var messageJson = JsonSerializer.Serialize(message, DefaultJsonSerializerOptions.JsonSerializeOptionsIndented);
                     totalLength += messageJson.Length;
                 }
             }
             else
             {
-                var messageJson = JsonSerializer.Serialize(CreateToolCallbackMessage(useShortContent, null), DefaultJsonSerializerOptions.JsonSerializeOptionsIndented);
+                var message = CreateToolCallbackMessage(useShortContent, null);
+                var messageJson = JsonSerializer.Serialize(message, DefaultJsonSerializerOptions.JsonSerializeOptionsIndented);
                 totalLength += messageJson.Length;
             }
 
-            if (totalLength < maxTokens * 5 / 2)
+            if (totalLength < maxTokens * 3)
                 maxLongDesciptionPrompt++;
             else
             {
@@ -66,7 +85,6 @@ public abstract class BaseAgent(Workspace Workspace, OllamaClient Client)
             }
         }
 
-        notNullHistory.Reverse(); // Lijst weer normaal maken
         var i = notNullHistory.Count; // Dan terug tellen
         foreach (var responseResult in notNullHistory)
         {
@@ -127,7 +145,7 @@ public abstract class BaseAgent(Workspace Workspace, OllamaClient Client)
         return new OllamaMessage(
             nameof(OllamaAgentRole.tool).ToLower(),
             toolCall?.tool_call.id,
-            toolCall == null ? "No tool_calls found" : useShortContent ? toolCall.result.shortContent : toolCall.result.content,
+            toolCall == null ? "Error: no tool_calls found" : useShortContent ? toolCall.result.shortContent : toolCall.result.content,
             null,
             null);
     }

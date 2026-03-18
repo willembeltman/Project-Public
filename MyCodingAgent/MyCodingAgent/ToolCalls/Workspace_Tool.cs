@@ -26,10 +26,10 @@ public class Workspace_Tool(Workspace Workspace) : WorkspaceReadonly_Tool(Worksp
             "diff_with_original"
         ]),
         new ("path", "string", "File path, not used for files_list", null, true),
-        new ("query", "string", "Exact text to find, for search or replace", null, true),
-        new ("content", "string", "Content to write, append or replace", null, true),
-        new ("newPath", "string", "Destination path, for move", null, true),
-        new ("lineNumber", "number", "Line number for append, optional", null, true)
+        new ("query", "string", "Exact text to find, for text_search/text_search_and_replace", null, true),
+        new ("content", "string", "Content for write/append/text_search_and_replace", null, true),
+        new ("newPath", "string", "Destination path for move", null, true),
+        new ("lineNumber", "number", "Line number for append (optional)", null, true)
     ];
 
     public override async Task<ToolResult> Invoke(OllamaToolCall toolCall)
