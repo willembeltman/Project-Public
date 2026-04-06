@@ -1,0 +1,126 @@
+﻿<Window x:Class="MyWpfCodingAgent.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Coding Agent" Height="850" Width="1300"
+        Background="#1E1E1E"
+        Foreground="#FFFFFF">
+
+    <!-- ========= GLOBAL STYLES ========= -->
+    <Window.Resources>
+        <Style TargetType="TextBox">
+            <Setter Property="Background" Value="#2D2D30"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="#3F3F46"/>
+        </Style>
+
+        <Style TargetType="ListBox">
+            <Setter Property="Background" Value="#2D2D30"/>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+
+        <Style TargetType="GroupBox">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="#3F3F46"/>
+        </Style>
+
+        <Style TargetType="Button">
+            <Setter Property="Background" Value="#3E3E42"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Margin" Value="5"/>
+        </Style>
+    </Window.Resources>
+
+    <DockPanel>
+
+        <!-- ========= TOP BAR ========= -->
+        <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="5,5,5,0">
+
+            <!-- Directory -->
+            <TextBlock Text="Directory:" VerticalAlignment="Center" Margin="5"/>
+            <TextBox Name="DirectoryTextBox" Width="300" Margin="5"/>
+            <Button Content="Browse..." Click="BrowseDirectory_Click"/>
+
+            <!-- Model -->
+            <TextBlock Text="Model:" VerticalAlignment="Center" Margin="15,5,5,5"/>
+
+            <ComboBox Name="ModelComboBox" Width="200" Margin="5">
+                <ComboBoxItem Content="gpt-4o"/>
+                <ComboBoxItem Content="gpt-4.1"/>
+                <ComboBoxItem Content="claude-3.5-sonnet"/>
+                <ComboBoxItem Content="local-llama"/>
+            </ComboBox>
+
+            <!-- Start -->
+            <Button Name="StartAgentButton" Content="Start Agent" Margin="20,5,5,5"/>
+
+        </StackPanel>
+
+        <!-- ========= MAIN GRID ========= -->
+        <Grid Margin="5,0,5,5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*" />
+                <ColumnDefinition Width="3*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- ================= LEFT ================= -->
+            <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="2*" />
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="3*" />
+                </Grid.RowDefinitions>
+
+                <!-- Prompt -->
+                <GroupBox Header="Prompt" Margin="5">
+                    <DockPanel>
+                        <Button Name="SendPromptButton" Content="Send"
+                                DockPanel.Dock="Bottom"
+                                Height="35"
+                                Click="SendPromptButton_Click"/>
+
+                        <TextBox Name="PromptTextBox"
+                                 AcceptsReturn="True"
+                                 TextWrapping="Wrap"
+                                 VerticalScrollBarVisibility="Auto"
+                                 FontFamily="Consolas"
+                                 FontSize="14"/>
+                    </DockPanel>
+                </GroupBox>
+
+                <!-- LLM Events -->
+                <GroupBox Header="LLM Communication" Grid.Row="2" Margin="5">
+                    <ListBox Name="LlmEventsList"
+                             SelectionChanged="LlmEventsList_SelectionChanged"/>
+                </GroupBox>
+            </Grid>
+
+            <!-- ================= RIGHT ================= -->
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="3*" />
+                    <RowDefinition Height="2*" />
+                </Grid.RowDefinitions>
+
+                <!-- Details -->
+                <GroupBox Header="Event Details" Margin="5">
+                    <TextBox Name="EventDetailsTextBox"
+                             IsReadOnly="True"
+                             AcceptsReturn="True"
+                             TextWrapping="Wrap"
+                             VerticalScrollBarVisibility="Auto"
+                             FontFamily="Consolas"/>
+                </GroupBox>
+
+                <!-- Terminal -->
+                <GroupBox Header="Terminal Output" Grid.Row="1" Margin="5">
+                    <TextBox Name="TerminalOutputTextBox"
+                             IsReadOnly="True"
+                             AcceptsReturn="True"
+                             TextWrapping="Wrap"
+                             VerticalScrollBarVisibility="Auto"
+                             FontFamily="Consolas"/>
+                </GroupBox>
+            </Grid>
+        </Grid>
+    </DockPanel>
+</Window>
