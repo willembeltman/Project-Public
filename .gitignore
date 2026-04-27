@@ -94,3 +94,5 @@ MyVideoEditor/MyVideoEditor/Executebles/ffprobe.exe
 MyVideoEditor/VideoEditor/Executebles/ffmpeg.exe
 MyVideoEditor/VideoEditor/Executebles/ffplay.exe
 MyVideoEditor/VideoEditor/Executebles/ffprobe.exe
+
+appsettings.Development.json

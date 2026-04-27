@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+	</PropertyGroup>
+
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\..\gAPI\gAPI.AutoApi.Server\gAPI.AutoApiServer.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+		<ProjectReference Include="..\..\..\gAPI\gAPI.AutoSse.Server\gAPI.AutoSseServer.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\..\gAPI\gAPI.Core.Server\gAPI.Core.Server.csproj" />
+		<ProjectReference Include="..\UwvLlm.Shared\UwvLlm.Shared.csproj" />
+		<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.7" />
+		<PackageReference Include="Scalar.AspNetCore" Version="2.14.4" />
+	</ItemGroup>
+
+</Project>

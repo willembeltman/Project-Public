@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:UwvLlm.App.ViewModels"
+             x:Class="UwvLlm.App.Pages.EmailPage"
+             Title="Email versturen">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="30" Spacing="15">
+
+            <Entry Placeholder="Van"
+                   Text="{Binding From}" />
+
+            <Entry Placeholder="Naar"
+                   Text="{Binding To}" />
+
+            <Entry Placeholder="Titel"
+                   Text="{Binding Subject}" />
+
+            <Editor Placeholder="Bericht..."
+                    Text="{Binding Body}" />
+
+            <Button Text="Verstuur"
+                    Command="{Binding SendCommand}" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

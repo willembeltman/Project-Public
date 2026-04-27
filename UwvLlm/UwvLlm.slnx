@@ -1,3 +1,23 @@
 <Solution>
-  <Project Path="UwvLlm.Api/UwvLlm.Api.csproj" />
+  <Folder Name="/App/">
+    <Project Path="UwvLlm.App/UwvLlm.App.csproj" Id="a22a3074-67d3-433f-9089-6566a64f8542">
+      <Deploy Solution="Debug|*" />
+    </Project>
+    <Project Path="UwvLlm.Core/UwvLlm.Core.csproj" />
+    <Project Path="UwvLlm.Shared/UwvLlm.Shared.csproj" Id="2f380807-1cec-4eb5-bc9e-f2382a973d5c" />
+    <Project Path="UwvLlm.Storage/UwvLlm.Storage.csproj" Id="a184ac3f-a28a-4e72-8a5b-0f61ae38dea5" />
+  </Folder>
+  <Folder Name="/gAPI/">
+    <Project Path="../../gAPI/gAPI.AutoApi.Client/gAPI.AutoApiClient.csproj" />
+    <Project Path="../../gAPI/gAPI.AutoApi.Server/gAPI.AutoApiServer.csproj" />
+    <Project Path="../../gAPI/gAPI.AutoSerializer/gAPI.AutoSerializer.csproj" />
+    <Project Path="../../gAPI/gAPI.AutoSse.Client/gAPI.AutoSseClient.csproj" />
+    <Project Path="../../gAPI/gAPI.AutoSse.Server/gAPI.AutoSseServer.csproj" />
+    <Project Path="../../gAPI/gAPI.Core.Client/gAPI.Core.Client.csproj" />
+    <Project Path="../../gAPI/gAPI.Core.Server/gAPI.Core.Server.csproj" />
+    <Project Path="../../gAPI/gAPI.Core/gAPI.Core.csproj" />
+    <Project Path="../../gAPI/gAPI.FabricNode/gAPI.FabricNode.csproj" />
+    <Project Path="../../gAPI/gAPI.Storage.Server/gAPI.Storage.Server.csproj" />
+  </Folder>
+  <Project Path="UwvLlm.AppHost/UwvLlm.AppHost.csproj" Id="222f8302-2a19-436d-b055-9c531cc1b408" />
 </Solution>

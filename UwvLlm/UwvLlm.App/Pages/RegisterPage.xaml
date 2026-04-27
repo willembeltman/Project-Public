@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:UwvLlm.App.ViewModels"
+             x:Class="UwvLlm.App.Pages.RegisterPage"
+             Title="Register">
+
+        <VerticalStackLayout Padding="30" Spacing="20">
+
+            <Entry Placeholder="Email"
+               Text="{Binding Email}" />
+
+            <Entry Placeholder="Wachtwoord"
+               IsPassword="True"
+               Text="{Binding Password}" />
+
+            <Button Text="Inloggen"
+                Command="{Binding RegisterCommand}" />
+
+        </VerticalStackLayout>
+    
+</ContentPage>
