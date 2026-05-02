@@ -4,8 +4,24 @@ namespace UwvLlm.App.Pages;
 
 public partial class NotificationsPage : ContentPage
 {
-	public NotificationsPage(NotificationsPageViewModel viewModel)
-	{
-		InitializeComponent();
-	}
+    private readonly NotificationsPageViewModel ViewModel;
+
+    public NotificationsPage(NotificationsPageViewModel viewModel)
+    {
+        ViewModel = viewModel;
+        InitializeComponent();
+        BindingContext = viewModel;
+    }
+
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+        await ViewModel.OnAppearingAsync();
+    }
+
+    protected override async void OnDisappearing()
+    {
+        base.OnDisappearing();
+        await ViewModel.OnDisappearingAsync();
+    }
 }

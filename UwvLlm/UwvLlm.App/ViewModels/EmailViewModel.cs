@@ -1,16 +1,18 @@
-﻿using System.Windows.Input;
+﻿using gAPI.Generated;
+using System.Windows.Input;
 using UwvLlm.App.Interfaces;
 using UwvLlm.Shared.Interfaces;
 
 namespace UwvLlm.App.ViewModels;
 
-public class EmailViewModel : BaseNotificationsViewModel
+public class EmailViewModel : NotificationHubViewModel
 {
     public EmailViewModel(
-        INotificationsApi notifications,
+        IClientConnection clientConnection,
+        INotificationApi notifications,
         INavigationService navigation,
         IEmailService email)
-        : base(notifications, navigation)
+        : base(clientConnection, notifications, navigation)
     {
         SendCommand = new Command(async () => await email.Send(From, To, Subject, Body));
     }

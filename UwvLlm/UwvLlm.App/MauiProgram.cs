@@ -35,10 +35,10 @@ public static class MauiProgram
         builder.Services.AddTransient<IEmailService, EmailService>();
         builder.Services.AddTransient<INavigationService, NavigationService>();
         builder.Services.AddTransient<INavigationManager, NavigationService>();
-        builder.Services.AddTransient<INotificationsHub, NotificationsService>();
-        builder.Services.AddSingleton<IUiService, UiService>();
+        builder.Services.AddTransient<INotificationHub>(sp => sp.GetRequiredService<NotificationsPageViewModel>());
+        builder.Services.AddTransient<IUiService, UiService>();
 
-        builder.Services.AddTransient<BaseNotificationsViewModel>();
+        builder.Services.AddTransient<NotificationHubViewModel>();
         builder.Services.AddTransient<EmailViewModel>();
         builder.Services.AddTransient<LoginViewModel>();
         builder.Services.AddTransient<MainPageViewModel>();
@@ -49,7 +49,6 @@ public static class MauiProgram
         builder.Services.AddAutoSseClient();
         builder.Services.AddAuthenticationServices<State>(builder.Configuration["FrontendConfig:ApiBackendUrl"] ?? "https://localhost:7281");
         builder.Services.AddScoped<IStateParser<State>, StateParser>();
-
 
         Routing.RegisterRoute(nameof(LoginPage), typeof(LoginPage));
         Routing.RegisterRoute(nameof(RegisterPage), typeof(RegisterPage));
