@@ -1,7 +1,7 @@
 var builder = DistributedApplication.CreateBuilder(args);
 
 // Storage API
-var storage = builder.AddProject<Projects.UwvLlm_Core>("storage")
+var storage = builder.AddProject<Projects.UwvLlm_Storage>("storage")
     .WithExternalHttpEndpoints(); // expose https://localhost:7099
 
 // Fabric node (console app)

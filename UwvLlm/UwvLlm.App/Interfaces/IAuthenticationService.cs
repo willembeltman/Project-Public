@@ -2,7 +2,7 @@
 
 public interface IAuthenticationService
 {
-    Task GotoRegister();
-    Task Login(string? Email, string? Password);
-    Task Register(string? email, string? password, string? passwordRepeat);
+    Task<bool> IsAuthenticatedAsync();
+    Task LoginAsync(string? Email, string? Password);
+    Task RegisterAsync(string? username, string? email, string? password, string? passwordRepeat);
 }

@@ -11,7 +11,6 @@ public partial class AppShell : Shell
         Vm = vm;
         InitializeComponent();
         BindingContext = vm;
-        Routing.RegisterRoute(nameof(LoginPage), typeof(LoginPage));
     }
 
     protected override async void OnAppearing()

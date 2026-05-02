@@ -13,6 +13,9 @@ public class NavigationService : INavigationService
     {
         return Shell.Current.Title;
     }
+    public Task GotoMainPageAsync() => NavigateToAsync<MainPage>();
+    public Task GotoRegisterPageAsync() => NavigateToAsync<RegisterPage>();
+    public Task GotoLoginPageAsync() => NavigateToAsync<LoginPage>();
     public Task OpenNotifications() => NavigateToAsync<NotificationsPage>();
     public Task GotoSendEmailPage() => NavigateToAsync<EmailPage>();
 }

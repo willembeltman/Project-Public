@@ -5,18 +5,30 @@
              x:Class="UwvLlm.App.Pages.RegisterPage"
              Title="Register">
 
-        <VerticalStackLayout Padding="30" Spacing="20">
+    <VerticalStackLayout Padding="30" Spacing="20">
 
-            <Entry Placeholder="Email"
+        <Label Text="Registreren" />
+
+        <Entry Placeholder="Username"
+               Text="{Binding UserName}" />
+
+        <Entry Placeholder="Email"
                Text="{Binding Email}" />
 
-            <Entry Placeholder="Wachtwoord"
+        <Entry Placeholder="Wachtwoord"
                IsPassword="True"
                Text="{Binding Password}" />
 
-            <Button Text="Inloggen"
+        <Entry Placeholder="Wachtwoord"
+               IsPassword="True"
+               Text="{Binding PasswordRepeat}" />
+
+        <Button Text="Registreren"
                 Command="{Binding RegisterCommand}" />
 
-        </VerticalStackLayout>
-    
+        <Button Text="Ga naar login pagina"
+                Command="{Binding GotoLoginCommand}" />
+
+    </VerticalStackLayout>
+
 </ContentPage>
