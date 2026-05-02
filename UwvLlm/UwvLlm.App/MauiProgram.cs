@@ -8,6 +8,7 @@ using UwvLlm.App.Services;
 using UwvLlm.App.ViewModels;
 using UwvLlm.Shared;
 using UwvLlm.Shared.Dtos;
+using UwvLlm.Shared.Interfaces;
 
 namespace UwvLlm.App;
 
@@ -24,14 +25,25 @@ public static class MauiProgram
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
             });
 
-        builder.Services.AddSingleton<IUiService, UiService>();
-        builder.Services.AddTransient<INavigationManager>(sp => sp.GetRequiredService<IUiService>());
-
-        builder.Services.AddTransient<LoginViewModel>();
-        builder.Services.AddTransient<EmailViewModel>();
-
         builder.Services.AddTransient<LoginPage>();
         builder.Services.AddTransient<EmailPage>();
+        builder.Services.AddTransient<MainPage>();
+        builder.Services.AddTransient<NotificationsPage>();
+        builder.Services.AddTransient<RegisterPage>();
+
+        builder.Services.AddTransient<IAuthenticationService, AuthenticationService>();
+        builder.Services.AddTransient<IEmailService, EmailService>();
+        builder.Services.AddTransient<INavigationService, NavigationService>();
+        builder.Services.AddTransient<INavigationManager, NavigationService>();
+        builder.Services.AddTransient<INotificationsHub, NotificationsService>();
+        builder.Services.AddSingleton<IUiService, UiService>();
+
+        builder.Services.AddTransient<AppShellViewModel>();
+        builder.Services.AddTransient<EmailViewModel>();
+        builder.Services.AddTransient<LoginViewModel>();
+        builder.Services.AddTransient<MainPageViewModel>();
+        builder.Services.AddTransient<NotificationsPageViewModel>();
+        builder.Services.AddTransient<RegisterViewModel>();
 
         builder.Services.AddAutoApiClient(); 
         builder.Services.AddAutoSseClient();

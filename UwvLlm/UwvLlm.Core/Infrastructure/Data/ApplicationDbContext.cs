@@ -4,12 +4,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace UwvLlm.Core.Infrastructure.Data;
 
-public class ApplicationDbContext : AuthenticationDbContext<User>
+public class ApplicationDbContext(DbContextOptions options) : AuthenticationDbContext<User>(options)
 {
-    public ApplicationDbContext(DbContextOptions options) : base(options)
-    {
-    }
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

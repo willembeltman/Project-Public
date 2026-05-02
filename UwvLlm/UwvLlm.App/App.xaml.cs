@@ -1,16 +1,18 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using UwvLlm.App.ViewModels;
 
 namespace UwvLlm.App;
 
 public partial class App : Application
 {
-    public App()
+    private readonly AppShellViewModel Vm;
+    public App(AppShellViewModel vm)
     {
+        Vm = vm;
         InitializeComponent();
     }
 
     protected override Window CreateWindow(IActivationState? activationState)
     {
-        return new Window(new AppShell());
+        return new Window(new AppShell(Vm));
     }
 }

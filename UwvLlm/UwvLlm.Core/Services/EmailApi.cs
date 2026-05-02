@@ -2,7 +2,7 @@
 
 namespace UwvLlm.Core.Services;
 
-public class EmailService : IEmailService
+public class EmailApi : IEmailApi
 {
     public void Receive(string from, string[] to, string subject, string body)
     {

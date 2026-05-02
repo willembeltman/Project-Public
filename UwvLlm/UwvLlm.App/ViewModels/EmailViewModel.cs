@@ -5,13 +5,9 @@ namespace UwvLlm.App.ViewModels;
 
 public class EmailViewModel : BaseViewModel
 {
-    private readonly IUiService Ui;
-
-
-    public EmailViewModel(IUiService ui)
+    public EmailViewModel(IEmailService email)
     {
-        Ui = ui;
-        SendCommand = new Command(async () => await Send());
+        SendCommand = new Command(async () => await email.Send(From, To, Subject, Body));
     }
 
     public string? From
@@ -39,9 +35,4 @@ public class EmailViewModel : BaseViewModel
     }
 
     public ICommand SendCommand { get; }
-
-    private async Task Send()
-    {
-        await Ui.ShowAlert("OK", $"Mail naar {To}", "OK");
-    }
 }
