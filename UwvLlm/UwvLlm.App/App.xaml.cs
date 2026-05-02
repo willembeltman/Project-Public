@@ -1,18 +1,14 @@
-﻿using UwvLlm.App.ViewModels;
-
-namespace UwvLlm.App;
+﻿namespace UwvLlm.App;
 
 public partial class App : Application
 {
-    private readonly AppShellViewModel Vm;
-    public App(AppShellViewModel vm)
+    public App()
     {
-        Vm = vm;
         InitializeComponent();
     }
 
     protected override Window CreateWindow(IActivationState? activationState)
     {
-        return new Window(new AppShell(Vm));
+        return new Window(new AppShell());
     }
 }

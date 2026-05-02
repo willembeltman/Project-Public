@@ -38,7 +38,7 @@ public static class MauiProgram
         builder.Services.AddTransient<INotificationsHub, NotificationsService>();
         builder.Services.AddSingleton<IUiService, UiService>();
 
-        builder.Services.AddTransient<AppShellViewModel>();
+        builder.Services.AddTransient<BaseNotificationsViewModel>();
         builder.Services.AddTransient<EmailViewModel>();
         builder.Services.AddTransient<LoginViewModel>();
         builder.Services.AddTransient<MainPageViewModel>();

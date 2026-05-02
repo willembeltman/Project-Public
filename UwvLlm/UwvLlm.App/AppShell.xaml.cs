@@ -1,21 +1,9 @@
-﻿using UwvLlm.App.Pages;
-using UwvLlm.App.ViewModels;
-
-namespace UwvLlm.App;
+﻿namespace UwvLlm.App;
 
 public partial class AppShell : Shell
 {
-    private readonly AppShellViewModel Vm;
-    public AppShell(AppShellViewModel vm)
+    public AppShell()
     {
-        Vm = vm;
         InitializeComponent();
-        BindingContext = vm;
-    }
-
-    protected override async void OnAppearing()
-    {
-        base.OnAppearing();
-        await Vm.OnAppearingAsync();
     }
 }

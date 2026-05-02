@@ -1,5 +1,5 @@
 ﻿namespace UwvLlm.App.ViewModels;
 
-public class NotificationsPageViewModel
+public class NotificationsPageViewModel : BaseViewModel
 {
 }

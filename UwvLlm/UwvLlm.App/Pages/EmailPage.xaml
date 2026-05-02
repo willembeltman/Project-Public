@@ -5,6 +5,29 @@
              x:Class="UwvLlm.App.Pages.EmailPage"
              Title="Email versturen">
 
+    <Shell.TitleView>
+        <Grid>
+            <Label Text="Mijn App" HorizontalOptions="Start" />
+
+            <Grid HorizontalOptions="End">
+                <Image Source="bell.png" WidthRequest="24" HeightRequest="24" />
+
+                <Border
+                    BackgroundColor="Red"
+                    Padding="2"
+                    IsVisible="{Binding HasNotifications}"
+                    HorizontalOptions="End"
+                    VerticalOptions="Start">
+
+                    <Label
+                        Text="{Binding NotificationCount}"
+                        FontSize="10"
+                        TextColor="White" />
+                </Border>
+            </Grid>
+        </Grid>
+    </Shell.TitleView>
+
     <ScrollView>
         <VerticalStackLayout Padding="30" Spacing="15">
 

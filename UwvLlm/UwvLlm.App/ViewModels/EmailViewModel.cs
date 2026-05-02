@@ -1,11 +1,16 @@
 ﻿using System.Windows.Input;
 using UwvLlm.App.Interfaces;
+using UwvLlm.Shared.Interfaces;
 
 namespace UwvLlm.App.ViewModels;
 
-public class EmailViewModel : BaseViewModel
+public class EmailViewModel : BaseNotificationsViewModel
 {
-    public EmailViewModel(IEmailService email)
+    public EmailViewModel(
+        INotificationsApi notifications,
+        INavigationService navigation,
+        IEmailService email)
+        : base(notifications, navigation)
     {
         SendCommand = new Command(async () => await email.Send(From, To, Subject, Body));
     }

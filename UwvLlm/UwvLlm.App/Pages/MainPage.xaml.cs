@@ -4,9 +4,18 @@ namespace UwvLlm.App.Pages;
 
 public partial class MainPage : ContentPage
 {
-    public MainPage(MainPageViewModel vm)
+    private readonly MainPageViewModel ViewModel;
+
+    public MainPage(MainPageViewModel viewModel)
     {
+        ViewModel = viewModel;
         InitializeComponent();
-        BindingContext = vm;
+        BindingContext = viewModel;
+    }
+
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+        await ViewModel.OnAppearingAsync();
     }
 }

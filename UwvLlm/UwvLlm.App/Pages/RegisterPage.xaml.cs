@@ -4,9 +4,9 @@ namespace UwvLlm.App.Pages;
 
 public partial class RegisterPage : ContentPage
 {
-    public RegisterPage(RegisterViewModel vm)
+    public RegisterPage(RegisterViewModel viewModel)
     {
         InitializeComponent();
-        BindingContext = vm;
+        BindingContext = viewModel;
     }
 }

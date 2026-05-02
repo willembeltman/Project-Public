@@ -4,11 +4,11 @@ using UwvLlm.Shared.Interfaces;
 
 namespace UwvLlm.App.ViewModels;
 
-public class AppShellViewModel
+public class BaseNotificationsViewModel : BaseViewModel
 {
     private readonly INotificationsApi Notifications;
 
-    public AppShellViewModel(
+    public BaseNotificationsViewModel(
         INotificationsApi notifications,
         INavigationService navigation)
     {

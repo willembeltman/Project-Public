@@ -4,9 +4,18 @@ namespace UwvLlm.App.Pages;
 
 public partial class EmailPage : ContentPage
 {
-    public EmailPage(EmailViewModel vm)
+    private readonly EmailViewModel ViewModel;
+
+    public EmailPage(EmailViewModel viewModel)
     {
+        ViewModel = viewModel;
         InitializeComponent();
-        BindingContext = vm;
+        BindingContext = viewModel;
+    }
+
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+        await ViewModel.OnAppearingAsync();
     }
 }

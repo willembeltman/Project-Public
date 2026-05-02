@@ -4,7 +4,7 @@ namespace UwvLlm.App.Pages;
 
 public partial class NotificationsPage : ContentPage
 {
-	public NotificationsPage(NotificationsPageViewModel vm)
+	public NotificationsPage(NotificationsPageViewModel viewModel)
 	{
 		InitializeComponent();
 	}
