@@ -4,9 +4,9 @@ using UwvLlm.Shared.Interfaces;
 
 namespace UwvLlm.App.ViewModels;
 
-public class NotificationsPageViewModel : NotificationHubViewModel
+public class NotificationPageViewModel : NotificationHubViewModel
 {
-    public NotificationsPageViewModel(
+    public NotificationPageViewModel(
         IClientConnection clientConnection, 
         INotificationApi notifications, 
         INavigationService navigation) 

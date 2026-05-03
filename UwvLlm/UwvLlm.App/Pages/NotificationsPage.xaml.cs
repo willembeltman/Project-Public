@@ -4,9 +4,9 @@ namespace UwvLlm.App.Pages;
 
 public partial class NotificationsPage : ContentPage
 {
-    private readonly NotificationsPageViewModel ViewModel;
+    private readonly NotificationPageViewModel ViewModel;
 
-    public NotificationsPage(NotificationsPageViewModel viewModel)
+    public NotificationsPage(NotificationPageViewModel viewModel)
     {
         ViewModel = viewModel;
         InitializeComponent();

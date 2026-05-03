@@ -35,14 +35,14 @@ public static class MauiProgram
         builder.Services.AddTransient<IEmailService, EmailService>();
         builder.Services.AddTransient<INavigationService, NavigationService>();
         builder.Services.AddTransient<INavigationManager, NavigationService>();
-        builder.Services.AddTransient<INotificationHub>(sp => sp.GetRequiredService<NotificationsPageViewModel>());
+        builder.Services.AddTransient<INotificationHub>(sp => sp.GetRequiredService<NotificationPageViewModel>());
         builder.Services.AddTransient<IUiService, UiService>();
 
         builder.Services.AddTransient<NotificationHubViewModel>();
         builder.Services.AddTransient<EmailViewModel>();
         builder.Services.AddTransient<LoginViewModel>();
         builder.Services.AddTransient<MainPageViewModel>();
-        builder.Services.AddTransient<NotificationsPageViewModel>();
+        builder.Services.AddTransient<NotificationPageViewModel>();
         builder.Services.AddTransient<RegisterViewModel>();
 
         builder.Services.AddAutoApiClient(); 

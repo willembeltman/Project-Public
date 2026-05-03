@@ -26,18 +26,23 @@ public class NotificationHubViewModel
     public async Task OnAppearingAsync()
     {
         await ClientConnection.SubscribeAsync(this);
-        NotificationList = [.. await Notifications.GetNotificationList()];
+        NotificationList.Clear();
+        foreach (var n in await Notifications.GetNotificationList())
+            NotificationList.Add(n);
     }
     public async Task OnDisappearingAsync()
     {
         await ClientConnection.UnsubscribeAsync(this);
     }
 
-    public async Task NotificationReceived(NotificationDto notification)
+    public async Task OnNotificationReceived(NotificationDto notification)
     {
-        NotificationList.Add(notification);
-        NotificationCount = NotificationList.Count;
-        HasNotifications = NotificationList.Count > 0; 
+        MainThread.BeginInvokeOnMainThread(() =>
+        {
+            NotificationList.Add(notification);
+            NotificationCount = NotificationList.Count;
+            HasNotifications = NotificationList.Count > 0;
+        });
     }
 
     public int NotificationCount
