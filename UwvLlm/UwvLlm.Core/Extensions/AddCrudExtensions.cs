@@ -10,7 +10,6 @@ public static class AddCrudExtensions
     {
         services.AddScoped<IUseCase<Infrastructure.Data.MailMessage, Shared.Dtos.MailMessage, Guid>, MailMessagesUseCase>();
         services.AddScoped<IUseCase<Infrastructure.Data.UserNotification, Shared.Dtos.UserNotification, long>, UserNotificationsUseCase>();
-        services.AddScoped<IUseCase<Infrastructure.Data.UserNotificationQuickOption, Shared.Dtos.UserNotificationQuickOption, long>, UserNotificationQuickOptionsUseCase>();
         services.AddScoped<IUseCase<Infrastructure.Data.User, Shared.Dtos.User, Guid>, UsersUseCase>();
         return services;
     }
@@ -19,7 +18,6 @@ public static class AddCrudExtensions
     {
         services.AddScoped<Mapping<Infrastructure.Data.MailMessage, Shared.Dtos.MailMessage>, MailMessagesMapping>();
         services.AddScoped<Mapping<Infrastructure.Data.UserNotification, Shared.Dtos.UserNotification>, UserNotificationsMapping>();
-        services.AddScoped<Mapping<Infrastructure.Data.UserNotificationQuickOption, Shared.Dtos.UserNotificationQuickOption>, UserNotificationQuickOptionsMapping>();
         services.AddScoped<Mapping<Infrastructure.Data.User, Shared.Dtos.User>, UsersMapping>();
         return services;
     }

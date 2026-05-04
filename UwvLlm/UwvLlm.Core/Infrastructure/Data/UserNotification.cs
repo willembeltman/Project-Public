@@ -16,5 +16,5 @@ public class UserNotification
     public string Title { get; set; } = string.Empty;
     public string Message { get; set; } = string.Empty;
 
-    public virtual ICollection<UserNotificationQuickOption>? QuickOptions { get; set; }
+    public string[] QuickOptions { get; set; } = [];
 }

@@ -14,5 +14,4 @@ public class ApplicationDbContext(DbContextOptions options) : AuthenticationDbCo
 
     public virtual DbSet<MailMessage> MailMessages { get; set; }
     public virtual DbSet<UserNotification> UserNotifications { get; set; }
-    public virtual DbSet<UserNotificationQuickOption> UserNotificationQuickOptions { get; set; }
 }
