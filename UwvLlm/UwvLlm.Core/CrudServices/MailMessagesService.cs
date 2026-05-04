@@ -38,12 +38,12 @@ public class MailMessagesService(
         };
     }
 
-    public async Task<BaseResponseT<MailMessage>> Read(Guid emailmessageId, CancellationToken ct)
+    public async Task<BaseResponseT<MailMessage>> Read(Guid mailmessageId, CancellationToken ct)
     {
         if (!await useCase.IsAllowedAsync(ct))
             return new BaseResponseT<MailMessage>() { Error = BaseResponseErrorEnum.ErrorNotAuthorized };
 
-        var entity = await useCase.FindByIdAsync(emailmessageId, ct);
+        var entity = await useCase.FindByIdAsync(mailmessageId, ct);
         if (entity == null)
             return new BaseResponseT<MailMessage>() { Error = BaseResponseErrorEnum.ErrorItemNotFound };
 
@@ -88,12 +88,12 @@ public class MailMessagesService(
         };
     }
 
-    public async Task<BaseResponseT<bool>> Delete(Guid emailmessageId, CancellationToken ct)
+    public async Task<BaseResponseT<bool>> Delete(Guid mailmessageId, CancellationToken ct)
     {
         if (!await useCase.IsAllowedAsync(ct))
             return new BaseResponseT<bool>() { Error = BaseResponseErrorEnum.ErrorNotAuthorized };
 
-        var entity = await useCase.FindByIdAsync(emailmessageId, ct);
+        var entity = await useCase.FindByIdAsync(mailmessageId, ct);
         if (entity == null)
             return new BaseResponseT<bool>() { Error = BaseResponseErrorEnum.ErrorItemNotFound };
 
