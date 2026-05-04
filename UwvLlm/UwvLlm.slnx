@@ -5,6 +5,7 @@
       <Deploy Solution="Debug|*" />
     </Project>
     <Project Path="UwvLlm.Fabric/UwvLlm.Fabric.csproj" Id="741459c8-905f-4511-ae23-9b8283c10d41" />
+    <Project Path="UwvLlm.Llm/UwvLlm.Llm.csproj" Id="f4b6d9fd-1aaa-432a-bcc1-91e93261430b" />
     <Project Path="UwvLlm.Storage/UwvLlm.Storage.csproj" Id="a184ac3f-a28a-4e72-8a5b-0f61ae38dea5" />
   </Folder>
   <Folder Name="/Core/">
@@ -12,6 +13,7 @@
     <Project Path="UwvLlm.App.Core/UwvLlm.App.Core.csproj" Id="d7da95e3-4a2e-4f91-bafd-d4360da2354d" />
     <Project Path="UwvLlm.Infrastructure.Data/UwvLlm.Infrastructure.Data.csproj" Id="544a8f93-80e4-4b49-819d-05bd8b104d80" />
     <Project Path="UwvLlm.Infrastructure.Llm/UwvLlm.Infrastructure.Llm.csproj" Id="9076559d-1c9d-48ca-8363-f7338524d726" />
+    <Project Path="UwvLlm.Llm.Core/UwvLlm.Llm.Core.csproj" Id="d7b63eac-72f4-4a6f-87de-352f7a216ee6" />
     <Project Path="UwvLlm.Shared/UwvLlm.Shared.csproj" Id="2f380807-1cec-4eb5-bc9e-f2382a973d5c" />
   </Folder>
   <Folder Name="/gAPI/">
