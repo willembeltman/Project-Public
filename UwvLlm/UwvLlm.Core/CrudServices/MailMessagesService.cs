@@ -137,4 +137,60 @@ public class MailMessagesService(
             Response = dtos
         };
     }
+
+    public async Task<BaseListResponseT<MailMessage>> ListByFromUserId(Guid fromUserId, int? skip, int? take, string[]? orderby, CancellationToken ct)
+    {
+        if (!await useCase.IsAllowedAsync(ct))
+            return new BaseListResponseT<MailMessage>() { Error = BaseResponseErrorEnum.ErrorNotAuthorized };
+
+        if (!await useCase.CanListAsync(ct))
+            return new BaseListResponseT<MailMessage>() { Error = BaseResponseErrorEnum.ErrorNotAuthorized };
+
+        var entities = useCase
+            .ListAll()
+            .Where(a => a.FromUserId == fromUserId);
+
+        orderby = orderby == null || orderby.Length == 0 ? ["Id"] : orderby;
+        var dtos = mapping.ProjectToDtosAsync(entities, orderby, skip, take, ct);
+
+        if (dtos == null)
+            return new BaseListResponseT<MailMessage>() { Error = BaseResponseErrorEnum.ErrorGettingData };
+
+        return new BaseListResponseT<MailMessage>()
+        {
+            Success = true,
+            Skip = skip ?? 0,
+            Take = take ?? 0,
+            CanCreate = await useCase.CanCreateAsync(ct),
+            Response = dtos
+        };
+    }
+
+    public async Task<BaseListResponseT<MailMessage>> ListNotByFromUserId(Guid fromUserId, int? skip, int? take, string[]? orderby, CancellationToken ct)
+    {
+        if (!await useCase.IsAllowedAsync(ct))
+            return new BaseListResponseT<MailMessage>() { Error = BaseResponseErrorEnum.ErrorNotAuthorized };
+
+        if (!await useCase.CanListAsync(ct))
+            return new BaseListResponseT<MailMessage>() { Error = BaseResponseErrorEnum.ErrorNotAuthorized };
+
+        var entities = useCase
+            .ListAll()
+            .Where(a => a.FromUserId != fromUserId);
+
+        orderby = orderby == null || orderby.Length == 0 ? ["Id"] : orderby;
+        var dtos = mapping.ProjectToDtosAsync(entities, orderby, skip, take, ct);
+
+        if (dtos == null)
+            return new BaseListResponseT<MailMessage>() { Error = BaseResponseErrorEnum.ErrorGettingData };
+
+        return new BaseListResponseT<MailMessage>()
+        {
+            Success = true,
+            Skip = skip ?? 0,
+            Take = take ?? 0,
+            CanCreate = await useCase.CanCreateAsync(ct),
+            Response = dtos
+        };
+    }
 }

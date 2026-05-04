@@ -11,8 +11,9 @@ public class MailMessagesMapping(
         UwvLlm.Core.Infrastructure.Data.MailMessage entity)
     {
         entity.Id = dto.Id;
-        entity.From = dto.From;
+        entity.FromUserId = dto.FromUserId;
         entity.Subject = dto.Subject;
+        entity.Date = dto.Date;
         entity.Body = dto.Body;
 
         return entity;
@@ -24,10 +25,14 @@ public class MailMessagesMapping(
         CancellationToken ct)
     {
         dto.Id = entity.Id;
-        dto.From = entity.From;
+        dto.FromUserId = entity.FromUserId;
         dto.Subject = entity.Subject;
+        dto.Date = entity.Date;
         dto.Body = entity.Body;
         
+        dto.FromUserName = 
+            ("" + (entity?.FromUser?.UserName ?? default) + "");
+
         await ExtendDto(dto, ct);
 
         return dto;
@@ -44,10 +49,13 @@ public class MailMessagesMapping(
             .Select(entity => new UwvLlm.Shared.Dtos.MailMessage()
             {
                 Id = entity.Id,
-                From = entity.From,
+                FromUserId = entity.FromUserId,
                 Subject = entity.Subject,
+                Date = entity.Date,
                 Body = entity.Body,
 #nullable disable
+                FromUserName = 
+                    ("" + entity.FromUser.UserName + ""),
 #nullable enable
             })
             .ApplyOrderBy(orderby);
