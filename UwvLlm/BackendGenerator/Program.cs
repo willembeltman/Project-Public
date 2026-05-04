@@ -29,7 +29,7 @@ var config = new BackendConfig(
     Core_ServicesDirectory: EnvironmentPathHelper.GetDirectory(root, @"UwvLlm.Core\Services"),
     Core_ServicesNamespace: "UwvLlm.Core.Services",
 
-    Extensions_Directory: EnvironmentPathHelper.GetDirectory(root, @"UwvLlm.Core.Extensions"),
+    Extensions_Directory: EnvironmentPathHelper.GetDirectory(root, @"UwvLlm.Core\Extensions"),
     Extensions_Namespace: "UwvLlm.Core.Extensions");
 
 var generator = new gAPI.CodeGen.Backend.BackendGenerator(config);
