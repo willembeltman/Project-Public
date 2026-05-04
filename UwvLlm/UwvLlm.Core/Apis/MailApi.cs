@@ -12,8 +12,8 @@ public class MailApi (
 {
     public Task Receive(NewMailMessage newMail, CancellationToken ct)
     {
-        var mail = mailService.ReceivedEmail(newMail);
-        var notification = notificationService.CreateEmailNotification(mail);
+        var mail = mailService.ReceivedEmail(newMail, ct);
+        var notification = notificationService.CreateEmailNotification(mail, ct);
         return notificationHub.ToAll.OnNotificationReceived(notification);
     }
 }

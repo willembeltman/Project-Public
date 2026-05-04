@@ -1,9 +1,9 @@
 ﻿using gAPI.Attributes;
+using gAPI.Enums;
 using System.ComponentModel.DataAnnotations;
 
 namespace UwvLlm.Core.Infrastructure.Data;
 
-[IsHidden]
 public class MailMessage
 {
     [Key]
@@ -14,9 +14,11 @@ public class MailMessage
 
     [IsName]
     public string Subject { get; set; } = string.Empty;
-    [IsName("(", gAPI.Enums.FormattingOption.dd_MM_yyyy_HH_mm, ")")]
+
+    [IsName(" (", FormattingOption.dd_MM_yyyy_HH_mm, ")")]
     public DateTimeOffset Date { get; set; }
+
     public string Body { get; set; } = string.Empty;
 
-    public virtual ICollection<MailMessageToUser> ToUsers { get; set; } = [];
+    public virtual ICollection<MailMessageToUser>? ToUsers { get; set; }
 }

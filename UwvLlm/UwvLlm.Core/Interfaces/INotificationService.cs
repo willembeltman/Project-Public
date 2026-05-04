@@ -4,5 +4,5 @@ namespace UwvLlm.Core.Interfaces;
 
 public interface INotificationService
 {
-    Notification CreateEmailNotification(MailMessage mail);
+    Notification CreateEmailNotification(Task<MailMessage> mail, CancellationToken ct);
 }

@@ -1,9 +1,7 @@
-﻿using gAPI.Attributes;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace UwvLlm.Core.Infrastructure.Data;
 
-[IsHidden]
 public class MailMessageToUser
 {
     [Key]

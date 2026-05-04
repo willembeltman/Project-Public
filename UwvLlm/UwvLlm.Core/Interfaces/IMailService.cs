@@ -4,5 +4,5 @@ namespace UwvLlm.Core.Interfaces;
 
 public interface IMailService
 {
-    MailMessage ReceivedEmail(NewMailMessage newMail);
+    Task<MailMessage> ReceivedEmail(NewMailMessage newMail, CancellationToken ct);
 }

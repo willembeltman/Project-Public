@@ -2,5 +2,5 @@
 
 public enum NotificationType
 {
-    Email
+    Mail
 }

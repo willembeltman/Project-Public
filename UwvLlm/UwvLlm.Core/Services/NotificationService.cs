@@ -6,11 +6,11 @@ namespace UwvLlm.Core.Services;
 
 public class NotificationService : INotificationService
 {
-    public Notification CreateEmailNotification(MailMessage mail)
+    public Notification CreateEmailNotification(Task<MailMessage> mail, CancellationToken ct)
     {
         return new Notification(
-            NotificationType.Email,
-            "1",
+            NotificationType.Mail,
+            mail.Id.ToString(),
             "Message received",
             "Message content\r\nDo you want to auto-reply?",
             ["Yes", "No", "Modify"]);

@@ -33,6 +33,7 @@ public class MailService(
             await ui.ShowAlert("Fout", "body verplicht", "OK");
             return;
         }
+
         //await email.Receive(new EmailDto(from, [to], subject, body));
         await ui.ShowAlert("OK", $"Mail verstuurd naar {to}", "OK");
         await navigation.GotoMainPageAsync();

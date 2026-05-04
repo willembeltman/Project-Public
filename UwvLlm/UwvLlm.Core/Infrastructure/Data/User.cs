@@ -1,9 +1,8 @@
-﻿using gAPI.Attributes;
-using gAPI.Core.Server.Entities;
+﻿using gAPI.Core.Server.Entities;
 
 namespace UwvLlm.Core.Infrastructure.Data;
 
-[IsHidden]
 public class User : AuthUser
 {
+    public virtual ICollection<UserNotification>? Notifications { get; set; }
 }
