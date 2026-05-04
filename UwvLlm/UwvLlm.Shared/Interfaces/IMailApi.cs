@@ -4,7 +4,7 @@ using UwvLlm.Shared.Dtos;
 namespace UwvLlm.Shared.Interfaces;
 
 [GenerateApi]
-public interface IEmailApi
+public interface IMailApi
 {
-    Task Receive(EmailDto email);
+    Task Receive(MailDto email);
 }

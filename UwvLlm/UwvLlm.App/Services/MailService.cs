@@ -5,11 +5,11 @@ using UwvLlm.Shared.Interfaces;
 
 namespace UwvLlm.App.Services;
 
-public class EmailService(
+public class MailService(
     IUiService ui,
-    IEmailApi email,
+    IMailApi email,
     INavigationService navigation) 
-    : IEmailService
+    : IMailService
 {
     public async Task Send(string? from, string? to, string? subject, string? body)
     {

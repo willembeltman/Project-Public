@@ -1,10 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿namespace UwvLlm.Shared.Dtos;
 
-namespace UwvLlm.Core.Infrastructure.Data;
-
-public class EmailMessage
+public class MailDto
 {
-    [Key]
     public Guid Id { get; set; } = Guid.NewGuid();
     public string From { get; set; } = string.Empty;
     public string[] To { get; set; } = [];

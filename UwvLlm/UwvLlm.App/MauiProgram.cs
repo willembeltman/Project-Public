@@ -32,7 +32,7 @@ public static class MauiProgram
         builder.Services.AddTransient<RegisterPage>();
 
         builder.Services.AddTransient<IAuthenticationService, AuthenticationService>();
-        builder.Services.AddTransient<IEmailService, EmailService>();
+        builder.Services.AddTransient<IMailService, MailService>();
         builder.Services.AddTransient<INavigationService, NavigationService>();
         builder.Services.AddTransient<INavigationManager, NavigationService>();
         builder.Services.AddTransient<INotificationHub>(sp => sp.GetRequiredService<NotificationPageViewModel>());

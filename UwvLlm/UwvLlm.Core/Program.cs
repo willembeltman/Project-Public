@@ -5,7 +5,6 @@ using gAPI.Generated;
 using gAPI.Interfaces;
 using Scalar.AspNetCore;
 using UwvLlm.Core.Extensions;
-using UwvLlm.Core.Infrastructure.Data;
 using UwvLlm.Core.Mappings;
 using UwvLlm.Shared;
 using UwvLlm.Shared.Dtos;
@@ -19,14 +18,14 @@ builder.Services.AddAutoSse(serverConfig);
 builder.Services.AddStorage(serverConfig);
 builder.Services.AddCommenServices(serverConfig);
 builder.Services.AddDatabase(serverConfig);
-builder.Services.AddAuthenticationServices<User, State>();
-builder.Services.AddScoped<IStateMapping<User, State>, StateMapping>();
-builder.Services.AddScoped<IStateUserMapping<User, StateUser>, StateUserMapping>();
+builder.Services.AddAuthenticationServices<UwvLlm.Core.Infrastructure.Data.User, State>();
+builder.Services.AddScoped<IStateMapping<UwvLlm.Core.Infrastructure.Data.User, State>, StateMapping>();
+builder.Services.AddScoped<IStateUserMapping<UwvLlm.Core.Infrastructure.Data.User, StateUser>, StateUserMapping>();
 builder.Services.AddScoped<IStateParser<State>, StateParser>();
 
 var app = builder.Build();
 
-app.MapAutoApi<AuthenticationMiddleware<User, State>>();
+app.MapAutoApi<AuthenticationMiddleware<UwvLlm.Core.Infrastructure.Data.User, State>>();
 app.MapAutoSse();
 app.UseHttpsRedirection();
 app.MapOpenApi();

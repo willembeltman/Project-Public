@@ -11,7 +11,7 @@ public class EmailViewModel : NotificationHubViewModel
         IClientConnection clientConnection,
         INotificationApi notifications,
         INavigationService navigation,
-        IEmailService email)
+        IMailService email)
         : base(clientConnection, notifications, navigation)
     {
         SendCommand = new Command(async () => await email.Send(From, To, Subject, Body));
