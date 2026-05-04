@@ -1,6 +1,6 @@
 ﻿using gAPI.Interfaces;
-using UwvLlm.Api.Core.UseCases;
 using UwvLlm.Api.Core.Mappings;
+using UwvLlm.Api.Core.UseCases;
 
 namespace UwvLlm.Api.Extensions;
 

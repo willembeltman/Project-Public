@@ -6,7 +6,7 @@ namespace UwvLlm.Api.Core.Services;
 
 public class MailApi(
     IMailMessageCrudService mailService,
-    IUserNotificationsService notificationService,
+    IUserNotificationCrudService notificationService,
     INotificationHubContext notificationHub)
     : IMailApi
 {

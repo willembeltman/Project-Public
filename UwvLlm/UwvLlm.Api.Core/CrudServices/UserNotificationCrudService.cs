@@ -1,5 +1,6 @@
 ﻿using gAPI.Dtos;
 using gAPI.Enums;
+using Microsoft.EntityFrameworkCore;
 using UwvLlm.Shared.Dtos;
 using UwvLlm.Shared.Interfaces;
 
@@ -8,7 +9,7 @@ namespace UwvLlm.Api.Core.CrudServices;
 public class UserNotificationCrudService(
     gAPI.Interfaces.IUseCase<UwvLlm.Api.Core.Infrastructure.Data.UserNotification, UserNotification, long> useCase,
     gAPI.Interfaces.Mapping<UwvLlm.Api.Core.Infrastructure.Data.UserNotification, UserNotification> mapping)
-    : IUserNotificationsService
+    : IUserNotificationCrudService
 {
     public async Task<BaseResponseT<UserNotification>> Create(UserNotification dto, CancellationToken ct)
     {

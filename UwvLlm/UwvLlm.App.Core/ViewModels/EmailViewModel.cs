@@ -18,7 +18,7 @@ public class EmailViewModel : NotificationHubViewModel
         IUserCrudService userService,
         MailService mailService,
         IClientConnection clientConnection,
-        IUserNotificationsService userNotificationService,
+        IUserNotificationCrudService userNotificationService,
         INavigationService navigationService,
         IUiService uiService)
         : base(dispatcher, clientConnection, userNotificationService, navigationService, uiService)

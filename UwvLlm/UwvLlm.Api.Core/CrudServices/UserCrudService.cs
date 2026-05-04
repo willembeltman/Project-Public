@@ -2,6 +2,7 @@
 using gAPI.Enums;
 using gAPI.Storage;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using UwvLlm.Shared.Dtos;
 using UwvLlm.Shared.Interfaces;
 

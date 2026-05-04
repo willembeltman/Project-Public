@@ -10,7 +10,7 @@ public class NotificationPageViewModel : NotificationHubViewModel
     public NotificationPageViewModel(
         IDispatcherService dispatcher,
         IClientConnection clientConnection, 
-        IUserNotificationsService userNotificationsService, 
+        IUserNotificationCrudService userNotificationsService, 
         INavigationService navigationService,
         IUiService uiService) 
         : base(dispatcher, clientConnection, userNotificationsService, navigationService, uiService)

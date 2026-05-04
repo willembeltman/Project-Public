@@ -15,14 +15,14 @@ public partial class NotificationHubViewModel : BaseViewModel
     protected readonly CancellationTokenSource Cts = new();
     protected readonly IDispatcherService Dispatcher;
     protected readonly IClientConnection ClientConnection;
-    protected readonly IUserNotificationsService UserNotificationsService;
+    protected readonly IUserNotificationCrudService UserNotificationsService;
     protected readonly INavigationService NavigationService;
     protected readonly IUiService UiService;
 
     public NotificationHubViewModel(
         IDispatcherService dispatcher,
         IClientConnection clientConnection,
-        IUserNotificationsService userNotificationsService,
+        IUserNotificationCrudService userNotificationsService,
         INavigationService navigationService,
         IUiService uiService)
     {

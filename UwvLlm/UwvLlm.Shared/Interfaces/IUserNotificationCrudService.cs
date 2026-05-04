@@ -6,7 +6,7 @@ namespace UwvLlm.Shared.Interfaces;
 
 [GenerateApi]
 [IsAuthorized]
-public interface IUserNotificationsService
+public interface IUserNotificationCrudService
 {
     [IsCreate]
     Task<BaseResponseT<UserNotification>> Create(UserNotification usernotification, CancellationToken ct);
