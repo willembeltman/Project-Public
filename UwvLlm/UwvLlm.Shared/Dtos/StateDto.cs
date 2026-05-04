@@ -4,6 +4,7 @@ using gAPI.Dtos;
 namespace UwvLlm.Shared.Dtos;
 
 [GenerateSerializer]
+[IsStateDto]
 public class StateDto : AuthStateDto
 {
 }

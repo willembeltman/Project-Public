@@ -22,13 +22,13 @@ var config = new BackendConfig(
 
     Core_CrudUseCasesDirectory: EnvironmentPathHelper.GetDirectory(root, @"UwvLlm.Core\CrudUseCases"),
     Core_CrudUseCasesNamespace: "UwvLlm.Core.CrudUseCases",
-    Core_CrudMappingsDirectory: EnvironmentPathHelper.GetDirectory(root, @"UwvLlm.Core\CrudMappings"),
-    Core_CrudMappingsNamespace: "UwvLlm.Core.CrudMappings",
     Core_CrudServicesDirectory: EnvironmentPathHelper.GetDirectory(root, @"UwvLlm.Core\CrudServices"),
     Core_CrudServicesNamespace: "UwvLlm.Core.CrudServices",
+
+    Core_CrudMappingsDirectory: EnvironmentPathHelper.GetDirectory(root, @"UwvLlm.Core\Mappings"),
+    Core_CrudMappingsNamespace: "UwvLlm.Core.Mappings",
     Core_ServicesDirectory: EnvironmentPathHelper.GetDirectory(root, @"UwvLlm.Core\Services"),
     Core_ServicesNamespace: "UwvLlm.Core.Services",
-
     Extensions_Directory: EnvironmentPathHelper.GetDirectory(root, @"UwvLlm.Core\Extensions"),
     Extensions_Namespace: "UwvLlm.Core.Extensions");
 
