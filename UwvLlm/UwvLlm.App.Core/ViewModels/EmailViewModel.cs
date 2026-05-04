@@ -40,6 +40,6 @@ public partial class EmailViewModel(
     }
 
     [RelayCommand]
-    private async Task SendCommand()
+    public async Task Send()
         => await mailService.Send(SelectedUser?.Id, Subject, Body);
 }

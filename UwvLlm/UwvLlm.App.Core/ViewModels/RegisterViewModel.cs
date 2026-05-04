@@ -14,10 +14,10 @@ public partial class RegisterViewModel(
     public string? PasswordRepeat { get => field; set => SetProperty(ref field, value); }
 
     [RelayCommand]
-    private async Task RegisterCommand() 
+    public async Task Register() 
         => await authenticationService.RegisterAsync(UserName, Email, Password, PasswordRepeat);
 
     [RelayCommand]
-    private async Task GotoLoginCommand()
+    public async Task GotoLogin()
         => await navigationService.GotoLoginPageAsync();
 }

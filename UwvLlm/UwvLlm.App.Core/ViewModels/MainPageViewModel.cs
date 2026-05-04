@@ -14,6 +14,6 @@ public partial class MainPageViewModel(
     : NotificationHubViewModel(dispatcher, clientConnection, userNotificationsService, navigationService, uiService)
 {
     [RelayCommand]
-    private async Task SendEmailCommand()
+    public async Task SendEmail()
         => await NavigationService.GotoSendEmailPage();
 }

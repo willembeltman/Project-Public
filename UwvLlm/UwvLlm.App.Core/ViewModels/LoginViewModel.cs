@@ -5,8 +5,8 @@ using UwvLlm.App.Core.Services;
 namespace UwvLlm.App.Core.ViewModels;
 
 public partial class LoginViewModel(
-    INavigationService navigation,
-    AuthenticationService authentication)
+    INavigationService navigationService,
+    AuthenticationService authenticationService)
     : BaseViewModel
 {
     public string? Email { get => field; set => SetProperty(ref field, value); }
@@ -14,15 +14,15 @@ public partial class LoginViewModel(
 
     public async Task OnAppearingAsync()
     {
-        if (await authentication.IsAuthenticatedAsync())
-            await navigation.GotoMainPageAsync();
+        if (await authenticationService.IsAuthenticatedAsync())
+            await navigationService.GotoMainPageAsync();
     }
 
     [RelayCommand]
-    private async Task LoginCommand()
-        => await authentication.LoginAsync(Email, Password);
+    public async Task Login()
+        => await authenticationService.LoginAsync(Email, Password);
 
     [RelayCommand]
-    private async Task GotoRegisterCommand()
-        => await navigation.GotoRegisterPageAsync();
+    public async Task GotoRegister()
+        => await navigationService.GotoRegisterPageAsync();
 }

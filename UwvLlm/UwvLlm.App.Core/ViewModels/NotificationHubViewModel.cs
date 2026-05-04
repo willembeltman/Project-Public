@@ -58,7 +58,7 @@ public partial class NotificationHubViewModel(
         });
 
     [RelayCommand]
-    private async Task OpenNotificationsCommand()
+    public async Task OpenNotifications()
         => await NavigationService.OpenNotifications();
 
     public void Dispose()
