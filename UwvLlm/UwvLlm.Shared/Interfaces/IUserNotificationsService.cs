@@ -5,6 +5,7 @@ using UwvLlm.Shared.Dtos;
 namespace UwvLlm.Shared.Interfaces;
 
 [GenerateApi]
+[IsAuthorized]
 public interface IUserNotificationsService
 {
     [IsCreate]

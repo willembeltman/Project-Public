@@ -23,12 +23,11 @@ public class EmailViewModel : NotificationHubViewModel
     {
         UsersService = userService;
         MailService = mailService;
-        SendCommand = new Command(async () => await MailService.Send(To, Subject, Body));
+        SendCommand = new Command(async () => await MailService.Send(SelectedUser?.Id, Subject, Body));
     }
 
     public override async Task OnAppearingAsync()
     {
-        // Let op we doen niets met paginarisering?
         var response = await UsersService.List(skip: 0, take: int.MaxValue, null, CancellationToken.None);
         if (response.Success == false || response.Response == null)
         {
@@ -46,22 +45,10 @@ public class EmailViewModel : NotificationHubViewModel
     public ICommand SendCommand { get; }
     public ObservableCollection<User> Users { get; } = [];
 
-    public Guid? To
-    {
-        get => field;
-        set => SetProperty(ref field, value);
-    }
-
     public User? SelectedUser
     {
-        get => field;
-        set
-        {
-            if (SetProperty(ref field, value))
-            {
-                To = value?.Id; // sync naar je bestaande property
-            }
-        }
+        get => field; 
+        set => SetProperty(ref field, value);
     }
 
     public string? Subject

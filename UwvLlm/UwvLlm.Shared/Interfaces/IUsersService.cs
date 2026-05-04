@@ -5,7 +5,7 @@ using UwvLlm.Shared.Dtos;
 
 namespace UwvLlm.Shared.Interfaces;
 
-//[GenerateApi]
+[GenerateApi]
 [IsAuthorized]
 public interface IUsersService
 {

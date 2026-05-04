@@ -35,7 +35,7 @@
 
             <Picker Title="Selecteer gebruiker"
                 ItemsSource="{Binding Users}"
-                ItemDisplayBinding="{Binding Name}"
+                ItemDisplayBinding="{Binding UserName}"
                 SelectedItem="{Binding SelectedUser}" />
             
             <Entry Placeholder="Titel"

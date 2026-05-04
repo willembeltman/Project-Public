@@ -22,6 +22,9 @@ builder.Services.AddAuthenticationServices<UwvLlm.Core.Infrastructure.Data.User,
 builder.Services.AddScoped<IStateMapping<UwvLlm.Core.Infrastructure.Data.User, State>, StateMapping>();
 builder.Services.AddScoped<IStateUserMapping<UwvLlm.Core.Infrastructure.Data.User, StateUser>, StateUserMapping>();
 builder.Services.AddScoped<IStateParser<State>, StateParser>();
+builder.Services.AddCrudMappings();
+builder.Services.AddCrudUseCases();
+
 
 var app = builder.Build();
 
