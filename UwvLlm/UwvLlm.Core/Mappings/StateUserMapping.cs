@@ -6,9 +6,9 @@ namespace UwvLlm.Core.Mappings;
 
 public class StateUserMapping(
     IStorageService storageService) :
-    IStateUserMapping<Infrastructure.Data.User, StateUserDto>
+    IStateUserMapping<Infrastructure.Data.User, StateUser>
 {
-    public async Task<StateUserDto> ToDtoAsync(Infrastructure.Data.User entity, StateUserDto dto, CancellationToken ct)
+    public async Task<StateUser> ToDtoAsync(Infrastructure.Data.User entity, StateUser dto, CancellationToken ct)
     {
         dto.Id = entity.Id;
         dto.UserName = entity.UserName;
