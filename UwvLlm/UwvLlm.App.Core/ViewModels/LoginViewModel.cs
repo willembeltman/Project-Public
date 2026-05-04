@@ -1,41 +1,28 @@
-﻿using System.Windows.Input;
+﻿using CommunityToolkit.Mvvm.Input;
 using UwvLlm.App.Core.Interfaces;
 using UwvLlm.App.Core.Services;
 
 namespace UwvLlm.App.Core.ViewModels;
 
-public class LoginViewModel : BaseViewModel
+public partial class LoginViewModel(
+    INavigationService navigation,
+    AuthenticationService authentication)
+    : BaseViewModel
 {
-    private readonly INavigationService NavigationService;
-    private readonly AuthenticationService AuthenticationService;
-
-    public LoginViewModel(
-        INavigationService navigation,
-        AuthenticationService authentication)
-    {
-        NavigationService = navigation;
-        AuthenticationService = authentication;
-        LoginCommand = new RelayCommand(async () => await AuthenticationService.LoginAsync(Email, Password));
-        GotoRegisterCommand = new RelayCommand(async () => await NavigationService.GotoRegisterPageAsync());
-    }
+    public string? Email { get => field; set => SetProperty(ref field, value); }
+    public string? Password { get => field; set => SetProperty(ref field, value); }
 
     public async Task OnAppearingAsync()
     {
-        if (await AuthenticationService.IsAuthenticatedAsync())
-            await NavigationService.GotoMainPageAsync();
+        if (await authentication.IsAuthenticatedAsync())
+            await navigation.GotoMainPageAsync();
     }
 
-    public string? Email
-    {
-        get => field;
-        set => SetProperty(ref field, value);
-    }
-    public string? Password
-    {
-        get => field;
-        set => SetProperty(ref field, value);
-    }
+    [RelayCommand]
+    private async Task LoginCommand()
+        => await authentication.LoginAsync(Email, Password);
 
-    public ICommand LoginCommand { get; }
-    public ICommand GotoRegisterCommand { get; }
+    [RelayCommand]
+    private async Task GotoRegisterCommand()
+        => await navigation.GotoRegisterPageAsync();
 }

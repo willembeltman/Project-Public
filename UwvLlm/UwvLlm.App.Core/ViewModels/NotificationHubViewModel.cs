@@ -1,38 +1,34 @@
 ﻿using gAPI.Interfaces;
 using System.Collections.ObjectModel;
-using System.Windows.Input;
 using UwvLlm.App.Core.Interfaces;
 using UwvLlm.Shared.Dtos;
 using UwvLlm.Shared.Interfaces;
+using CommunityToolkit.Mvvm.Input;
 
-#pragma warning disable IDE0290 // Use primary constructor
 namespace UwvLlm.App.Core.ViewModels;
 
-public partial class NotificationHubViewModel : BaseViewModel
+public partial class NotificationHubViewModel(
+    IDispatcherService dispatcher,
+    IClientConnection clientConnection,
+    IUserNotificationCrudService userNotificationsService,
+    INavigationService navigationService,
+    IUiService uiService)
+    : BaseViewModel
     , INotificationHub
     , IDisposable
 {
     protected readonly CancellationTokenSource Cts = new();
-    protected readonly IDispatcherService Dispatcher;
-    protected readonly IClientConnection ClientConnection;
-    protected readonly IUserNotificationCrudService UserNotificationsService;
-    protected readonly INavigationService NavigationService;
-    protected readonly IUiService UiService;
+    protected readonly IDispatcherService Dispatcher = dispatcher;
+    protected readonly IClientConnection ClientConnection = clientConnection;
+    protected readonly IUserNotificationCrudService UserNotificationsService = userNotificationsService;
+    protected readonly INavigationService NavigationService = navigationService;
+    protected readonly IUiService UiService = uiService;
 
-    public NotificationHubViewModel(
-        IDispatcherService dispatcher,
-        IClientConnection clientConnection,
-        IUserNotificationCrudService userNotificationsService,
-        INavigationService navigationService,
-        IUiService uiService)
-    {
-        Dispatcher = dispatcher;
-        ClientConnection = clientConnection;
-        UserNotificationsService = userNotificationsService;
-        NavigationService = navigationService;
-        UiService = uiService;
-        OpenNotificationsCommand = new RelayCommand(async () => await navigationService.OpenNotifications());
-    }
+    public int NotificationCount { get => field; set => SetProperty(ref field, value); }
+
+    public bool HasNotifications { get => field; set => SetProperty(ref field, value); }
+
+    public ObservableCollection<UserNotification> NotificationList { get; } = [];
 
     public virtual async Task OnAppearingAsync()
     {
@@ -50,31 +46,20 @@ public partial class NotificationHubViewModel : BaseViewModel
             NotificationList.Add(notification);
     }
 
-    public virtual async Task OnDisappearingAsync() => ClientConnection.UnsubscribeAsync(this);
+    public virtual async Task OnDisappearingAsync()
+        => ClientConnection.UnsubscribeAsync(this);
 
     public virtual async Task OnNotificationReceived(UserNotification notification)
         => Dispatcher.Invoke(() =>
-    {
-        NotificationList.Add(notification);
-        NotificationCount = NotificationList.Count;
-        HasNotifications = NotificationList.Count > 0;
-    });
+        {
+            NotificationList.Add(notification);
+            NotificationCount = NotificationList.Count;
+            HasNotifications = NotificationList.Count > 0;
+        });
 
-    public int NotificationCount
-    {
-        get => field;
-        set => SetProperty(ref field, value);
-    }
-
-    public bool HasNotifications
-    {
-        get => field;
-        set => SetProperty(ref field, value);
-    }
-
-    public ObservableCollection<UserNotification> NotificationList { get; } = [];
-
-    public ICommand OpenNotificationsCommand { get; }
+    [RelayCommand]
+    private async Task OpenNotificationsCommand()
+        => await NavigationService.OpenNotifications();
 
     public void Dispose()
     {
