@@ -1,4 +1,5 @@
 ﻿using UwvLlm.App.Interfaces;
+using UwvLlm.Shared.Dtos;
 using UwvLlm.Shared.Interfaces;
 
 namespace UwvLlm.App.Services;
@@ -9,14 +10,9 @@ public class MailService(
     INavigationService navigation) 
     : IMailService
 {
-    public async Task Send(string? from, string? to, string? subject, string? body)
+    public async Task Send(Guid? toUserId, string? subject, string? body)
     {
-        if (string.IsNullOrWhiteSpace(from))
-        {
-            await ui.ShowAlert("Fout", "from verplicht", "OK");
-            return;
-        }
-        if (string.IsNullOrWhiteSpace(to))
+        if (toUserId == null)
         {
             await ui.ShowAlert("Fout", "to verplicht", "OK");
             return;
@@ -32,8 +28,15 @@ public class MailService(
             return;
         }
 
-        //await email.Receive(new EmailDto(from, [to], subject, body));
-        await ui.ShowAlert("OK", $"Mail verstuurd naar {to}", "OK");
+        var mail = new MailMessage()
+        {
+            ToUserId = toUserId.Value,
+            Subject = subject,
+            Body = body
+        };
+        await email.SendMail(mail, CancellationToken.None);
+
+        await ui.ShowAlert("OK", $"Mail verstuurd naar {toUserId}", "OK");
         await navigation.GotoMainPageAsync();
     }
 }

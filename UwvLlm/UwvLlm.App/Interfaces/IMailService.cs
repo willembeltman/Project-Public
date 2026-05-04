@@ -2,5 +2,5 @@
 
 public interface IMailService
 {
-    Task Send(string? from, string? to, string? subject, string? body);
+    Task Send(Guid? to, string? subject, string? body);
 }

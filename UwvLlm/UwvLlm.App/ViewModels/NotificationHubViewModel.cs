@@ -17,17 +17,18 @@ public partial class NotificationHubViewModel(
 {
     private readonly CancellationTokenSource Cts = new();
 
-    public async Task OnAppearingAsync()
+    public virtual async Task OnAppearingAsync()
     {
         clientConnection.SubscribeAsync(this);
+
         NotificationList.Clear();
         foreach (var notification in await notifications.GetNotificationList(Cts.Token))
             NotificationList.Add(notification);
     }
 
-    public async Task OnDisappearingAsync() => clientConnection.UnsubscribeAsync(this);
+    public virtual async Task OnDisappearingAsync() => clientConnection.UnsubscribeAsync(this);
 
-    public async Task OnNotificationReceived(UserNotification notification) => MainThread.BeginInvokeOnMainThread(() =>
+    public virtual async Task OnNotificationReceived(UserNotification notification) => MainThread.BeginInvokeOnMainThread(() =>
     {
         NotificationList.Add(notification);
         NotificationCount = NotificationList.Count;

@@ -30,10 +30,14 @@
 
     <ScrollView>
         <VerticalStackLayout Padding="30" Spacing="15">
-
             <Entry Placeholder="Naar"
-                   Text="{Binding To}" />
+                Text="{Binding To}" />
 
+            <Picker Title="Selecteer gebruiker"
+                ItemsSource="{Binding Users}"
+                ItemDisplayBinding="{Binding Name}"
+                SelectedItem="{Binding SelectedUser}" />
+            
             <Entry Placeholder="Titel"
                    Text="{Binding Subject}" />
 
