@@ -8,11 +8,8 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\..\..\gAPI\gAPI.AutoSse.Server\gAPI.AutoSseServer.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<ProjectReference Include="..\..\..\gAPI\gAPI.Core.Server\gAPI.Core.Server.csproj" />
-		<ProjectReference Include="..\UwvLlm.Shared\UwvLlm.Shared.csproj" />
+		<ProjectReference Include="..\UwvLlm.Infrastructure.Data\UwvLlm.Infrastructure.Data.csproj" />
+		<ProjectReference Include="..\UwvLlm.Infrastructure.Llm\UwvLlm.Infrastructure.Llm.csproj" />
 	</ItemGroup>
 
 </Project>
