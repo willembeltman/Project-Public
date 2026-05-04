@@ -6,10 +6,10 @@ using UwvLlm.Shared.Dtos;
 namespace UwvLlm.App.Core.Services;
 
 public class AuthenticationService(
-    IUiService ui,
+    IUiService uiService,
     IAccountService accountService,
     IAuthenticatedHttpClient<State> httpClient,
-    INavigationService navigation)
+    INavigationService navigationService)
 {
     public Task<bool> IsAuthenticatedAsync()
     {
@@ -20,56 +20,56 @@ public class AuthenticationService(
     {
         if (string.IsNullOrWhiteSpace(username))
         {
-            await ui.ShowAlert("Fout", "username verplicht", "OK");
+            await uiService.ShowAlert("Fout", "username verplicht", "OK");
             return;
         }
         if (string.IsNullOrWhiteSpace(email))
         {
-            await ui.ShowAlert("Fout", "Email verplicht", "OK");
+            await uiService.ShowAlert("Fout", "Email verplicht", "OK");
             return;
         }
         if (string.IsNullOrWhiteSpace(password))
         {
-            await ui.ShowAlert("Fout", "password verplicht", "OK");
+            await uiService.ShowAlert("Fout", "password verplicht", "OK");
             return;
         }
         if (string.IsNullOrWhiteSpace(passwordRepeat))
         {
-            await ui.ShowAlert("Fout", "passwordRepeat verplicht", "OK");
+            await uiService.ShowAlert("Fout", "passwordRepeat verplicht", "OK");
             return;
         }
         if (password != passwordRepeat)
         {
-            await ui.ShowAlert("Fout", "password en passwordRepeat zijn niet gelijk", "OK");
+            await uiService.ShowAlert("Fout", "password en passwordRepeat zijn niet gelijk", "OK");
             return;
         }
         var response = await accountService.RegisterAsync(username, email, password, passwordRepeat, CancellationToken.None);
         if (response.Success == false)
         {
-            await ui.ShowAlert("Fout", $"Fout opgetreden: {response.Error}", "OK");
+            await uiService.ShowAlert("Fout", $"Fout opgetreden: {response.Error}", "OK");
             return;
         }
-        await navigation.GotoMainPageAsync();
+        await navigationService.GotoMainPageAsync();
     }
 
     public async Task LoginAsync(string? email, string? password)
     {
         if (string.IsNullOrWhiteSpace(email))
         {
-            await ui.ShowAlert("Fout", "Email verplicht", "OK");
+            await uiService.ShowAlert("Fout", "Email verplicht", "OK");
             return;
         }
         if (string.IsNullOrWhiteSpace(password))
         {
-            await ui.ShowAlert("Fout", "Password verplicht", "OK");
+            await uiService.ShowAlert("Fout", "Password verplicht", "OK");
             return;
         }
         var response = await accountService.LoginAsync(email, password, CancellationToken.None);
         if (response.Success == false)
         {
-            await ui.ShowAlert("Fout", $"Fout opgetreden: {response.Error}", "OK");
+            await uiService.ShowAlert("Fout", $"Fout opgetreden: {response.Error}", "OK");
             return;
         }
-        await navigation.GotoMainPageAsync();
+        await navigationService.GotoMainPageAsync();
     }
 }

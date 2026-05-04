@@ -11,12 +11,12 @@ namespace UwvLlm.App.Core.ViewModels;
 public class EmailViewModel : NotificationHubViewModel
 {
     private readonly IUserCrudService UsersService;
-    private readonly MailService MailService;
+    private readonly EmailService MailService;
 
     public EmailViewModel(
         IDispatcherService dispatcher,
         IUserCrudService userService,
-        MailService mailService,
+        EmailService mailService,
         IClientConnection clientConnection,
         IUserNotificationCrudService userNotificationService,
         INavigationService navigationService,
