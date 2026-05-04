@@ -12,5 +12,6 @@ public class ApplicationDbContext(DbContextOptions options) : AuthenticationDbCo
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AuthUser).Assembly);
     }
 
-    public virtual DbSet<MailMessage> EmailMessages { get; set; }
+    public virtual DbSet<MailMessage> MailMessages { get; set; }
+    public virtual DbSet<MailMessageToUser> MailMessageToUsers { get; set; }
 }

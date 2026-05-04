@@ -20,14 +20,14 @@ public class MailMessagesUseCase(
     public async Task<MailMessage?> FindByMatchAsync(UwvLlm.Shared.Dtos.MailMessage dto, CancellationToken ct) 
         => null; // If you implement this, also use includes
     public async Task<MailMessage?> FindByIdAsync(Guid id, CancellationToken ct) 
-        => await db.EmailMessages // Add your filter query
+        => await db.MailMessages // Add your filter query
             .FirstOrDefaultAsync(a => a.Id == id, ct);
     public IQueryable<MailMessage> ListAll()
-        => db.EmailMessages; // Add your filter query, no need for includes here
+        => db.MailMessages; // Add your filter query, no need for includes here
 
     public async Task<bool> AddAsync(MailMessage entityToAdd, CancellationToken ct) 
     {
-        await db.EmailMessages.AddAsync(entityToAdd, ct);
+        await db.MailMessages.AddAsync(entityToAdd, ct);
         await db.SaveChangesAsync(ct);
         return true;
     }
@@ -38,7 +38,7 @@ public class MailMessagesUseCase(
     }
     public async Task<bool> RemoveAsync(MailMessage entity, CancellationToken ct)
     {
-        db.EmailMessages.Remove(entity);
+        db.MailMessages.Remove(entity);
         await db.SaveChangesAsync();
         return true;
     }
