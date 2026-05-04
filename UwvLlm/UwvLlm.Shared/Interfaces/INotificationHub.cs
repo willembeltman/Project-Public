@@ -6,5 +6,5 @@ namespace UwvLlm.Shared.Interfaces;
 [GenerateHub]
 public interface INotificationHub
 {
-    Task OnNotificationReceived(NotificationDto notification);
+    Task OnNotificationReceived(Notification notification);
 }

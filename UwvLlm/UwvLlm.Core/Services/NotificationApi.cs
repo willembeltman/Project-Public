@@ -8,7 +8,7 @@ public class NotificationApi(
     IAuthenticationService<Infrastructure.Data.User, State> authentication)
     : INotificationApi
 {
-    public async Task<NotificationDto[]> GetNotificationList(CancellationToken ct)
+    public async Task<Notification[]> GetNotificationList(CancellationToken ct)
     {
         return [];
     }

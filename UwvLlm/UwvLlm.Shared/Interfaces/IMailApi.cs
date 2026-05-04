@@ -6,5 +6,5 @@ namespace UwvLlm.Shared.Interfaces;
 [GenerateApi]
 public interface IMailApi
 {
-    Task Receive(MailDto email);
+    Task Receive(MailMessage email);
 }

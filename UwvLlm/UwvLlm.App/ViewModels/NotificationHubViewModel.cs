@@ -27,7 +27,7 @@ public partial class NotificationHubViewModel(
 
     public async Task OnDisappearingAsync() => clientConnection.UnsubscribeAsync(this);
 
-    public async Task OnNotificationReceived(NotificationDto notification) => MainThread.BeginInvokeOnMainThread(() =>
+    public async Task OnNotificationReceived(Notification notification) => MainThread.BeginInvokeOnMainThread(() =>
     {
         NotificationList.Add(notification);
         NotificationCount = NotificationList.Count;
@@ -46,7 +46,7 @@ public partial class NotificationHubViewModel(
         set => SetProperty(ref field, value);
     }
 
-    public ObservableCollection<NotificationDto> NotificationList { get; private set; } = [];
+    public ObservableCollection<Notification> NotificationList { get; private set; } = [];
 
     public ICommand OpenNotificationsCommand { get; } = new Command(async () => await navigation.OpenNotifications());
 

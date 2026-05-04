@@ -7,9 +7,9 @@ public class EmailApi (
     INotificationHubContext notificationHub)
     : IMailApi
 {
-    public Task Receive(MailDto email)
+    public Task Receive(MailMessage email)
     {
-        return notificationHub.ToAll.OnNotificationReceived(new Shared.Dtos.NotificationDto("Message received", "Message content"));
+        return notificationHub.ToAll.OnNotificationReceived(new Shared.Dtos.Notification("Message received", "Message content"));
         //throw new NotImplementedException();
     }
 }
