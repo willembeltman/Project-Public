@@ -8,9 +8,10 @@ public class NotificationPageViewModel : NotificationHubViewModel
 {
     public NotificationPageViewModel(
         IClientConnection clientConnection, 
-        INotificationApi notifications, 
-        INavigationService navigation) 
-        : base(clientConnection, notifications, navigation)
+        IUserNotificationsService userNotificationsService, 
+        INavigationService navigationService,
+        IUiService uiService) 
+        : base(clientConnection, userNotificationsService, navigationService, uiService)
     {
     }
 }

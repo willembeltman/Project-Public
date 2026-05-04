@@ -10,18 +10,20 @@ namespace UwvLlm.App.ViewModels;
 public class EmailViewModel : NotificationHubViewModel
 {
     private readonly IUsersService UsersService;
+    private readonly IMailService MailService;
 
     public EmailViewModel(
         IUsersService userService,
-        IUiService uiService,
+        IMailService mailService,
         IClientConnection clientConnection,
-        INotificationApi notificationApi,
+        IUserNotificationsService userNotificationService,
         INavigationService navigationService,
-        IMailService mailService)
-        : base(clientConnection, notificationApi, navigationService)
+        IUiService uiService)
+        : base(clientConnection, userNotificationService, navigationService, uiService)
     {
         UsersService = userService;
-        SendCommand = new Command(async () => await mailService.Send(To, Subject, Body));
+        MailService = mailService;
+        SendCommand = new Command(async () => await MailService.Send(To, Subject, Body));
     }
 
     public override async Task OnAppearingAsync()
@@ -30,6 +32,7 @@ public class EmailViewModel : NotificationHubViewModel
         var response = await UsersService.List(skip: 0, take: int.MaxValue, null, CancellationToken.None);
         if (response.Success == false || response.Response == null)
         {
+            await UiService.ShowAlert("Cannot load users", "There is a problem while loading the users", "OK");
             return;
         }
 
@@ -40,7 +43,8 @@ public class EmailViewModel : NotificationHubViewModel
         await base.OnAppearingAsync();
     }
 
-    public ObservableCollection<User> Users { get; private set; } = [];
+    public ICommand SendCommand { get; }
+    public ObservableCollection<User> Users { get; } = [];
 
     public Guid? To
     {
@@ -71,6 +75,4 @@ public class EmailViewModel : NotificationHubViewModel
         get => field;
         set => SetProperty(ref field, value);
     }
-
-    public ICommand SendCommand { get; }
 }

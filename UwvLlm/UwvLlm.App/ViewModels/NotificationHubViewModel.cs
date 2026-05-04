@@ -7,26 +7,46 @@ using UwvLlm.Shared.Interfaces;
 
 namespace UwvLlm.App.ViewModels;
 
-public partial class NotificationHubViewModel(
-    IClientConnection clientConnection,
-    INotificationApi notifications,
-    INavigationService navigation)
-    : BaseViewModel
+public partial class NotificationHubViewModel : BaseViewModel
     , INotificationHub
     , IDisposable
 {
-    private readonly CancellationTokenSource Cts = new();
+    protected readonly CancellationTokenSource Cts = new();
+    protected readonly IClientConnection ClientConnection;
+    protected readonly IUserNotificationsService UserNotificationsService;
+    protected readonly INavigationService NavigationService;
+    protected readonly IUiService UiService;
+
+    public NotificationHubViewModel(
+        IClientConnection clientConnection,
+        IUserNotificationsService userNotificationsService,
+        INavigationService navigationService,
+        IUiService uiService)
+    {
+        ClientConnection = clientConnection;
+        UserNotificationsService = userNotificationsService;
+        NavigationService = navigationService;
+        UiService = uiService;
+        OpenNotificationsCommand = new Command(async () => await navigationService.OpenNotifications());
+    }
 
     public virtual async Task OnAppearingAsync()
     {
-        clientConnection.SubscribeAsync(this);
+        ClientConnection.SubscribeAsync(this);
 
         NotificationList.Clear();
-        foreach (var notification in await notifications.GetNotificationList(Cts.Token))
+        var response = await UserNotificationsService.List(0, int.MaxValue, null, Cts.Token);
+        if (response.Success == false || response.Response == null)
+        {
+            await UiService.ShowAlert("Cannot load users", "There is a problem while loading the users", "OK");
+            return;
+        }
+
+        await foreach (var notification in response.Response)
             NotificationList.Add(notification);
     }
 
-    public virtual async Task OnDisappearingAsync() => clientConnection.UnsubscribeAsync(this);
+    public virtual async Task OnDisappearingAsync() => ClientConnection.UnsubscribeAsync(this);
 
     public virtual async Task OnNotificationReceived(UserNotification notification) => MainThread.BeginInvokeOnMainThread(() =>
     {
@@ -47,9 +67,9 @@ public partial class NotificationHubViewModel(
         set => SetProperty(ref field, value);
     }
 
-    public ObservableCollection<UserNotification> NotificationList { get; private set; } = [];
+    public ObservableCollection<UserNotification> NotificationList { get; } = [];
 
-    public ICommand OpenNotificationsCommand { get; } = new Command(async () => await navigation.OpenNotifications());
+    public ICommand OpenNotificationsCommand { get; }
 
     public void Dispose()
     {

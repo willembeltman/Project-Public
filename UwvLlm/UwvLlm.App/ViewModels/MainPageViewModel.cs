@@ -7,9 +7,10 @@ namespace UwvLlm.App.ViewModels;
 
 public class MainPageViewModel(
     IClientConnection clientConnection,
-    INotificationApi notifications,
-    INavigationService navigation) 
-    : NotificationHubViewModel(clientConnection, notifications, navigation)
+    IUserNotificationsService userNotificationsService,
+    INavigationService navigationService,
+    IUiService uiService) 
+    : NotificationHubViewModel(clientConnection, userNotificationsService, navigationService, uiService)
 {
-    public ICommand SendEmailCommand { get; } = new Command(async () => await navigation.GotoSendEmailPage());
+    public ICommand SendEmailCommand { get; } = new Command(async () => await navigationService.GotoSendEmailPage());
 }
