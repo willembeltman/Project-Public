@@ -6,14 +6,14 @@ using UwvLlm.Shared.Dtos;
 namespace UwvLlm.Core.Mappings;
 
 public class StateMapping(
-    IStateUserMapping<User, StateUser> stateUserMapping)
-    : IStateMapping<User, State>
+    IStateUserMapping<User, StateUserDto> stateUserMapping)
+    : IStateMapping<User, StateDto>
 {
-    public async Task<State> ToDtoAsync(User? dbUser, UserToken<User>? dbToken, Ip<User> dbIp, State? receivedClientState, CancellationToken ct)
+    public async Task<StateDto> ToDtoAsync(User? dbUser, UserToken<User>? dbToken, Ip<User> dbIp, StateDto? receivedClientState, CancellationToken ct)
     {
-        return new State
+        return new StateDto
         {
-            User = dbUser != null ? await stateUserMapping.ToDtoAsync(dbUser, new StateUser(), ct) : null
+            User = dbUser != null ? await stateUserMapping.ToDtoAsync(dbUser, new StateUserDto(), ct) : null
         };
     }
 }

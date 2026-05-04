@@ -47,8 +47,8 @@ public static class MauiProgram
 
         builder.Services.AddAutoApiClient(); 
         builder.Services.AddAutoSseClient();
-        builder.Services.AddAuthenticationServices<State>(builder.Configuration["FrontendConfig:ApiBackendUrl"] ?? "https://localhost:7281");
-        builder.Services.AddScoped<IStateParser<State>, StateParser>();
+        builder.Services.AddAuthenticationServices<StateDto>(builder.Configuration["FrontendConfig:ApiBackendUrl"] ?? "https://localhost:7281");
+        builder.Services.AddScoped<IStateParser<StateDto>, StateParser>();
 
         Routing.RegisterRoute(nameof(LoginPage), typeof(LoginPage));
         Routing.RegisterRoute(nameof(RegisterPage), typeof(RegisterPage));

@@ -1,11 +1,15 @@
-﻿using UwvLlm.Shared.Interfaces;
+﻿using UwvLlm.Shared.Dtos;
+using UwvLlm.Shared.Interfaces;
 
 namespace UwvLlm.Core.Services;
 
-public class EmailApi : IEmailApi
+public class EmailApi (
+    INotificationHubContext notificationHub)
+    : IEmailApi
 {
-    public void Receive(string from, string[] to, string subject, string body)
+    public Task Receive(EmailDto email)
     {
-        throw new NotImplementedException();
+        return notificationHub.ToAll.OnNotificationReceived(new Shared.Dtos.NotificationDto("Message received", "Message content"));
+        //throw new NotImplementedException();
     }
 }

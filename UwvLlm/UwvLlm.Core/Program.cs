@@ -1,6 +1,5 @@
 using gAPI.Core.Server;
 using gAPI.Core.Server.Mappings;
-using gAPI.Dtos;
 using gAPI.Extensions;
 using gAPI.Generated;
 using gAPI.Interfaces;
@@ -20,14 +19,14 @@ builder.Services.AddAutoSse(serverConfig);
 builder.Services.AddStorage(serverConfig);
 builder.Services.AddCommenServices(serverConfig);
 builder.Services.AddDatabase(serverConfig);
-builder.Services.AddAuthenticationServices<User, State>();
-builder.Services.AddScoped<IStateMapping<User, State>, StateMapping>();
-builder.Services.AddScoped<IStateUserMapping<User, StateUser>, StateUserMapping>();
-builder.Services.AddScoped<IStateParser<State>, StateParser>();
+builder.Services.AddAuthenticationServices<User, StateDto>();
+builder.Services.AddScoped<IStateMapping<User, StateDto>, StateMapping>();
+builder.Services.AddScoped<IStateUserMapping<User, StateUserDto>, StateUserMapping>();
+builder.Services.AddScoped<IStateParser<StateDto>, StateParser>();
 
 var app = builder.Build();
 
-app.MapAutoApi<AuthenticationMiddleware<User, State>>();
+app.MapAutoApi<AuthenticationMiddleware<User, StateDto>>();
 app.MapAutoSse();
 app.UseHttpsRedirection();
 app.MapOpenApi();

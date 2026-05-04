@@ -1,5 +1,6 @@
 ﻿using UwvLlm.App.Interfaces;
 using UwvLlm.App.Pages;
+using UwvLlm.Shared.Dtos;
 using UwvLlm.Shared.Interfaces;
 
 namespace UwvLlm.App.Services;
@@ -32,7 +33,7 @@ public class EmailService(
             await ui.ShowAlert("Fout", "body verplicht", "OK");
             return;
         }
-        email.Receive(from, [to], subject, body);
+        //await email.Receive(new EmailDto(from, [to], subject, body));
         await ui.ShowAlert("OK", $"Mail verstuurd naar {to}", "OK");
         await navigation.GotoMainPageAsync();
     }

@@ -1,6 +1,10 @@
-﻿namespace UwvLlm.Shared.Interfaces;
+﻿using gAPI.Attributes;
+using UwvLlm.Shared.Dtos;
 
+namespace UwvLlm.Shared.Interfaces;
+
+[GenerateApi]
 public interface IEmailApi
 {
-    void Receive(string from, string[] to, string subject, string body);
+    Task Receive(EmailDto email);
 }

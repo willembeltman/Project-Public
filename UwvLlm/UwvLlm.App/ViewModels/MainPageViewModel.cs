@@ -1,4 +1,4 @@
-﻿using gAPI.Generated;
+﻿using gAPI.Interfaces;
 using System.Windows.Input;
 using UwvLlm.App.Interfaces;
 using UwvLlm.Shared.Interfaces;
@@ -11,5 +11,5 @@ public class MainPageViewModel(
     INavigationService navigation) 
     : NotificationHubViewModel(clientConnection, notifications, navigation)
 {
-    public ICommand GotoSendEmailPageCommand { get; } = new Command(async () => await navigation.GotoSendEmailPage());
+    public ICommand SendEmailCommand { get; } = new Command(async () => await navigation.GotoSendEmailPage());
 }

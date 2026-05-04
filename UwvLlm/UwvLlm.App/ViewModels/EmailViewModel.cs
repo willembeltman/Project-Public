@@ -1,4 +1,4 @@
-﻿using gAPI.Generated;
+﻿using gAPI.Interfaces;
 using System.Windows.Input;
 using UwvLlm.App.Interfaces;
 using UwvLlm.Shared.Interfaces;

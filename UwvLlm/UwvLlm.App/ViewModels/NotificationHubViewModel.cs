@@ -1,4 +1,4 @@
-﻿using gAPI.Generated;
+﻿using gAPI.Interfaces;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 using UwvLlm.App.Interfaces;
@@ -7,55 +7,53 @@ using UwvLlm.Shared.Interfaces;
 
 namespace UwvLlm.App.ViewModels;
 
-public class NotificationHubViewModel 
+public partial class NotificationHubViewModel(
+    IClientConnection clientConnection,
+    INotificationApi notifications,
+    INavigationService navigation)
     : BaseViewModel
     , INotificationHub
+    , IDisposable
 {
-    private readonly IClientConnection ClientConnection;
-    private readonly INotificationApi Notifications;
+    private readonly CancellationTokenSource Cts = new();
 
-    public NotificationHubViewModel(
-        IClientConnection clientConnection,
-        INotificationApi notifications,
-        INavigationService navigation)
-    {
-        ClientConnection = clientConnection;
-        Notifications = notifications;
-        OpenNotificationsCommand = new Command(async () => await navigation.OpenNotifications());
-    }
     public async Task OnAppearingAsync()
     {
-        await ClientConnection.SubscribeAsync(this);
+        clientConnection.SubscribeAsync(this);
         NotificationList.Clear();
-        foreach (var n in await Notifications.GetNotificationList())
-            NotificationList.Add(n);
-    }
-    public async Task OnDisappearingAsync()
-    {
-        await ClientConnection.UnsubscribeAsync(this);
+        foreach (var notification in await notifications.GetNotificationList(Cts.Token))
+            NotificationList.Add(notification);
     }
 
-    public async Task OnNotificationReceived(NotificationDto notification)
+    public async Task OnDisappearingAsync() => clientConnection.UnsubscribeAsync(this);
+
+    public async Task OnNotificationReceived(NotificationDto notification) => MainThread.BeginInvokeOnMainThread(() =>
     {
-        MainThread.BeginInvokeOnMainThread(() =>
-        {
-            NotificationList.Add(notification);
-            NotificationCount = NotificationList.Count;
-            HasNotifications = NotificationList.Count > 0;
-        });
-    }
+        NotificationList.Add(notification);
+        NotificationCount = NotificationList.Count;
+        HasNotifications = NotificationList.Count > 0;
+    });
 
     public int NotificationCount
     {
         get => field;
         set => SetProperty(ref field, value);
     }
+
     public bool HasNotifications
     {
         get => field;
         set => SetProperty(ref field, value);
     }
-    public ObservableCollection<NotificationDto> NotificationList { get; private set; } = new();
 
-    public ICommand OpenNotificationsCommand { get; }
+    public ObservableCollection<NotificationDto> NotificationList { get; private set; } = [];
+
+    public ICommand OpenNotificationsCommand { get; } = new Command(async () => await navigation.OpenNotifications());
+
+    public void Dispose()
+    {
+        Cts.Cancel();
+        Cts.Dispose();
+        GC.SuppressFinalize(this);
+    }
 }

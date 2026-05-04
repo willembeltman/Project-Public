@@ -9,7 +9,7 @@ namespace UwvLlm.App.Services;
 public class AuthenticationService(
     IUiService ui,
     IAccountService accountService,
-    IAuthenticatedHttpClient<State> httpClient,
+    IAuthenticatedHttpClient<StateDto> httpClient,
     INavigationService navigation)
     : IAuthenticationService
 {

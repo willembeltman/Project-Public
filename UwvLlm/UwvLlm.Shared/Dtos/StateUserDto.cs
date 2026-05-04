@@ -2,6 +2,6 @@
 
 namespace UwvLlm.Shared.Dtos;
 
-public class StateUser : AuthStateUserDto
+public class StateUserDto : AuthStateUserDto
 {
 }

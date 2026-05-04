@@ -13,11 +13,15 @@
     <Project Path="../../gAPI/gAPI.AutoSerializer/gAPI.AutoSerializer.csproj" />
     <Project Path="../../gAPI/gAPI.AutoSse.Client/gAPI.AutoSseClient.csproj" />
     <Project Path="../../gAPI/gAPI.AutoSse.Server/gAPI.AutoSseServer.csproj" />
+    <Project Path="../../gAPI/gAPI.CodeGen.Backend/gAPI.CodeGen.Backend.csproj" />
     <Project Path="../../gAPI/gAPI.Core.Client/gAPI.Core.Client.csproj" />
     <Project Path="../../gAPI/gAPI.Core.Server/gAPI.Core.Server.csproj" />
     <Project Path="../../gAPI/gAPI.Core/gAPI.Core.csproj" />
     <Project Path="../../gAPI/gAPI.FabricNode/gAPI.FabricNode.csproj" />
     <Project Path="../../gAPI/gAPI.Storage.Server/gAPI.Storage.Server.csproj" />
+  </Folder>
+  <Folder Name="/Generators/">
+    <Project Path="BackendGenerator/BackendGenerator.csproj" Id="de0964aa-4a60-40ea-a230-975b567a34d1" />
   </Folder>
   <Project Path="UwvLlm.AppHost/UwvLlm.AppHost.csproj" Id="222f8302-2a19-436d-b055-9c531cc1b408" />
 </Solution>
