@@ -5,12 +5,12 @@ var storage = builder.AddProject<Projects.UwvLlm_Storage>("storage")
     .WithExternalHttpEndpoints(); // expose https://localhost:7099
 
 // Fabric node (console app)
-var fabricNode = builder.AddProject<Projects.gAPI_FabricNode>("fabricnode");
+var fabric = builder.AddProject<Projects.UwvLlm_Fabric>("fabric");
 
 // Core API
-var core = builder.AddProject<Projects.UwvLlm_Core>("core")
+var core = builder.AddProject<Projects.UwvLlm_Api>("core")
     .WithReference(storage)              // dependency injection / service discovery
-    .WithReference(fabricNode)
+    .WithReference(fabric)
     .WithExternalHttpEndpoints();        // expose https://localhost:7281
 
 // (optioneel) environment variables voor duidelijke endpoints

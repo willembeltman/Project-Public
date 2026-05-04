@@ -1,6 +1,5 @@
 ﻿using gAPI.Dtos;
 using gAPI.Enums;
-using Microsoft.EntityFrameworkCore;
 using UwvLlm.Shared.Dtos;
 using UwvLlm.Shared.Interfaces;
 

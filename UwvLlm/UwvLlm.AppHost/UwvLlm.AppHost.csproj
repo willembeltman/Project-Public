@@ -9,8 +9,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\gAPI\gAPI.FabricNode\gAPI.FabricNode.csproj" />
-    <ProjectReference Include="..\UwvLlm.Core\UwvLlm.Core.csproj" />
+    <ProjectReference Include="..\UwvLlm.Api\UwvLlm.Api.csproj" />
+    <ProjectReference Include="..\UwvLlm.Fabric\UwvLlm.Fabric.csproj" />
     <ProjectReference Include="..\UwvLlm.Storage\UwvLlm.Storage.csproj" />
   </ItemGroup>
 

@@ -9,8 +9,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\gAPI\gAPI.CodeGen.Backend\gAPI.CodeGen.Backend.csproj" />
-    <ProjectReference Include="..\..\..\gAPI\gAPI.Core\gAPI.Core.csproj" />
-    <ProjectReference Include="..\UwvLlm.Core\UwvLlm.Core.csproj" />
+    <ProjectReference Include="..\UwvLlm.Api\UwvLlm.Api.csproj" />
   </ItemGroup>
 
 </Project>

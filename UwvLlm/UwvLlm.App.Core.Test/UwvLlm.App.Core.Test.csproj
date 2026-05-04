@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\UwvLlm.Core\UwvLlm.Core.csproj" />
+    <ProjectReference Include="..\UwvLlm.App.Core\UwvLlm.App.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>

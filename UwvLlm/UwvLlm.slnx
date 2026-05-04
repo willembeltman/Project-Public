@@ -1,12 +1,16 @@
 <Solution>
-  <Folder Name="/App/">
-    <Project Path="UwvLlm.App.Core/UwvLlm.App.Core.csproj" Id="d7da95e3-4a2e-4f91-bafd-d4360da2354d" />
+  <Folder Name="/Apps/">
     <Project Path="UwvLlm.App/UwvLlm.App.csproj" Id="a22a3074-67d3-433f-9089-6566a64f8542">
       <Deploy Solution="Debug|*" />
     </Project>
-    <Project Path="UwvLlm.Core/UwvLlm.Core.csproj" />
-    <Project Path="UwvLlm.Shared/UwvLlm.Shared.csproj" Id="2f380807-1cec-4eb5-bc9e-f2382a973d5c" />
+    <Project Path="UwvLlm.Api/UwvLlm.Api.csproj" />
+    <Project Path="UwvLlm.Fabric/UwvLlm.Fabric.csproj" Id="741459c8-905f-4511-ae23-9b8283c10d41" />
     <Project Path="UwvLlm.Storage/UwvLlm.Storage.csproj" Id="a184ac3f-a28a-4e72-8a5b-0f61ae38dea5" />
+  </Folder>
+  <Folder Name="/Core/">
+    <Project Path="UwvLlm.Api.Core/UwvLlm.Api.Core.csproj" Id="26295ce6-4320-41cb-aa4a-206f4089f821" />
+    <Project Path="UwvLlm.App.Core/UwvLlm.App.Core.csproj" Id="d7da95e3-4a2e-4f91-bafd-d4360da2354d" />
+    <Project Path="UwvLlm.Shared/UwvLlm.Shared.csproj" Id="2f380807-1cec-4eb5-bc9e-f2382a973d5c" />
   </Folder>
   <Folder Name="/gAPI/">
     <Project Path="../../gAPI/gAPI.AutoApi.Client/gAPI.AutoApiClient.csproj" />
@@ -22,10 +26,11 @@
     <Project Path="../../gAPI/gAPI.Storage.Server/gAPI.Storage.Server.csproj" />
   </Folder>
   <Folder Name="/Generators/">
-    <Project Path="BackendGenerator/BackendGenerator.csproj" Id="de0964aa-4a60-40ea-a230-975b567a34d1" />
+    <Project Path="UwvLlm.BackendGenerator/UwvLlm.BackendGenerator.csproj" Id="de0964aa-4a60-40ea-a230-975b567a34d1" />
   </Folder>
-  <Folder Name="/Test/">
-    <Project Path="UwvLlm.Core.Test/UwvLlm.Core.Test.csproj" Id="9bfc8b26-d11e-4283-8d59-49392f5940f0" />
+  <Folder Name="/Tests/">
+    <Project Path="UwvLlm.Api.Core.Test/UwvLlm.Api.Core.Test.csproj" />
+    <Project Path="UwvLlm.App.Core.Test/UwvLlm.App.Core.Test.csproj" Id="c29e61f3-47ae-4277-8b33-ad2900bc06b5" />
   </Folder>
   <Project Path="UwvLlm.AppHost/UwvLlm.AppHost.csproj" Id="222f8302-2a19-436d-b055-9c531cc1b408" />
 </Solution>

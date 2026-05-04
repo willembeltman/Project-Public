@@ -12,6 +12,7 @@ using UwvLlm.Shared.Dtos;
 var builder = WebApplication.CreateBuilder(args);
 
 var serverConfig = builder.Configuration.CreateServerConfig();
+
 builder.Services.AddOpenApi();
 builder.Services.AddAutoApi(serverConfig);
 builder.Services.AddAutoSse(serverConfig);
@@ -24,7 +25,6 @@ builder.Services.AddScoped<IStateUserMapping<UwvLlm.Core.Infrastructure.Data.Use
 builder.Services.AddScoped<IStateParser<State>, StateParser>();
 builder.Services.AddCrudMappings();
 builder.Services.AddCrudUseCases();
-
 
 var app = builder.Build();
 
