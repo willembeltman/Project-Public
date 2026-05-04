@@ -31,9 +31,6 @@
     <ScrollView>
         <VerticalStackLayout Padding="30" Spacing="15">
 
-            <Entry Placeholder="Van"
-                   Text="{Binding From}" />
-
             <Entry Placeholder="Naar"
                    Text="{Binding To}" />
 
