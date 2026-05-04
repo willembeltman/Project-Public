@@ -20,6 +20,8 @@ public class UserNotification : ICrudEntity
     public string Title { get; set; } = string.Empty;
     [Required]
     public string Message { get; set; } = string.Empty;
+    [Required]
+    public string[] QuickOptions { get; set; } = [];
     [IsReadOnly]
     public bool CanUpdate { get; set; }
     [IsReadOnly]

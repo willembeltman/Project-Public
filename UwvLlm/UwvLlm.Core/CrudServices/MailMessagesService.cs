@@ -7,8 +7,8 @@ using UwvLlm.Shared.Interfaces;
 namespace UwvLlm.Core.CrudServices;
 
 public class MailMessagesService(
-    gAPI.Interfaces.IUseCase<Infrastructure.Data.MailMessage, MailMessage, Guid> useCase,
-    gAPI.Interfaces.Mapping<Infrastructure.Data.MailMessage, MailMessage> mapping)
+    gAPI.Interfaces.IUseCase<UwvLlm.Core.Infrastructure.Data.MailMessage, MailMessage, Guid> useCase,
+    gAPI.Interfaces.Mapping<UwvLlm.Core.Infrastructure.Data.MailMessage, MailMessage> mapping)
     : IMailMessagesService
 {
     public async Task<BaseResponseT<MailMessage>> Create(MailMessage dto, CancellationToken ct)
@@ -21,7 +21,7 @@ public class MailMessagesService(
         if (entity != null)
             return new BaseResponseT<MailMessage>() { Error = BaseResponseErrorEnum.ErrorAlreadyUsed };
 
-        entity = mapping.ToEntity(dto, new Infrastructure.Data.MailMessage());
+        entity = mapping.ToEntity(dto, new UwvLlm.Core.Infrastructure.Data.MailMessage());
 
         if (!await useCase.CanCreateAsync(dto, ct))
             return new BaseResponseT<MailMessage>() { Error = BaseResponseErrorEnum.ErrorNotAuthorized };
