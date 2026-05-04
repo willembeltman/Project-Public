@@ -1,5 +1,4 @@
 ﻿using gAPI.Attributes;
-using gAPI.Enums;
 using gAPI.Interfaces;
 using gAPI.Storage;
 using System.ComponentModel.DataAnnotations;
