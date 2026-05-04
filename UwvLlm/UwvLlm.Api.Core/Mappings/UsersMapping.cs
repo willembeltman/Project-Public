@@ -1,16 +1,16 @@
 ﻿using gAPI.Extensions;
 using gAPI.Storage;
 
-namespace UwvLlm.Core.Mappings;
+namespace UwvLlm.Api.Core.Mappings;
 
 public class UsersMapping(
-    gAPI.Interfaces.IUseCase<UwvLlm.Core.Infrastructure.Data.User, UwvLlm.Shared.Dtos.User, Guid> useCase, 
+    gAPI.Interfaces.IUseCase<UwvLlm.Api.Core.Infrastructure.Data.User, UwvLlm.Shared.Dtos.User, Guid> useCase, 
     IStorageService storageService) 
-    : gAPI.Interfaces.Mapping<UwvLlm.Core.Infrastructure.Data.User, UwvLlm.Shared.Dtos.User>
+    : gAPI.Interfaces.Mapping<UwvLlm.Api.Core.Infrastructure.Data.User, UwvLlm.Shared.Dtos.User>
 {
-    public override UwvLlm.Core.Infrastructure.Data.User ToEntity(
+    public override UwvLlm.Api.Core.Infrastructure.Data.User ToEntity(
         UwvLlm.Shared.Dtos.User dto, 
-        UwvLlm.Core.Infrastructure.Data.User entity)
+        UwvLlm.Api.Core.Infrastructure.Data.User entity)
     {
         entity.Id = dto.Id;
         entity.UserName = dto.UserName;
@@ -21,7 +21,7 @@ public class UsersMapping(
     }
 
     public override async Task<UwvLlm.Shared.Dtos.User> ToDtoAsync(
-        UwvLlm.Core.Infrastructure.Data.User entity, 
+        UwvLlm.Api.Core.Infrastructure.Data.User entity, 
         UwvLlm.Shared.Dtos.User dto,
         CancellationToken ct)
     {
@@ -36,7 +36,7 @@ public class UsersMapping(
     }
 
     public override IAsyncEnumerable<UwvLlm.Shared.Dtos.User> ProjectToDtosAsync(
-        IQueryable<UwvLlm.Core.Infrastructure.Data.User> entities,
+        IQueryable<UwvLlm.Api.Core.Infrastructure.Data.User> entities,
         string[]? orderby, 
         int? skip, 
         int? take,

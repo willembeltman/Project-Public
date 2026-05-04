@@ -1,4 +1,4 @@
-﻿namespace UwvLlm.Core.Infrastructure.Llm.Models;
+﻿namespace UwvLlm.Api.Core.Infrastructure.Llm.Models;
 
 public class ToolCallFunctionArguments
 {

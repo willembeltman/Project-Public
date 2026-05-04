@@ -1,14 +1,14 @@
 ﻿using gAPI.Extensions;
 
-namespace UwvLlm.Core.Mappings;
+namespace UwvLlm.Api.Core.Mappings;
 
 public class MailMessagesMapping(
-    gAPI.Interfaces.IUseCase<UwvLlm.Core.Infrastructure.Data.MailMessage, UwvLlm.Shared.Dtos.MailMessage, Guid> useCase) 
-    : gAPI.Interfaces.Mapping<UwvLlm.Core.Infrastructure.Data.MailMessage, UwvLlm.Shared.Dtos.MailMessage>
+    gAPI.Interfaces.IUseCase<UwvLlm.Api.Core.Infrastructure.Data.MailMessage, UwvLlm.Shared.Dtos.MailMessage, Guid> useCase) 
+    : gAPI.Interfaces.Mapping<UwvLlm.Api.Core.Infrastructure.Data.MailMessage, UwvLlm.Shared.Dtos.MailMessage>
 {
-    public override UwvLlm.Core.Infrastructure.Data.MailMessage ToEntity(
+    public override UwvLlm.Api.Core.Infrastructure.Data.MailMessage ToEntity(
         UwvLlm.Shared.Dtos.MailMessage dto, 
-        UwvLlm.Core.Infrastructure.Data.MailMessage entity)
+        UwvLlm.Api.Core.Infrastructure.Data.MailMessage entity)
     {
         entity.Id = dto.Id;
         entity.FromUserId = dto.FromUserId;
@@ -21,7 +21,7 @@ public class MailMessagesMapping(
     }
 
     public override async Task<UwvLlm.Shared.Dtos.MailMessage> ToDtoAsync(
-        UwvLlm.Core.Infrastructure.Data.MailMessage entity, 
+        UwvLlm.Api.Core.Infrastructure.Data.MailMessage entity, 
         UwvLlm.Shared.Dtos.MailMessage dto,
         CancellationToken ct)
     {
@@ -44,7 +44,7 @@ public class MailMessagesMapping(
     }
 
     public override IAsyncEnumerable<UwvLlm.Shared.Dtos.MailMessage> ProjectToDtosAsync(
-        IQueryable<UwvLlm.Core.Infrastructure.Data.MailMessage> entities,
+        IQueryable<UwvLlm.Api.Core.Infrastructure.Data.MailMessage> entities,
         string[]? orderby, 
         int? skip, 
         int? take,

@@ -1,7 +1,7 @@
 ﻿using gAPI.Core.Server.Entities;
 using gAPI.Core.Server.Mappings;
 
-namespace UwvLlm.Core.Mappings;
+namespace UwvLlm.Api.Core.Mappings;
 
 public class StateMapping(
     IStateUserMapping<Infrastructure.Data.User, Shared.Dtos.StateUser> stateUserMapping)

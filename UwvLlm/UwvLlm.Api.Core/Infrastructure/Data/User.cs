@@ -1,6 +1,6 @@
 ﻿using gAPI.Core.Server.Entities;
 
-namespace UwvLlm.Core.Infrastructure.Data;
+namespace UwvLlm.Api.Core.Infrastructure.Data;
 
 public class User : AuthUser
 {

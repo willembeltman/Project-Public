@@ -2,7 +2,7 @@
 using UwvLlm.Shared.Enums;
 using UwvLlm.Shared.Interfaces;
 
-namespace UwvLlm.Core.Services;
+namespace UwvLlm.Api.Core.Services;
 
 public class MailApi(
     IMailMessageCrudService mailService,

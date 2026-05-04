@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace UwvLlm.Core.Infrastructure.Llm;
+namespace UwvLlm.Api.Core.Infrastructure.Llm;
 
 public static class DefaultJsonSerializerOptions
 {

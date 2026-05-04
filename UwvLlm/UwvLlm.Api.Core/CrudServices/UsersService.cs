@@ -5,11 +5,11 @@ using Microsoft.AspNetCore.Http;
 using UwvLlm.Shared.Dtos;
 using UwvLlm.Shared.Interfaces;
 
-namespace UwvLlm.Core.CrudServices;
+namespace UwvLlm.Api.Core.CrudServices;
 
 public class UsersService(
-    gAPI.Interfaces.IUseCase<UwvLlm.Core.Infrastructure.Data.User, User, Guid> useCase,
-    gAPI.Interfaces.Mapping<UwvLlm.Core.Infrastructure.Data.User, User> mapping,
+    gAPI.Interfaces.IUseCase<UwvLlm.Api.Core.Infrastructure.Data.User, User, Guid> useCase,
+    gAPI.Interfaces.Mapping<UwvLlm.Api.Core.Infrastructure.Data.User, User> mapping,
     IStorageService storageService)
     : IUserCrudService
 {
@@ -23,7 +23,7 @@ public class UsersService(
         if (entity != null)
             return new BaseResponseT<User>() { Error = BaseResponseErrorEnum.ErrorAlreadyUsed };
 
-        entity = mapping.ToEntity(dto, new UwvLlm.Core.Infrastructure.Data.User());
+        entity = mapping.ToEntity(dto, new UwvLlm.Api.Core.Infrastructure.Data.User());
 
         if (!await useCase.CanCreateAsync(dto, ct))
             return new BaseResponseT<User>() { Error = BaseResponseErrorEnum.ErrorNotAuthorized };

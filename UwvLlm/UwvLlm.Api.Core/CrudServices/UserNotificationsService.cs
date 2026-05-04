@@ -3,11 +3,11 @@ using gAPI.Enums;
 using UwvLlm.Shared.Dtos;
 using UwvLlm.Shared.Interfaces;
 
-namespace UwvLlm.Core.CrudServices;
+namespace UwvLlm.Api.Core.CrudServices;
 
 public class UserNotificationsService(
-    gAPI.Interfaces.IUseCase<UwvLlm.Core.Infrastructure.Data.UserNotification, UserNotification, long> useCase,
-    gAPI.Interfaces.Mapping<UwvLlm.Core.Infrastructure.Data.UserNotification, UserNotification> mapping)
+    gAPI.Interfaces.IUseCase<UwvLlm.Api.Core.Infrastructure.Data.UserNotification, UserNotification, long> useCase,
+    gAPI.Interfaces.Mapping<UwvLlm.Api.Core.Infrastructure.Data.UserNotification, UserNotification> mapping)
     : IUserNotificationsService
 {
     public async Task<BaseResponseT<UserNotification>> Create(UserNotification dto, CancellationToken ct)
@@ -20,7 +20,7 @@ public class UserNotificationsService(
         if (entity != null)
             return new BaseResponseT<UserNotification>() { Error = BaseResponseErrorEnum.ErrorAlreadyUsed };
 
-        entity = mapping.ToEntity(dto, new UwvLlm.Core.Infrastructure.Data.UserNotification());
+        entity = mapping.ToEntity(dto, new UwvLlm.Api.Core.Infrastructure.Data.UserNotification());
 
         if (!await useCase.CanCreateAsync(dto, ct))
             return new BaseResponseT<UserNotification>() { Error = BaseResponseErrorEnum.ErrorNotAuthorized };

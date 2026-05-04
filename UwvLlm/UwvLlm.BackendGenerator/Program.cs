@@ -1,6 +1,6 @@
 ﻿using gAPI.CodeGen.Backend.Models.Config;
 using gAPI.Helpers;
-using UwvLlm.Core.Infrastructure.Data;
+using UwvLlm.Api.Core.Infrastructure.Data;
 
 var root = EnvironmentPathHelper.GetRoot(Environment.ProcessPath!, "UwvLlm");
 var config = new BackendConfig(
@@ -20,17 +20,17 @@ var config = new BackendConfig(
     Shared_ResponseDtosDirectory: EnvironmentPathHelper.GetDirectory(root, @"UwvLlm.Shared\Dtos"),
     Shared_ResponseDtosNamespace: "UwvLlm.Shared.Dtos",
 
-    Core_CrudUseCasesDirectory: EnvironmentPathHelper.GetDirectory(root, @"UwvLlm.Core\CrudUseCases"),
-    Core_CrudUseCasesNamespace: "UwvLlm.Core.CrudUseCases",
-    Core_CrudServicesDirectory: EnvironmentPathHelper.GetDirectory(root, @"UwvLlm.Core\CrudServices"),
-    Core_CrudServicesNamespace: "UwvLlm.Core.CrudServices",
+    Core_CrudUseCasesDirectory: EnvironmentPathHelper.GetDirectory(root, @"UwvLlm.Api.Core\UseCases"),
+    Core_CrudUseCasesNamespace: "UwvLlm.Api.Core.UseCases",
+    Core_CrudServicesDirectory: EnvironmentPathHelper.GetDirectory(root, @"UwvLlm.Api.Core\CrudServices"),
+    Core_CrudServicesNamespace: "UwvLlm.Api.Core.CrudServices",
 
-    Core_CrudMappingsDirectory: EnvironmentPathHelper.GetDirectory(root, @"UwvLlm.Core\Mappings"),
-    Core_CrudMappingsNamespace: "UwvLlm.Core.Mappings",
-    Core_ServicesDirectory: EnvironmentPathHelper.GetDirectory(root, @"UwvLlm.Core\Services"),
-    Core_ServicesNamespace: "UwvLlm.Core.Services",
-    Extensions_Directory: EnvironmentPathHelper.GetDirectory(root, @"UwvLlm.Core\Extensions"),
-    Extensions_Namespace: "UwvLlm.Core.Extensions");
+    Core_CrudMappingsDirectory: EnvironmentPathHelper.GetDirectory(root, @"UwvLlm.Api.Core\Mappings"),
+    Core_CrudMappingsNamespace: "UwvLlm.Api.Core.Mappings",
+    Core_ServicesDirectory: EnvironmentPathHelper.GetDirectory(root, @"UwvLlm.Api.Core\Services"),
+    Core_ServicesNamespace: "UwvLlm.Api.Core.Services",
+    Extensions_Directory: EnvironmentPathHelper.GetDirectory(root, @"UwvLlm.Api\Extensions"),
+    Extensions_Namespace: "UwvLlm.Api.Extensions");
 
 var generator = new gAPI.CodeGen.Backend.BackendGenerator(config);
 generator.Run();

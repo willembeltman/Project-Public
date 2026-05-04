@@ -1,8 +1,8 @@
 ﻿using gAPI.Core.Server;
 using Microsoft.EntityFrameworkCore;
-using UwvLlm.Core.Infrastructure.Data;
+using UwvLlm.Api.Core.Infrastructure.Data;
 
-namespace UwvLlm.Core.CrudUseCases;
+namespace UwvLlm.Api.Core.UseCases;
 
 public class UsersUseCase(
     ApplicationDbContext db,

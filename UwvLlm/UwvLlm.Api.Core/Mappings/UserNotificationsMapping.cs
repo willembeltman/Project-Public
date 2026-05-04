@@ -1,14 +1,14 @@
 ﻿using gAPI.Extensions;
 
-namespace UwvLlm.Core.Mappings;
+namespace UwvLlm.Api.Core.Mappings;
 
 public class UserNotificationsMapping(
-    gAPI.Interfaces.IUseCase<UwvLlm.Core.Infrastructure.Data.UserNotification, UwvLlm.Shared.Dtos.UserNotification, long> useCase) 
-    : gAPI.Interfaces.Mapping<UwvLlm.Core.Infrastructure.Data.UserNotification, UwvLlm.Shared.Dtos.UserNotification>
+    gAPI.Interfaces.IUseCase<UwvLlm.Api.Core.Infrastructure.Data.UserNotification, UwvLlm.Shared.Dtos.UserNotification, long> useCase) 
+    : gAPI.Interfaces.Mapping<UwvLlm.Api.Core.Infrastructure.Data.UserNotification, UwvLlm.Shared.Dtos.UserNotification>
 {
-    public override UwvLlm.Core.Infrastructure.Data.UserNotification ToEntity(
+    public override UwvLlm.Api.Core.Infrastructure.Data.UserNotification ToEntity(
         UwvLlm.Shared.Dtos.UserNotification dto, 
-        UwvLlm.Core.Infrastructure.Data.UserNotification entity)
+        UwvLlm.Api.Core.Infrastructure.Data.UserNotification entity)
     {
         entity.Id = dto.Id;
         entity.UserId = dto.UserId;
@@ -21,7 +21,7 @@ public class UserNotificationsMapping(
     }
 
     public override async Task<UwvLlm.Shared.Dtos.UserNotification> ToDtoAsync(
-        UwvLlm.Core.Infrastructure.Data.UserNotification entity, 
+        UwvLlm.Api.Core.Infrastructure.Data.UserNotification entity, 
         UwvLlm.Shared.Dtos.UserNotification dto,
         CancellationToken ct)
     {
@@ -41,7 +41,7 @@ public class UserNotificationsMapping(
     }
 
     public override IAsyncEnumerable<UwvLlm.Shared.Dtos.UserNotification> ProjectToDtosAsync(
-        IQueryable<UwvLlm.Core.Infrastructure.Data.UserNotification> entities,
+        IQueryable<UwvLlm.Api.Core.Infrastructure.Data.UserNotification> entities,
         string[]? orderby, 
         int? skip, 
         int? take,
