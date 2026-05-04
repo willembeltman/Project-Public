@@ -1,16 +1,17 @@
 ﻿using System.Windows.Input;
-using UwvLlm.App.Interfaces;
+using UwvLlm.App.Core.Interfaces;
+using UwvLlm.App.Core.Services;
 
-namespace UwvLlm.App.ViewModels;
+namespace UwvLlm.App.Core.ViewModels;
 
 public class RegisterViewModel : BaseViewModel
 {
     public RegisterViewModel(
-        INavigationService navigation,
-        IAuthenticationService authentication)
+        INavigationService navigationService,
+        AuthenticationService authenticationService)
     {
-        RegisterCommand = new Command(async () => await authentication.RegisterAsync(UserName, Email, Password, PasswordRepeat));
-        GotoLoginCommand = new Command(async () => await navigation.GotoLoginPageAsync());
+        RegisterCommand = new RelayCommand(async () => await authenticationService.RegisterAsync(UserName, Email, Password, PasswordRepeat));
+        GotoLoginCommand = new RelayCommand(async () => await navigationService.GotoLoginPageAsync());
     }
 
     public string? UserName

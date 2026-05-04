@@ -6,7 +6,7 @@ namespace UwvLlm.Shared.Interfaces;
 
 [GenerateApi]
 [IsAuthorized]
-public interface IMailMessagesService
+public interface IMailMessageCrudService
 {
     [IsCreate]
     Task<BaseResponseT<MailMessage>> Create(MailMessage emailmessage, CancellationToken ct);

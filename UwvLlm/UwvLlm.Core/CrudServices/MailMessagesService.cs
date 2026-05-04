@@ -9,7 +9,7 @@ namespace UwvLlm.Core.CrudServices;
 public class MailMessagesService(
     gAPI.Interfaces.IUseCase<UwvLlm.Core.Infrastructure.Data.MailMessage, MailMessage, Guid> useCase,
     gAPI.Interfaces.Mapping<UwvLlm.Core.Infrastructure.Data.MailMessage, MailMessage> mapping)
-    : IMailMessagesService
+    : IMailMessageCrudService
 {
     public async Task<BaseResponseT<MailMessage>> Create(MailMessage dto, CancellationToken ct)
     {

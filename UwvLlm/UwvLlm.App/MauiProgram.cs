@@ -2,13 +2,14 @@
 using gAPI.Generated;
 using gAPI.Interfaces;
 using Microsoft.Extensions.Logging;
-using UwvLlm.App.Interfaces;
 using UwvLlm.App.Pages;
 using UwvLlm.App.Services;
-using UwvLlm.App.ViewModels;
+using UwvLlm.App.Core.ViewModels;
 using UwvLlm.Shared;
 using UwvLlm.Shared.Dtos;
 using UwvLlm.Shared.Interfaces;
+using UwvLlm.App.Core.Interfaces;
+using UwvLlm.App.Core.Services;
 
 namespace UwvLlm.App;
 
@@ -31,8 +32,8 @@ public static class MauiProgram
         builder.Services.AddTransient<NotificationsPage>();
         builder.Services.AddTransient<RegisterPage>();
 
-        builder.Services.AddTransient<IAuthenticationService, AuthenticationService>();
-        builder.Services.AddTransient<IMailService, MailService>();
+        builder.Services.AddTransient<AuthenticationService>();
+        builder.Services.AddTransient<MailService>();
         builder.Services.AddTransient<INavigationService, NavigationService>();
         builder.Services.AddTransient<INavigationManager, NavigationService>();
         builder.Services.AddTransient<INotificationHub>(sp => sp.GetRequiredService<NotificationPageViewModel>());

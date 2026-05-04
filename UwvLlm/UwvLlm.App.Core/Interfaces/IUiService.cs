@@ -1,4 +1,4 @@
-﻿namespace UwvLlm.App.Interfaces;
+﻿namespace UwvLlm.App.Core.Interfaces;
 
 public interface IUiService
 {

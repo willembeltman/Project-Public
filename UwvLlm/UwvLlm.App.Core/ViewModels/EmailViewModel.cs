@@ -1,29 +1,31 @@
 ﻿using gAPI.Interfaces;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
-using UwvLlm.App.Interfaces;
+using UwvLlm.App.Core.Interfaces;
+using UwvLlm.App.Core.Services;
 using UwvLlm.Shared.Dtos;
 using UwvLlm.Shared.Interfaces;
 
-namespace UwvLlm.App.ViewModels;
+namespace UwvLlm.App.Core.ViewModels;
 
 public class EmailViewModel : NotificationHubViewModel
 {
-    private readonly IUsersService UsersService;
-    private readonly IMailService MailService;
+    private readonly IUserCrudService UsersService;
+    private readonly MailService MailService;
 
     public EmailViewModel(
-        IUsersService userService,
-        IMailService mailService,
+        IDispatcherService dispatcher,
+        IUserCrudService userService,
+        MailService mailService,
         IClientConnection clientConnection,
         IUserNotificationsService userNotificationService,
         INavigationService navigationService,
         IUiService uiService)
-        : base(clientConnection, userNotificationService, navigationService, uiService)
+        : base(dispatcher, clientConnection, userNotificationService, navigationService, uiService)
     {
         UsersService = userService;
         MailService = mailService;
-        SendCommand = new Command(async () => await MailService.Send(SelectedUser?.Id, Subject, Body));
+        SendCommand = new RelayCommand(async () => await MailService.Send(SelectedUser?.Id, Subject, Body));
     }
 
     public override async Task OnAppearingAsync()
@@ -47,7 +49,7 @@ public class EmailViewModel : NotificationHubViewModel
 
     public User? SelectedUser
     {
-        get => field; 
+        get => field;
         set => SetProperty(ref field, value);
     }
 

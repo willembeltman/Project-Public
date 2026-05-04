@@ -1,5 +1,6 @@
 <Solution>
   <Folder Name="/App/">
+    <Project Path="UwvLlm.App.Core/UwvLlm.App.Core.csproj" Id="d7da95e3-4a2e-4f91-bafd-d4360da2354d" />
     <Project Path="UwvLlm.App/UwvLlm.App.csproj" Id="a22a3074-67d3-433f-9089-6566a64f8542">
       <Deploy Solution="Debug|*" />
     </Project>
@@ -22,6 +23,9 @@
   </Folder>
   <Folder Name="/Generators/">
     <Project Path="BackendGenerator/BackendGenerator.csproj" Id="de0964aa-4a60-40ea-a230-975b567a34d1" />
+  </Folder>
+  <Folder Name="/Test/">
+    <Project Path="UwvLlm.Core.Test/UwvLlm.Core.Test.csproj" Id="9bfc8b26-d11e-4283-8d59-49392f5940f0" />
   </Folder>
   <Project Path="UwvLlm.AppHost/UwvLlm.AppHost.csproj" Id="222f8302-2a19-436d-b055-9c531cc1b408" />
 </Solution>

@@ -1,4 +1,4 @@
-using UwvLlm.App.ViewModels;
+using UwvLlm.App.Core.ViewModels;
 
 namespace UwvLlm.App.Pages;
 

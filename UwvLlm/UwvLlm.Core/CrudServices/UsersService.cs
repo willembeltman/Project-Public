@@ -12,7 +12,7 @@ public class UsersService(
     gAPI.Interfaces.IUseCase<UwvLlm.Core.Infrastructure.Data.User, User, Guid> useCase,
     gAPI.Interfaces.Mapping<UwvLlm.Core.Infrastructure.Data.User, User> mapping,
     IStorageService storageService)
-    : IUsersService
+    : IUserCrudService
 {
     public async Task<BaseResponseT<User>> Create(User dto, CancellationToken ct)
     {

@@ -1,14 +1,13 @@
-﻿using UwvLlm.App.Interfaces;
+﻿using UwvLlm.App.Core.Interfaces;
 using UwvLlm.Shared.Dtos;
 using UwvLlm.Shared.Interfaces;
 
-namespace UwvLlm.App.Services;
+namespace UwvLlm.App.Core.Services;
 
 public class MailService(
     IUiService ui,
     IMailApi email,
-    INavigationService navigation) 
-    : IMailService
+    INavigationService navigation)
 {
     public async Task Send(Guid? toUserId, string? subject, string? body)
     {

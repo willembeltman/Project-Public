@@ -7,7 +7,7 @@ namespace UwvLlm.Shared.Interfaces;
 
 [GenerateApi]
 [IsAuthorized]
-public interface IUsersService
+public interface IUserCrudService
 {
     [IsCreate]
     Task<BaseResponseT<User>> Create(User user, CancellationToken ct);

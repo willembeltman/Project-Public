@@ -1,17 +1,15 @@
 ﻿using gAPI.Core.Client;
 using gAPI.Interfaces;
-using UwvLlm.App.Interfaces;
-using UwvLlm.App.Pages;
+using UwvLlm.App.Core.Interfaces;
 using UwvLlm.Shared.Dtos;
 
-namespace UwvLlm.App.Services;
+namespace UwvLlm.App.Core.Services;
 
 public class AuthenticationService(
     IUiService ui,
     IAccountService accountService,
     IAuthenticatedHttpClient<State> httpClient,
     INavigationService navigation)
-    : IAuthenticationService
 {
     public Task<bool> IsAuthenticatedAsync()
     {

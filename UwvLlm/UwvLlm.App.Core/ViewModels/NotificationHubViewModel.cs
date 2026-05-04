@@ -1,33 +1,37 @@
 ﻿using gAPI.Interfaces;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
-using UwvLlm.App.Interfaces;
+using UwvLlm.App.Core.Interfaces;
 using UwvLlm.Shared.Dtos;
 using UwvLlm.Shared.Interfaces;
 
-namespace UwvLlm.App.ViewModels;
+#pragma warning disable IDE0290 // Use primary constructor
+namespace UwvLlm.App.Core.ViewModels;
 
 public partial class NotificationHubViewModel : BaseViewModel
     , INotificationHub
     , IDisposable
 {
     protected readonly CancellationTokenSource Cts = new();
+    protected readonly IDispatcherService Dispatcher;
     protected readonly IClientConnection ClientConnection;
     protected readonly IUserNotificationsService UserNotificationsService;
     protected readonly INavigationService NavigationService;
     protected readonly IUiService UiService;
 
     public NotificationHubViewModel(
+        IDispatcherService dispatcher,
         IClientConnection clientConnection,
         IUserNotificationsService userNotificationsService,
         INavigationService navigationService,
         IUiService uiService)
     {
+        Dispatcher = dispatcher;
         ClientConnection = clientConnection;
         UserNotificationsService = userNotificationsService;
         NavigationService = navigationService;
         UiService = uiService;
-        OpenNotificationsCommand = new Command(async () => await navigationService.OpenNotifications());
+        OpenNotificationsCommand = new RelayCommand(async () => await navigationService.OpenNotifications());
     }
 
     public virtual async Task OnAppearingAsync()
@@ -48,7 +52,8 @@ public partial class NotificationHubViewModel : BaseViewModel
 
     public virtual async Task OnDisappearingAsync() => ClientConnection.UnsubscribeAsync(this);
 
-    public virtual async Task OnNotificationReceived(UserNotification notification) => MainThread.BeginInvokeOnMainThread(() =>
+    public virtual async Task OnNotificationReceived(UserNotification notification)
+        => Dispatcher.Invoke(() =>
     {
         NotificationList.Add(notification);
         NotificationCount = NotificationList.Count;

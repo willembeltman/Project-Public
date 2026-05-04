@@ -1,4 +1,4 @@
-﻿using UwvLlm.App.Interfaces;
+﻿using UwvLlm.App.Core.Interfaces;
 
 namespace UwvLlm.App.Services;
 

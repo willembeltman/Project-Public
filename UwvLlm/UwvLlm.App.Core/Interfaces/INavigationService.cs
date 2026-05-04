@@ -1,10 +1,10 @@
 ﻿using gAPI.Core.Client;
 
-namespace UwvLlm.App.Interfaces;
+namespace UwvLlm.App.Core.Interfaces;
 
 public interface INavigationService : INavigationManager
 {
-    Task NavigateToAsync<TPage>() where TPage : Page;
+    Task NavigateToAsync<TPage>();
     Task GotoSendEmailPage();
     Task OpenNotifications();
     Task GotoMainPageAsync();

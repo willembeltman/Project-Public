@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\..\gAPI\gAPI.AutoApi.Client\gAPI.AutoApiClient.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+		<ProjectReference Include="..\..\..\gAPI\gAPI.AutoSse.Client\gAPI.AutoSseClient.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\..\gAPI\gAPI.Core.Client\gAPI.Core.Client.csproj" />
+		<ProjectReference Include="..\UwvLlm.Shared\UwvLlm.Shared.csproj" />
+	</ItemGroup>
+
+</Project>

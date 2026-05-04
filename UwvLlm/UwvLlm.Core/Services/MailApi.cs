@@ -5,7 +5,7 @@ using UwvLlm.Shared.Interfaces;
 namespace UwvLlm.Core.Services;
 
 public class MailApi(
-    IMailMessagesService mailService,
+    IMailMessageCrudService mailService,
     IUserNotificationsService notificationService,
     INotificationHubContext notificationHub)
     : IMailApi

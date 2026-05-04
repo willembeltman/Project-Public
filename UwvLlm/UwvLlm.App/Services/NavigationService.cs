@@ -1,11 +1,11 @@
-﻿using UwvLlm.App.Interfaces;
+﻿using UwvLlm.App.Core.Interfaces;
 using UwvLlm.App.Pages;
 
 namespace UwvLlm.App.Services;
 
 public class NavigationService : INavigationService
 {
-    public Task NavigateToAsync<TPage>() where TPage : Page
+    public Task NavigateToAsync<TPage>()
     {
         return Shell.Current.GoToAsync(typeof(TPage).Name);
     }
