@@ -8,17 +8,19 @@ public static class AddCrudExtensions
 {
     public static IServiceCollection AddCrudUseCases(this IServiceCollection services)
     {
-        services.AddScoped<IUseCase<UwvLlm.Core.Infrastructure.Data.MailMessage, UwvLlm.Shared.Dtos.MailMessage, Guid>, MailMessagesUseCase>();
-        services.AddScoped<IUseCase<UwvLlm.Core.Infrastructure.Data.MailMessageToUser, UwvLlm.Shared.Dtos.MailMessageToUser, long>, MailMessageToUsersUseCase>();
-        services.AddScoped<IUseCase<UwvLlm.Core.Infrastructure.Data.User, UwvLlm.Shared.Dtos.User, Guid>, UsersUseCase>();
+        services.AddScoped<IUseCase<Infrastructure.Data.MailMessage, Shared.Dtos.MailMessage, Guid>, MailMessagesUseCase>();
+        services.AddScoped<IUseCase<Infrastructure.Data.UserNotification, Shared.Dtos.UserNotification, long>, UserNotificationsUseCase>();
+        services.AddScoped<IUseCase<Infrastructure.Data.UserNotificationQuickOption, Shared.Dtos.UserNotificationQuickOption, long>, UserNotificationQuickOptionsUseCase>();
+        services.AddScoped<IUseCase<Infrastructure.Data.User, Shared.Dtos.User, Guid>, UsersUseCase>();
         return services;
     }
 
     public static IServiceCollection AddCrudMappings(this IServiceCollection services)
     {
-        services.AddScoped<Mapping<UwvLlm.Core.Infrastructure.Data.MailMessage, UwvLlm.Shared.Dtos.MailMessage>, MailMessagesMapping>();
-        services.AddScoped<Mapping<UwvLlm.Core.Infrastructure.Data.MailMessageToUser, UwvLlm.Shared.Dtos.MailMessageToUser>, MailMessageToUsersMapping>();
-        services.AddScoped<Mapping<UwvLlm.Core.Infrastructure.Data.User, UwvLlm.Shared.Dtos.User>, UsersMapping>();
+        services.AddScoped<Mapping<Infrastructure.Data.MailMessage, Shared.Dtos.MailMessage>, MailMessagesMapping>();
+        services.AddScoped<Mapping<Infrastructure.Data.UserNotification, Shared.Dtos.UserNotification>, UserNotificationsMapping>();
+        services.AddScoped<Mapping<Infrastructure.Data.UserNotificationQuickOption, Shared.Dtos.UserNotificationQuickOption>, UserNotificationQuickOptionsMapping>();
+        services.AddScoped<Mapping<Infrastructure.Data.User, Shared.Dtos.User>, UsersMapping>();
         return services;
     }
 }

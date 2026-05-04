@@ -7,8 +7,8 @@ using UwvLlm.Shared.Interfaces;
 namespace UwvLlm.Core.CrudServices;
 
 public class MailMessagesService(
-    gAPI.Interfaces.IUseCase<UwvLlm.Core.Infrastructure.Data.MailMessage, MailMessage, Guid> useCase,
-    gAPI.Interfaces.Mapping<UwvLlm.Core.Infrastructure.Data.MailMessage, MailMessage> mapping)
+    gAPI.Interfaces.IUseCase<Infrastructure.Data.MailMessage, MailMessage, Guid> useCase,
+    gAPI.Interfaces.Mapping<Infrastructure.Data.MailMessage, MailMessage> mapping)
     : IMailMessagesService
 {
     public async Task<BaseResponseT<MailMessage>> Create(MailMessage dto, CancellationToken ct)
@@ -21,7 +21,7 @@ public class MailMessagesService(
         if (entity != null)
             return new BaseResponseT<MailMessage>() { Error = BaseResponseErrorEnum.ErrorAlreadyUsed };
 
-        entity = mapping.ToEntity(dto, new UwvLlm.Core.Infrastructure.Data.MailMessage());
+        entity = mapping.ToEntity(dto, new Infrastructure.Data.MailMessage());
 
         if (!await useCase.CanCreateAsync(dto, ct))
             return new BaseResponseT<MailMessage>() { Error = BaseResponseErrorEnum.ErrorNotAuthorized };
@@ -177,6 +177,62 @@ public class MailMessagesService(
         var entities = useCase
             .ListAll()
             .Where(a => a.FromUserId != fromUserId);
+
+        orderby = orderby == null || orderby.Length == 0 ? ["Id"] : orderby;
+        var dtos = mapping.ProjectToDtosAsync(entities, orderby, skip, take, ct);
+
+        if (dtos == null)
+            return new BaseListResponseT<MailMessage>() { Error = BaseResponseErrorEnum.ErrorGettingData };
+
+        return new BaseListResponseT<MailMessage>()
+        {
+            Success = true,
+            Skip = skip ?? 0,
+            Take = take ?? 0,
+            CanCreate = await useCase.CanCreateAsync(ct),
+            Response = dtos
+        };
+    }
+
+    public async Task<BaseListResponseT<MailMessage>> ListByToUserId(Guid toUserId, int? skip, int? take, string[]? orderby, CancellationToken ct)
+    {
+        if (!await useCase.IsAllowedAsync(ct))
+            return new BaseListResponseT<MailMessage>() { Error = BaseResponseErrorEnum.ErrorNotAuthorized };
+
+        if (!await useCase.CanListAsync(ct))
+            return new BaseListResponseT<MailMessage>() { Error = BaseResponseErrorEnum.ErrorNotAuthorized };
+
+        var entities = useCase
+            .ListAll()
+            .Where(a => a.ToUserId == toUserId);
+
+        orderby = orderby == null || orderby.Length == 0 ? ["Id"] : orderby;
+        var dtos = mapping.ProjectToDtosAsync(entities, orderby, skip, take, ct);
+
+        if (dtos == null)
+            return new BaseListResponseT<MailMessage>() { Error = BaseResponseErrorEnum.ErrorGettingData };
+
+        return new BaseListResponseT<MailMessage>()
+        {
+            Success = true,
+            Skip = skip ?? 0,
+            Take = take ?? 0,
+            CanCreate = await useCase.CanCreateAsync(ct),
+            Response = dtos
+        };
+    }
+
+    public async Task<BaseListResponseT<MailMessage>> ListNotByToUserId(Guid toUserId, int? skip, int? take, string[]? orderby, CancellationToken ct)
+    {
+        if (!await useCase.IsAllowedAsync(ct))
+            return new BaseListResponseT<MailMessage>() { Error = BaseResponseErrorEnum.ErrorNotAuthorized };
+
+        if (!await useCase.CanListAsync(ct))
+            return new BaseListResponseT<MailMessage>() { Error = BaseResponseErrorEnum.ErrorNotAuthorized };
+
+        var entities = useCase
+            .ListAll()
+            .Where(a => a.ToUserId != toUserId);
 
         orderby = orderby == null || orderby.Length == 0 ? ["Id"] : orderby;
         var dtos = mapping.ProjectToDtosAsync(entities, orderby, skip, take, ct);

@@ -7,5 +7,5 @@ namespace UwvLlm.Shared.Interfaces;
 [IsAuthorized]
 public interface IMailApi
 {
-    Task Receive(NewMailMessage email, CancellationToken ct);
+    Task SendMail(MailMessage email, CancellationToken ct);
 }

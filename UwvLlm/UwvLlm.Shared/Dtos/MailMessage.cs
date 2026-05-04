@@ -13,10 +13,14 @@ public class MailMessage : ICrudEntity
     public Guid FromUserId { get; set; }
     [IsForeignName(nameof(FromUserId))]
     public string? FromUserName { get; set; }
+    [IsForeignKey(typeof(User))]
+    public Guid ToUserId { get; set; }
+    [IsForeignName(nameof(ToUserId))]
+    public string? ToUserName { get; set; }
     [Required]
     [IsName]
     public string Subject { get; set; } = string.Empty;
-    [IsName("(", FormattingOption.dd_MM_yyyy_HH_mm, ")")]
+    [IsName(" (", FormattingOption.dd_MM_yyyy_HH_mm, ")")]
     public System.DateTimeOffset Date { get; set; }
     [Required]
     public string Body { get; set; } = string.Empty;

@@ -7,5 +7,5 @@ namespace UwvLlm.Shared.Interfaces;
 [IsAuthorized]
 public interface INotificationApi
 {
-    Task<Notification[]> GetNotificationList(CancellationToken ct);
+    Task<UserNotification[]> GetNotificationList(CancellationToken ct);
 }

@@ -1,22 +1,25 @@
 ﻿using gAPI.Attributes;
 using gAPI.Interfaces;
 using System.ComponentModel.DataAnnotations;
+using UwvLlm.Shared.Enums;
 
 namespace UwvLlm.Shared.Dtos;
 
-[IsJunctionTable(typeof(MailMessage), typeof(User))]
-public class MailMessageToUser : ICrudEntity
+public class UserNotification : ICrudEntity
 {
     [Key]
     public long Id { get; set; }
-    [IsForeignKey(typeof(MailMessage))]
-    public Guid MailMessageId { get; set; }
-    [IsForeignName(nameof(MailMessageId))]
-    public string? MailMessageName { get; set; }
     [IsForeignKey(typeof(User))]
     public Guid UserId { get; set; }
     [IsForeignName(nameof(UserId))]
     public string? UserName { get; set; }
+    public NotificationType ExternalType { get; set; }
+    [Required]
+    public string ExternalId { get; set; } = string.Empty;
+    [Required]
+    public string Title { get; set; } = string.Empty;
+    [Required]
+    public string Message { get; set; } = string.Empty;
     [IsReadOnly]
     public bool CanUpdate { get; set; }
     [IsReadOnly]

@@ -12,6 +12,9 @@ public class MailMessage
     public Guid FromUserId { get; set; } = default!;
     public virtual User FromUser { get; set; } = default!;
 
+    public Guid ToUserId { get; set; } = default!;
+    public virtual User ToUser { get; set; } = default!;
+
     [IsName]
     public string Subject { get; set; } = string.Empty;
 
@@ -19,6 +22,4 @@ public class MailMessage
     public DateTimeOffset Date { get; set; }
 
     public string Body { get; set; } = string.Empty;
-
-    public virtual ICollection<MailMessageToUser>? ToUsers { get; set; }
 }
