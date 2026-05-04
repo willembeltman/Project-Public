@@ -2,7 +2,7 @@
 using UwvLlm.Shared.Dtos;
 using UwvLlm.Shared.Interfaces;
 
-namespace UwvLlm.Core.Services;
+namespace UwvLlm.Core.Apis;
 
 public class NotificationApi(
     IAuthenticationService<Infrastructure.Data.User, State> authentication)

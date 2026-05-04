@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace UwvLlm.Core.Infrastructure.Data;
 
+[IsHidden]
 public class MailMessage
 {
     [Key]

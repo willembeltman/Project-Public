@@ -4,7 +4,8 @@ using UwvLlm.Shared.Dtos;
 namespace UwvLlm.Shared.Interfaces;
 
 [GenerateApi]
+[IsAuthorized]
 public interface IMailApi
 {
-    Task Receive(MailMessage email);
+    Task Receive(NewMailMessage email, CancellationToken ct);
 }
