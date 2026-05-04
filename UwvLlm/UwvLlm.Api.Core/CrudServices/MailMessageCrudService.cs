@@ -5,7 +5,7 @@ using UwvLlm.Shared.Interfaces;
 
 namespace UwvLlm.Api.Core.CrudServices;
 
-public class MailMessagesService(
+public class MailMessageCrudService(
     gAPI.Interfaces.IUseCase<UwvLlm.Api.Core.Infrastructure.Data.MailMessage, MailMessage, Guid> useCase,
     gAPI.Interfaces.Mapping<UwvLlm.Api.Core.Infrastructure.Data.MailMessage, MailMessage> mapping)
     : IMailMessageCrudService

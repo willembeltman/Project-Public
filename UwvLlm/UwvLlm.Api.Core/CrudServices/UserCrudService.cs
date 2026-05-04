@@ -7,7 +7,7 @@ using UwvLlm.Shared.Interfaces;
 
 namespace UwvLlm.Api.Core.CrudServices;
 
-public class UsersService(
+public class UserCrudService(
     gAPI.Interfaces.IUseCase<UwvLlm.Api.Core.Infrastructure.Data.User, User, Guid> useCase,
     gAPI.Interfaces.Mapping<UwvLlm.Api.Core.Infrastructure.Data.User, User> mapping,
     IStorageService storageService)

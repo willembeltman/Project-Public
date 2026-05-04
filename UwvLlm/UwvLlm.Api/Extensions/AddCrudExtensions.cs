@@ -2,7 +2,7 @@
 using UwvLlm.Api.Core.UseCases;
 using UwvLlm.Api.Core.Mappings;
 
-namespace UwvLlm.Core.Extensions;
+namespace UwvLlm.Api.Extensions;
 
 public static class AddCrudExtensions
 {

@@ -8,6 +8,7 @@ using UwvLlm.Core.Extensions;
 using UwvLlm.Api.Core.Mappings;
 using UwvLlm.Shared;
 using UwvLlm.Shared.Dtos;
+using UwvLlm.Api.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 

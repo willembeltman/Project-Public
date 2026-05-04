@@ -5,7 +5,7 @@ using UwvLlm.Shared.Interfaces;
 
 namespace UwvLlm.Api.Core.CrudServices;
 
-public class UserNotificationsService(
+public class UserNotificationCrudService(
     gAPI.Interfaces.IUseCase<UwvLlm.Api.Core.Infrastructure.Data.UserNotification, UserNotification, long> useCase,
     gAPI.Interfaces.Mapping<UwvLlm.Api.Core.Infrastructure.Data.UserNotification, UserNotification> mapping)
     : IUserNotificationsService
