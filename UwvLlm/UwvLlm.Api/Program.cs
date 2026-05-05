@@ -7,6 +7,7 @@ using Scalar.AspNetCore;
 using UwvLlm.Api.Core.Mappings;
 using UwvLlm.Api.Extensions;
 using UwvLlm.Core.Extensions;
+using UwvLlm.Llm.Core.Handlers;
 using UwvLlm.Shared.Private.Interfaces;
 using UwvLlm.Shared.Private.Services;
 using UwvLlm.Shared.Public;
@@ -31,8 +32,8 @@ builder.Services.AddCrudUseCases();
 
 builder.Services.AddSingleton<IRabbitConnectionProvider, RabbitConnectionProvider>();
 builder.Services.AddSingleton<HandlerRegistry>();
-builder.Services.AddSingleton<ServiceBusReceiverService>();
-builder.Services.AddSingleton<ServiceBusSenderService>();
+builder.Services.AddSingleton<ServiceBusReceiver>();
+builder.Services.AddSingleton<ServiceBusSender>();
 
 builder.Services.AddScoped<IHandler, GenerateAutoReplyResponseHandler>();
 

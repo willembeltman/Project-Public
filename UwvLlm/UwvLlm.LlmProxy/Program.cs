@@ -19,8 +19,8 @@ builder.Services.AddSingleton<ConsoleService>();
 
 builder.Services.AddSingleton<IRabbitConnectionProvider, RabbitConnectionProvider>();
 builder.Services.AddSingleton<HandlerRegistry>();
-builder.Services.AddSingleton<ServiceBusReceiverService>();
-builder.Services.AddSingleton<ServiceBusSenderService>();
+builder.Services.AddSingleton<ServiceBusReceiver>();
+builder.Services.AddSingleton<ServiceBusSender>();
 
 builder.Services.AddScoped<IHandler, GenerateAutoReplyRequestHandler>();
 

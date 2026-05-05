@@ -1,5 +1,6 @@
 ﻿using gAPI.Core.Server;
 using UwvLlm.Shared.Private.Dtos;
+using UwvLlm.Shared.Private.Enums;
 using UwvLlm.Shared.Private.Services;
 using UwvLlm.Shared.Public.Dtos;
 using UwvLlm.Shared.Public.Interfaces;
@@ -9,7 +10,7 @@ namespace UwvLlm.Api.Core.Services;
 public class MailApi(
     IAuthenticationService<Infrastructure.Data.User, State> authenticationService,
     IMailMessageCrudService mailService,
-    ServiceBusSenderService serviceBusSender)
+    ServiceBusSender serviceBusSender)
     : IMailApi
 {
     public async Task SendMail(MailMessage newMail, CancellationToken ct)
@@ -22,6 +23,9 @@ public class MailApi(
         if (mailResponse.Success == false || mailResponse.Response == null) 
             return;
 
-        await serviceBusSender.SendAsync(new GenerateAutoReplyRequest(), ct);
+        var autoReplyMessage = new GenerateAutoReplyRequest(
+            mailResponse.Response);
+
+        await serviceBusSender.SendAsync(Bus.LlmProxy, autoReplyMessage, ct);
     }
 }

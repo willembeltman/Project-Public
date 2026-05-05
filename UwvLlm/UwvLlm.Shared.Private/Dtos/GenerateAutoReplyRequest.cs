@@ -1,3 +1,5 @@
-﻿namespace UwvLlm.Shared.Private.Dtos;
+﻿using UwvLlm.Shared.Public.Dtos;
 
-public record GenerateAutoReplyRequest();
+namespace UwvLlm.Shared.Private.Dtos;
+
+public record GenerateAutoReplyRequest(MailMessage Email);

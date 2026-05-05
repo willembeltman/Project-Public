@@ -22,4 +22,5 @@ public class MailMessage
     public DateTimeOffset Date { get; set; }
 
     public string Body { get; set; } = string.Empty;
+    public string? AutoResponse { get; set; }
 }

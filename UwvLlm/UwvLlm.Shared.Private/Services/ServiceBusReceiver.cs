@@ -3,17 +3,18 @@ using RabbitMQ.Client.Events;
 using System.Text;
 using System.Text.Json;
 using UwvLlm.Shared.Private.Dtos;
+using UwvLlm.Shared.Private.Enums;
 using UwvLlm.Shared.Private.Interfaces;
 
 namespace UwvLlm.Shared.Private.Services;
 
-public class ServiceBusReceiverService
+public class ServiceBusReceiver
 {
     private readonly IRabbitConnectionProvider _provider;
     private readonly HandlerRegistry _registry;
     private readonly IServiceProvider _sp;
 
-    public ServiceBusReceiverService(
+    public ServiceBusReceiver(
         IRabbitConnectionProvider provider,
         HandlerRegistry registry,
         IServiceProvider sp)
@@ -23,13 +24,13 @@ public class ServiceBusReceiverService
         _sp = sp;
     }
 
-    public async Task Start(CancellationToken ct)
+    public async Task Start(Bus bus, CancellationToken ct)
     {
         var connection = await _provider.GetConnectionAsync();
         var channel = await connection.CreateChannelAsync();
 
         await channel.QueueDeclareAsync(
-            "jobs",
+            Enum.GetName(bus)!,
             durable: true,
             exclusive: false,
             autoDelete: false);
@@ -55,6 +56,6 @@ public class ServiceBusReceiverService
             }
         };
 
-        await channel.BasicConsumeAsync("jobs", false, consumer);
+        await channel.BasicConsumeAsync(Enum.GetName(bus)!, false, consumer);
     }
 }

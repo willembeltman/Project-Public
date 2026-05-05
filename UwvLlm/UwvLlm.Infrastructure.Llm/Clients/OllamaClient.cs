@@ -1,18 +1,21 @@
-﻿using System.Net.Http.Json;
+﻿using System.Data;
+using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using UwvLlm.Api.Core.Infrastructure.Llm.Interfaces;
 using UwvLlm.Api.Core.Infrastructure.Llm.Models;
+using UwvLlm.Infrastructure.Llm.Enums;
 
 namespace UwvLlm.Api.Core.Infrastructure.Llm.Clients;
 
 public class OllamaClient(
     Uri? ollamaServerUrl = null)
-    : IDisposable
-    , IClient
+    : ILlmClient
 {
     private readonly HttpClient HttpClient = new() { Timeout = TimeSpan.FromSeconds(3600) };
     private readonly Uri OllamaServerUrl = ollamaServerUrl ?? new Uri("http://localhost:11434");
+
+    public bool Initialized { get; set; }
 
     public async Task<Model[]> GetModels(CancellationToken ct = default)
     {
@@ -48,6 +51,8 @@ public class OllamaClient(
         var url = new Uri(OllamaServerUrl, "/api/pull");
         var response = await HttpClient.PostAsJsonAsync(url, request, ct);
         response.EnsureSuccessStatusCode();
+
+        Initialized = true;
     }
 
     public async Task<LlmResponse> ChatAsync(Model model, LlmRequest apiCall, CancellationToken ct = default)
@@ -64,7 +69,13 @@ public class OllamaClient(
             response.model,
             response.created_at,
             new Message(
-                response.message.role,
+                response.message.role.ToLower() switch
+                {
+                    "system" => Role.System,
+                    "tool" => Role.Tool,
+                    "assistant" => Role.Assistant,
+                    _ => Role.User
+                },
                 response.message.tool_call_id,
                 response.message.content,
                 response.message.thinking,
@@ -85,6 +96,7 @@ public class OllamaClient(
                         })))
                 ]));
     }
+
 
     private async Task<string> DoCall(string payload, CancellationToken ct)
     {

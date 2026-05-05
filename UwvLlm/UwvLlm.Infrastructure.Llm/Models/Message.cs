@@ -1,7 +1,9 @@
-﻿namespace UwvLlm.Api.Core.Infrastructure.Llm.Models;
+﻿using UwvLlm.Infrastructure.Llm.Enums;
+
+namespace UwvLlm.Api.Core.Infrastructure.Llm.Models;
 
 public record Message(
-    string Role,
+    Role Role,
     string? ToolCallId,
     string? Content,
     string? Thinking,
