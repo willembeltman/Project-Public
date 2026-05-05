@@ -1,6 +1,7 @@
 ﻿using gAPI.Core.Server;
 using UwvLlm.Api.Core.Dtos;
 using UwvLlm.Api.Core.Enums;
+using UwvLlm.Infrastructure.Messaging.Interfaces;
 using UwvLlm.Shared.CrudInterfaces;
 using UwvLlm.Shared.Dtos;
 using UwvLlm.Shared.Interfaces;
@@ -10,7 +11,7 @@ namespace UwvLlm.Api.Core.Services;
 public class MailApi(
     IAuthenticationService<Infrastructure.Data.Entities.User, State> authenticationService,
     IMailMessageCrudService mailService,
-    ServiceBusSender serviceBusSender)
+    IServiceBusSender serviceBusSender)
     : IMailApi
 {
     public async Task SendMail(MailMessage newMail, CancellationToken ct)

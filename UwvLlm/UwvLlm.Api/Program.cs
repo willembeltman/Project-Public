@@ -6,12 +6,12 @@ using gAPI.Generated;
 using Scalar.AspNetCore;
 using UwvLlm.Api.Extensions;
 using UwvLlm.Core.Extensions;
+using UwvLlm.Infrastructure.Data.Mappings;
+using UwvLlm.Infrastructure.Messaging.Interfaces;
+using UwvLlm.Infrastructure.Messaging.Services;
 using UwvLlm.LlmProxy.Core.Handlers;
-using UwvLlm.Api.Core.Interfaces;
-using UwvLlm.Api.Core.Services;
 using UwvLlm.Shared;
 using UwvLlm.Shared.Dtos;
-using UwvLlm.Infrastructure.Data.Mappings;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,11 +31,11 @@ builder.Services.AddCrudMappings();
 builder.Services.AddCrudUseCases();
 
 builder.Services.AddSingleton<IRabbitConnectionProvider, RabbitConnectionProvider>();
-builder.Services.AddSingleton<HandlerRegistry>();
-builder.Services.AddSingleton<ServiceBusReceiver>();
-builder.Services.AddSingleton<ServiceBusSender>();
+builder.Services.AddSingleton<IHandlerRegistry, HandlerRegistry>();
+builder.Services.AddSingleton<IServiceBusReceiver, ServiceBusReceiver>();
+builder.Services.AddSingleton<IServiceBusSender, ServiceBusSender>();
 
-builder.Services.AddTransient<IHandler, GenerateAutoReplyResponseHandler>();
+builder.Services.AddTransient<GenerateAutoReplyResponseHandler>();
 
 var app = builder.Build();
 

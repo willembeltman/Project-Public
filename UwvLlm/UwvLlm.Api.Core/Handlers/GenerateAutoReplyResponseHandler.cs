@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using UwvLlm.Api.Core.Dtos;
-using UwvLlm.Api.Core.Interfaces;
+using UwvLlm.Infrastructure.Messaging.Interfaces;
 using UwvLlm.Shared.CrudInterfaces;
 using UwvLlm.Shared.Dtos;
 using UwvLlm.Shared.Enums;

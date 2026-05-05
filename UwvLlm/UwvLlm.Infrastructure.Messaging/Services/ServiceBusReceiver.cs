@@ -4,29 +4,19 @@ using System.Text;
 using System.Text.Json;
 using UwvLlm.Api.Core.Dtos;
 using UwvLlm.Api.Core.Enums;
-using UwvLlm.Api.Core.Interfaces;
+using UwvLlm.Infrastructure.Messaging.Interfaces;
 
-namespace UwvLlm.Api.Core.Services;
+namespace UwvLlm.Infrastructure.Messaging.Services;
 
-public class ServiceBusReceiver
+public class ServiceBusReceiver(
+    IRabbitConnectionProvider provider,
+    IHandlerRegistry registry,
+    IServiceProvider sp) 
+    : IServiceBusReceiver
 {
-    private readonly IRabbitConnectionProvider _provider;
-    private readonly HandlerRegistry _registry;
-    private readonly IServiceProvider _sp;
-
-    public ServiceBusReceiver(
-        IRabbitConnectionProvider provider,
-        HandlerRegistry registry,
-        IServiceProvider sp)
-    {
-        _provider = provider;
-        _registry = registry;
-        _sp = sp;
-    }
-
     public async Task Start(Bus bus, CancellationToken ct)
     {
-        var connection = await _provider.GetConnectionAsync();
+        var connection = await provider.GetConnectionAsync();
         var channel = await connection.CreateChannelAsync();
 
         await channel.QueueDeclareAsync(
@@ -46,7 +36,7 @@ public class ServiceBusReceiver
                 var message = JsonSerializer.Deserialize<ServiceBusMessage>(json)
                     ?? throw new Exception("Invalid message");
 
-                await _registry.Handle(message, _sp, ct);
+                await registry.Handle(message, sp, ct);
 
                 await channel.BasicAckAsync(e.DeliveryTag, false);
             }

@@ -3,8 +3,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using UwvLlm.Api.Core.Infrastructure.Llm.Clients;
 using UwvLlm.Api.Core.Infrastructure.Llm.Interfaces;
-using UwvLlm.Api.Core.Interfaces;
-using UwvLlm.Api.Core.Services;
+using UwvLlm.Infrastructure.Messaging.Interfaces;
+using UwvLlm.Infrastructure.Messaging.Services;
 using UwvLlm.LlmProxy.Core;
 using UwvLlm.LlmProxy.Core.Handlers;
 using UwvLlm.LlmProxy.Core.Services;
@@ -19,12 +19,12 @@ builder.Services.AddDatabase(serverConfig);
 builder.Services.AddSingleton<ConsoleService>();
 
 builder.Services.AddSingleton<IRabbitConnectionProvider, RabbitConnectionProvider>();
-builder.Services.AddSingleton<HandlerRegistry>();
-builder.Services.AddSingleton<ServiceBusReceiver>();
-builder.Services.AddSingleton<ServiceBusSender>();
+builder.Services.AddSingleton<IHandlerRegistry, HandlerRegistry>();
+builder.Services.AddSingleton<IServiceBusReceiver, ServiceBusReceiver>();
+builder.Services.AddSingleton<IServiceBusSender, ServiceBusSender>();
 
 builder.Services.AddSingleton<ILlmClient, OllamaClient>();
-builder.Services.AddTransient<IHandler, GenerateAutoReplyRequestHandler>();
+builder.Services.AddTransient<GenerateAutoReplyRequestHandler>();
 
 var app = builder.Build();
-await app.StartProxyAsync();
+await app.StartConsoleAsync();

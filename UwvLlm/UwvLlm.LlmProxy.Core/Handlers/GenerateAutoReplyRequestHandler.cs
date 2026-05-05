@@ -4,15 +4,14 @@ using UwvLlm.Api.Core.Infrastructure.Llm.Models;
 using UwvLlm.Infrastructure.Llm.Enums;
 using UwvLlm.Api.Core.Dtos;
 using UwvLlm.Api.Core.Enums;
-using UwvLlm.Api.Core.Interfaces;
-using UwvLlm.Api.Core.Services;
 using UwvLlm.Infrastructure.Data.Entities;
+using UwvLlm.Infrastructure.Messaging.Interfaces;
 
 namespace UwvLlm.LlmProxy.Core.Handlers;
 
 public class GenerateAutoReplyRequestHandler(
     IDbContextFactory<ApplicationDbContext> dbFactory,
-    ServiceBusSender sender,
+    IServiceBusSender sender,
     ILlmClient llmClient)
     : IHandler<GenerateAutoReplyRequest>
 {

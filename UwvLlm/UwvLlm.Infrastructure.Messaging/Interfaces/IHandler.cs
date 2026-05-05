@@ -1,6 +1,6 @@
 ﻿using UwvLlm.Api.Core.Dtos;
 
-namespace UwvLlm.Api.Core.Interfaces;
+namespace UwvLlm.Infrastructure.Messaging.Interfaces;
 
 public interface IHandler
 {

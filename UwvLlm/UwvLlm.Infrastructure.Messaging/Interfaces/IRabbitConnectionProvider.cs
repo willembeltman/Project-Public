@@ -1,6 +1,6 @@
 ﻿using RabbitMQ.Client;
 
-namespace UwvLlm.Api.Core.Interfaces;
+namespace UwvLlm.Infrastructure.Messaging.Interfaces;
 
 public interface IRabbitConnectionProvider
 {

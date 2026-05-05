@@ -3,22 +3,17 @@ using System.Text;
 using System.Text.Json;
 using UwvLlm.Api.Core.Dtos;
 using UwvLlm.Api.Core.Enums;
-using UwvLlm.Api.Core.Interfaces;
+using UwvLlm.Infrastructure.Messaging.Interfaces;
 
-namespace UwvLlm.Api.Core.Services;
+namespace UwvLlm.Infrastructure.Messaging.Services;
 
-public class ServiceBusSender
+public class ServiceBusSender(
+    IRabbitConnectionProvider provider) 
+    : IServiceBusSender
 {
-    private readonly IRabbitConnectionProvider _provider;
-
-    public ServiceBusSender(IRabbitConnectionProvider provider)
-    {
-        _provider = provider;
-    }
-
     public async Task SendAsync<TMessage>(Bus bus, TMessage message, CancellationToken ct)
     {
-        var connection = await _provider.GetConnectionAsync();
+        var connection = await provider.GetConnectionAsync();
         using var channel = await connection.CreateChannelAsync();
 
         var envelope = new ServiceBusMessage(
