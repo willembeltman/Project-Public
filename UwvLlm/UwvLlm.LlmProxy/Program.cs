@@ -1,15 +1,14 @@
 ﻿using gAPI.Core.Server.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using UwvLlm.Api.Core.Interfaces;
+using UwvLlm.Api.Core.Services;
 using UwvLlm.LlmProxy.Core;
 using UwvLlm.LlmProxy.Core.Handlers;
 using UwvLlm.LlmProxy.Core.Services;
 using UwvLlm.LlmProxy.Extensions;
-using UwvLlm.Api.Core.Interfaces;
-using UwvLlm.Api.Core.Services;
 
 var builder = Host.CreateApplicationBuilder(args);
-
 var serverConfig = builder.Configuration.CreateServerConfig();
 
 builder.Services.AddStorage(serverConfig);

@@ -11,6 +11,7 @@
   <Folder Name="/Core/">
     <Project Path="UwvLlm.Api.Core/UwvLlm.Api.Core.csproj" Id="26295ce6-4320-41cb-aa4a-206f4089f821" />
     <Project Path="UwvLlm.App.Core/UwvLlm.App.Core.csproj" Id="d7da95e3-4a2e-4f91-bafd-d4360da2354d" />
+    <Project Path="UwvLlm.Application/UwvLlm.Application.csproj" Id="0f3f9376-7fa8-4f76-88af-d18abcd7cd14" />
     <Project Path="UwvLlm.Infrastructure.Data/UwvLlm.Infrastructure.Data.csproj" Id="544a8f93-80e4-4b49-819d-05bd8b104d80" />
     <Project Path="UwvLlm.Infrastructure.Llm/UwvLlm.Infrastructure.Llm.csproj" Id="9076559d-1c9d-48ca-8363-f7338524d726" />
     <Project Path="UwvLlm.LlmProxy.Core/UwvLlm.LlmProxy.Core.csproj" Id="d7b63eac-72f4-4a6f-87de-352f7a216ee6" />
@@ -40,6 +41,7 @@
   <Folder Name="/Tests/">
     <Project Path="UwvLlm.Api.Core.Test/UwvLlm.Api.Core.Test.csproj" />
     <Project Path="UwvLlm.App.Core.Test/UwvLlm.App.Core.Test.csproj" Id="c29e61f3-47ae-4277-8b33-ad2900bc06b5" />
+    <Project Path="UwvLlm.LlmProxy.Core.Test/UwvLlm.LlmProxy.Core.Test.csproj" Id="7d2fda0a-e3de-4121-ad60-3b200f31ee41" />
   </Folder>
   <Project Path="UwvLlm.AppHost/UwvLlm.AppHost.csproj" Id="222f8302-2a19-436d-b055-9c531cc1b408" />
 </Solution>

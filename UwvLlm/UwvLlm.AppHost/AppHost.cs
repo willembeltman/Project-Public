@@ -22,6 +22,8 @@ var api = builder.AddProject<Projects.UwvLlm_Api>("api")
     .WithReference(llmproxy)
     .WithExternalHttpEndpoints();
 
+llmproxy.WithEnvironment("DOTNET_ENVIRONMENT", "Development");
+
 // (optioneel) environment variables voor duidelijke endpoints
 api.WithEnvironment("STORAGE__BASEURL", storage.GetEndpoint("https"));
 api.WithEnvironment("FABRIC__HOST", "localhost");
