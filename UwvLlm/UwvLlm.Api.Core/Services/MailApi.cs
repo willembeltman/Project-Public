@@ -1,9 +1,12 @@
-﻿using UwvLlm.Shared.Public.Dtos;
+﻿using gAPI.Core.Server;
+using UwvLlm.Shared.Private.Dtos;
+using UwvLlm.Shared.Public.Dtos;
 using UwvLlm.Shared.Public.Interfaces;
 
 namespace UwvLlm.Api.Core.Services;
 
 public class MailApi(
+    IAuthenticationService<Infrastructure.Data.User, State> authenticationService,
     IMailMessageCrudService mailService,
     ServiceBusSenderService serviceBusSender) //,
     //IUserNotificationCrudService notificationService,
@@ -12,10 +15,16 @@ public class MailApi(
 {
     public async Task SendMail(MailMessage newMail, CancellationToken ct)
     {
-        var mailResponse = await mailService.Create(newMail, ct);
-        if (mailResponse.Success == false || mailResponse.Response == null) return;
+        if (authenticationService.State.User == null)
+            return;
 
-        await serviceBusSender.SendAsync(ct);
+        newMail.FromUserId = authenticationService.State.User.Id;
+        var mailResponse = await mailService.Create(newMail, ct);
+        if (mailResponse.Success == false || mailResponse.Response == null) 
+            return;
+
+        var request = new GenerateAutoReplyRequest();
+        await serviceBusSender.SendGenerateAutoReplyRequest(request, ct);
 
         //var userNotification = new UserNotification()
         //{
