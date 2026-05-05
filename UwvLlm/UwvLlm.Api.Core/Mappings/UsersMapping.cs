@@ -4,13 +4,13 @@ using gAPI.Core.Server.Storage;
 namespace UwvLlm.Api.Core.Mappings;
 
 public class UsersMapping(
-    gAPI.Core.Interfaces.IUseCase<UwvLlm.Api.Core.Infrastructure.Data.User, UwvLlm.Shared.Public.Dtos.User, Guid> useCase, 
+    gAPI.Core.Interfaces.IUseCase<UwvLlm.Infrastructure.Data.User, UwvLlm.Shared.Dtos.User, Guid> useCase, 
     IStorageService storageService) 
-    : gAPI.Core.Interfaces.Mapping<UwvLlm.Api.Core.Infrastructure.Data.User, UwvLlm.Shared.Public.Dtos.User>
+    : gAPI.Core.Interfaces.Mapping<UwvLlm.Infrastructure.Data.User, UwvLlm.Shared.Dtos.User>
 {
-    public override UwvLlm.Api.Core.Infrastructure.Data.User ToEntity(
-        UwvLlm.Shared.Public.Dtos.User dto, 
-        UwvLlm.Api.Core.Infrastructure.Data.User entity)
+    public override UwvLlm.Infrastructure.Data.User ToEntity(
+        UwvLlm.Shared.Dtos.User dto, 
+        UwvLlm.Infrastructure.Data.User entity)
     {
         entity.Id = dto.Id;
         entity.UserName = dto.UserName;
@@ -20,9 +20,9 @@ public class UsersMapping(
         return entity;
     }
 
-    public override async Task<UwvLlm.Shared.Public.Dtos.User> ToDtoAsync(
-        UwvLlm.Api.Core.Infrastructure.Data.User entity, 
-        UwvLlm.Shared.Public.Dtos.User dto,
+    public override async Task<UwvLlm.Shared.Dtos.User> ToDtoAsync(
+        UwvLlm.Infrastructure.Data.User entity, 
+        UwvLlm.Shared.Dtos.User dto,
         CancellationToken ct)
     {
         dto.Id = entity.Id;
@@ -35,15 +35,15 @@ public class UsersMapping(
         return dto;
     }
 
-    public override IAsyncEnumerable<UwvLlm.Shared.Public.Dtos.User> ProjectToDtosAsync(
-        IQueryable<UwvLlm.Api.Core.Infrastructure.Data.User> entities,
+    public override IAsyncEnumerable<UwvLlm.Shared.Dtos.User> ProjectToDtosAsync(
+        IQueryable<UwvLlm.Infrastructure.Data.User> entities,
         string[]? orderby, 
         int? skip, 
         int? take,
         CancellationToken ct)
     {  
         var dtos = entities
-            .Select(entity => new UwvLlm.Shared.Public.Dtos.User()
+            .Select(entity => new UwvLlm.Shared.Dtos.User()
             {
                 Id = entity.Id,
                 UserName = entity.UserName,
@@ -67,7 +67,7 @@ public class UsersMapping(
     }
 
     public override async Task ExtendDto(
-        UwvLlm.Shared.Public.Dtos.User dto,
+        UwvLlm.Shared.Dtos.User dto,
         CancellationToken ct)
     {
         dto.StorageFileUrl = await storageService.GetStorageFileUrlAsync(dto.Id.ToString(), "User", ct);

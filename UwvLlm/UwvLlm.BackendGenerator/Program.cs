@@ -1,6 +1,6 @@
 ﻿using gAPI.CodeGen.Backend.Models.Config;
 using gAPI.Core.Helpers;
-using UwvLlm.Api.Core.Infrastructure.Data;
+using UwvLlm.Infrastructure.Data;
 
 var root = EnvironmentPathHelper.GetRoot(Environment.ProcessPath!, "UwvLlm");
 var config = new BackendConfig(
@@ -9,16 +9,16 @@ var config = new BackendConfig(
     Data_AuthenticationDirectory: EnvironmentPathHelper.GetDirectory(root, @"UwvLlm.Infrastructure.Data\Authentication"),
     Data_AuthenticationNamespace: "UwvLlm.Infrastructure.Data.Authentication",
 
-    Shared_DtosDirectory: EnvironmentPathHelper.GetDirectory(root, @"UwvLlm.Shared.Public\Dtos"),
-    Shared_DtosNamespace: "UwvLlm.Shared.Public.Dtos",
-    Shared_StateDtosDirectory: EnvironmentPathHelper.GetDirectory(root, @"UwvLlm.Shared.Public\Dtos"),
-    Shared_StateDtosNamespace: "UwvLlm.Shared.Public.Dtos",
-    Shared_InterfacesDirectory: EnvironmentPathHelper.GetDirectory(root, @"UwvLlm.Shared.Public\Interfaces"),
-    Shared_InterfacesNamespace: "UwvLlm.Shared.Public.Interfaces",
-    Shared_RequestDtosDirectory: EnvironmentPathHelper.GetDirectory(root, @"UwvLlm.Shared.Public\Dtos"),
-    Shared_RequestDtosNamespace: "UwvLlm.Shared.Public.Dtos",
-    Shared_ResponseDtosDirectory: EnvironmentPathHelper.GetDirectory(root, @"UwvLlm.Shared.Public\Dtos"),
-    Shared_ResponseDtosNamespace: "UwvLlm.Shared.Public.Dtos",
+    Shared_DtosDirectory: EnvironmentPathHelper.GetDirectory(root, @"UwvLlm.Shared\Dtos"),
+    Shared_DtosNamespace: "UwvLlm.Shared.Dtos",
+    Shared_StateDtosDirectory: EnvironmentPathHelper.GetDirectory(root, @"UwvLlm.Shared\Dtos"),
+    Shared_StateDtosNamespace: "UwvLlm.Shared.Dtos",
+    Shared_InterfacesDirectory: EnvironmentPathHelper.GetDirectory(root, @"UwvLlm.Shared\Interfaces"),
+    Shared_InterfacesNamespace: "UwvLlm.Shared.Interfaces",
+    Shared_RequestDtosDirectory: EnvironmentPathHelper.GetDirectory(root, @"UwvLlm.Shared\Dtos"),
+    Shared_RequestDtosNamespace: "UwvLlm.Shared.Dtos",
+    Shared_ResponseDtosDirectory: EnvironmentPathHelper.GetDirectory(root, @"UwvLlm.Shared\Dtos"),
+    Shared_ResponseDtosNamespace: "UwvLlm.Shared.Dtos",
 
     Core_CrudUseCasesDirectory: EnvironmentPathHelper.GetDirectory(root, @"UwvLlm.Api.Core\UseCases"),
     Core_CrudUseCasesNamespace: "UwvLlm.Api.Core.UseCases",

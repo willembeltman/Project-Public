@@ -1,7 +1,7 @@
 ﻿using gAPI.Core.Client;
 using gAPI.Core.Interfaces;
 using UwvLlm.App.Core.Interfaces;
-using UwvLlm.Shared.Public.Dtos;
+using UwvLlm.Shared.Dtos;
 
 namespace UwvLlm.App.Core.Services;
 

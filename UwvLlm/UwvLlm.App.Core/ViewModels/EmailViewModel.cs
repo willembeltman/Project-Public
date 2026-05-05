@@ -3,8 +3,8 @@ using gAPI.Core.Interfaces;
 using System.Collections.ObjectModel;
 using UwvLlm.App.Core.Interfaces;
 using UwvLlm.App.Core.Services;
-using UwvLlm.Shared.Public.Dtos;
-using UwvLlm.Shared.Public.Interfaces;
+using UwvLlm.Shared.Dtos;
+using UwvLlm.Shared.Interfaces;
 
 namespace UwvLlm.App.Core.ViewModels;
 

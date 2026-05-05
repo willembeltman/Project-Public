@@ -1,4 +1,4 @@
-﻿namespace UwvLlm.Shared.Public.Enums;
+﻿namespace UwvLlm.Shared.Enums;
 
 public enum NotificationType
 {

@@ -2,14 +2,14 @@
 using gAPI.Core.Enums;
 using gAPI.Core.Server.Storage;
 using Microsoft.AspNetCore.Http;
-using UwvLlm.Shared.Public.Dtos;
-using UwvLlm.Shared.Public.Interfaces;
+using UwvLlm.Shared.Dtos;
+using UwvLlm.Shared.Interfaces;
 
 namespace UwvLlm.Api.Core.CrudServices;
 
 public class UserCrudService(
-    gAPI.Core.Interfaces.IUseCase<UwvLlm.Api.Core.Infrastructure.Data.User, User, Guid> useCase,
-    gAPI.Core.Interfaces.Mapping<UwvLlm.Api.Core.Infrastructure.Data.User, User> mapping,
+    gAPI.Core.Interfaces.IUseCase<UwvLlm.Infrastructure.Data.User, User, Guid> useCase,
+    gAPI.Core.Interfaces.Mapping<UwvLlm.Infrastructure.Data.User, User> mapping,
     IStorageService storageService)
     : IUserCrudService
 {
@@ -23,7 +23,7 @@ public class UserCrudService(
         if (entity != null)
             return new BaseResponseT<User>() { Error = BaseResponseErrorEnum.ErrorAlreadyUsed };
 
-        entity = mapping.ToEntity(dto, new UwvLlm.Api.Core.Infrastructure.Data.User());
+        entity = mapping.ToEntity(dto, new UwvLlm.Infrastructure.Data.User());
 
         if (!await useCase.CanCreateAsync(dto, ct))
             return new BaseResponseT<User>() { Error = BaseResponseErrorEnum.ErrorNotAuthorized };

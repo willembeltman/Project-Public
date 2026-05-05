@@ -7,11 +7,11 @@ using Scalar.AspNetCore;
 using UwvLlm.Api.Core.Mappings;
 using UwvLlm.Api.Extensions;
 using UwvLlm.Core.Extensions;
-using UwvLlm.Llm.Core.Handlers;
-using UwvLlm.Shared.Private.Interfaces;
-using UwvLlm.Shared.Private.Services;
-using UwvLlm.Shared.Public;
-using UwvLlm.Shared.Public.Dtos;
+using UwvLlm.LlmProxy.Core.Handlers;
+using UwvLlm.Api.Core.Interfaces;
+using UwvLlm.Api.Core.Services;
+using UwvLlm.Shared;
+using UwvLlm.Shared.Dtos;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,9 +23,9 @@ builder.Services.AddAutoSse(serverConfig);
 builder.Services.AddStorage(serverConfig);
 builder.Services.AddCommenServices(serverConfig);
 builder.Services.AddDatabase(serverConfig);
-builder.Services.AddAuthenticationServices<UwvLlm.Api.Core.Infrastructure.Data.User, State>();
-builder.Services.AddScoped<IStateMapping<UwvLlm.Api.Core.Infrastructure.Data.User, State>, StateMapping>();
-builder.Services.AddScoped<IStateUserMapping<UwvLlm.Api.Core.Infrastructure.Data.User, StateUser>, StateUserMapping>();
+builder.Services.AddAuthenticationServices<UwvLlm.Infrastructure.Data.User, State>();
+builder.Services.AddScoped<IStateMapping<UwvLlm.Infrastructure.Data.User, State>, StateMapping>();
+builder.Services.AddScoped<IStateUserMapping<UwvLlm.Infrastructure.Data.User, StateUser>, StateUserMapping>();
 builder.Services.AddScoped<IStateParser<State>, StateParser>();
 builder.Services.AddCrudMappings();
 builder.Services.AddCrudUseCases();
@@ -39,7 +39,7 @@ builder.Services.AddScoped<IHandler, GenerateAutoReplyResponseHandler>();
 
 var app = builder.Build();
 
-app.MapAutoApi<AuthenticationMiddleware<UwvLlm.Api.Core.Infrastructure.Data.User, State>>();
+app.MapAutoApi<AuthenticationMiddleware<UwvLlm.Infrastructure.Data.User, State>>();
 app.MapAutoSse();
 app.UseHttpsRedirection();
 app.MapOpenApi();

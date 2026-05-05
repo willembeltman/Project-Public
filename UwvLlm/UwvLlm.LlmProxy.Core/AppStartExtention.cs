@@ -1,10 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using UwvLlm.Llm.Core.Services;
-using UwvLlm.Shared.Private.Enums;
-using UwvLlm.Shared.Private.Services;
+using UwvLlm.LlmProxy.Core.Services;
+using UwvLlm.Api.Core.Enums;
+using UwvLlm.Api.Core.Services;
 
-namespace UwvLlm.Llm.Core;
+namespace UwvLlm.LlmProxy.Core;
 
 public static class AppStartExtention
 {

@@ -1,8 +1,8 @@
 ﻿using System.Text.Json;
-using UwvLlm.Shared.Private.Dtos;
-using UwvLlm.Shared.Private.Interfaces;
+using UwvLlm.Api.Core.Dtos;
+using UwvLlm.Api.Core.Interfaces;
 
-namespace UwvLlm.Shared.Private.Services;
+namespace UwvLlm.Api.Core.Services;
 
 public class HandlerRegistry
 {

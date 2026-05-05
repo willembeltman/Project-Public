@@ -2,7 +2,7 @@
 using gAPI.Core.Enums;
 using System.ComponentModel.DataAnnotations;
 
-namespace UwvLlm.Api.Core.Infrastructure.Data;
+namespace UwvLlm.Infrastructure.Data;
 
 public class MailMessage
 {

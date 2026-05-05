@@ -1,14 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using UwvLlm.Shared.Private.Dtos;
-using UwvLlm.Shared.Private.Interfaces;
-using UwvLlm.Shared.Public.Dtos;
-using UwvLlm.Shared.Public.Enums;
-using UwvLlm.Shared.Public.Interfaces;
+using UwvLlm.Api.Core.Dtos;
+using UwvLlm.Api.Core.Interfaces;
+using UwvLlm.Shared.Dtos;
+using UwvLlm.Shared.Enums;
+using UwvLlm.Shared.Interfaces;
 
-namespace UwvLlm.Llm.Core.Handlers;
+namespace UwvLlm.LlmProxy.Core.Handlers;
 
 public class GenerateAutoReplyResponseHandler(
-    IDbContextFactory<Api.Core.Infrastructure.Data.ApplicationDbContext> dbFactory,
+    IDbContextFactory<UwvLlm.Infrastructure.Data.ApplicationDbContext> dbFactory,
     IUserNotificationCrudService notificationService,
     INotificationHubContext notificationHub)
     : IHandler<GenerateAutoReplyResponse>

@@ -1,4 +1,4 @@
-﻿namespace UwvLlm.Shared.Private.Enums;
+﻿namespace UwvLlm.Api.Core.Enums;
 
 public enum Bus
 {

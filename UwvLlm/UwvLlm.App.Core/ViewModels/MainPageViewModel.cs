@@ -1,7 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using gAPI.Core.Interfaces;
 using UwvLlm.App.Core.Interfaces;
-using UwvLlm.Shared.Public.Interfaces;
+using UwvLlm.Shared.Interfaces;
 
 namespace UwvLlm.App.Core.ViewModels;
 

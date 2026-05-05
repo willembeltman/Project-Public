@@ -1,14 +1,14 @@
 ﻿using gAPI.Core.Server.Mappings;
 using gAPI.Core.Server.Storage;
-using UwvLlm.Shared.Public.Dtos;
+using UwvLlm.Shared.Dtos;
 
 namespace UwvLlm.Api.Core.Mappings;
 
 public class StateUserMapping(
     IStorageService storageService) :
-    IStateUserMapping<Infrastructure.Data.User, StateUser>
+    IStateUserMapping<UwvLlm.Infrastructure.Data.User, StateUser>
 {
-    public async Task<StateUser> ToDtoAsync(Infrastructure.Data.User entity, StateUser dto, CancellationToken ct)
+    public async Task<StateUser> ToDtoAsync(UwvLlm.Infrastructure.Data.User entity, StateUser dto, CancellationToken ct)
     {
         dto.Id = entity.Id;
         dto.UserName = entity.UserName;

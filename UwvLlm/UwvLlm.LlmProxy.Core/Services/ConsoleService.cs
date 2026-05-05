@@ -1,4 +1,4 @@
-﻿namespace UwvLlm.Llm.Core.Services;
+﻿namespace UwvLlm.LlmProxy.Core.Services;
 
 public class ConsoleService
 {

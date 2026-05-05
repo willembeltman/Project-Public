@@ -5,9 +5,9 @@ using Microsoft.Extensions.Logging;
 using UwvLlm.App.Pages;
 using UwvLlm.App.Services;
 using UwvLlm.App.Core.ViewModels;
-using UwvLlm.Shared.Public;
-using UwvLlm.Shared.Public.Dtos;
-using UwvLlm.Shared.Public.Interfaces;
+using UwvLlm.Shared;
+using UwvLlm.Shared.Dtos;
+using UwvLlm.Shared.Interfaces;
 using UwvLlm.App.Core.Interfaces;
 using UwvLlm.App.Core.Services;
 

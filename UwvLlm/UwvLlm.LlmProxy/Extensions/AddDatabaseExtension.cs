@@ -1,10 +1,10 @@
 ﻿using gAPI.Core.Server;
 using Microsoft.EntityFrameworkCore;
-using UwvLlm.Api.Core.Infrastructure.Data;
+using UwvLlm.Infrastructure.Data;
 using gAPI.Core.Server.Dtos;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace UwvLlm.Llm.Extensions;
+namespace UwvLlm.LlmProxy.Extensions;
 
 public static class AddDatabaseExtension
 {

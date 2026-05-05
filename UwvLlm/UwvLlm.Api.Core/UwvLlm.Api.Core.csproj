@@ -9,7 +9,11 @@
 	<ItemGroup>
 		<ProjectReference Include="..\..\..\gAPI\gAPI.AutoSse.Server\gAPI.AutoSse.Server.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
 		<ProjectReference Include="..\UwvLlm.Infrastructure.Data\UwvLlm.Infrastructure.Data.csproj" />
-		<ProjectReference Include="..\UwvLlm.Shared.Private\UwvLlm.Shared.Private.csproj" />
+		<ProjectReference Include="..\UwvLlm.Infrastructure.Llm\UwvLlm.Infrastructure.Llm.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="RabbitMQ.Client" Version="7.2.1" />
 	</ItemGroup>
 
 </Project>

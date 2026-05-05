@@ -1,7 +1,7 @@
 ﻿using gAPI.Core.Attributes;
 using gAPI.Core.Dtos;
 
-namespace UwvLlm.Shared.Public.Dtos;
+namespace UwvLlm.Shared.Dtos;
 
 [GenerateSerializer]
 [IsStateDto]

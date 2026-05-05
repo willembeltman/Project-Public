@@ -1,4 +1,4 @@
-﻿namespace UwvLlm.Shared.Private.Dtos;
+﻿namespace UwvLlm.Api.Core.Dtos;
 
 public record ServiceBusMessage(
     string MessageType,

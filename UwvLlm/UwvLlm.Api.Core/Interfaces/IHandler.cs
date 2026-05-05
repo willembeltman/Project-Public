@@ -1,6 +1,6 @@
-﻿using UwvLlm.Shared.Private.Dtos;
+﻿using UwvLlm.Api.Core.Dtos;
 
-namespace UwvLlm.Shared.Private.Interfaces;
+namespace UwvLlm.Api.Core.Interfaces;
 
 public interface IHandler
 {
