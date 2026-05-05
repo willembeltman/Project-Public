@@ -5,7 +5,7 @@ namespace UwvLlm.Api.Core.Services;
 
 public class ServiceBusSenderService
 {
-    public async Task SendAsync()
+    public async Task SendAsync(CancellationToken ct)
     {
         var factory = new ConnectionFactory() { HostName = "rabbit" };
         using var connection = await factory.CreateConnectionAsync();

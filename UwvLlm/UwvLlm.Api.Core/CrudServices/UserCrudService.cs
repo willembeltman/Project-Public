@@ -2,8 +2,8 @@
 using gAPI.Core.Enums;
 using gAPI.Core.Server.Storage;
 using Microsoft.AspNetCore.Http;
-using UwvLlm.Shared.Dtos;
-using UwvLlm.Shared.Interfaces;
+using UwvLlm.Shared.Public.Dtos;
+using UwvLlm.Shared.Public.Interfaces;
 
 namespace UwvLlm.Api.Core.CrudServices;
 

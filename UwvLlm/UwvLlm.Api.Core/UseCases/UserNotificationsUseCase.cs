@@ -6,18 +6,18 @@ namespace UwvLlm.Api.Core.UseCases;
 
 public class UserNotificationsUseCase(
     ApplicationDbContext db,
-    IAuthenticationService<User, Shared.Dtos.State> authenticationService)
-    : gAPI.Core.Interfaces.IUseCase<UserNotification, Shared.Dtos.UserNotification, long>
+    IAuthenticationService<User, Shared.Public.Dtos.State> authenticationService)
+    : gAPI.Core.Interfaces.IUseCase<UserNotification, Shared.Public.Dtos.UserNotification, long>
 {
     public async Task<bool> IsAllowedAsync(CancellationToken ct) => true;
     public async Task<bool> CanListAsync(CancellationToken ct) => true;
     public async Task<bool> CanCreateAsync(CancellationToken ct) => authenticationService.State.User != null;
-    public async Task<bool> CanCreateAsync(Shared.Dtos.UserNotification dto, CancellationToken ct) => authenticationService.State.User != null;
-    public async Task<bool> CanReadAsync(Shared.Dtos.UserNotification dto, CancellationToken ct) => true;
-    public async Task<bool> CanUpdateAsync(Shared.Dtos.UserNotification dto, CancellationToken ct) => authenticationService.State.User != null;
-    public async Task<bool> CanDeleteAsync(Shared.Dtos.UserNotification dto, CancellationToken ct) => authenticationService.State.User != null;
+    public async Task<bool> CanCreateAsync(Shared.Public.Dtos.UserNotification dto, CancellationToken ct) => authenticationService.State.User != null;
+    public async Task<bool> CanReadAsync(Shared.Public.Dtos.UserNotification dto, CancellationToken ct) => true;
+    public async Task<bool> CanUpdateAsync(Shared.Public.Dtos.UserNotification dto, CancellationToken ct) => authenticationService.State.User != null;
+    public async Task<bool> CanDeleteAsync(Shared.Public.Dtos.UserNotification dto, CancellationToken ct) => authenticationService.State.User != null;
 
-    public async Task<UserNotification?> FindByMatchAsync(Shared.Dtos.UserNotification dto, CancellationToken ct) 
+    public async Task<UserNotification?> FindByMatchAsync(Shared.Public.Dtos.UserNotification dto, CancellationToken ct) 
         => null; // If you implement this, also use includes
     public async Task<UserNotification?> FindByIdAsync(long id, CancellationToken ct) 
         => await db.UserNotifications
@@ -32,7 +32,7 @@ public class UserNotificationsUseCase(
         await db.SaveChangesAsync(ct);
         return true;
     }
-    public async Task<bool> UpdateAsync(UserNotification updatedEntity, Shared.Dtos.UserNotification dto, CancellationToken ct)
+    public async Task<bool> UpdateAsync(UserNotification updatedEntity, Shared.Public.Dtos.UserNotification dto, CancellationToken ct)
     {
         await db.SaveChangesAsync();
         return true;

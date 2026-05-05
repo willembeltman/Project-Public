@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using UwvLlm.Shared.Enums;
+using UwvLlm.Shared.Public.Enums;
 
 namespace UwvLlm.Api.Core.Infrastructure.Data;
 

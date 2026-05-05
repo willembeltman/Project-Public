@@ -10,7 +10,7 @@
 		<ProjectReference Include="..\UwvLlm.Infrastructure.Data\UwvLlm.Infrastructure.Data.csproj" />
 		<ProjectReference Include="..\UwvLlm.Infrastructure.Llm\UwvLlm.Infrastructure.Llm.csproj" />
 		<ProjectReference Include="..\UwvLlm.Shared.Private\UwvLlm.Shared.Private.csproj" />
-		<ProjectReference Include="..\UwvLlm.Shared\UwvLlm.Shared.Public.csproj" />
+		<ProjectReference Include="..\UwvLlm.Shared.Public\UwvLlm.Shared.Public.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

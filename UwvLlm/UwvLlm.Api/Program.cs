@@ -5,8 +5,8 @@ using gAPI.Core.Interfaces;
 using Scalar.AspNetCore;
 using UwvLlm.Core.Extensions;
 using UwvLlm.Api.Core.Mappings;
-using UwvLlm.Shared;
-using UwvLlm.Shared.Dtos;
+using UwvLlm.Shared.Public;
+using UwvLlm.Shared.Public.Dtos;
 using UwvLlm.Api.Extensions;
 using gAPI.Core.Server.Extensions;
 

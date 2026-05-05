@@ -1,6 +1,6 @@
 ﻿using UwvLlm.App.Core.Interfaces;
-using UwvLlm.Shared.Dtos;
-using UwvLlm.Shared.Interfaces;
+using UwvLlm.Shared.Public.Dtos;
+using UwvLlm.Shared.Public.Interfaces;
 
 namespace UwvLlm.App.Core.Services;
 

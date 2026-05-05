@@ -1,5 +1,5 @@
-﻿using UwvLlm.Shared.Dtos;
-using UwvLlm.Shared.Interfaces;
+﻿using UwvLlm.Shared.Public.Dtos;
+using UwvLlm.Shared.Public.Interfaces;
 
 namespace UwvLlm.Api.Core.Services;
 
@@ -15,7 +15,7 @@ public class MailApi(
         var mailResponse = await mailService.Create(newMail, ct);
         if (mailResponse.Success == false || mailResponse.Response == null) return;
 
-        await serviceBusSender.SendAsync();
+        await serviceBusSender.SendAsync(ct);
 
         //var userNotification = new UserNotification()
         //{

@@ -1,9 +1,9 @@
 ﻿using gAPI.Core.Attributes;
 using gAPI.Core.Interfaces;
 using System.ComponentModel.DataAnnotations;
-using UwvLlm.Shared.Enums;
+using UwvLlm.Shared.Public.Enums;
 
-namespace UwvLlm.Shared.Dtos;
+namespace UwvLlm.Shared.Public.Dtos;
 
 public class UserNotification : ICrudEntity
 {

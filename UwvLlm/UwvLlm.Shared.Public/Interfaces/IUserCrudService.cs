@@ -1,9 +1,9 @@
 ﻿using gAPI.Core.Attributes;
 using gAPI.Core.Dtos;
 using Microsoft.AspNetCore.Http;
-using UwvLlm.Shared.Dtos;
+using UwvLlm.Shared.Public.Dtos;
 
-namespace UwvLlm.Shared.Interfaces;
+namespace UwvLlm.Shared.Public.Interfaces;
 
 [GenerateApi]
 [IsAuthorized]

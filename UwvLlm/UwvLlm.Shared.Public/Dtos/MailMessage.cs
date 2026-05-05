@@ -3,7 +3,7 @@ using gAPI.Core.Enums;
 using gAPI.Core.Interfaces;
 using System.ComponentModel.DataAnnotations;
 
-namespace UwvLlm.Shared.Dtos;
+namespace UwvLlm.Shared.Public.Dtos;
 
 public class MailMessage : ICrudEntity
 {

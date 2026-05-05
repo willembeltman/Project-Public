@@ -1,9 +1,9 @@
 ﻿using gAPI.Core.Interfaces;
 using Microsoft.Extensions.Logging;
 using System.Buffers;
-using UwvLlm.Shared.Dtos;
+using UwvLlm.Shared.Public.Dtos;
 
-namespace UwvLlm.Shared;
+namespace UwvLlm.Shared.Public;
 
 public class StateParser(ILoggerFactory loggerFactory) : IStateParser<State>
 {

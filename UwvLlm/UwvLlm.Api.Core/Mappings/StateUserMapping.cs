@@ -1,6 +1,6 @@
 ﻿using gAPI.Core.Server.Mappings;
 using gAPI.Core.Server.Storage;
-using UwvLlm.Shared.Dtos;
+using UwvLlm.Shared.Public.Dtos;
 
 namespace UwvLlm.Api.Core.Mappings;
 

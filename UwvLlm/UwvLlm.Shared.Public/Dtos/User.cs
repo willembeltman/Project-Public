@@ -3,7 +3,7 @@ using gAPI.Core.Interfaces;
 using gAPI.Storage;
 using System.ComponentModel.DataAnnotations;
 
-namespace UwvLlm.Shared.Dtos;
+namespace UwvLlm.Shared.Public.Dtos;
 
 [IsAuthorized]
 [IsUser]
