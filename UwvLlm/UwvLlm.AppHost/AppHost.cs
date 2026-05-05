@@ -5,7 +5,7 @@ var rabbit = builder.AddRabbitMQ("rabbit");
 
 // Storage API
 var storage = builder.AddProject<Projects.UwvLlm_Storage>("storage")
-    .WithExternalHttpEndpoints(); // expose https://localhost:7099
+    .WithExternalHttpEndpoints();
 
 // Fabric (console app)
 var fabric = builder.AddProject<Projects.UwvLlm_Fabric>("fabric");
@@ -16,11 +16,11 @@ var llmproxy = builder.AddProject<Projects.UwvLlm_LlmProxy>("llmproxy")
 
 // Core API
 var api = builder.AddProject<Projects.UwvLlm_Api>("api")
-    .WithReference(storage)              // dependency injection / service discovery
+    .WithReference(rabbit)
+    .WithReference(storage)
     .WithReference(fabric)
     .WithReference(llmproxy)
-    .WithReference(rabbit)
-    .WithExternalHttpEndpoints();        // expose https://localhost:7281
+    .WithExternalHttpEndpoints();
 
 // (optioneel) environment variables voor duidelijke endpoints
 api.WithEnvironment("STORAGE__BASEURL", storage.GetEndpoint("https"));

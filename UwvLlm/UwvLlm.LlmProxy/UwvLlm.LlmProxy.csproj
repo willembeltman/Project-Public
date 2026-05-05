@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\UwvLlm.Llm.Core\UwvLlm.LlmProxy.Core.csproj" />
+    <ProjectReference Include="..\UwvLlm.LlmProxy.Core\UwvLlm.LlmProxy.Core.csproj" />
   </ItemGroup>
 
 </Project>

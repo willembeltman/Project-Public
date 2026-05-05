@@ -15,7 +15,7 @@
   <ItemGroup>
     <ProjectReference Include="..\UwvLlm.Api\UwvLlm.Api.csproj" />
     <ProjectReference Include="..\UwvLlm.Fabric\UwvLlm.Fabric.csproj" />
-    <ProjectReference Include="..\UwvLlm.Llm\UwvLlm.LlmProxy.csproj" />
+    <ProjectReference Include="..\UwvLlm.LlmProxy\UwvLlm.LlmProxy.csproj" />
     <ProjectReference Include="..\UwvLlm.Storage\UwvLlm.Storage.csproj" />
   </ItemGroup>
 
