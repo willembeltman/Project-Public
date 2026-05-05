@@ -18,7 +18,10 @@ public class GenerateAutoReplyRequestHandler(
     public async Task Handle(GenerateAutoReplyRequest message, CancellationToken ct)
     {
         using var db = dbFactory.CreateDbContext();
-        var dbMailMessage = db.MailMessages.FirstOrDefault(a => a.Id == message.Email.Id);
+        var dbMailMessage = await db.MailMessages
+            .Include("FromUser")
+            .Include("ToUser")
+            .FirstOrDefaultAsync(a => a.Id == message.Email.Id);
         if (dbMailMessage == null || dbMailMessage.AutoResponse != null)
             return;
 
@@ -59,6 +62,6 @@ Subject: {dbMailMessage.Subject}
 
         await db.SaveChangesAsync(ct);
 
-        await sender.SendAsync(Bus.Api, new GenerateAutoReplyResponse(message.Email), ct);
+        await sender.SendAsync(Receipent.Api, new GenerateAutoReplyResponse(message.Email), ct);
     }
 }

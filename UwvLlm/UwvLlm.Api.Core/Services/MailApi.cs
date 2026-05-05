@@ -27,6 +27,6 @@ public class MailApi(
         var autoReplyMessage = new GenerateAutoReplyRequest(
             mailResponse.Response);
 
-        await serviceBusSender.SendAsync(Bus.LlmProxy, autoReplyMessage, ct);
+        await serviceBusSender.SendAsync(Receipent.LlmProxy, autoReplyMessage, ct);
     }
 }

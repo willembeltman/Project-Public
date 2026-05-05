@@ -11,10 +11,11 @@ namespace UwvLlm.Infrastructure.Messaging.Services;
 public class ServiceBusReceiver(
     IRabbitConnectionProvider provider,
     IHandlerRegistry registry,
-    IServiceProvider sp) 
+    IServiceProvider sp,
+    IConsoleService console) 
     : IServiceBusReceiver
 {
-    public async Task Start(Bus bus, CancellationToken ct)
+    public async Task StartAsync(Receipent bus, CancellationToken ct)
     {
         var connection = await provider.GetConnectionAsync();
         var channel = await connection.CreateChannelAsync();
@@ -42,7 +43,7 @@ public class ServiceBusReceiver(
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                console.WriteLine(ex);
             }
         };
 

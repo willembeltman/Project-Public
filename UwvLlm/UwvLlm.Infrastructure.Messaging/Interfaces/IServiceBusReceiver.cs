@@ -4,5 +4,5 @@ namespace UwvLlm.Infrastructure.Messaging.Interfaces;
 
 public interface IServiceBusReceiver
 {
-    Task Start(Bus bus, CancellationToken ct);
+    Task StartAsync(Receipent bus, CancellationToken ct);
 }

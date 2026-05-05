@@ -32,19 +32,21 @@ public static class MauiProgram
         builder.Services.AddTransient<NotificationsPage>();
         builder.Services.AddTransient<RegisterPage>();
 
-        builder.Services.AddTransient<IAuthenticationService, AuthenticationService>();
-        builder.Services.AddTransient<IEmailService, EmailService>();
-        builder.Services.AddTransient<INavigationService, NavigationService>();
-        builder.Services.AddTransient<INavigationManager, NavigationService>();
-        builder.Services.AddTransient<INotificationHub>(sp => sp.GetRequiredService<NotificationPageViewModel>());
-        builder.Services.AddTransient<IUiService, UiService>();
+        builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+        builder.Services.AddScoped<IEmailService, EmailService>();
+        builder.Services.AddScoped<IDispatcherService, DispatcherService>();
+        builder.Services.AddScoped<NavigationService>();
+        builder.Services.AddScoped<INavigationService>(sp => sp.GetRequiredService<NavigationService>());
+        builder.Services.AddScoped<INavigationManager>(sp => sp.GetRequiredService<NavigationService>());
+        builder.Services.AddScoped<INotificationHub>(sp => sp.GetRequiredService<NotificationPageViewModel>());
+        builder.Services.AddScoped<IUiService, UiService>();
 
-        builder.Services.AddTransient<NotificationHubViewModel>();
-        builder.Services.AddTransient<EmailViewModel>();
-        builder.Services.AddTransient<LoginViewModel>();
-        builder.Services.AddTransient<MainPageViewModel>();
-        builder.Services.AddTransient<NotificationPageViewModel>();
-        builder.Services.AddTransient<RegisterViewModel>();
+        builder.Services.AddScoped<NotificationHubViewModel>();
+        builder.Services.AddScoped<EmailViewModel>();
+        builder.Services.AddScoped<LoginViewModel>();
+        builder.Services.AddScoped<MainPageViewModel>();
+        builder.Services.AddScoped<NotificationPageViewModel>();
+        builder.Services.AddScoped<RegisterViewModel>();
 
         builder.Services.AddAutoApiClient(); 
         builder.Services.AddAutoSseClient();

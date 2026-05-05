@@ -4,6 +4,7 @@ using gAPI.Core.Server.Extensions;
 using gAPI.Core.Server.Mappings;
 using gAPI.Generated;
 using Scalar.AspNetCore;
+using UwvLlm.Api.Core.Enums;
 using UwvLlm.Api.Extensions;
 using UwvLlm.Core.Extensions;
 using UwvLlm.Infrastructure.Data.Mappings;
@@ -29,6 +30,7 @@ builder.Services.AddScoped<IStateUserMapping<UwvLlm.Infrastructure.Data.Entities
 builder.Services.AddScoped<IStateParser<State>, StateParser>();
 builder.Services.AddCrudMappings();
 builder.Services.AddCrudUseCases();
+builder.Services.AddSingleton<IConsoleService, ConsoleService>();
 
 builder.Services.AddSingleton<IRabbitConnectionProvider, RabbitConnectionProvider>();
 builder.Services.AddSingleton<IHandlerRegistry, HandlerRegistry>();
@@ -44,5 +46,8 @@ app.MapAutoSse();
 app.UseHttpsRedirection();
 app.MapOpenApi();
 app.MapScalarApiReference();
+
+var receiver = app.Services.GetRequiredService<IServiceBusReceiver>();
+_ = Task.Run(async () => await receiver.StartAsync(Receipent.Api, CancellationToken.None));
 
 app.Run();

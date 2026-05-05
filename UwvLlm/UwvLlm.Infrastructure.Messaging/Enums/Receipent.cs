@@ -1,6 +1,6 @@
 ﻿namespace UwvLlm.Api.Core.Enums;
 
-public enum Bus
+public enum Receipent
 {
     Api,
     LlmProxy

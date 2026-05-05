@@ -11,7 +11,7 @@ public class ServiceBusSender(
     IRabbitConnectionProvider provider) 
     : IServiceBusSender
 {
-    public async Task SendAsync<TMessage>(Bus bus, TMessage message, CancellationToken ct)
+    public async Task SendAsync<TMessage>(Receipent bus, TMessage message, CancellationToken ct)
     {
         var connection = await provider.GetConnectionAsync();
         using var channel = await connection.CreateChannelAsync();

@@ -2,9 +2,8 @@
 using Microsoft.Extensions.Hosting;
 using UwvLlm.Api.Core.Enums;
 using UwvLlm.Infrastructure.Messaging.Interfaces;
-using UwvLlm.LlmProxy.Core.Services;
 
-namespace UwvLlm.LlmProxy.Core;
+namespace UwvLlm.LlmProxy.Extensions;
 
 public static class AppStartExtention
 {
@@ -13,10 +12,19 @@ public static class AppStartExtention
         using var scope = app.Services.CreateScope();
 
         var workerService = scope.ServiceProvider.GetRequiredService<IServiceBusReceiver>();
-        var consoleService = scope.ServiceProvider.GetRequiredService<ConsoleService>();
+        var consoleService = scope.ServiceProvider.GetRequiredService<IConsoleService>();
 
         using var cts = new CancellationTokenSource();
 
-        await workerService.Start(Bus.LlmProxy, cts.Token);
+        var workerTask = workerService.StartAsync(Receipent.LlmProxy, cts.Token);
+        var consoleTask = consoleService.Start(cts.Token);
+        await Task.WhenAny(workerTask, consoleTask);
+
+        if (workerTask.Exception != null)
+            throw workerTask.Exception;
+
+        cts.Cancel();
+
+        await Task.WhenAll(consoleTask);
     }
 }
