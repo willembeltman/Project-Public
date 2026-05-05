@@ -32,7 +32,7 @@ public class EmailService(
         {
             ToUserId = toUserId.Value,
             Subject = subject,
-            Body = body
+            Content = body
         };
         await mailApi.SendMail(mail, CancellationToken.None);
 

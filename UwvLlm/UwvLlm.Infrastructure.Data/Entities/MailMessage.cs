@@ -21,6 +21,6 @@ public class MailMessage
     [IsName(" (", FormattingOption.dd_MM_yyyy_HH_mm, ")")]
     public DateTimeOffset Date { get; set; }
 
-    public string Body { get; set; } = string.Empty;
+    public string Content { get; set; } = string.Empty;
     public string? AutoResponse { get; set; }
 }

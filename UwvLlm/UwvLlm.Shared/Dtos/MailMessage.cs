@@ -23,7 +23,7 @@ public class MailMessage : ICrudEntity
     [IsName(" (", FormattingOption.dd_MM_yyyy_HH_mm, ")")]
     public System.DateTimeOffset Date { get; set; }
     [Required]
-    public string Body { get; set; } = string.Empty;
+    public string Content { get; set; } = string.Empty;
     public string? AutoResponse { get; set; }
     [IsReadOnly]
     public bool CanUpdate { get; set; }

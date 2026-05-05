@@ -1,6 +1,6 @@
-﻿namespace UwvLlm.Api.Core.Dtos;
+﻿using UwvLlm.Shared.Dtos;
 
-public record GenerateAutoReplyResponse()
-{
-    public string ExternalId { get; set; }
-}
+namespace UwvLlm.Api.Core.Dtos;
+
+public record GenerateAutoReplyResponse(
+    MailMessage Email);

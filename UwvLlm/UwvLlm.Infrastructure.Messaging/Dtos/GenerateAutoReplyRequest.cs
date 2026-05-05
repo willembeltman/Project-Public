@@ -2,4 +2,5 @@
 
 namespace UwvLlm.Api.Core.Dtos;
 
-public record GenerateAutoReplyRequest(MailMessage Email);
+public record GenerateAutoReplyRequest(
+    MailMessage Email);

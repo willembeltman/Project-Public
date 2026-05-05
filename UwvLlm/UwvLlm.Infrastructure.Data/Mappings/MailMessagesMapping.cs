@@ -15,7 +15,7 @@ public class MailMessagesMapping(
         entity.ToUserId = dto.ToUserId;
         entity.Subject = dto.Subject;
         entity.Date = dto.Date;
-        entity.Body = dto.Body;
+        entity.Content = dto.Content;
         entity.AutoResponse = dto.AutoResponse;
 
         return entity;
@@ -31,7 +31,7 @@ public class MailMessagesMapping(
         dto.ToUserId = entity.ToUserId;
         dto.Subject = entity.Subject;
         dto.Date = entity.Date;
-        dto.Body = entity.Body;
+        dto.Content = entity.Content;
         dto.AutoResponse = entity.AutoResponse;
         
         dto.FromUserName = 
@@ -60,7 +60,7 @@ public class MailMessagesMapping(
                 ToUserId = entity.ToUserId,
                 Subject = entity.Subject,
                 Date = entity.Date,
-                Body = entity.Body,
+                Content = entity.Content,
                 AutoResponse = entity.AutoResponse,
 #nullable disable
                 FromUserName = 

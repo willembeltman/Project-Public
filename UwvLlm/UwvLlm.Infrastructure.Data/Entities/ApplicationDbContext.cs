@@ -65,7 +65,7 @@ public class ApplicationDbContext(DbContextOptions options) : AuthenticationDbCo
             entity.Property(m => m.Subject)
                   .IsRequired();
 
-            entity.Property(m => m.Body)
+            entity.Property(m => m.Content)
                   .IsRequired();
 
             entity.Property(m => m.Date)

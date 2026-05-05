@@ -16,18 +16,33 @@ public class GenerateAutoReplyResponseHandler(
 {
     public async Task Handle(GenerateAutoReplyResponse message, CancellationToken ct)
     {
-        using var db = dbFactory.CreateDbContext();
+        using var db = await dbFactory.CreateDbContextAsync();
+        var dbMailMessage = await db.MailMessages.FirstOrDefaultAsync(a => a.Id == message.Email.Id, ct);
+        if (dbMailMessage == null)
+            return;
 
         var userNotification = new UserNotification()
         {
             ExternalType = NotificationType.Mail,
-            ExternalId = message.ExternalId, //mailResponse.Response.Id.ToString(),
+            ExternalId = dbMailMessage.Id.ToString(), 
             Title = "Message received",
-            Message = "Message content\r\nDo you want to auto-reply?",
+            Message = $@"Subject: {dbMailMessage.Subject}
+
+{dbMailMessage.Content}
+
+==========================
+        AUTO-REPLY
+==========================
+
+{dbMailMessage.AutoResponse}
+
+Do you want to auto-reply?",
             QuickOptions = ["Yes", "No", "Modify"]
         };
-        var notification = await notificationService.Create(userNotification, ct);
-        if (notification.Success == false || notification.Response == null) return;
-        await notificationHub.ToAll.OnNotificationReceived(notification.Response);
+
+        var createResult = await notificationService.Create(userNotification, ct);
+        if (createResult.Success == false || createResult.Response == null) return;
+
+        await notificationHub.ToAll.OnNotificationReceived(createResult.Response);
     }
 }
