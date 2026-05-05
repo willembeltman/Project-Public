@@ -1,14 +1,14 @@
 using gAPI.Core.Server;
 using gAPI.Core.Server.Mappings;
-using gAPI.Extensions;
 using gAPI.Generated;
-using gAPI.Interfaces;
+using gAPI.Core.Interfaces;
 using Scalar.AspNetCore;
 using UwvLlm.Core.Extensions;
 using UwvLlm.Api.Core.Mappings;
 using UwvLlm.Shared;
 using UwvLlm.Shared.Dtos;
 using UwvLlm.Api.Extensions;
+using gAPI.Core.Server.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 

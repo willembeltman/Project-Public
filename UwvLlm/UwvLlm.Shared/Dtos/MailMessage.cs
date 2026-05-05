@@ -1,6 +1,6 @@
-﻿using gAPI.Attributes;
-using gAPI.Enums;
-using gAPI.Interfaces;
+﻿using gAPI.Core.Attributes;
+using gAPI.Core.Enums;
+using gAPI.Core.Interfaces;
 using System.ComponentModel.DataAnnotations;
 
 namespace UwvLlm.Shared.Dtos;

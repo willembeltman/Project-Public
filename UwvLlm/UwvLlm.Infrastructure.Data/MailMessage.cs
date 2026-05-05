@@ -1,5 +1,5 @@
-﻿using gAPI.Attributes;
-using gAPI.Enums;
+﻿using gAPI.Core.Attributes;
+using gAPI.Core.Enums;
 using System.ComponentModel.DataAnnotations;
 
 namespace UwvLlm.Api.Core.Infrastructure.Data;

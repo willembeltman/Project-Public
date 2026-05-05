@@ -1,5 +1,5 @@
 ﻿using gAPI.CodeGen.Backend.Models.Config;
-using gAPI.Helpers;
+using gAPI.Core.Helpers;
 using UwvLlm.Api.Core.Infrastructure.Data;
 
 var root = EnvironmentPathHelper.GetRoot(Environment.ProcessPath!, "UwvLlm");

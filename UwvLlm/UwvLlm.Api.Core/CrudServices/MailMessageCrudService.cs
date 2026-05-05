@@ -1,13 +1,13 @@
-﻿using gAPI.Dtos;
-using gAPI.Enums;
+﻿using gAPI.Core.Dtos;
+using gAPI.Core.Enums;
 using UwvLlm.Shared.Dtos;
 using UwvLlm.Shared.Interfaces;
 
 namespace UwvLlm.Api.Core.CrudServices;
 
 public class MailMessageCrudService(
-    gAPI.Interfaces.IUseCase<UwvLlm.Api.Core.Infrastructure.Data.MailMessage, MailMessage, Guid> useCase,
-    gAPI.Interfaces.Mapping<UwvLlm.Api.Core.Infrastructure.Data.MailMessage, MailMessage> mapping)
+    gAPI.Core.Interfaces.IUseCase<UwvLlm.Api.Core.Infrastructure.Data.MailMessage, MailMessage, Guid> useCase,
+    gAPI.Core.Interfaces.Mapping<UwvLlm.Api.Core.Infrastructure.Data.MailMessage, MailMessage> mapping)
     : IMailMessageCrudService
 {
     public async Task<BaseResponseT<MailMessage>> Create(MailMessage dto, CancellationToken ct)

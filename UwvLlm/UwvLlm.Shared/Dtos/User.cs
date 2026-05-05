@@ -1,5 +1,5 @@
-﻿using gAPI.Attributes;
-using gAPI.Interfaces;
+﻿using gAPI.Core.Attributes;
+using gAPI.Core.Interfaces;
 using gAPI.Storage;
 using System.ComponentModel.DataAnnotations;
 

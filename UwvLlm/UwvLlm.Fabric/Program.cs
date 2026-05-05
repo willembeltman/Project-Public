@@ -1,3 +1,3 @@
-﻿using gAPI.FabricNode;
+﻿using gAPI.Fabric;
 
 await FabricProgram.StartAsync();

@@ -1,4 +1,4 @@
-﻿using gAPI.Interfaces;
+﻿using gAPI.Core.Interfaces;
 using Microsoft.Extensions.Logging;
 using System.Buffers;
 using UwvLlm.Shared.Dtos;

@@ -7,7 +7,7 @@ namespace UwvLlm.Api.Core.UseCases;
 public class UserNotificationsUseCase(
     ApplicationDbContext db,
     IAuthenticationService<User, Shared.Dtos.State> authenticationService)
-    : gAPI.Interfaces.IUseCase<UserNotification, Shared.Dtos.UserNotification, long>
+    : gAPI.Core.Interfaces.IUseCase<UserNotification, Shared.Dtos.UserNotification, long>
 {
     public async Task<bool> IsAllowedAsync(CancellationToken ct) => true;
     public async Task<bool> CanListAsync(CancellationToken ct) => true;

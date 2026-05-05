@@ -1,12 +1,12 @@
-﻿using gAPI.Extensions;
-using gAPI.Storage;
+﻿using gAPI.Core.Server.Extensions;
+using gAPI.Core.Server.Storage;
 
 namespace UwvLlm.Api.Core.Mappings;
 
 public class UsersMapping(
-    gAPI.Interfaces.IUseCase<UwvLlm.Api.Core.Infrastructure.Data.User, UwvLlm.Shared.Dtos.User, Guid> useCase, 
+    gAPI.Core.Interfaces.IUseCase<UwvLlm.Api.Core.Infrastructure.Data.User, UwvLlm.Shared.Dtos.User, Guid> useCase, 
     IStorageService storageService) 
-    : gAPI.Interfaces.Mapping<UwvLlm.Api.Core.Infrastructure.Data.User, UwvLlm.Shared.Dtos.User>
+    : gAPI.Core.Interfaces.Mapping<UwvLlm.Api.Core.Infrastructure.Data.User, UwvLlm.Shared.Dtos.User>
 {
     public override UwvLlm.Api.Core.Infrastructure.Data.User ToEntity(
         UwvLlm.Shared.Dtos.User dto, 

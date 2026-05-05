@@ -1,13 +1,13 @@
-﻿using gAPI.Dtos;
-using gAPI.Enums;
+﻿using gAPI.Core.Dtos;
+using gAPI.Core.Enums;
 using UwvLlm.Shared.Dtos;
 using UwvLlm.Shared.Interfaces;
 
 namespace UwvLlm.Api.Core.CrudServices;
 
 public class UserNotificationCrudService(
-    gAPI.Interfaces.IUseCase<UwvLlm.Api.Core.Infrastructure.Data.UserNotification, UserNotification, long> useCase,
-    gAPI.Interfaces.Mapping<UwvLlm.Api.Core.Infrastructure.Data.UserNotification, UserNotification> mapping)
+    gAPI.Core.Interfaces.IUseCase<UwvLlm.Api.Core.Infrastructure.Data.UserNotification, UserNotification, long> useCase,
+    gAPI.Core.Interfaces.Mapping<UwvLlm.Api.Core.Infrastructure.Data.UserNotification, UserNotification> mapping)
     : IUserNotificationCrudService
 {
     public async Task<BaseResponseT<UserNotification>> Create(UserNotification dto, CancellationToken ct)

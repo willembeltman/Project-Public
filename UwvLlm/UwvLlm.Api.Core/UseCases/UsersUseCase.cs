@@ -7,7 +7,7 @@ namespace UwvLlm.Api.Core.UseCases;
 public class UsersUseCase(
     ApplicationDbContext db,
     IAuthenticationService<User, Shared.Dtos.State> authenticationService)
-    : gAPI.Interfaces.IUseCase<User, Shared.Dtos.User, Guid>
+    : gAPI.Core.Interfaces.IUseCase<User, Shared.Dtos.User, Guid>
 {
     public async Task<bool> IsAllowedAsync(CancellationToken ct) => authenticationService.State.User != null;
     public async Task<bool> CanListAsync(CancellationToken ct) => authenticationService.State.User != null;

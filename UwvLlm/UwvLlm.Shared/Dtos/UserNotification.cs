@@ -1,5 +1,5 @@
-﻿using gAPI.Attributes;
-using gAPI.Interfaces;
+﻿using gAPI.Core.Attributes;
+using gAPI.Core.Interfaces;
 using System.ComponentModel.DataAnnotations;
 using UwvLlm.Shared.Enums;
 

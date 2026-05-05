@@ -1,5 +1,5 @@
-﻿using gAPI.Attributes;
-using gAPI.Dtos;
+﻿using gAPI.Core.Attributes;
+using gAPI.Core.Dtos;
 
 namespace UwvLlm.Shared.Dtos;
 

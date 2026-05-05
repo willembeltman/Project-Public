@@ -1,7 +1,7 @@
 ﻿using gAPI.Core.Server;
-using gAPI.Dtos;
 using Microsoft.EntityFrameworkCore;
 using UwvLlm.Api.Core.Infrastructure.Data;
+using gAPI.Core.Server.Dtos;
 
 namespace UwvLlm.Core.Extensions;
 

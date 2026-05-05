@@ -1,5 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Input;
-using gAPI.Interfaces;
+using gAPI.Core.Interfaces;
 using System.Collections.ObjectModel;
 using UwvLlm.App.Core.Interfaces;
 using UwvLlm.App.Core.Services;

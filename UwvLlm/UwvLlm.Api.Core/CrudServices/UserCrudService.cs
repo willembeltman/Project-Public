@@ -1,6 +1,6 @@
-﻿using gAPI.Dtos;
-using gAPI.Enums;
-using gAPI.Storage;
+﻿using gAPI.Core.Dtos;
+using gAPI.Core.Enums;
+using gAPI.Core.Server.Storage;
 using Microsoft.AspNetCore.Http;
 using UwvLlm.Shared.Dtos;
 using UwvLlm.Shared.Interfaces;
@@ -8,8 +8,8 @@ using UwvLlm.Shared.Interfaces;
 namespace UwvLlm.Api.Core.CrudServices;
 
 public class UserCrudService(
-    gAPI.Interfaces.IUseCase<UwvLlm.Api.Core.Infrastructure.Data.User, User, Guid> useCase,
-    gAPI.Interfaces.Mapping<UwvLlm.Api.Core.Infrastructure.Data.User, User> mapping,
+    gAPI.Core.Interfaces.IUseCase<UwvLlm.Api.Core.Infrastructure.Data.User, User, Guid> useCase,
+    gAPI.Core.Interfaces.Mapping<UwvLlm.Api.Core.Infrastructure.Data.User, User> mapping,
     IStorageService storageService)
     : IUserCrudService
 {

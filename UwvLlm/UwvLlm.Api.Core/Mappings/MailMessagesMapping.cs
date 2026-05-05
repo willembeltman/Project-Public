@@ -1,10 +1,10 @@
-﻿using gAPI.Extensions;
+﻿using gAPI.Core.Server.Extensions;
 
 namespace UwvLlm.Api.Core.Mappings;
 
 public class MailMessagesMapping(
-    gAPI.Interfaces.IUseCase<UwvLlm.Api.Core.Infrastructure.Data.MailMessage, UwvLlm.Shared.Dtos.MailMessage, Guid> useCase) 
-    : gAPI.Interfaces.Mapping<UwvLlm.Api.Core.Infrastructure.Data.MailMessage, UwvLlm.Shared.Dtos.MailMessage>
+    gAPI.Core.Interfaces.IUseCase<UwvLlm.Api.Core.Infrastructure.Data.MailMessage, UwvLlm.Shared.Dtos.MailMessage, Guid> useCase) 
+    : gAPI.Core.Interfaces.Mapping<UwvLlm.Api.Core.Infrastructure.Data.MailMessage, UwvLlm.Shared.Dtos.MailMessage>
 {
     public override UwvLlm.Api.Core.Infrastructure.Data.MailMessage ToEntity(
         UwvLlm.Shared.Dtos.MailMessage dto, 

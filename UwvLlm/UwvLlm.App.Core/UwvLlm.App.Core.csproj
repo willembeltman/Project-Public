@@ -11,8 +11,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\..\gAPI\gAPI.AutoApi.Client\gAPI.AutoApiClient.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
-		<ProjectReference Include="..\..\..\gAPI\gAPI.AutoSse.Client\gAPI.AutoSseClient.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+		<ProjectReference Include="..\..\..\gAPI\gAPI.AutoApi.Client\gAPI.AutoApi.Client.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+		<ProjectReference Include="..\..\..\gAPI\gAPI.AutoSse.Client\gAPI.AutoSse.Client.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
 	</ItemGroup>
 
 	<ItemGroup>

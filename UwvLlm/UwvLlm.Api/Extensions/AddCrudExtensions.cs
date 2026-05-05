@@ -1,4 +1,4 @@
-﻿using gAPI.Interfaces;
+﻿using gAPI.Core.Interfaces;
 using UwvLlm.Api.Core.Mappings;
 using UwvLlm.Api.Core.UseCases;
 

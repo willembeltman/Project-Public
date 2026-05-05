@@ -1,10 +1,10 @@
-﻿using gAPI.Extensions;
+﻿using gAPI.Core.Server.Extensions;
 
 namespace UwvLlm.Api.Core.Mappings;
 
 public class UserNotificationsMapping(
-    gAPI.Interfaces.IUseCase<UwvLlm.Api.Core.Infrastructure.Data.UserNotification, UwvLlm.Shared.Dtos.UserNotification, long> useCase) 
-    : gAPI.Interfaces.Mapping<UwvLlm.Api.Core.Infrastructure.Data.UserNotification, UwvLlm.Shared.Dtos.UserNotification>
+    gAPI.Core.Interfaces.IUseCase<UwvLlm.Api.Core.Infrastructure.Data.UserNotification, UwvLlm.Shared.Dtos.UserNotification, long> useCase) 
+    : gAPI.Core.Interfaces.Mapping<UwvLlm.Api.Core.Infrastructure.Data.UserNotification, UwvLlm.Shared.Dtos.UserNotification>
 {
     public override UwvLlm.Api.Core.Infrastructure.Data.UserNotification ToEntity(
         UwvLlm.Shared.Dtos.UserNotification dto, 

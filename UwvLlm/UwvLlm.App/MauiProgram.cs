@@ -1,6 +1,6 @@
 ﻿using gAPI.Core.Client;
 using gAPI.Generated;
-using gAPI.Interfaces;
+using gAPI.Core.Interfaces;
 using Microsoft.Extensions.Logging;
 using UwvLlm.App.Pages;
 using UwvLlm.App.Services;
