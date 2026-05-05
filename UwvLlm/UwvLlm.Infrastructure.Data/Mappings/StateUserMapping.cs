@@ -2,7 +2,7 @@
 using gAPI.Core.Server.Storage;
 using UwvLlm.Shared.Dtos;
 
-namespace UwvLlm.Api.Core.Mappings;
+namespace UwvLlm.Infrastructure.Data.Mappings;
 
 public class StateUserMapping(
     IStorageService storageService) :

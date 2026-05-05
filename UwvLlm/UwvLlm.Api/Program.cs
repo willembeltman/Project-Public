@@ -11,7 +11,7 @@ using UwvLlm.Api.Core.Interfaces;
 using UwvLlm.Api.Core.Services;
 using UwvLlm.Shared;
 using UwvLlm.Shared.Dtos;
-using UwvLlm.Api.Core.Mappings;
+using UwvLlm.Infrastructure.Data.Mappings;
 
 var builder = WebApplication.CreateBuilder(args);
 

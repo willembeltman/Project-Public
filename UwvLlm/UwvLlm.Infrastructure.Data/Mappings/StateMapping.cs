@@ -1,21 +1,23 @@
-﻿using gAPI.Core.Server.Storage;
+﻿using gAPI.Core.Server.Entities;
+using gAPI.Core.Server.Mappings;
+using UwvLlm.Infrastructure.Data.Entities;
+
 namespace UwvLlm.Infrastructure.Data.Mappings;
 
-public class StateMapping (
-    IStorageService storageService)
+public class StateMapping(
+    IStateUserMapping<User, Shared.Dtos.StateUser> stateUserMapping)
+    : IStateMapping<User, Shared.Dtos.State>
 {
-
-    public async Task<UwvLlm.Shared.Dtos.StateUser> ToDtoAsync(
-        UwvLlm.Infrastructure.Data.Entities.User entity,
-        UwvLlm.Shared.Dtos.StateUser dto,
+    public async Task<Shared.Dtos.State> ToDtoAsync(
+        User? dbUser, 
+        UserToken<User>? dbToken, 
+        Ip<User> dbIp,
+        Shared.Dtos.State? receivedClientState, 
         CancellationToken ct)
     {
-        dto.Id = entity.Id;
-        dto.UserName = entity.UserName;
-        dto.Email = entity.Email;
-        dto.StorageFileUrl = await storageService.GetStorageFileUrlAsync(dto.Id.ToString(), "StateUser", ct);
-        return dto;
+        return new Shared.Dtos.State
+        {
+            User = dbUser != null ? await stateUserMapping.ToDtoAsync(dbUser, new Shared.Dtos.StateUser(), ct) : null
+        };
     }
-
-
 }
