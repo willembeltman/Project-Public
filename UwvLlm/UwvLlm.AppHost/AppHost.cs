@@ -1,5 +1,8 @@
 var builder = DistributedApplication.CreateBuilder(args);
 
+var sql = builder.AddSqlServer("sql")
+    .AddDatabase("uwvllm-db");
+
 // Service Bus
 var rabbit = builder.AddRabbitMQ("rabbit");
 
@@ -12,10 +15,12 @@ var fabric = builder.AddProject<Projects.UwvLlm_Fabric>("fabric");
 
 // Llm (console app)
 var llmproxy = builder.AddProject<Projects.UwvLlm_LlmProxy>("llmproxy")
+    .WithReference(sql)
     .WithReference(rabbit);
 
 // Core API
 var api = builder.AddProject<Projects.UwvLlm_Api>("api")
+    .WithReference(sql)
     .WithReference(rabbit)
     .WithReference(storage)
     .WithReference(fabric)

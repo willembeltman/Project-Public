@@ -1,24 +1,26 @@
 ﻿using gAPI.Core.Server;
 using Microsoft.EntityFrameworkCore;
-using gAPI.Core.Server.Dtos;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using UwvLlm.Infrastructure.Data.Entities;
 
 namespace UwvLlm.LlmProxy.Extensions;
-
 public static class AddDatabaseExtension
 {
-    public static IServiceCollection AddDatabase(this IServiceCollection services, ServerConfig config)
+    public static IServiceCollection AddDatabase(
+        this IServiceCollection services,
+        IConfiguration configuration,
+        bool useMemoryDatabase = false)
     {
-        return AddDatabase(services, config.DefaultConnectionString, config.UseMemoryDatabase);
-    }
+        var connectionString = configuration.GetConnectionString("uwvllm-db");
 
-    public static IServiceCollection AddDatabase(this IServiceCollection services, string connectionString, bool useMemoryDatabase = false)
-    {
+        Console.WriteLine(connectionString);
+
         if (useMemoryDatabase)
         {
             services.AddDbContextFactory<ApplicationDbContext>(options =>
                 options.UseInMemoryDatabase("InMemoryDb"));
+
             services.AddDbContextFactory<AuthenticationDbContext<User>>(options =>
                 options.UseInMemoryDatabase("InMemoryDb"));
         }
@@ -28,25 +30,17 @@ public static class AddDatabaseExtension
             {
                 options.UseSqlServer(
                     connectionString,
-                    sql => sql.EnableRetryOnFailure(
-                        maxRetryCount: 10,
-                        maxRetryDelay: TimeSpan.FromSeconds(5),
-                        errorNumbersToAdd: null
-                    )
-                );
+                    sql => sql.EnableRetryOnFailure(10, TimeSpan.FromSeconds(5), null));
             });
+
             services.AddDbContextFactory<AuthenticationDbContext<User>>(options =>
             {
                 options.UseSqlServer(
                     connectionString,
-                    sql => sql.EnableRetryOnFailure(
-                        maxRetryCount: 10,
-                        maxRetryDelay: TimeSpan.FromSeconds(5),
-                        errorNumbersToAdd: null
-                    )
-                );
+                    sql => sql.EnableRetryOnFailure(10, TimeSpan.FromSeconds(5), null));
             });
         }
+
         return services;
     }
 }

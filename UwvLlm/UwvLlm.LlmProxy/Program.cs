@@ -13,7 +13,7 @@ var serverConfig = builder.Configuration.CreateServerConfig();
 
 builder.Services.AddStorage(serverConfig);
 builder.Services.AddCommenServices(serverConfig);
-builder.Services.AddDatabase(serverConfig);
+builder.Services.AddDatabase(builder.Configuration);
 builder.Services.AddSingleton<IConsoleService, ConsoleService>();
 builder.Services.AddSingleton<ILlmClient, OllamaClient>();
 
