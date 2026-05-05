@@ -4,6 +4,7 @@ using UwvLlm.App.Core.Interfaces;
 using UwvLlm.Shared.Dtos;
 using UwvLlm.Shared.Interfaces;
 using CommunityToolkit.Mvvm.Input;
+using UwvLlm.Shared.CrudInterfaces;
 
 namespace UwvLlm.App.Core.ViewModels;
 

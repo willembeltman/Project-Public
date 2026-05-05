@@ -1,14 +1,15 @@
 ﻿using gAPI.Core.Server.Extensions;
+using UwvLlm.Infrastructure.Data.Entities;
 
-namespace UwvLlm.Api.Core.Mappings;
+namespace UwvLlm.Infrastructure.Data.Mappings;
 
 public class MailMessagesMapping(
-    gAPI.Core.Interfaces.IUseCase<UwvLlm.Infrastructure.Data.MailMessage, UwvLlm.Shared.Dtos.MailMessage, Guid> useCase) 
-    : gAPI.Core.Interfaces.Mapping<UwvLlm.Infrastructure.Data.MailMessage, UwvLlm.Shared.Dtos.MailMessage>
+    gAPI.Core.Interfaces.IUseCase<MailMessage, Shared.Dtos.MailMessage, Guid> useCase) 
+    : gAPI.Core.Interfaces.Mapping<MailMessage, Shared.Dtos.MailMessage>
 {
-    public override UwvLlm.Infrastructure.Data.MailMessage ToEntity(
-        UwvLlm.Shared.Dtos.MailMessage dto, 
-        UwvLlm.Infrastructure.Data.MailMessage entity)
+    public override MailMessage ToEntity(
+        Shared.Dtos.MailMessage dto, 
+        MailMessage entity)
     {
         entity.Id = dto.Id;
         entity.FromUserId = dto.FromUserId;
@@ -20,9 +21,9 @@ public class MailMessagesMapping(
         return entity;
     }
 
-    public override async Task<UwvLlm.Shared.Dtos.MailMessage> ToDtoAsync(
-        UwvLlm.Infrastructure.Data.MailMessage entity, 
-        UwvLlm.Shared.Dtos.MailMessage dto,
+    public override async Task<Shared.Dtos.MailMessage> ToDtoAsync(
+        MailMessage entity, 
+        Shared.Dtos.MailMessage dto,
         CancellationToken ct)
     {
         dto.Id = entity.Id;
@@ -43,15 +44,15 @@ public class MailMessagesMapping(
         return dto;
     }
 
-    public override IAsyncEnumerable<UwvLlm.Shared.Dtos.MailMessage> ProjectToDtosAsync(
-        IQueryable<UwvLlm.Infrastructure.Data.MailMessage> entities,
+    public override IAsyncEnumerable<Shared.Dtos.MailMessage> ProjectToDtosAsync(
+        IQueryable<MailMessage> entities,
         string[]? orderby, 
         int? skip, 
         int? take,
         CancellationToken ct)
     {  
         var dtos = entities
-            .Select(entity => new UwvLlm.Shared.Dtos.MailMessage()
+            .Select(entity => new Shared.Dtos.MailMessage()
             {
                 Id = entity.Id,
                 FromUserId = entity.FromUserId,
@@ -81,7 +82,7 @@ public class MailMessagesMapping(
     }
 
     public override async Task ExtendDto(
-        UwvLlm.Shared.Dtos.MailMessage dto,
+        Shared.Dtos.MailMessage dto,
         CancellationToken ct)
     {
         dto.CanUpdate = await useCase.CanUpdateAsync(dto, ct);

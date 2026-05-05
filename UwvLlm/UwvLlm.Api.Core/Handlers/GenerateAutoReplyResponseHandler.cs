@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using UwvLlm.Api.Core.Dtos;
 using UwvLlm.Api.Core.Interfaces;
+using UwvLlm.Shared.CrudInterfaces;
 using UwvLlm.Shared.Dtos;
 using UwvLlm.Shared.Enums;
 using UwvLlm.Shared.Interfaces;
@@ -8,7 +9,7 @@ using UwvLlm.Shared.Interfaces;
 namespace UwvLlm.LlmProxy.Core.Handlers;
 
 public class GenerateAutoReplyResponseHandler(
-    IDbContextFactory<UwvLlm.Infrastructure.Data.ApplicationDbContext> dbFactory,
+    IDbContextFactory<Infrastructure.Data.Entities.ApplicationDbContext> dbFactory,
     IUserNotificationCrudService notificationService,
     INotificationHubContext notificationHub)
     : IHandler<GenerateAutoReplyResponse>

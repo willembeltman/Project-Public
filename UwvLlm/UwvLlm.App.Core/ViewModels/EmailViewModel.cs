@@ -2,16 +2,15 @@
 using gAPI.Core.Interfaces;
 using System.Collections.ObjectModel;
 using UwvLlm.App.Core.Interfaces;
-using UwvLlm.App.Core.Services;
+using UwvLlm.Shared.CrudInterfaces;
 using UwvLlm.Shared.Dtos;
-using UwvLlm.Shared.Interfaces;
 
 namespace UwvLlm.App.Core.ViewModels;
 
 public partial class EmailViewModel(
     IDispatcherService dispatcher,
     IUserCrudService userService,
-    EmailService mailService,
+    IEmailService mailService,
     IClientConnection clientConnection,
     IUserNotificationCrudService userNotificationService,
     INavigationService navigationService,

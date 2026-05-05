@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using UwvLlm.Shared.Enums;
 
-namespace UwvLlm.Infrastructure.Data;
+namespace UwvLlm.Infrastructure.Data.Entities;
 
 public class UserNotification
 {

@@ -1,8 +1,8 @@
 ﻿using gAPI.Core.Server;
 using Microsoft.EntityFrameworkCore;
-using UwvLlm.Infrastructure.Data;
 using gAPI.Core.Server.Dtos;
 using Microsoft.Extensions.DependencyInjection;
+using UwvLlm.Infrastructure.Data.Entities;
 
 namespace UwvLlm.LlmProxy.Extensions;
 

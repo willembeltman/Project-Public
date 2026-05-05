@@ -2,7 +2,7 @@
 using gAPI.Core.Dtos;
 using UwvLlm.Shared.Dtos;
 
-namespace UwvLlm.Shared.Interfaces;
+namespace UwvLlm.Shared.CrudInterfaces;
 
 [GenerateApi]
 [IsAuthorized]

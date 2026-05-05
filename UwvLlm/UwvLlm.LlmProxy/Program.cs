@@ -1,6 +1,8 @@
 ﻿using gAPI.Core.Server.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using UwvLlm.Api.Core.Infrastructure.Llm.Clients;
+using UwvLlm.Api.Core.Infrastructure.Llm.Interfaces;
 using UwvLlm.Api.Core.Interfaces;
 using UwvLlm.Api.Core.Services;
 using UwvLlm.LlmProxy.Core;
@@ -21,7 +23,8 @@ builder.Services.AddSingleton<HandlerRegistry>();
 builder.Services.AddSingleton<ServiceBusReceiver>();
 builder.Services.AddSingleton<ServiceBusSender>();
 
-builder.Services.AddScoped<IHandler, GenerateAutoReplyRequestHandler>();
+builder.Services.AddSingleton<ILlmClient, OllamaClient>();
+builder.Services.AddTransient<IHandler, GenerateAutoReplyRequestHandler>();
 
 var app = builder.Build();
 await app.StartProxyAsync();

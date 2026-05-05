@@ -1,36 +1,28 @@
 ﻿using gAPI.CodeGen.Backend.Models.Config;
 using gAPI.Core.Helpers;
-using UwvLlm.Infrastructure.Data;
+using UwvLlm.Infrastructure.Data.Entities;
 
 var root = EnvironmentPathHelper.GetRoot(Environment.ProcessPath!, "UwvLlm");
 var config = new BackendConfig(
     DbContextType: typeof(ApplicationDbContext),
 
-    Data_AuthenticationDirectory: EnvironmentPathHelper.GetDirectory(root, @"UwvLlm.Infrastructure.Data\Authentication"),
-    Data_AuthenticationNamespace: "UwvLlm.Infrastructure.Data.Authentication",
-
     Shared_DtosDirectory: EnvironmentPathHelper.GetDirectory(root, @"UwvLlm.Shared\Dtos"),
     Shared_DtosNamespace: "UwvLlm.Shared.Dtos",
     Shared_StateDtosDirectory: EnvironmentPathHelper.GetDirectory(root, @"UwvLlm.Shared\Dtos"),
     Shared_StateDtosNamespace: "UwvLlm.Shared.Dtos",
-    Shared_InterfacesDirectory: EnvironmentPathHelper.GetDirectory(root, @"UwvLlm.Shared\Interfaces"),
-    Shared_InterfacesNamespace: "UwvLlm.Shared.Interfaces",
-    Shared_RequestDtosDirectory: EnvironmentPathHelper.GetDirectory(root, @"UwvLlm.Shared\Dtos"),
-    Shared_RequestDtosNamespace: "UwvLlm.Shared.Dtos",
-    Shared_ResponseDtosDirectory: EnvironmentPathHelper.GetDirectory(root, @"UwvLlm.Shared\Dtos"),
-    Shared_ResponseDtosNamespace: "UwvLlm.Shared.Dtos",
+    Shared_CrudInterfacesDirectory: EnvironmentPathHelper.GetDirectory(root, @"UwvLlm.Shared\CrudInterfaces"),
+    Shared_CrudInterfacesNamespace: "UwvLlm.Shared.CrudInterfaces",
 
-    Core_CrudUseCasesDirectory: EnvironmentPathHelper.GetDirectory(root, @"UwvLlm.Api.Core\UseCases"),
-    Core_CrudUseCasesNamespace: "UwvLlm.Api.Core.UseCases",
-    Core_CrudServicesDirectory: EnvironmentPathHelper.GetDirectory(root, @"UwvLlm.Api.Core\CrudServices"),
-    Core_CrudServicesNamespace: "UwvLlm.Api.Core.CrudServices",
+    Core_CrudUseCasesDirectory: EnvironmentPathHelper.GetDirectory(root, @"UwvLlm.Infrastructure.Data\UseCases"),
+    Core_CrudUseCasesNamespace: "UwvLlm.Infrastructure.Data.UseCases",
+    Core_CrudServicesDirectory: EnvironmentPathHelper.GetDirectory(root, @"UwvLlm.Infrastructure.Data\CrudServices"),
+    Core_CrudServicesNamespace: "UwvLlm.Infrastructure.Data.CrudServices",
+    Core_CrudMappingsDirectory: EnvironmentPathHelper.GetDirectory(root, @"UwvLlm.Infrastructure.Data\Mappings"),
+    Core_CrudMappingsNamespace: "UwvLlm.Infrastructure.Data.Mappings",
 
-    Core_CrudMappingsDirectory: EnvironmentPathHelper.GetDirectory(root, @"UwvLlm.Api.Core\Mappings"),
-    Core_CrudMappingsNamespace: "UwvLlm.Api.Core.Mappings",
-    Core_ServicesDirectory: EnvironmentPathHelper.GetDirectory(root, @"UwvLlm.Api.Core\Services"),
-    Core_ServicesNamespace: "UwvLlm.Api.Core.Services",
     Extensions_Directory: EnvironmentPathHelper.GetDirectory(root, @"UwvLlm.Api\Extensions"),
-    Extensions_Namespace: "UwvLlm.Api.Extensions");
+    Extensions_Namespace: "UwvLlm.Api.Extensions"
+    );
 
 var generator = new gAPI.CodeGen.Backend.BackendGenerator(config);
 generator.Run();

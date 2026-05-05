@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace UwvLlm.App.Core;
+namespace UwvLlm.App.Core.ViewModels;
 
 public partial class BaseViewModel : INotifyPropertyChanged
 {

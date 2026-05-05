@@ -11,9 +11,9 @@
   <Folder Name="/Core/">
     <Project Path="UwvLlm.Api.Core/UwvLlm.Api.Core.csproj" Id="26295ce6-4320-41cb-aa4a-206f4089f821" />
     <Project Path="UwvLlm.App.Core/UwvLlm.App.Core.csproj" Id="d7da95e3-4a2e-4f91-bafd-d4360da2354d" />
-    <Project Path="UwvLlm.Application/UwvLlm.Application.csproj" Id="0f3f9376-7fa8-4f76-88af-d18abcd7cd14" />
     <Project Path="UwvLlm.Infrastructure.Data/UwvLlm.Infrastructure.Data.csproj" Id="544a8f93-80e4-4b49-819d-05bd8b104d80" />
     <Project Path="UwvLlm.Infrastructure.Llm/UwvLlm.Infrastructure.Llm.csproj" Id="9076559d-1c9d-48ca-8363-f7338524d726" />
+    <Project Path="UwvLlm.Infrastructure.Messaging/UwvLlm.Infrastructure.Messaging.csproj" Id="7b5e2458-b601-4c3f-b2d9-51a2af04c542" />
     <Project Path="UwvLlm.LlmProxy.Core/UwvLlm.LlmProxy.Core.csproj" Id="d7b63eac-72f4-4a6f-87de-352f7a216ee6" />
     <Project Path="UwvLlm.Shared/UwvLlm.Shared.csproj" Id="2f380807-1cec-4eb5-bc9e-f2382a973d5c" />
   </Folder>

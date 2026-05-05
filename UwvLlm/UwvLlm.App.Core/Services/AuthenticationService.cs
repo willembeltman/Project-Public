@@ -9,7 +9,8 @@ public class AuthenticationService(
     IUiService uiService,
     IAccountService accountService,
     IAuthenticatedHttpClient<State> httpClient,
-    INavigationService navigationService)
+    INavigationService navigationService) 
+    : IAuthenticationService
 {
     public Task<bool> IsAuthenticatedAsync()
     {

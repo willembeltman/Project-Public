@@ -1,14 +1,14 @@
 ﻿using gAPI.Core.Server;
 using UwvLlm.Api.Core.Dtos;
 using UwvLlm.Api.Core.Enums;
-using UwvLlm.Api.Core.Services;
+using UwvLlm.Shared.CrudInterfaces;
 using UwvLlm.Shared.Dtos;
 using UwvLlm.Shared.Interfaces;
 
 namespace UwvLlm.Api.Core.Services;
 
 public class MailApi(
-    IAuthenticationService<UwvLlm.Infrastructure.Data.User, State> authenticationService,
+    IAuthenticationService<Infrastructure.Data.Entities.User, State> authenticationService,
     IMailMessageCrudService mailService,
     ServiceBusSender serviceBusSender)
     : IMailApi

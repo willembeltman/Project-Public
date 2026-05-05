@@ -1,22 +1,23 @@
 ﻿using gAPI.Core.Server.Entities;
 using gAPI.Core.Server.Mappings;
+using UwvLlm.Infrastructure.Data.Entities;
 
 namespace UwvLlm.Api.Core.Mappings;
 
 public class StateMapping(
-    IStateUserMapping<UwvLlm.Infrastructure.Data.User, UwvLlm.Shared.Dtos.StateUser> stateUserMapping)
-    : IStateMapping<UwvLlm.Infrastructure.Data.User, UwvLlm.Shared.Dtos.State>
+    IStateUserMapping<User, Shared.Dtos.StateUser> stateUserMapping)
+    : IStateMapping<User, Shared.Dtos.State>
 {
-    public async Task<UwvLlm.Shared.Dtos.State> ToDtoAsync(
-        UwvLlm.Infrastructure.Data.User? dbUser, 
-        UserToken<UwvLlm.Infrastructure.Data.User>? dbToken, 
-        Ip<UwvLlm.Infrastructure.Data.User> dbIp,
-        UwvLlm.Shared.Dtos.State? receivedClientState, 
+    public async Task<Shared.Dtos.State> ToDtoAsync(
+        User? dbUser, 
+        UserToken<User>? dbToken, 
+        Ip<User> dbIp,
+        Shared.Dtos.State? receivedClientState, 
         CancellationToken ct)
     {
-        return new UwvLlm.Shared.Dtos.State
+        return new Shared.Dtos.State
         {
-            User = dbUser != null ? await stateUserMapping.ToDtoAsync(dbUser, new UwvLlm.Shared.Dtos.StateUser(), ct) : null
+            User = dbUser != null ? await stateUserMapping.ToDtoAsync(dbUser, new Shared.Dtos.StateUser(), ct) : null
         };
     }
 }

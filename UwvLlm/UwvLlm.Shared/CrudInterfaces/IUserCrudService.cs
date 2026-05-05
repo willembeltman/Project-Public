@@ -3,7 +3,7 @@ using gAPI.Core.Dtos;
 using Microsoft.AspNetCore.Http;
 using UwvLlm.Shared.Dtos;
 
-namespace UwvLlm.Shared.Interfaces;
+namespace UwvLlm.Shared.CrudInterfaces;
 
 [GenerateApi]
 [IsAuthorized]

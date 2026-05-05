@@ -1,6 +1,6 @@
 ﻿using gAPI.Core.Interfaces;
 using UwvLlm.App.Core.Interfaces;
-using UwvLlm.Shared.Interfaces;
+using UwvLlm.Shared.CrudInterfaces;
 
 namespace UwvLlm.App.Core.ViewModels;
 

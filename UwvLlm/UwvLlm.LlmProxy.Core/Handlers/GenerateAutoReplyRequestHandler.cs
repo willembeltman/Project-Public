@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using UwvLlm.Infrastructure.Data;
 using UwvLlm.Api.Core.Infrastructure.Llm.Interfaces;
 using UwvLlm.Api.Core.Infrastructure.Llm.Models;
 using UwvLlm.Infrastructure.Llm.Enums;
@@ -7,6 +6,7 @@ using UwvLlm.Api.Core.Dtos;
 using UwvLlm.Api.Core.Enums;
 using UwvLlm.Api.Core.Interfaces;
 using UwvLlm.Api.Core.Services;
+using UwvLlm.Infrastructure.Data.Entities;
 
 namespace UwvLlm.LlmProxy.Core.Handlers;
 

@@ -1,12 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using UwvLlm.App.Core.Interfaces;
-using UwvLlm.App.Core.Services;
 
 namespace UwvLlm.App.Core.ViewModels;
 
 public partial class RegisterViewModel(
     INavigationService navigationService,
-    AuthenticationService authenticationService) : BaseViewModel
+    IAuthenticationService authenticationService) : BaseViewModel
 {
     public string? UserName { get => field; set => SetProperty(ref field, value); }
     public string? Email { get => field; set => SetProperty(ref field, value); }

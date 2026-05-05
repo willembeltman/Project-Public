@@ -7,7 +7,8 @@ namespace UwvLlm.App.Core.Services;
 public class EmailService(
     IUiService uiService,
     IMailApi mailApi,
-    INavigationService navigationService)
+    INavigationService navigationService) 
+    : IEmailService
 {
     public async Task Send(Guid? toUserId, string? subject, string? body)
     {

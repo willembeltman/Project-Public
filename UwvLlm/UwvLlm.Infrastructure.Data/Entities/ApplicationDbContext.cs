@@ -1,7 +1,7 @@
 ﻿using gAPI.Core.Server;
 using Microsoft.EntityFrameworkCore;
 
-namespace UwvLlm.Infrastructure.Data;
+namespace UwvLlm.Infrastructure.Data.Entities;
 
 public class ApplicationDbContext(DbContextOptions options) : AuthenticationDbContext<User>(options)
 {
