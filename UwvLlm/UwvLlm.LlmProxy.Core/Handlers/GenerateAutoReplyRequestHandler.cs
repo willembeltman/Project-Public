@@ -1,27 +1,25 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.Text.Json;
 using UwvLlm.Api.Core.Infrastructure.Data;
 using UwvLlm.Shared.Private.Dtos;
 using UwvLlm.Shared.Private.Interfaces;
+using UwvLlm.Shared.Private.Services;
 
 namespace UwvLlm.Llm.Core.Handlers;
 
-public class GenerateAutoReplyRequestHandler : IHandler
+public class GenerateAutoReplyRequestHandler(
+    IDbContextFactory<ApplicationDbContext> dbFactory,
+    ServiceBusSenderService sender)
+    : IHandler<GenerateAutoReplyRequest>
 {
-    private readonly IDbContextFactory<ApplicationDbContext> DbFactory;
-
-    public GenerateAutoReplyRequestHandler(IDbContextFactory<ApplicationDbContext> dbFactory)
+    public async Task Handle(GenerateAutoReplyRequest message, CancellationToken ct)
     {
-        DbFactory = dbFactory;
-    }
+        using var db = dbFactory.CreateDbContext();
 
-    public string MessageType => nameof(GenerateAutoReplyRequest);
+        // geen JSON parsing meer 🎉
+        // gewoon typed werken
 
-    public async Task Handle(string messageJson)
-    {
-        var message = JsonSerializer.Deserialize<GenerateAutoReplyRequest>(messageJson)
-            ?? throw new Exception("Cannot parse json");
-        using var db = DbFactory.CreateDbContext();
+        //Console.WriteLine(message.Email);
 
+        await sender.SendAsync(new GenerateAutoReplyResponse(), ct);
     }
 }

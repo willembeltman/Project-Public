@@ -1,12 +1,13 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using UwvLlm.Llm.Core.Services;
+using UwvLlm.Shared.Private.Services;
 
 namespace UwvLlm.Llm.Core;
 
 public static class AppStartExtention
 {
-    public static async Task CustomStartAsync(this IHost app)
+    public static async Task StartProxyAsync(this IHost app)
     {
         using var scope = app.Services.CreateScope();
 
@@ -18,8 +19,17 @@ public static class AppStartExtention
         var workerTask = workerService.Start(cts.Token);
         var consoleTask = consoleService.Start(cts.Token);
 
-        await Task.WhenAny(workerTask, consoleTask);
+        // Start
+        await Task.WhenAny(
+            workerTask, 
+            consoleTask);
+
+        // Somebody quit, so cancel
         cts.Cancel();
-        Task.WaitAll(workerTask, consoleTask);
+
+        // Wait for all to quit / throw
+        Task.WaitAll(
+            workerTask, 
+            consoleTask);
     }
 }

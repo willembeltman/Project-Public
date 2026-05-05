@@ -4,6 +4,8 @@ namespace UwvLlm.Shared.Private.Interfaces;
 
 public interface IHandler
 {
-    string MessageType { get; }
-    Task Handle(string messageJson);
+}
+public interface IHandler<TMessage> : IHandler
+{
+    Task Handle(TMessage message, CancellationToken ct);
 }
