@@ -17,7 +17,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\..\..\gAPI\gAPI.Core.Client\gAPI.Core.Client.csproj" />
-		<ProjectReference Include="..\UwvLlm.Shared\UwvLlm.Shared.csproj" />
+		<ProjectReference Include="..\UwvLlm.Shared\UwvLlm.Shared.Public.csproj" />
 	</ItemGroup>
 
 </Project>
