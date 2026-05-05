@@ -24,6 +24,7 @@ public class MailMessage : ICrudEntity
     public System.DateTimeOffset Date { get; set; }
     [Required]
     public string Body { get; set; } = string.Empty;
+    public string? AutoResponse { get; set; }
     [IsReadOnly]
     public bool CanUpdate { get; set; }
     [IsReadOnly]

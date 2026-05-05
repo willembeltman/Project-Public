@@ -8,8 +8,8 @@ using UwvLlm.Shared.Dtos;
 namespace UwvLlm.Infrastructure.Data.CrudServices;
 
 public class UserCrudService(
-    gAPI.Core.Interfaces.IUseCase<Entities.User, User, Guid> useCase,
-    gAPI.Core.Interfaces.Mapping<Entities.User, User> mapping,
+    gAPI.Core.Interfaces.IUseCase<UwvLlm.Infrastructure.Data.Entities.User, User, Guid> useCase,
+    gAPI.Core.Interfaces.Mapping<UwvLlm.Infrastructure.Data.Entities.User, User> mapping,
     IStorageService storageService)
     : IUserCrudService
 {
@@ -23,7 +23,7 @@ public class UserCrudService(
         if (entity != null)
             return new BaseResponseT<User>() { Error = BaseResponseErrorEnum.ErrorAlreadyUsed };
 
-        entity = mapping.ToEntity(dto, new Entities.User());
+        entity = mapping.ToEntity(dto, new UwvLlm.Infrastructure.Data.Entities.User());
 
         if (!await useCase.CanCreateAsync(dto, ct))
             return new BaseResponseT<User>() { Error = BaseResponseErrorEnum.ErrorNotAuthorized };

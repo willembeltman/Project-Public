@@ -6,8 +6,8 @@ using UwvLlm.Shared.Dtos;
 namespace UwvLlm.Infrastructure.Data.CrudServices;
 
 public class MailMessageCrudService(
-    gAPI.Core.Interfaces.IUseCase<Entities.MailMessage, MailMessage, Guid> useCase,
-    gAPI.Core.Interfaces.Mapping<Entities.MailMessage, MailMessage> mapping)
+    gAPI.Core.Interfaces.IUseCase<UwvLlm.Infrastructure.Data.Entities.MailMessage, MailMessage, Guid> useCase,
+    gAPI.Core.Interfaces.Mapping<UwvLlm.Infrastructure.Data.Entities.MailMessage, MailMessage> mapping)
     : IMailMessageCrudService
 {
     public async Task<BaseResponseT<MailMessage>> Create(MailMessage dto, CancellationToken ct)
@@ -20,7 +20,7 @@ public class MailMessageCrudService(
         if (entity != null)
             return new BaseResponseT<MailMessage>() { Error = BaseResponseErrorEnum.ErrorAlreadyUsed };
 
-        entity = mapping.ToEntity(dto, new Entities.MailMessage());
+        entity = mapping.ToEntity(dto, new UwvLlm.Infrastructure.Data.Entities.MailMessage());
 
         if (!await useCase.CanCreateAsync(dto, ct))
             return new BaseResponseT<MailMessage>() { Error = BaseResponseErrorEnum.ErrorNotAuthorized };
