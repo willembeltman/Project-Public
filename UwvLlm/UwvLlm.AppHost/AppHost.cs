@@ -11,14 +11,14 @@ var storage = builder.AddProject<Projects.UwvLlm_Storage>("storage")
 var fabric = builder.AddProject<Projects.UwvLlm_Fabric>("fabric");
 
 // Llm (console app)
-var llm = builder.AddProject<Projects.UwvLlm_Llm>("llm")
+var llmproxy = builder.AddProject<Projects.UwvLlm_LlmProxy>("llmproxy")
     .WithReference(rabbit);
 
 // Core API
 var api = builder.AddProject<Projects.UwvLlm_Api>("api")
     .WithReference(storage)              // dependency injection / service discovery
     .WithReference(fabric)
-    .WithReference(llm)
+    .WithReference(llmproxy)
     .WithReference(rabbit)
     .WithExternalHttpEndpoints();        // expose https://localhost:7281
 
