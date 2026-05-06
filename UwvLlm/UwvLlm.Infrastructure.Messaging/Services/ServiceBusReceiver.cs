@@ -1,4 +1,5 @@
-﻿using RabbitMQ.Client;
+﻿using Microsoft.Extensions.DependencyInjection;
+using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Text;
 using System.Text.Json;
@@ -30,6 +31,8 @@ public class ServiceBusReceiver(
 
         consumer.ReceivedAsync += async (_, e) =>
         {
+            using var scope = sp.CreateScope();
+
             var json = Encoding.UTF8.GetString(e.Body.ToArray());
 
             try
@@ -37,7 +40,9 @@ public class ServiceBusReceiver(
                 var message = JsonSerializer.Deserialize<ServiceBusMessage>(json)
                     ?? throw new Exception("Invalid message");
 
-                await registry.Handle(message, sp, ct);
+                var registry = scope.ServiceProvider.GetRequiredService<IHandlerRegistry>();
+
+                await registry.Handle(message, scope.ServiceProvider, ct);
 
                 await channel.BasicAckAsync(e.DeliveryTag, false);
             }
