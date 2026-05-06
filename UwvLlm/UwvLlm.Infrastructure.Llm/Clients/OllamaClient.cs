@@ -50,7 +50,10 @@ public class OllamaClient(
         var request = new { model = model.Name };
         var url = new Uri(OllamaServerUrl, "/api/pull");
         var response = await HttpClient.PostAsJsonAsync(url, request, ct);
+        var responseContent = await response.Content.ReadAsStringAsync();
         response.EnsureSuccessStatusCode();
+
+        if (responseContent == null) { }
 
         Initialized = true;
     }
@@ -62,7 +65,7 @@ public class OllamaClient(
         var reponseJson = await DoCall(payload, ct);
 
         var response =
-            JsonSerializer.Deserialize<OllamaResponse>(reponseJson)
+            JsonSerializer.Deserialize<OllamaResponse>(reponseJson, DefaultJsonSerializerOptions.JsonDeserializerOptions)
             ?? throw new Exception("Something is not right");
 
         return new LlmResponse(
@@ -108,10 +111,10 @@ public class OllamaClient(
         };
 
         var response = await HttpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, ct);
+        var json = await response.Content.ReadAsStringAsync(ct);
 
         response.EnsureSuccessStatusCode();
 
-        var json = await response.Content.ReadAsStringAsync(ct);
 
         return json;
     }
@@ -121,7 +124,7 @@ public class OllamaClient(
         var ollamaMessages = messages.Select(a =>
             new
             {
-                role = a.Role,
+                role = Enum.GetName(a.Role)!.ToLower(),
                 tool_call_id = a.ToolCallId,
                 content = a.Content,
                 tool_calls = a.ToolCalls?.Select(b =>
