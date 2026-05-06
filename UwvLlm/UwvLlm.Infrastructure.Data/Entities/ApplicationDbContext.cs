@@ -1,5 +1,9 @@
-﻿using gAPI.Core.Server;
+﻿using gAPI.Core.Attributes;
+using gAPI.Core.Server.Entities;
+using gAPI.Core.Server.Storage;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace UwvLlm.Infrastructure.Data.Entities;
 
