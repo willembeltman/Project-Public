@@ -1,11 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.14.36327.8 d17.14
+# Visual Studio Version 18
+VisualStudioVersion = 18.7.11819.209
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScrinkLargestVideos", "ScrinkLargestVideos\ScrinkLargestVideos.csproj", "{FF86C9F0-A400-4200-AE54-6C40F0A4229D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "gAPI.EntityFrameworkDisk", "..\..\gAPI\gAPI.EntityFrameworkDisk\gAPI.EntityFrameworkDisk.csproj", "{D54C9B56-92BA-81F9-6011-D5DE3311F90C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "gAPI.Core", "..\..\gAPI\gAPI.Core\gAPI.Core.csproj", "{75A691DC-7ABD-2BD8-A52C-F959968C8D07}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "gAPI.AutoSerializer", "..\..\gAPI\gAPI.AutoSerializer\gAPI.AutoSerializer.csproj", "{C56CAE96-0883-737F-1E48-8AAB2EB684C3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +25,14 @@ Global
 		{D54C9B56-92BA-81F9-6011-D5DE3311F90C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D54C9B56-92BA-81F9-6011-D5DE3311F90C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D54C9B56-92BA-81F9-6011-D5DE3311F90C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{75A691DC-7ABD-2BD8-A52C-F959968C8D07}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{75A691DC-7ABD-2BD8-A52C-F959968C8D07}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{75A691DC-7ABD-2BD8-A52C-F959968C8D07}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{75A691DC-7ABD-2BD8-A52C-F959968C8D07}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C56CAE96-0883-737F-1E48-8AAB2EB684C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C56CAE96-0883-737F-1E48-8AAB2EB684C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C56CAE96-0883-737F-1E48-8AAB2EB684C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C56CAE96-0883-737F-1E48-8AAB2EB684C3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

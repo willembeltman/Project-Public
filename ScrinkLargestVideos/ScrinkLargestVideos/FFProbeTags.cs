@@ -1,9 +1,14 @@
-﻿namespace ScrinkLargestVideos
+﻿using System.Text.Json.Serialization;
+
+namespace ScrinkLargestVideos
 {
     public class FFProbeTags
     {
-        public string DURATION { get; set; }
-        public string title { get; set; }
-        public string ENCODER { get; set; }
+        [JsonPropertyName("DURATION")]
+        public string Duration { get; set; } = string.Empty;
+        [JsonPropertyName("title")]
+        public string Title { get; set; } = string.Empty;
+        [JsonPropertyName("ENCODER")]
+        public string Encoder { get; set; } = string.Empty;
     }
 }

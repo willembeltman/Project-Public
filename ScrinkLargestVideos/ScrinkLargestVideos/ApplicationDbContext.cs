@@ -1,13 +1,8 @@
-﻿using System;
+﻿using gAPI.Storage.Server.EntityFrameworkDisk;
 
-namespace ScrinkLargestVideos
+namespace ScrinkLargestVideos;
+
+public class ApplicationDbContext : DbContext
 {
-    public class ApplicationDbContext : IDisposable
-    {
-        public DbSet<FileRapport> FileRapports { get; set; } = new DbSet<FileRapport>("FileRapports");
-        public void Dispose()
-        {
-            FileRapports.Dispose();
-        }
-    }
+    public DbSet<FileRapport> FileRapports { get; set; } = default!;
 }

@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System.Text.Json.Serialization;
 
-namespace ScrinkLargestVideos
+namespace ScrinkLargestVideos;
+
+public class FFProbeRapport
 {
-    public class FFProbeRapport
-    {
-        public List<FFProbeStream> streams { get; set; }
-        public FFProbeFormat format { get; set; }
-    }
+    [JsonPropertyName("streams")]
+    public List<FFProbeStream> Streams { get; set; } = [];
+    [JsonPropertyName("format")]
+    public FFProbeFormat Format { get; set; } = new();
 }
