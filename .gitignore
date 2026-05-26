@@ -88,11 +88,12 @@ BenchmarkDotNet.Artifacts/
 # Build directory used by the dotnet CLI
 /bin/
 /obj/
-MyVideoEditor/MyVideoEditor/Executebles/ffmpeg.exe
-MyVideoEditor/MyVideoEditor/Executebles/ffplay.exe
-MyVideoEditor/MyVideoEditor/Executebles/ffprobe.exe
-MyVideoEditor/VideoEditor/Executebles/ffmpeg.exe
-MyVideoEditor/VideoEditor/Executebles/ffplay.exe
-MyVideoEditor/VideoEditor/Executebles/ffprobe.exe
 
 appsettings.Development.json
+
+# Ignore media files
+*.mp4
+
+ffmpeg.exe
+ffprobe.exe
+ffplay.exe
