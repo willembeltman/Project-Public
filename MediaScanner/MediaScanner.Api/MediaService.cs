@@ -25,6 +25,7 @@ public class MediaService : IHostedService
     // Configured clients: key is address (e.g. "localhost:5001"), value is ClientConnection
     private readonly List<string> _clientAddresses;
     private readonly string _localStoragePath;
+    public string LocalStoragePath => _localStoragePath;
 
     // In-memory store of all files from all clients and local storage
     // Key: ClientId or "Local", Value: Dictionary of relative paths (starting with root name) to MediaFileDto
