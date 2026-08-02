@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="MediaScanner.Shared/MediaScanner.Shared.csproj" />
+  <Project Path="MediaScanner.Client/MediaScanner.Client.csproj" />
+  <Project Path="MediaScanner.Api/MediaScanner.Api.csproj" />
+</Solution>
