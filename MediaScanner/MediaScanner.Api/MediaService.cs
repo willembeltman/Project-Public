@@ -12,6 +12,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using MediaScanner.Shared;
+using MediaScanner.Shared.Models;
+using MediaScanner.Shared.Enums;
 
 namespace MediaScanner.Api;
 

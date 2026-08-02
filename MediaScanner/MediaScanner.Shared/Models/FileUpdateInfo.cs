@@ -1,4 +1,6 @@
-namespace MediaScanner.Shared;
+using MediaScanner.Shared.Enums;
+
+namespace MediaScanner.Shared.Models;
 
 public class FileUpdateInfo
 {

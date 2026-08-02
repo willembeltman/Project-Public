@@ -1,7 +1,8 @@
+using MediaScanner.Shared.Enums;
 using System;
 using System.Collections.Generic;
 
-namespace MediaScanner.Shared;
+namespace MediaScanner.Shared.Models;
 
 public class ControlMessage
 {

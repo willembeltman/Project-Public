@@ -5,7 +5,8 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
-using MediaScanner.Shared;
+using MediaScanner.Shared.Models;
+using MediaScanner.Shared.Enums;
 
 namespace MediaScanner.Client;
 

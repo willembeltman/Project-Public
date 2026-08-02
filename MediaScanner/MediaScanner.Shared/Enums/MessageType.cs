@@ -1,4 +1,4 @@
-namespace MediaScanner.Shared;
+namespace MediaScanner.Shared.Enums;
 
 public enum MessageType
 {

@@ -15,6 +15,12 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+
+    // Voeg deze regel toe:
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/openapi/v1.json", "OpenAPI v1");
+    });
 }
 
 app.UseHttpsRedirection();

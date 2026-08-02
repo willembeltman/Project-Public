@@ -9,6 +9,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using MediaScanner.Shared;
+using MediaScanner.Shared.Models;
+using MediaScanner.Shared.Enums;
 
 namespace MediaScanner.Client;
 

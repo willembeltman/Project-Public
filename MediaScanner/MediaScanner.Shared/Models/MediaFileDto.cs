@@ -1,4 +1,4 @@
-namespace MediaScanner.Shared;
+namespace MediaScanner.Shared.Models;
 
 public class MediaFileDto
 {
