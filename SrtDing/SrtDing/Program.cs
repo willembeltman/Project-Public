@@ -1,4 +1,11 @@
-﻿var subtitles = SrtParser.Parse("OpnameEnverOrigineel.srt");
+﻿
+
+var subtitles2 = SrtParser.Parse("OpnameSollicitatie.srt");
+var text2 = string.Join("\r\n", subtitles2.Select(a => a.Text));
+File.WriteAllText("OpnameSollicitatie.txt", text2);
+
+return;
+var subtitles = SrtParser.Parse("OpnameEnverOrigineel.srt");
 
 var list = new List<ParsedSubtitle>();
 var currentIndex = 1;
