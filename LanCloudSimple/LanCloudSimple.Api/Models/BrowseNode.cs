@@ -1,4 +1,4 @@
-namespace LanCloudSimple.Api;
+namespace LanCloudSimple.Api.Models;
 
 public class BrowseNode
 {

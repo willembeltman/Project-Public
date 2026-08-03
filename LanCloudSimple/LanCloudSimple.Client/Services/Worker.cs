@@ -2,11 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using LanCloudSimple.Client.Processes;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace LanCloudSimple.Client;
+namespace LanCloudSimple.Client.Services;
 
 public class Worker : BackgroundService
 {

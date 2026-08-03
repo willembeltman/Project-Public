@@ -6,7 +6,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace LanCloudSimple.Shared;
+namespace LanCloudSimple.Shared.Helpers;
 
 public static class NetworkHelper
 {

@@ -1,3 +1,5 @@
+using LanCloudSimple.Api.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -6,8 +8,8 @@ builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
-builder.Services.AddSingleton<LanCloudSimple.Api.MediaService>();
-builder.Services.AddHostedService(sp => sp.GetRequiredService<LanCloudSimple.Api.MediaService>());
+builder.Services.AddSingleton<CloudService>();
+builder.Services.AddHostedService(sp => sp.GetRequiredService<CloudService>());
 
 var app = builder.Build();
 

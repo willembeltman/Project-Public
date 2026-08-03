@@ -6,6 +6,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using LanCloudSimple.Api.Models;
+using LanCloudSimple.Api.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
@@ -17,10 +19,10 @@ namespace LanCloudSimple.Api.Controllers;
 [Route("dav")]
 public class WebDavController : ControllerBase
 {
-    private readonly MediaService _mediaService;
+    private readonly CloudService _mediaService;
     private readonly ILogger<WebDavController> _logger;
 
-    public WebDavController(MediaService mediaService, ILogger<WebDavController> logger)
+    public WebDavController(CloudService mediaService, ILogger<WebDavController> logger)
     {
         _mediaService = mediaService;
         _logger = logger;

@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using LanCloudSimple.Api.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
@@ -13,10 +14,10 @@ namespace LanCloudSimple.Api.Controllers;
 [Route("api/[controller]")]
 public class MediaController : ControllerBase
 {
-    private readonly MediaService _mediaService;
+    private readonly CloudService _mediaService;
     private readonly ILogger<MediaController> _logger;
 
-    public MediaController(MediaService mediaService, ILogger<MediaController> logger)
+    public MediaController(CloudService mediaService, ILogger<MediaController> logger)
     {
         _mediaService = mediaService;
         _logger = logger;

@@ -1,6 +1,6 @@
 using System.Net.Sockets;
 
-namespace LanCloudSimple.Api;
+namespace LanCloudSimple.Api.Helpers;
 
 public class NetworkStreamWithCleanup : Stream
 {

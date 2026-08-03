@@ -1,4 +1,4 @@
-using LanCloudSimple.Client;
+using LanCloudSimple.Client.Services;
 
 var builder = Host.CreateApplicationBuilder(args);
 builder.Services.AddHostedService<Worker>();

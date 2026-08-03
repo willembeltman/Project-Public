@@ -1,25 +1,18 @@
-using System;
+using LanCloudSimple.Api.Helpers;
+using LanCloudSimple.Api.Models;
+using LanCloudSimple.Shared.Enums;
+using LanCloudSimple.Shared.Helpers;
+using LanCloudSimple.Shared.Models;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using LanCloudSimple.Shared;
-using LanCloudSimple.Shared.Models;
-using LanCloudSimple.Shared.Enums;
 
-namespace LanCloudSimple.Api;
+namespace LanCloudSimple.Api.Services;
 
-public class MediaService : IHostedService
+public class CloudService : IHostedService
 {
-    private readonly ILogger<MediaService> _logger;
+    private readonly ILogger<CloudService> _logger;
     private readonly IConfiguration _configuration;
     
     // Configured clients: key is address (e.g. "localhost:5001"), value is ClientConnection
@@ -36,7 +29,7 @@ public class MediaService : IHostedService
     private CancellationTokenSource? _cts;
     private FileSystemWatcher? _localWatcher;
 
-    public MediaService(ILogger<MediaService> logger, IConfiguration configuration)
+    public CloudService(ILogger<CloudService> logger, IConfiguration configuration)
     {
         _logger = logger;
         _configuration = configuration;

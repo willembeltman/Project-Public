@@ -8,11 +8,11 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using LanCloudSimple.Shared;
 using LanCloudSimple.Shared.Models;
 using LanCloudSimple.Shared.Enums;
+using LanCloudSimple.Shared.Helpers;
 
-namespace LanCloudSimple.Client;
+namespace LanCloudSimple.Client.Processes;
 
 public class TcpCloudServer
 {

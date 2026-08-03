@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 using LanCloudSimple.Shared.Models;
 using LanCloudSimple.Shared.Enums;
 
-namespace LanCloudSimple.Client;
+namespace LanCloudSimple.Client.Processes;
 
 public class CloudEngine
 {
