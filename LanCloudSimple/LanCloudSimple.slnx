@@ -2,4 +2,7 @@
   <Project Path="LanCloudSimple.Api/LanCloudSimple.Api.csproj" />
   <Project Path="LanCloudSimple.Client/LanCloudSimple.Client.csproj" />
   <Project Path="LanCloudSimple.Shared/LanCloudSimple.Shared.csproj" />
+  <Project Path="StorageApi.Api/StorageApi.Api.csproj" Id="eb37b394-1303-450b-bcce-78859f1cdeee" />
+  <Project Path="StorageApi.Host/StorageApi.Host.csproj" Id="1e425a39-0df1-414b-bc31-060e5ae5a0d1" />
+  <Project Path="StorageApi.Shared/StorageApi.Shared.csproj" Id="037fa69a-5538-4f6e-814f-3bfd90998a48" />
 </Solution>

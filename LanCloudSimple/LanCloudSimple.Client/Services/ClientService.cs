@@ -1,22 +1,16 @@
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using LanCloudSimple.Client.Processes;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using LanCloudSimple.Shared.Engine;
 
 namespace LanCloudSimple.Client.Services;
 
-public class Worker : BackgroundService
+public class ClientService : BackgroundService
 {
-    private readonly ILogger<Worker> _logger;
+    private readonly ILogger<ClientService> _logger;
     private readonly IConfiguration _configuration;
-    private CloudEngine? _engine;
-    private TcpCloudServer? _server;
+    private ClientEngine? _engine;
+    private ClientTcpServer? _server;
 
-    public Worker(ILogger<Worker> logger, IConfiguration configuration)
+    public ClientService(ILogger<ClientService> logger, IConfiguration configuration)
     {
         _logger = logger;
         _configuration = configuration;
@@ -25,23 +19,17 @@ public class Worker : BackgroundService
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         var clientId = _configuration["ClientConfig:ClientId"] ?? "Client-" + Guid.NewGuid().ToString()[..8];
-        var portStr = _configuration["ClientConfig:Port"] ?? "5001";
-        if (!int.TryParse(portStr, out int port))
-        {
-            port = 5001;
-        }
-
+        var port = int.TryParse(_configuration["ClientConfig:Port"], out int p) ? p : 5001;
         var scanDirs = _configuration.GetSection("ClientConfig:ScanDirectories").Get<List<string>>() ?? new List<string>();
 
-        _logger.LogInformation("Initializing Media Scanner Client ({clientId}) on port {port}...", clientId, port);
+        _logger.LogInformation("Initializing LanCloudSimple Client ({clientId}) on port {port}...", clientId, port);
 
-        _engine = new CloudEngine(scanDirs, _logger);
+        _engine = new ClientEngine(scanDirs, _logger);
         _engine.Start();
 
-        _server = new TcpCloudServer(port, clientId, _engine, _logger);
+        _server = new ClientTcpServer(port, clientId, _engine, _logger);
         _server.Start();
 
-        // Wait until host is stopped
         try
         {
             await Task.Delay(Timeout.Infinite, stoppingToken);

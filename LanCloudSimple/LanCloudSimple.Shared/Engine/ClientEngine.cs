@@ -1,76 +1,46 @@
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text.RegularExpressions;
-using Microsoft.Extensions.Logging;
-using LanCloudSimple.Shared.Models;
 using LanCloudSimple.Shared.Enums;
+using LanCloudSimple.Shared.Models;
+using Microsoft.Extensions.Logging;
+using System.Collections.Concurrent;
+using System.Text.RegularExpressions;
 
-namespace LanCloudSimple.Client.Processes;
+namespace LanCloudSimple.Shared.Engine;
 
-public class CloudEngine
+public class ClientEngine
 {
     private readonly ILogger _logger;
     private readonly List<string> _scanDirectories;
     private readonly ConcurrentDictionary<string, CloudFileDto> _index = new(StringComparer.OrdinalIgnoreCase);
-    private readonly List<FileSystemWatcher> _watchers = new();
-
-    public event Action<FileUpdateInfo>? OnFileUpdated;
+    private readonly List<FileSystemWatcher> _watchers = [];
 
     // Matches dates like 2026-08-02, 2026_08_02, 20260802, etc.
     private static readonly Regex DateRegex = new(
         @"(?<!\d)(?<year>19\d{2}|20\d{2})[-_./]?(?<month>0[1-9]|1[0-2])[-_./]?(?<day>0[1-9]|[12]\d|3[01])(?!\d)",
         RegexOptions.Compiled);
 
-    public CloudEngine(List<string> scanDirectories, ILogger logger)
+    public event Action<FileUpdateInfo>? OnFileUpdated;
+
+    public ClientEngine(List<string> scanDirectories, ILogger logger)
     {
         _scanDirectories = scanDirectories;
         _logger = logger;
     }
 
-    public List<CloudFileDto> GetIndex() => _index.Values.ToList();
+    public List<CloudFileDto> GetIndex() => [.. _index.Values];
 
     public void Start()
     {
-        _logger.LogInformation("Starting media indexing and file system watchers...");
+        _logger.LogInformation("Starting cloud engine indexing and file system watchers...");
         foreach (var dir in _scanDirectories)
         {
             if (!Directory.Exists(dir))
             {
-                _logger.LogWarning("Directory does not exist: {dir}", dir);
+                _logger.LogWarning("Scan directory does not exist, skipping: {dir}", dir);
                 continue;
             }
 
-            // Index existing files
             IndexDirectory(dir);
-
-            // Set up file system watcher
-            try
-            {
-                var watcher = new FileSystemWatcher(dir)
-                {
-                    IncludeSubdirectories = true,
-                    NotifyFilter = NotifyFilters.FileName | NotifyFilters.LastWrite | NotifyFilters.Size | NotifyFilters.CreationTime
-                };
-
-                watcher.Created += (s, e) => OnFileChanged(dir, e.FullPath, FileUpdateType.Added);
-                watcher.Changed += (s, e) => OnFileChanged(dir, e.FullPath, FileUpdateType.Updated);
-                watcher.Deleted += (s, e) => OnFileChanged(dir, e.FullPath, FileUpdateType.Deleted);
-                watcher.Renamed += (s, e) => {
-                    OnFileChanged(dir, e.OldFullPath, FileUpdateType.Deleted);
-                    OnFileChanged(dir, e.FullPath, FileUpdateType.Added);
-                };
-
-                watcher.EnableRaisingEvents = true;
-                _watchers.Add(watcher);
-                _logger.LogInformation("Watching directory: {dir}", dir);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Failed to set up watcher for: {dir}", dir);
-            }
+            SetupWatcher(dir);
         }
     }
 
@@ -82,6 +52,7 @@ public class CloudEngine
             watcher.Dispose();
         }
         _watchers.Clear();
+        _logger.LogInformation("Cloud engine stopped.");
     }
 
     private void IndexDirectory(string dir)
@@ -89,14 +60,11 @@ public class CloudEngine
         _logger.LogInformation("Indexing directory: {dir}", dir);
         try
         {
-            var files = Directory.EnumerateFiles(dir, "*.*", SearchOption.AllDirectories);
-            foreach (var file in files)
+            foreach (var file in Directory.EnumerateFiles(dir, "*.*", SearchOption.AllDirectories))
             {
-                var dto = CreateMediaFileDto(dir, file);
+                var dto = CreateFileDto(dir, file);
                 if (dto != null)
-                {
                     _index[dto.Path] = dto;
-                }
             }
         }
         catch (Exception ex)
@@ -105,9 +73,42 @@ public class CloudEngine
         }
     }
 
+    private void SetupWatcher(string dir)
+    {
+        try
+        {
+            var watcher = new FileSystemWatcher(dir)
+            {
+                IncludeSubdirectories = true,
+                NotifyFilter = NotifyFilters.FileName | NotifyFilters.DirectoryName | NotifyFilters.LastWrite | NotifyFilters.Size | NotifyFilters.CreationTime
+            };
+
+            watcher.Created += (_, e) => OnFileChanged(dir, e.FullPath, FileUpdateType.Added);
+            watcher.Changed += (_, e) => OnFileChanged(dir, e.FullPath, FileUpdateType.Updated);
+            watcher.Deleted += (_, e) => OnFileChanged(dir, e.FullPath, FileUpdateType.Deleted);
+            watcher.Renamed += (_, e) =>
+            {
+                OnFileChanged(dir, e.OldFullPath, FileUpdateType.Deleted);
+                OnFileChanged(dir, e.FullPath, FileUpdateType.Added);
+            };
+
+            watcher.EnableRaisingEvents = true;
+            _watchers.Add(watcher);
+            _logger.LogInformation("Watching directory: {dir}", dir);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to set up file system watcher for: {dir}", dir);
+        }
+    }
+
     private void OnFileChanged(string rootDir, string fullPath, FileUpdateType updateType)
     {
-        if (Directory.Exists(fullPath)) return; // Ignore directories
+        if (Directory.Exists(fullPath))
+        {
+            // Is (Empty) Directory
+            return;
+        }
 
         var relativePath = GetRelativePath(rootDir, fullPath);
 
@@ -115,26 +116,25 @@ public class CloudEngine
         {
             if (_index.TryRemove(relativePath, out var removed))
             {
-                _logger.LogInformation("File deleted: {path}", relativePath);
+                _logger.LogInformation("File deleted from index: {path}", relativePath);
                 OnFileUpdated?.Invoke(new FileUpdateInfo { UpdateType = FileUpdateType.Deleted, File = removed });
             }
             return;
         }
 
-        // Added or Updated
-        // Give a tiny delay or retry mechanism if file is still being written to by another process
+        // Added or Updated — retry briefly if file is still being written
         CloudFileDto? dto = null;
-        for (int i = 0; i < 3; i++)
+        for (int attempt = 0; attempt < 3; attempt++)
         {
             try
             {
                 if (!File.Exists(fullPath)) return;
-                dto = CreateMediaFileDto(rootDir, fullPath);
+                dto = CreateFileDto(rootDir, fullPath);
                 break;
             }
             catch (IOException)
             {
-                System.Threading.Thread.Sleep(100);
+                Thread.Sleep(100);
             }
         }
 
@@ -146,10 +146,12 @@ public class CloudEngine
         }
     }
 
+    /// <summary>
+    /// Resolves a client-relative path (e.g. "ShareName/sub/file.jpg") to an absolute physical path.
+    /// Returns null if path traversal is detected or the file does not exist.
+    /// </summary>
     public string? ResolvePhysicalPath(string requestPath)
     {
-        // Request path starts with "ShareName/..."
-        // We find which scan directory matches this share name
         foreach (var dir in _scanDirectories)
         {
             var rootName = Path.GetFileName(dir);
@@ -160,41 +162,29 @@ public class CloudEngine
             {
                 var relativePart = requestPath[rootName.Length..].TrimStart('/', '\\');
                 var physicalPath = Path.GetFullPath(Path.Combine(dir, relativePart));
-                
-                // Security check to avoid path traversal
                 var dirFullPath = Path.GetFullPath(dir);
+
                 if (physicalPath.StartsWith(dirFullPath, StringComparison.OrdinalIgnoreCase) && File.Exists(physicalPath))
-                {
                     return physicalPath;
-                }
             }
         }
         return null;
     }
 
-    private string GetRelativePath(string rootDir, string fullPath)
-    {
-        var parentDir = Path.GetDirectoryName(rootDir) ?? rootDir;
-        return Path.GetRelativePath(parentDir, fullPath).Replace('\\', '/');
-    }
-
-    private CloudFileDto? CreateMediaFileDto(string rootDir, string fullPath)
+    private CloudFileDto? CreateFileDto(string rootDir, string fullPath)
     {
         try
         {
             var fileInfo = new FileInfo(fullPath);
             if (!fileInfo.Exists) return null;
 
-            var relativePath = GetRelativePath(rootDir, fullPath);
-            var mediaDate = DetermineMediaDate(fileInfo);
-
             return new CloudFileDto
             {
-                Path = relativePath,
+                Path = GetRelativePath(rootDir, fullPath),
                 Size = fileInfo.Length,
                 LastWriteTime = fileInfo.LastWriteTimeUtc,
                 CreationTime = fileInfo.CreationTimeUtc,
-                MediaDate = mediaDate
+                MediaDate = DetermineMediaDate(fileInfo)
             };
         }
         catch (Exception ex)
@@ -204,29 +194,31 @@ public class CloudEngine
         }
     }
 
+    private string GetRelativePath(string rootDir, string fullPath)
+    {
+        var parentDir = Path.GetDirectoryName(rootDir) ?? rootDir;
+        return Path.GetRelativePath(parentDir, fullPath).Replace('\\', '/');
+    }
+
     public static DateTime DetermineMediaDate(FileInfo fileInfo)
     {
-        var name = fileInfo.Name;
-        var match = DateRegex.Match(name);
+        var match = DateRegex.Match(fileInfo.Name);
         if (match.Success)
         {
-            var year = int.Parse(match.Groups["year"].Value);
-            var month = int.Parse(match.Groups["month"].Value);
-            var day = int.Parse(match.Groups["day"].Value);
-
             try
             {
-                return new DateTime(year, month, day, 0, 0, 0, DateTimeKind.Utc);
+                return new DateTime(
+                    int.Parse(match.Groups["year"].Value),
+                    int.Parse(match.Groups["month"].Value),
+                    int.Parse(match.Groups["day"].Value),
+                    0, 0, 0, DateTimeKind.Utc);
             }
-            catch (ArgumentOutOfRangeException)
-            {
-                // Invalid date numbers (e.g. 2026-02-31)
-            }
+            catch (ArgumentOutOfRangeException) { }
         }
 
         // Fallback: earliest of creation time and last write time
-        var cTime = fileInfo.CreationTimeUtc;
-        var wTime = fileInfo.LastWriteTimeUtc;
-        return cTime < wTime ? cTime : wTime;
+        return fileInfo.CreationTimeUtc < fileInfo.LastWriteTimeUtc
+            ? fileInfo.CreationTimeUtc
+            : fileInfo.LastWriteTimeUtc;
     }
 }
