@@ -32,7 +32,7 @@ public class ApplicationDbContextFactory : IDesignTimeDbContextFactory<Applicati
         // Dynamisch switchen op basis van de connection string format
         if (connectionString.StartsWith("Host=", StringComparison.OrdinalIgnoreCase))
         {
-            optionsBuilder.UseNpgsql(connectionString);
+            //optionsBuilder.UseNpgsql(connectionString);
         }
         else
         {

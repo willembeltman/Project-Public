@@ -1,4 +1,17 @@
 <Solution>
+  <Folder Name="/gAPI/">
+    <Project Path="../../BeltmanSoftwareDesign/Bsd.Generators.Frontend/Bsd.Generators.Frontend.csproj" />
+    <Project Path="gAPI/gAPI.AutoAuth.Client/gAPI.AutoAuth.Client.csproj" />
+    <Project Path="gAPI/gAPI.AutoAuth.Server/gAPI.AutoAuth.Server.csproj" />
+    <Project Path="gAPI/gAPI.AutoSerializer/gAPI.AutoSerializer.csproj" />
+    <Project Path="gAPI/gAPI.AutoWss.Client/gAPI.AutoWss.Client.csproj" />
+    <Project Path="gAPI/gAPI.AutoWss.Server/gAPI.AutoWss.Server.csproj" />
+    <Project Path="gAPI/gAPI.CodeGen.Backend/gAPI.CodeGen.Backend.csproj" />
+    <Project Path="gAPI/gAPI.Core.Client/gAPI.Core.Client.csproj" />
+    <Project Path="gAPI/gAPI.Core.Server/gAPI.Core.Server.csproj" />
+    <Project Path="gAPI/gAPI.Core/gAPI.Core.csproj" />
+    <Project Path="gAPI/gAPI.Storage.Server/gAPI.Storage.Server.csproj" />
+  </Folder>
   <Folder Name="/Generator/">
     <Project Path="TinderWithStats.Backend.Generator/TinderWithStats.Backend.Generator.csproj" />
   </Folder>

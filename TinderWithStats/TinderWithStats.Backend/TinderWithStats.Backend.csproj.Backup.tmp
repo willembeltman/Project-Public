@@ -17,7 +17,6 @@
 
 		<ProjectReference Include="..\gAPI\gAPI.AutoWss.Server\gAPI.AutoWss.Server.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
 		<ProjectReference Include="..\gAPI\gAPI.AutoAuth.Server\gAPI.AutoAuth.Server.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
-		
 		<ProjectReference Include="..\gAPI\gAPI.Core.Server\gAPI.Core.Server.csproj" />
 		<ProjectReference Include="..\TinderWithStats.Shared\TinderWithStats.Shared.csproj" />
 
