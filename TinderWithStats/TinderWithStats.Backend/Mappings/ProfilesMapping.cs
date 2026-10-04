@@ -13,6 +13,7 @@ public class ProfilesMapping(
         entity.Id = dto.Id;
         entity.UserId = dto.UserId;
         entity.LocationId = dto.LocationId;
+        entity.Name = dto.Name;
         entity.DateOfBirth = dto.DateOfBirth;
         entity.Length = dto.Length;
         entity.Beroep = dto.Beroep;
@@ -29,6 +30,7 @@ public class ProfilesMapping(
         dto.Id = entity.Id;
         dto.UserId = entity.UserId;
         dto.LocationId = entity.LocationId;
+        dto.Name = entity.Name;
         dto.DateOfBirth = entity.DateOfBirth;
         dto.Length = entity.Length;
         dto.Beroep = entity.Beroep;
@@ -37,6 +39,9 @@ public class ProfilesMapping(
         dto.UserName = 
             ("" + (entity?.User?.UserName ?? default) + "") + " " + 
                 (" (" + (entity?.User?.Email ?? default) + ")");
+
+        dto.LocationName = 
+            ("" + (entity?.Location?.LocationName ?? default) + "");
 
         await ExtendDto(dto, ct);
 
@@ -56,6 +61,7 @@ public class ProfilesMapping(
                 Id = entity.Id,
                 UserId = entity.UserId,
                 LocationId = entity.LocationId,
+                Name = entity.Name,
                 DateOfBirth = entity.DateOfBirth,
                 Length = entity.Length,
                 Beroep = entity.Beroep,
@@ -64,6 +70,8 @@ public class ProfilesMapping(
                 UserName = 
                     ("" + entity.User.UserName + "") + " " + 
                         (" (" + entity.User.Email + ")"),
+                LocationName = 
+                    ("" + entity.Location.LocationName + ""),
 #nullable enable
             })
             .ApplyOrderBy(orderby);

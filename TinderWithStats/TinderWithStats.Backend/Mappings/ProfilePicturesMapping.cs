@@ -28,6 +28,10 @@ public class ProfilePicturesMapping(
         dto.ProfileId = entity.ProfileId;
         dto.UploadDate = entity.UploadDate;
         
+        dto.ProfileName = 
+            ("" + (entity?.Profile?.Name ?? default) + "") + " " + 
+                (" (" + ((entity?.Profile?.DateOfBirth ?? default).Year) + "-" + ("0" + (entity?.Profile?.DateOfBirth ?? default).Month).Substring(("0" + (entity?.Profile?.DateOfBirth ?? default).Month).Length - 2) + "-" + ("0" + (entity?.Profile?.DateOfBirth ?? default).Day).Substring(("0" + (entity?.Profile?.DateOfBirth ?? default).Day).Length - 2) + ")");
+
         await ExtendDto(dto, ct);
 
         return dto;
@@ -47,6 +51,9 @@ public class ProfilePicturesMapping(
                 ProfileId = entity.ProfileId,
                 UploadDate = entity.UploadDate,
 #nullable disable
+                ProfileName = 
+                    ("" + entity.Profile.Name + "") + " " + 
+                        (" (" + (entity.Profile.DateOfBirth.Year) + "-" + ("0" + entity.Profile.DateOfBirth.Month).Substring(("0" + entity.Profile.DateOfBirth.Month).Length - 2) + "-" + ("0" + entity.Profile.DateOfBirth.Day).Substring(("0" + entity.Profile.DateOfBirth.Day).Length - 2) + ")"),
 #nullable enable
             })
             .ApplyOrderBy(orderby);
