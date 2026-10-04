@@ -1,0 +1,6 @@
+@TinderWithStats.FileServer_HostAddress = http://localhost:5086
+
+GET {{TinderWithStats.FileServer_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

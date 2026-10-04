@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/Generator/">
+    <Project Path="TinderWithStats.Backend.Generator/TinderWithStats.Backend.Generator.csproj" />
+  </Folder>
+  <Project Path="TinderWithStats.Backend/TinderWithStats.Backend.csproj" />
+  <Project Path="TinderWithStats.FileServer/TinderWithStats.FileServer.csproj" />
+  <Project Path="TinderWithStats.Razor/TinderWithStats.Frontend.Razor.csproj" />
+  <Project Path="TinderWithStats.Shared/TinderWithStats.Shared.csproj" />
+  <Project Path="TinderWithStats/TinderWithStats.Frontend.csproj" />
+</Solution>
