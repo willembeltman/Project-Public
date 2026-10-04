@@ -13,6 +13,7 @@ public class ProfilePicture : IStorageFile
     public virtual Profile? Profile { get; set; }
     public Guid ProfileId { get; set; }
 
+    [IsName(gAPI.Core.Enums.FormattingOption.yyyy_MM_dd)]
     public DateTimeOffset UploadDate { get; set; } = DateTimeOffset.Now;
 
     string IStorageFile.Id => Id.ToString();

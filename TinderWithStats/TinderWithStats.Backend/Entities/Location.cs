@@ -9,6 +9,7 @@ public class Location
     [Key]
     public int Id { get; set; }
 
+    [IsName]
     public string LocationName { get; set; } = string.Empty;
 
     public virtual ICollection<Profile>? Profiles { get; set; }

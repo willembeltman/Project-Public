@@ -15,10 +15,14 @@ public class Profile
     public virtual Location? Location { get; set; }
     public int LocationId { get; set; }
 
+    [IsName]
+    public string Name { get; set; } = string.Empty;
     public DateTimeOffset DateOfBirth { get; set; }
     public int Length { get; set; }
     public string Beroep { get; set; } = string.Empty;
     public string Bio { get; set; } = string.Empty;
 
     public virtual ICollection<ProfilePicture>? ProfilePictures { get; set; }
+    public virtual ICollection<Match>? MatchesSend { get; set; }
+    public virtual ICollection<Match>? MatchesReceived { get; set; }
 }
