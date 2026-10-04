@@ -4,7 +4,7 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.IO;
 
-namespace Bsd.Infrastructure.Data.Entities;
+namespace TinderWithStats.Backend.Entities;
 
 /// <summary>
 /// Deze class wordt gebruikt door efcore om de configuratie in te laten om migrations mee te doen.

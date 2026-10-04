@@ -1,4 +1,9 @@
 <Solution>
+  <Folder Name="/Boilerplate/">
+    <Project Path="TinderWithStats.Backend.Generator/TinderWithStats.Backend.Generator.csproj" />
+    <Project Path="TinderWithStats.FileServer/TinderWithStats.FileServer.csproj" />
+    <Project Path="TinderWithStats.Frontend.Razor/TinderWithStats.Frontend.Razor.csproj" />
+  </Folder>
   <Folder Name="/gAPI/">
     <Project Path="gAPI/gAPI.AutoAuth.Client/gAPI.AutoAuth.Client.csproj" />
     <Project Path="gAPI/gAPI.AutoAuth.Server/gAPI.AutoAuth.Server.csproj" />
@@ -14,12 +19,7 @@
     <Project Path="gAPI/gAPI.EntityFrameworkDisk/gAPI.EntityFrameworkDisk.csproj" />
     <Project Path="gAPI/gAPI.Storage.Server/gAPI.Storage.Server.csproj" />
   </Folder>
-  <Folder Name="/Generator/">
-    <Project Path="TinderWithStats.Backend.Generator/TinderWithStats.Backend.Generator.csproj" />
-  </Folder>
   <Project Path="TinderWithStats.Backend/TinderWithStats.Backend.csproj" />
-  <Project Path="TinderWithStats.FileServer/TinderWithStats.FileServer.csproj" />
-  <Project Path="TinderWithStats.Razor/TinderWithStats.Frontend.Razor.csproj" />
   <Project Path="TinderWithStats.Shared/TinderWithStats.Shared.csproj" />
-  <Project Path="TinderWithStats/TinderWithStats.Frontend.csproj" />
+  <Project Path="TinderWithStats.Frontend/TinderWithStats.Frontend.csproj" />
 </Solution>

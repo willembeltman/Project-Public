@@ -1,12 +1,13 @@
 ﻿using gAPI.Core.Attributes;
 using gAPI.Core.Server.Entities;
-using gAPI.Core.Server.Storage;
 
-namespace Bsd.Infrastructure.Data.Entities;
+namespace TinderWithStats.Backend.Entities;
+
 
 [IsAuthorized]
-public class User : AuthUser, IStorageFile
+public class User : AuthUser
 {
     public bool IsAdmin { get; set; }
-    string IStorageFile.Id => Id.ToString();
+
+    public virtual ICollection<Profile>? Profiles { get; set; }
 }
