@@ -1,0 +1,71 @@
+@page "/profiles"
+@implements IAsyncDisposable
+@inject IProfilesApi list
+@inject IClientAuthenticatedHttpClient ClientAuthenticatedHttpClient
+@inject IJSRuntime JS
+
+<PageTitle>Profiles</PageTitle>
+
+<AuthorizeView>
+    <Authorized>
+        <h3>Profiles</h3>
+        <LoaderView Response="Profiles?.Response">
+            @if (Profiles!.Response!.CanCreate)
+            {
+                <a id="createnew" href="/profiles/create">➕ Create a new profile</a>
+            }
+            <AutoProfileList DataSource="Profiles" />
+        </LoaderView>
+    </Authorized>
+    <NotAuthorized>
+        <RedirectToLogin />
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private CancellationTokenSource? Cts;
+    private ListDataSource<Profile, Guid>? Profiles;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Cts != null)
+        {
+            await Cts.CancelAsync();
+            Cts.Dispose();
+        }
+
+        Cts = new CancellationTokenSource();
+
+        if (await ClientAuthenticatedHttpClient.IsAuthenticatedAsync(Cts.Token) == false)
+        {
+            return;
+        }
+
+        Profiles = new ListDataSource<Profile, Guid>(
+            JS,
+            StateHasChanged,
+            GetPrimaryKey: profile => profile.Id,
+            List: list.List,
+            SetForeignKey: null,
+            AfterSaveAction: null,
+            AfterCancelAction: null,
+            Create: null,
+            Read: null,
+            Update: null,
+            Delete: null
+        );
+
+        await Profiles.InitialiseAsync();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (Cts != null)
+        {
+            await Cts.CancelAsync();
+            Cts.Dispose();
+        }
+        if (Profiles != null)
+            await Profiles.DisposeAsync();
+    }
+}

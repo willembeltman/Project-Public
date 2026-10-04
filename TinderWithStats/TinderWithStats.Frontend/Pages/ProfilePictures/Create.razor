@@ -1,0 +1,89 @@
+@page "/profilepictures/create"
+@implements IAsyncDisposable
+@inject IProfilesApi iProfilesApi
+@inject IProfilePicturesApi iProfilePicturesApi
+@inject IClientAuthenticatedHttpClient ClientAuthenticatedHttpClient
+@inject IJSRuntime JS
+@inject NavigationManager NavigationManager
+
+<PageTitle>Create ProfilePicture</PageTitle>
+
+<AuthorizeView>
+    <Authorized Context="_">
+        <h3>Create ProfilePicture</h3>
+        <LoaderView Response="ProfilePicture?.Response">
+            <EditForm Model="ProfilePicture!.Model" OnValidSubmit="ProfilePicture.HandleValidSubmit">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <AutoProfilePictureForm DataSource="ProfilePicture" Profiles="Profiles" />
+                <ErrorView Response="ProfilePicture.StatusResponse" />
+                <button id="create" class="btn btn-primary" type="submit">➕ Create</button>
+                <button id="cancel" class="btn btn-secondary ms-2" @onclick="ProfilePicture.Cancel">Cancel</button>
+            </EditForm>
+        </LoaderView>
+    </Authorized>
+    <NotAuthorized>
+        <RedirectToLogin />
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private CancellationTokenSource? Cts;
+    private ItemDataSource<ProfilePicture, Guid>? ProfilePicture;
+    private ListDataSource<Profile, Guid>? Profiles;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Cts != null)
+        {
+            await Cts.CancelAsync();
+            Cts.Dispose();
+        }
+
+        Cts = new CancellationTokenSource();
+
+        if (await ClientAuthenticatedHttpClient.IsAuthenticatedAsync(Cts.Token) == false)
+            return;
+
+        ProfilePicture = new ItemDataSource<ProfilePicture, Guid>(
+            GetPrimaryKey: profilepicture => profilepicture.Id,
+            AfterSaveAction: profilepicture => NavigationManager.NavigateTo("/profilepictures"),
+            AfterCancelAction: profilepicture => NavigationManager.NavigateTo("/profilepictures"),
+            Create: iProfilePicturesApi.Create,
+            Read: null,
+            Update: null,
+            Delete: null,
+            FileUpdate: iProfilePicturesApi.FileUpdate,
+            FileDelete: null
+        );
+        ProfilePicture.NewModel();
+
+        Profiles = new ListDataSource<Profile, Guid>(
+            JS,
+            StateHasChanged,
+            GetPrimaryKey: profile => profile.Id,
+            List: iProfilesApi.List,
+            SetForeignKey: null,
+            AfterSaveAction: null,
+            AfterCancelAction: null,
+            Create: null,
+            Read: null,
+            Update: null,
+            Delete: null
+        );
+        await Profiles.InitialiseAsync();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (Cts != null)
+        {
+            await Cts.CancelAsync();
+            Cts.Dispose();
+        }
+        if (ProfilePicture != null) 
+            await ProfilePicture.DisposeAsync();
+        if (Profiles != null) 
+            await Profiles.DisposeAsync();
+    }
+}

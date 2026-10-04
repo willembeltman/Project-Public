@@ -22,8 +22,8 @@ var config = new BackendConfig(
     Core_CrudServicesNamespace: "TinderWithStats.Backend.Services",
     Core_CrudServicesEnd: "Api",
 
-    Extensions_Directory: EnvironmentPathHelper.GetDirectory(root, @"TinderWithStats.Api\Extensions"),
-    Extensions_Namespace: "TinderWithStats.Api.Extensions",
+    Extensions_Directory: EnvironmentPathHelper.GetDirectory(root, @"TinderWithStats.Backend\Extensions"),
+    Extensions_Namespace: "TinderWithStats.Backend.Extensions",
     OverwriteServices: true,
     OverwriteServiceInterfaces: true,
     OverwriteMappers: true,

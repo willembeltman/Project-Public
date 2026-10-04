@@ -37,7 +37,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             entity.HasOne(p => p.Location)
                   .WithMany(l => l.Profiles)
                   .HasForeignKey(p => p.LocationId)
-                  .OnDelete(DeleteBehavior.Restrict); // Voorkomt dat een locatie per ongeluk wordt verwijderd als er nog profielen aan gekoppeld zijn
+                  .OnDelete(DeleteBehavior.NoAction); // Voorkomt dat een locatie per ongeluk wordt verwijderd als er nog profielen aan gekoppeld zijn
         });
 
         modelBuilder.Entity<Match>(entity =>
@@ -45,7 +45,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             entity.HasOne(p => p.ProfileSender)
                   .WithMany(l => l.MatchesSend)
                   .HasForeignKey(p => p.ProfileSenderId)
-                  .OnDelete(DeleteBehavior.Restrict); // Voorkomt dat een locatie per ongeluk wordt verwijderd als er nog profielen aan gekoppeld zijn
+                  .OnDelete(DeleteBehavior.NoAction); // Voorkomt dat een locatie per ongeluk wordt verwijderd als er nog profielen aan gekoppeld zijn
         });
 
         modelBuilder.Entity<Match>(entity =>
@@ -53,7 +53,30 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             entity.HasOne(p => p.ProfileReceiver)
                   .WithMany(l => l.MatchesReceived)
                   .HasForeignKey(p => p.ProfileReceiverId)
-                  .OnDelete(DeleteBehavior.Restrict); // Voorkomt dat een locatie per ongeluk wordt verwijderd als er nog profielen aan gekoppeld zijn
+                  .OnDelete(DeleteBehavior.NoAction); // Voorkomt dat een locatie per ongeluk wordt verwijderd als er nog profielen aan gekoppeld zijn
+        });
+
+        modelBuilder.Entity<ChatMessage>(entity =>
+        {
+            entity.HasOne(p => p.Match)
+                  .WithMany(l => l.ChatMessages)
+                  .HasForeignKey(p => p.MatchId)
+                  .OnDelete(DeleteBehavior.NoAction); // Voorkomt dat een locatie per ongeluk wordt verwijderd als er nog profielen aan gekoppeld zijn
+        });
+
+        modelBuilder.Entity<ChatMessage>(entity =>
+        {
+            entity.HasOne(p => p.ProfileReceiver)
+                  .WithMany(l => l.MessagesReceived)
+                  .HasForeignKey(p => p.ProfileReceiverId)
+                  .OnDelete(DeleteBehavior.NoAction); // Voorkomt dat een locatie per ongeluk wordt verwijderd als er nog profielen aan gekoppeld zijn
+        });
+        modelBuilder.Entity<ChatMessage>(entity =>
+        {
+            entity.HasOne(p => p.ProfileSender)
+                  .WithMany(l => l.MessagesSend)
+                  .HasForeignKey(p => p.ProfileSenderId)
+                  .OnDelete(DeleteBehavior.NoAction); // Voorkomt dat een locatie per ongeluk wordt verwijderd als er nog profielen aan gekoppeld zijn
         });
     }
 }

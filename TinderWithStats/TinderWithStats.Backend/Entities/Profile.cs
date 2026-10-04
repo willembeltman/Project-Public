@@ -26,4 +26,6 @@ public class Profile
     public virtual ICollection<ProfilePicture>? ProfilePictures { get; set; }
     public virtual ICollection<Match>? MatchesSend { get; set; }
     public virtual ICollection<Match>? MatchesReceived { get; set; }
+    public virtual ICollection<ChatMessage>? MessagesSend { get; set; }
+    public virtual ICollection<ChatMessage>? MessagesReceived { get; set; }
 }

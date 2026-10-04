@@ -2,12 +2,15 @@
   <Folder Name="/Boilerplate/">
     <Project Path="TinderWithStats.Backend.Generator/TinderWithStats.Backend.Generator.csproj" />
     <Project Path="TinderWithStats.FileServer/TinderWithStats.FileServer.csproj" />
+    <Project Path="TinderWithStats.Frontend.Client/TinderWithStats.Frontend.Client.csproj" Id="61483274-9f7f-4e72-9340-d6185c305423" />
+    <Project Path="TinderWithStats.Frontend.Generator/TinderWithStats.Frontend.Generator.csproj" Id="8439d2cf-fd18-491f-8efe-204a139fa610" />
     <Project Path="TinderWithStats.Frontend.Razor/TinderWithStats.Frontend.Razor.csproj" />
   </Folder>
   <Folder Name="/gAPI/">
     <Project Path="gAPI/gAPI.AutoAuth.Client/gAPI.AutoAuth.Client.csproj" />
     <Project Path="gAPI/gAPI.AutoAuth.Server/gAPI.AutoAuth.Server.csproj" />
     <Project Path="gAPI/gAPI.AutoComponent/gAPI.AutoComponent.csproj" />
+    <Project Path="gAPI/gAPI.AutoPage/gAPI.AutoPage.csproj" />
     <Project Path="gAPI/gAPI.AutoSerializer/gAPI.AutoSerializer.csproj" />
     <Project Path="gAPI/gAPI.AutoWss.Client/gAPI.AutoWss.Client.csproj" />
     <Project Path="gAPI/gAPI.AutoWss.Server/gAPI.AutoWss.Server.csproj" />
@@ -20,6 +23,6 @@
     <Project Path="gAPI/gAPI.Storage.Server/gAPI.Storage.Server.csproj" />
   </Folder>
   <Project Path="TinderWithStats.Backend/TinderWithStats.Backend.csproj" />
-  <Project Path="TinderWithStats.Shared/TinderWithStats.Shared.csproj" />
   <Project Path="TinderWithStats.Frontend/TinderWithStats.Frontend.csproj" />
+  <Project Path="TinderWithStats.Shared/TinderWithStats.Shared.csproj" />
 </Solution>

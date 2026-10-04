@@ -1,3 +1,15 @@
-﻿@inherits LayoutComponentBase
+﻿@using gAPI.Generated.Layout
+@inherits LayoutComponentBase
+
+<AuthorizeView>
+    <Authorized>
+        <AutoNavMenuAuthenticated />
+    </Authorized>
+    <NotAuthorized>
+        <AutoNavMenuNotAuthenticated />
+    </NotAuthorized>
+</AuthorizeView>
+
+
 
 @Body
