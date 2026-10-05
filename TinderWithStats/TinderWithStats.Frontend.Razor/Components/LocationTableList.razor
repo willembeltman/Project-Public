@@ -1,0 +1,312 @@
+@if (DataSource == null || DataSource.Items.Count == 0)
+{
+    @if (DataSource == null || DataSource.HasMore == false)
+    {
+        <p><em>@(NoItemsText)</em></p>
+    }
+    else
+    {
+        <p><em>@(LoadingText)</em></p>
+    }
+}
+else
+{
+    <div>
+        <!-- Desktop weergave -->
+        <div class="d-none d-md-block">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        @if (HideColumnNames.Contains("Id") == false)
+                        {
+                            <th>
+                                <a @onclick="OrderByIdClicked" id="orderByIdButton" style="cursor:pointer;">
+                                    Id
+                                    @if (DataSource.OrderByColumn == "Id asc")
+                                    {
+                                        <span>▲</span>
+                                    }
+                                    else if (DataSource.OrderByColumn == "Id desc")
+                                    {
+                                        <span>▼</span>
+                                    }
+                                </a>
+                            </th>
+                        }
+                        @if (HideColumnNames.Contains("LocationName") == false)
+                        {
+                            <th>
+                                <a @onclick="OrderByLocationNameClicked" id="orderByLocationNameButton" style="cursor:pointer;">
+                                    LocationName
+                                    @if (DataSource.OrderByColumn == "LocationName asc")
+                                    {
+                                        <span>▲</span>
+                                    }
+                                    else if (DataSource.OrderByColumn == "LocationName desc")
+                                    {
+                                        <span>▼</span>
+                                    }
+                                </a>
+                            </th>
+                        }
+                        @if (HideColumnNames.Contains("CanUpdate") == false)
+                        {
+                            <th>
+                                <a @onclick="OrderByCanUpdateClicked" id="orderByCanUpdateButton" style="cursor:pointer;">
+                                    CanUpdate
+                                    @if (DataSource.OrderByColumn == "CanUpdate asc")
+                                    {
+                                        <span>▲</span>
+                                    }
+                                    else if (DataSource.OrderByColumn == "CanUpdate desc")
+                                    {
+                                        <span>▼</span>
+                                    }
+                                </a>
+                            </th>
+                        }
+                        @if (HideColumnNames.Contains("CanDelete") == false)
+                        {
+                            <th>
+                                <a @onclick="OrderByCanDeleteClicked" id="orderByCanDeleteButton" style="cursor:pointer;">
+                                    CanDelete
+                                    @if (DataSource.OrderByColumn == "CanDelete asc")
+                                    {
+                                        <span>▲</span>
+                                    }
+                                    else if (DataSource.OrderByColumn == "CanDelete desc")
+                                    {
+                                        <span>▼</span>
+                                    }
+                                </a>
+                            </th>
+                        }
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in DataSource.Items)
+                    {
+                        <tr>
+                            @if (HideColumnNames.Contains("Id") == false)
+                            {
+                                <td>@(item.Model!.Id)</td>
+                            }
+                            @if (HideColumnNames.Contains("LocationName") == false)
+                            {
+                                <td>@(item.Model!.LocationName)</td>
+                            }
+                            @if (HideColumnNames.Contains("CanUpdate") == false)
+                            {
+                                <td>@(item.Model!.CanUpdate)</td>
+                            }
+                            @if (HideColumnNames.Contains("CanDelete") == false)
+                            {
+                                <td>@(item.Model!.CanDelete)</td>
+                            }
+                            <td>
+                                @if (item.Model!.CanUpdate)
+                                {
+                                    <a class="btn btn-sm btn-primary" href="/locations/edit/@(item.Model!.Id)">✏️</a>
+                                }
+                                @if (item.Model!.CanDelete)
+                                {
+                                    <a class="btn btn-sm btn-danger ms-1" href="/locations/delete/@(item.Model!.Id)">🗑️</a>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Mobiele weergave -->
+        <div class="d-md-none">
+            <div class="mb-2 d-flex gap-2 align-items-center">
+                <select @onchange="DataSource.OrderByChanged" class="form-select form-select-sm w-auto">
+                    @if (Nothing__Selected)
+                    {
+                        <option value="" selected>@(EmptyText)</option>
+                    }
+                    else
+                    {
+                        <option value="">@(EmptyText)</option>
+                    }
+
+                    
+                    @if (HideColumnNames.Contains("Id") == false)
+                    {
+                        @if (Id__Selected)
+                        {
+                            <option value="Id" selected>Id</option>
+                        }
+                        else
+                        {
+                            <option value="Id">Id</option>
+                        }
+                    }
+                    @if (HideColumnNames.Contains("LocationName") == false)
+                    {
+                        @if (LocationName__Selected)
+                        {
+                            <option value="LocationName" selected>LocationName</option>
+                        }
+                        else
+                        {
+                            <option value="LocationName">LocationName</option>
+                        }
+                    }
+                    @if (HideColumnNames.Contains("CanUpdate") == false)
+                    {
+                        @if (CanUpdate__Selected)
+                        {
+                            <option value="CanUpdate" selected>CanUpdate</option>
+                        }
+                        else
+                        {
+                            <option value="CanUpdate">CanUpdate</option>
+                        }
+                    }
+                    @if (HideColumnNames.Contains("CanDelete") == false)
+                    {
+                        @if (CanDelete__Selected)
+                        {
+                            <option value="CanDelete" selected>CanDelete</option>
+                        }
+                        else
+                        {
+                            <option value="CanDelete">CanDelete</option>
+                        }
+                    }
+                </select>
+
+                @if (!string.IsNullOrEmpty(DataSource.OrderByColumn))
+                {
+                    <select @onchange="DataSource.OrderByDirectionChanged" class="form-select form-select-sm w-auto">
+                        @if (DataSource.OrderByDirectionAsc)
+                        {
+                            <option value="false" selected>@(AscText)</option>
+                            <option value="true">@(DescText)</option>
+                        }
+                        else
+                        {
+                            <option value="false">@(AscText)</option>
+                            <option value="true" selected>@(DescText)</option>
+                        }
+                    </select>
+                }
+            </div>
+
+            <div class="row row-cols-1 g-2">
+                @foreach (var item in DataSource.Items)
+                {
+                    <div class="col">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    @if (HideColumnNames.Contains("Id") == false)
+                                    {
+                                        <div class="text-muted">@(item.Model!.Id)</div>
+                                    }
+                                    @if (HideColumnNames.Contains("LocationName") == false)
+                                    {
+                                        <div class="text-muted">@(item.Model!.LocationName)</div>
+                                    }
+                                    @if (HideColumnNames.Contains("CanUpdate") == false)
+                                    {
+                                        <div class="text-muted">@(item.Model!.CanUpdate)</div>
+                                    }
+                                    @if (HideColumnNames.Contains("CanDelete") == false)
+                                    {
+                                        <div class="text-muted">@(item.Model!.CanDelete)</div>
+                                    }
+                                </div>
+                                <div class="mt-2">
+                                    @if (item.Model!.CanUpdate)
+                                    {
+                                        <a class="btn btn-sm btn-primary" href="/locations/edit/@(item.Model!.Id)">@(EditText)</a>
+                                    }
+                                    @if (item.Model!.CanDelete)
+                                    {
+                                        <a class="btn btn-sm btn-danger ms-1" href="/locations/delete/@(item.Model!.Id)">@(DeleteText)</a>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        @if (DataSource.HasMore)
+        {
+            <div id="@(DataSource.SentinelId)" class="sentinel">@(LoadingModeText)</div>
+        }
+    </div>
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public ListDataSource<Location, int>? DataSource { get; set; }
+
+    [Parameter] public string Id { get; set; } = $"locationTableList_{Guid.NewGuid()}";
+    [Parameter] public string EmptyText { get; set; } = "Order by...";
+    [Parameter] public string AscText { get; set; } = "▲ asc";
+    [Parameter] public string DescText { get; set; } = "▼ desc";
+    [Parameter] public string EditText { get; set; } = "✏️ Edit";
+    [Parameter] public string DeleteText { get; set; } = "🗑️ Delete";
+    [Parameter] public string LoadingText { get; set; } = "Loading, please wait...";
+    [Parameter] public string LoadingModeText { get; set; } = "Loading more...";
+    [Parameter] public string NoItemsText { get; set; } = "No Locations to display.";
+    
+    private string[] HideColumnNames = [];
+
+    [Parameter]
+    public string? HideColumns { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        HideColumnNames = string.IsNullOrWhiteSpace(HideColumns)
+            ? []
+            : HideColumns.Split(
+                ',',
+                StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries
+              );
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (//!firstRender || 
+            DataSource == null)
+            return;
+        await DataSource.AfterRenderAsync();
+    }
+
+
+    private async Task OrderByIdClicked()
+    { 
+        if (DataSource != null)
+            await DataSource.OrderByColumnClicked("Id");
+    }
+    private async Task OrderByLocationNameClicked()
+    { 
+        if (DataSource != null)
+            await DataSource.OrderByColumnClicked("LocationName");
+    }
+    private async Task OrderByCanUpdateClicked()
+    { 
+        if (DataSource != null)
+            await DataSource.OrderByColumnClicked("CanUpdate");
+    }
+    private async Task OrderByCanDeleteClicked()
+    { 
+        if (DataSource != null)
+            await DataSource.OrderByColumnClicked("CanDelete");
+    }
+
+    private bool Nothing__Selected => string.IsNullOrEmpty(DataSource?.OrderByColumn);
+    private bool Id__Selected => DataSource?.OrderByColumn == "Id";
+    private bool LocationName__Selected => DataSource?.OrderByColumn == "LocationName";
+    private bool CanUpdate__Selected => DataSource?.OrderByColumn == "CanUpdate";
+    private bool CanDelete__Selected => DataSource?.OrderByColumn == "CanDelete";
+}

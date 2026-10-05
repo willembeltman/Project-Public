@@ -1,25 +1,25 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
-  <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+	</PropertyGroup>
 
-
-  <ItemGroup>
-    <SupportedPlatform Include="browser" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.12" />
-  </ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\TinderWithStats.Frontend.Client\TinderWithStats.Frontend.Client.csproj" />
+		<SupportedPlatform Include="browser" />
+	</ItemGroup>
 
-		<ProjectReference Include="..\gAPI\gAPI.AutoComponent\gAPI.AutoComponent.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
-		<ProjectReference Include="..\gAPI\gAPI.AutoPage\gAPI.AutoPage.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.12" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\gAPI\gAPI.Core.Client\gAPI.Core.Client.csproj" />
+		<ProjectReference Include="..\gAPI\gAPI.AutoWss.Client\gAPI.AutoWss.Client.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+		<ProjectReference Include="..\gAPI\gAPI.AutoAuth.Client\gAPI.AutoAuth.Client.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+		<ProjectReference Include="..\TinderWithStats.Shared\TinderWithStats.Shared.csproj" />
 
 	</ItemGroup>
 

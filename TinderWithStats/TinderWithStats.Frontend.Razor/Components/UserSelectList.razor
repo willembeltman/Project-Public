@@ -1,0 +1,219 @@
+@if (DataSource == null || DataSource.Items.Count == 0)
+{
+    @if (DataSource == null || DataSource.HasMore == false)
+    {
+        <p><em>@(NoItemsText)</em></p>
+    }
+    else
+    {
+        <p><em>@(LoadingText)</em></p>
+    }
+}
+else
+{
+    <div id="@(Id)">
+        <!-- Desktop -->
+        <div class="d-none d-md-block">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th></th>
+                    @if (!HideColumnNames.Contains("UserName"))
+                    {
+                        <th>
+                            <a @onclick="OrderByUserNameClicked" style="cursor:pointer;">
+                                UserName
+                                @if (DataSource.OrderByColumn == "UserName asc") { <span>▲</span> }
+                                else if (DataSource.OrderByColumn == "UserName desc") { <span>▼</span> }
+                            </a>
+                        </th>
+                    }
+                    @if (!HideColumnNames.Contains("Email"))
+                    {
+                        <th>
+                            <a @onclick="OrderByEmailClicked" style="cursor:pointer;">
+                                Email
+                                @if (DataSource.OrderByColumn == "Email asc") { <span>▲</span> }
+                                else if (DataSource.OrderByColumn == "Email desc") { <span>▼</span> }
+                            </a>
+                        </th>
+                    }
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in DataSource.Items)
+                    {
+                        <tr>
+                            <td>
+                                <button class="btn btn-sm btn-outline-primary"
+                                        @onclick="() => SelectItem(item)">
+                                    @(SelectText)
+                                </button>
+                            </td>
+                    @if (!HideColumnNames.Contains("UserName"))
+                    {
+                        <td>@(item.Model!.UserName)</td>
+                    }
+                    @if (!HideColumnNames.Contains("Email"))
+                    {
+                        <td>@(item.Model!.Email)</td>
+                    }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Mobile -->
+        <div class="d-md-none">
+            <div class="mb-2 d-flex gap-2 align-items-center">
+                <select @onchange="DataSource.OrderByChanged" class="form-select form-select-sm w-auto">
+                @if (Nothing__Selected)
+                {
+                    <option value="" selected>@(EmptyText)</option>
+                }
+                else
+                {
+                    <option value="">@(EmptyText)</option>
+                }
+
+                
+                @if (HideColumnNames.Contains("UserName") == false)
+                {
+                    @if (UserName__Selected)
+                    {
+                        <option value="UserName" selected>UserName</option>
+                    }
+                    else
+                    {
+                        <option value="UserName">UserName</option>
+                    }
+                }
+                @if (HideColumnNames.Contains("Email") == false)
+                {
+                    @if (Email__Selected)
+                    {
+                        <option value="Email" selected>Email</option>
+                    }
+                    else
+                    {
+                        <option value="Email">Email</option>
+                    }
+                }
+            </select>
+
+            @if (!string.IsNullOrEmpty(DataSource.OrderByColumn))
+            {
+                <select @onchange="DataSource.OrderByDirectionChanged" class="form-select form-select-sm w-auto">
+                    @if (DataSource.OrderByDirectionAsc)
+                    {
+                        <option value="false" selected>@(AscText)</option>
+                        <option value="true">@(DescText)</option>
+                    }
+                    else
+                    {
+                        <option value="false">@(AscText)</option>
+                        <option value="true" selected>@(DescText)</option>
+                    }
+                </select>
+            }
+            </div>
+
+            <div class="row row-cols-1 g-2">
+                @foreach (var item in DataSource.Items)
+                {
+                    <div class="col">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    @if (!HideColumnNames.Contains("UserName"))
+                                    {
+                                        <div class="text-muted">@(item.Model!.UserName)</div>
+                                    }
+                                    @if (!HideColumnNames.Contains("Email"))
+                                    {
+                                        <div class="text-muted">@(item.Model!.Email)</div>
+                                    }
+                                </div>
+                                <div class="mt-2">
+                                    <button class="btn btn-sm btn-outline-primary w-100"
+                                            @onclick="() => SelectItem(item)">
+                                        @(SelectText)
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+    @if (DataSource.HasMore)
+    {
+        <div id="@(DataSource.SentinelId)" class="sentinel">
+            @(LoadingModeText)
+        </div>
+    }
+    </div>
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public ListDataSource<User, Guid>? DataSource { get; set; }
+
+    [Parameter, EditorRequired]
+    public EventCallback<ItemDataSource<User, Guid>> OnSelect { get; set; }
+
+    [Parameter] public string Id { get; set; } = $"userSelectList_{Guid.NewGuid()}";
+    [Parameter] public string SelectText { get; set; } = "Select";
+    [Parameter] public string EmptyText { get; set; } = "Order by...";
+    [Parameter] public string AscText { get; set; } = "▲ asc";
+    [Parameter] public string DescText { get; set; } = "▼ desc";
+    [Parameter] public string LoadingModeText { get; set; } = "Loading more...";
+    [Parameter] public string LoadingText { get; set; } = "Loading, please wait...";
+    [Parameter] public string NoItemsText { get; set; } = "No Users to select.";
+
+    private string[] HideColumnNames = [];
+
+    [Parameter]
+    public string? HideColumns { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        HideColumnNames = string.IsNullOrWhiteSpace(HideColumns)
+            ? []
+            : HideColumns.Split(
+                ',',
+                StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries
+              );
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (//!firstRender || 
+            DataSource == null)
+            return;
+        await DataSource.AfterRenderAsync();
+    }
+
+    private async Task SelectItem(ItemDataSource<User, Guid> item)
+    {
+        if (OnSelect.HasDelegate)
+            await OnSelect.InvokeAsync(item);
+    }
+    
+    private async Task OrderByUserNameClicked()
+    {
+        if (DataSource != null)
+            await DataSource.OrderByColumnClicked("UserName");
+    }
+    private async Task OrderByEmailClicked()
+    {
+        if (DataSource != null)
+            await DataSource.OrderByColumnClicked("Email");
+    }
+
+    private bool Nothing__Selected => string.IsNullOrEmpty(DataSource?.OrderByColumn);
+    private bool UserName__Selected => DataSource?.OrderByColumn == "UserName";
+    private bool Email__Selected => DataSource?.OrderByColumn == "Email";
+}

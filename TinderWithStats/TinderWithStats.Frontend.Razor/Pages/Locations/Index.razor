@@ -1,0 +1,71 @@
+@page "/locations"
+@implements IAsyncDisposable
+@inject ILocationsApi list
+@inject IClientAuthenticatedHttpClient ClientAuthenticatedHttpClient
+@inject IJSRuntime JS
+
+<PageTitle>Locations</PageTitle>
+
+<AuthorizeView>
+    <Authorized>
+        <h3>Locations</h3>
+        <LoaderView Response="Locations?.Response">
+            @if (Locations!.Response!.CanCreate)
+            {
+                <a id="createnew" href="/locations/create">➕ Create a new location</a>
+            }
+            <LocationList DataSource="Locations" />
+        </LoaderView>
+    </Authorized>
+    <NotAuthorized>
+        <RedirectToLogin />
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private CancellationTokenSource? Cts;
+    private ListDataSource<Location, int>? Locations;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Cts != null)
+        {
+            await Cts.CancelAsync();
+            Cts.Dispose();
+        }
+
+        Cts = new CancellationTokenSource();
+
+        if (await ClientAuthenticatedHttpClient.IsAuthenticatedAsync(Cts.Token) == false)
+        {
+            return;
+        }
+
+        Locations = new ListDataSource<Location, int>(
+            JS,
+            StateHasChanged,
+            GetPrimaryKey: location => location.Id,
+            List: list.List,
+            SetForeignKey: null,
+            AfterSaveAction: null,
+            AfterCancelAction: null,
+            Create: null,
+            Read: null,
+            Update: null,
+            Delete: null
+        );
+
+        await Locations.InitialiseAsync();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (Cts != null)
+        {
+            await Cts.CancelAsync();
+            Cts.Dispose();
+        }
+        if (Locations != null)
+            await Locations.DisposeAsync();
+    }
+}

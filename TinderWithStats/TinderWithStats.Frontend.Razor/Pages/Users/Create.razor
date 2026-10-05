@@ -1,0 +1,70 @@
+@page "/users/create"
+@implements IAsyncDisposable
+@inject IUsersApi iUsersApi
+@inject IClientAuthenticatedHttpClient ClientAuthenticatedHttpClient
+@inject IJSRuntime JS
+@inject NavigationManager NavigationManager
+
+<PageTitle>Create User</PageTitle>
+
+<AuthorizeView>
+    <Authorized Context="_">
+        <h3>Create User</h3>
+        <LoaderView Response="User?.Response">
+            <EditForm Model="User!.Model" OnValidSubmit="User.HandleValidSubmit">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <UserForm DataSource="User" />
+                <ErrorView Response="User.StatusResponse" />
+                <button id="create" class="btn btn-primary" type="submit">➕ Create</button>
+                <button id="cancel" class="btn btn-secondary ms-2" @onclick="User.Cancel">Cancel</button>
+            </EditForm>
+        </LoaderView>
+    </Authorized>
+    <NotAuthorized>
+        <RedirectToLogin />
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private CancellationTokenSource? Cts;
+    private ItemDataSource<User, Guid>? User;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Cts != null)
+        {
+            await Cts.CancelAsync();
+            Cts.Dispose();
+        }
+
+        Cts = new CancellationTokenSource();
+
+        if (await ClientAuthenticatedHttpClient.IsAuthenticatedAsync(Cts.Token) == false)
+            return;
+
+        User = new ItemDataSource<User, Guid>(
+            GetPrimaryKey: user => user.Id,
+            AfterSaveAction: user => NavigationManager.NavigateTo("/users"),
+            AfterCancelAction: user => NavigationManager.NavigateTo("/users"),
+            Create: iUsersApi.Create,
+            Read: null,
+            Update: null,
+            Delete: null,
+            FileUpdate: null,
+            FileDelete: null
+        );
+        User.NewModel();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (Cts != null)
+        {
+            await Cts.CancelAsync();
+            Cts.Dispose();
+        }
+        if (User != null) 
+            await User.DisposeAsync();
+    }
+}

@@ -1,0 +1,68 @@
+@page "/Account/Register"
+@implements IAsyncDisposable
+@inject IAccountService Account
+@inject NavigationManager NavigationManager
+
+<PageTitle>Register</PageTitle>
+<h3>Register</h3>
+
+<AuthorizeView>
+    <Authorized>
+        <RedirectToHome />
+    </Authorized>
+    <NotAuthorized Context="_">
+
+        <EditForm Model="this" OnValidSubmit="HandleValidSubmit">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <div class="mb-3">
+                <label>UserName</label>
+                <InputText @bind-Value="UserName" class="form-control" />
+            </div>
+            <div class="mb-3">
+                <label>E-mail</label>
+                <InputText @bind-Value="Email" class="form-control" />
+            </div>
+            <div class="mb-3">
+                <label>Password</label>
+                <InputText @bind-Value="Password" type="password" class="form-control" />
+            </div>
+            <div class="mb-3">
+                <label>Repeat password</label>
+                <InputText @bind-Value="PasswordRepeat" type="password" class="form-control" />
+            </div>
+            <ErrorView Response="Response" />
+            <button type="submit" class="btn btn-primary">Register</button>
+        </EditForm>
+
+        @if (Response != null && Response.Success)
+        {
+            <h3>Success</h3>
+        }
+
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private CancellationTokenSource Cts = new();
+    private string UserName { get; set; } = string.Empty;
+    private string Email { get; set; } = string.Empty;
+    private string Password { get; set; } = string.Empty;
+    private string PasswordRepeat { get; set; } = string.Empty;
+    private BaseResponse? Response { get; set; }
+
+    private async Task HandleValidSubmit()
+    {
+        Response = await Account.RegisterAsync(UserName, Email, Password, PasswordRepeat, Cts.Token);
+        if (!string.IsNullOrWhiteSpace(Response.RedirectPath))
+        {
+            NavigationManager.NavigateTo(Response.RedirectPath);
+        }
+    }
+
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        await Cts.CancelAsync();
+        Cts.Dispose();
+    }
+}

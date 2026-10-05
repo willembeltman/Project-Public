@@ -1,0 +1,43 @@
+@if (DataSource?.Model == null)
+{
+    <text><!-- niets te tonen --></text>
+}
+else
+{    
+    
+    @if (!string.IsNullOrWhiteSpace(DataSource.Model!.StorageFileUrl))
+    {
+        <div class="mb-3">
+            @if (new[] { "png", "jpg", "jpeg", "gif", "bmp", "webp" }.
+                Contains(System.IO.Path.GetExtension(DataSource.Model!.StorageFileUrl)!.TrimStart('.').ToLowerInvariant()))
+            {
+                <img src="@(DataSource.Model!.StorageFileUrl)" style="max-height: 120px;" />
+            }
+            else
+            {
+                <a href="@(DataSource.Model!.StorageFileUrl)" download>Download</a>
+            }
+        </div>
+    }
+    
+    <div class="mb-2">
+        <strong>Id</strong>: @(DataSource.Model.Id.ToString())
+    </div>
+
+    <div class="mb-2">
+        <strong>ProfileName</strong>: @(DataSource.Model.ProfileName?.ToString())
+    </div>
+
+    <div class="mb-2">
+        <strong>UploadDate</strong>: @(DataSource.Model.UploadDate.ToString())
+    </div>
+
+    <div class="mb-2">
+        <strong>StorageFileUrl</strong>: @(DataSource.Model.StorageFileUrl?.ToString())
+    </div>
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public ItemDataSource<ProfilePicture, Guid>? DataSource { get; set; }
+}

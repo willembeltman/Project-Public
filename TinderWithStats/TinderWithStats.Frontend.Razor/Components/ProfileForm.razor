@@ -1,0 +1,97 @@
+@if (DataSource?.Model == null)
+{
+    <text><!-- niets te renderen --></text>
+}
+else
+{
+
+    @if (HideColumnNames.Contains("UserId") == false)
+    {
+        <div class="mb-3">
+            <label for="userId" class="form-label">User</label>
+            <UserDropDown @bind-Value="DataSource.Model.UserId" bindtype_Value="Guid"
+                @bind-ForeignName="DataSource.Model.UserName" bindtype_ForeignName="string?"
+                DataSource="Users" id="userId" />
+        </div>
+    }
+
+    @if (HideColumnNames.Contains("LocationId") == false)
+    {
+        <div class="mb-3">
+            <label for="locationId" class="form-label">Location</label>
+            <LocationDropDown @bind-Value="DataSource.Model.LocationId" bindtype_Value="int"
+                @bind-ForeignName="DataSource.Model.LocationName" bindtype_ForeignName="string?"
+                DataSource="Locations" id="locationId" />
+        </div>
+    }
+
+    @if (HideColumnNames.Contains("Name") == false)
+    {
+        <div class="mb-3">
+            <label for="name" class="form-label">Name</label>
+            <InputText @bind-Value="DataSource.Model.Name" bindtype_Value="string"
+                id="name" class="form-control" />
+        </div>
+    }
+
+    @if (HideColumnNames.Contains("DateOfBirth") == false)
+    {
+        <div class="mb-3">
+            <label for="dateOfBirth" class="form-label">DateOfBirth</label>
+            <InputDate @bind-Value="DataSource.Model.DateOfBirth" bindtype_Value="DateTimeOffset"
+                id="dateOfBirth" class="form-control" />
+        </div>
+    }
+
+    @if (HideColumnNames.Contains("Length") == false)
+    {
+        <div class="mb-3">
+            <label for="length" class="form-label">Length</label>
+            <InputNumber @bind-Value="DataSource.Model.Length" bindtype_Value="int"
+                id="length" class="form-control" />
+        </div>
+    }
+
+    @if (HideColumnNames.Contains("Beroep") == false)
+    {
+        <div class="mb-3">
+            <label for="beroep" class="form-label">Beroep</label>
+            <InputText @bind-Value="DataSource.Model.Beroep" bindtype_Value="string"
+                id="beroep" class="form-control" />
+        </div>
+    }
+
+    @if (HideColumnNames.Contains("Bio") == false)
+    {
+        <div class="mb-3">
+            <label for="bio" class="form-label">Bio</label>
+            <InputText @bind-Value="DataSource.Model.Bio" bindtype_Value="string"
+                id="bio" class="form-control" />
+        </div>
+    }
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public ItemDataSource<Profile, Guid>? DataSource { get; set; }
+
+    [Parameter, EditorRequired]
+    public ListDataSource<User, Guid> Users { get; set; } = null!;
+    [Parameter, EditorRequired]
+    public ListDataSource<Location, int> Locations { get; set; } = null!;
+
+    private string[] HideColumnNames = [];
+
+    [Parameter]
+    public string? HideColumns { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        HideColumnNames = string.IsNullOrWhiteSpace(HideColumns)
+            ? []
+            : HideColumns.Split(
+                ',',
+                StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries
+              );
+    }
+}

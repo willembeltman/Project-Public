@@ -1,0 +1,33 @@
+@if (DataSource?.Model == null)
+{
+    <text><!-- niets te tonen --></text>
+}
+else
+{    
+    
+    
+    <div class="mb-2">
+        <strong>IsAdmin</strong>: @(DataSource.Model.IsAdmin.ToString())
+    </div>
+
+    <div class="mb-2">
+        <strong>Id</strong>: @(DataSource.Model.Id.ToString())
+    </div>
+
+    <div class="mb-2">
+        <strong>UserName</strong>: @(DataSource.Model.UserName.ToString())
+    </div>
+
+    <div class="mb-2">
+        <strong>Email</strong>: @(DataSource.Model.Email.ToString())
+    </div>
+
+    <div class="mb-2">
+        <strong>PhoneNumber</strong>: @(DataSource.Model.PhoneNumber.ToString())
+    </div>
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public ItemDataSource<User, Guid>? DataSource { get; set; }
+}

@@ -1,0 +1,108 @@
+@page "/profiles/create"
+@implements IAsyncDisposable
+@inject IUsersApi iUsersApi
+@inject ILocationsApi iLocationsApi
+@inject IProfilesApi iProfilesApi
+@inject IClientAuthenticatedHttpClient ClientAuthenticatedHttpClient
+@inject IJSRuntime JS
+@inject NavigationManager NavigationManager
+
+<PageTitle>Create Profile</PageTitle>
+
+<AuthorizeView>
+    <Authorized Context="_">
+        <h3>Create Profile</h3>
+        <LoaderView Response="Profile?.Response">
+            <EditForm Model="Profile!.Model" OnValidSubmit="Profile.HandleValidSubmit">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <ProfileForm DataSource="Profile" Users="Users" Locations="Locations" />
+                <ErrorView Response="Profile.StatusResponse" />
+                <button id="create" class="btn btn-primary" type="submit">➕ Create</button>
+                <button id="cancel" class="btn btn-secondary ms-2" @onclick="Profile.Cancel">Cancel</button>
+            </EditForm>
+        </LoaderView>
+    </Authorized>
+    <NotAuthorized>
+        <RedirectToLogin />
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private CancellationTokenSource? Cts;
+    private ItemDataSource<Profile, Guid>? Profile;
+    private ListDataSource<User, Guid>? Users;
+    private ListDataSource<Location, int>? Locations;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Cts != null)
+        {
+            await Cts.CancelAsync();
+            Cts.Dispose();
+        }
+
+        Cts = new CancellationTokenSource();
+
+        if (await ClientAuthenticatedHttpClient.IsAuthenticatedAsync(Cts.Token) == false)
+            return;
+
+        Profile = new ItemDataSource<Profile, Guid>(
+            GetPrimaryKey: profile => profile.Id,
+            AfterSaveAction: profile => NavigationManager.NavigateTo("/profiles"),
+            AfterCancelAction: profile => NavigationManager.NavigateTo("/profiles"),
+            Create: iProfilesApi.Create,
+            Read: null,
+            Update: null,
+            Delete: null,
+            FileUpdate: null,
+            FileDelete: null
+        );
+        Profile.NewModel();
+
+        Users = new ListDataSource<User, Guid>(
+            JS,
+            StateHasChanged,
+            GetPrimaryKey: user => user.Id,
+            List: iUsersApi.List,
+            SetForeignKey: null,
+            AfterSaveAction: null,
+            AfterCancelAction: null,
+            Create: null,
+            Read: null,
+            Update: null,
+            Delete: null
+        );
+        await Users.InitialiseAsync();
+
+        Locations = new ListDataSource<Location, int>(
+            JS,
+            StateHasChanged,
+            GetPrimaryKey: location => location.Id,
+            List: iLocationsApi.List,
+            SetForeignKey: null,
+            AfterSaveAction: null,
+            AfterCancelAction: null,
+            Create: null,
+            Read: null,
+            Update: null,
+            Delete: null
+        );
+        await Locations.InitialiseAsync();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (Cts != null)
+        {
+            await Cts.CancelAsync();
+            Cts.Dispose();
+        }
+        if (Profile != null) 
+            await Profile.DisposeAsync();
+        if (Users != null) 
+            await Users.DisposeAsync();
+        if (Locations != null) 
+            await Locations.DisposeAsync();
+    }
+}

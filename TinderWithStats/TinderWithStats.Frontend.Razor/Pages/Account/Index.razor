@@ -1,0 +1,30 @@
+@page "/Account/Index"
+
+<PageTitle>Account</PageTitle>
+<h3>Account</h3>
+
+<AuthorizeView>
+    <Authorized Context="_">
+
+        <div class="px-3">
+            <NavLink class="nav-link" href="/Account/Logoff">
+                <span aria-hidden="true"></span> Logoff
+            </NavLink>
+        </div>
+
+    </Authorized>
+    <NotAuthorized Context="_">
+
+        <div class="px-3">
+            <NavLink class="nav-link" href="/Account/Register">
+                <span aria-hidden="true"></span> Register
+            </NavLink>
+        </div>
+        <div class="px-3">
+            <NavLink class="nav-link" href="/Account/Login">
+                <span aria-hidden="true"></span> Login
+            </NavLink>
+        </div>
+
+    </NotAuthorized>
+</AuthorizeView>

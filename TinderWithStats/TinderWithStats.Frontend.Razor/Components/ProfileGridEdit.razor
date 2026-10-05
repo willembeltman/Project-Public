@@ -1,0 +1,176 @@
+@if (DataSource == null || DataSource.Items.Count == 0)
+{
+    @if (DataSource == null || DataSource.HasMore)
+    {
+        <p><em>@(LoadingText)</em></p>
+    }
+    else
+    {
+        <p><em>@(NoItemsText)</em></p>
+    }
+}
+else
+{
+    <div class="grid-container" id="@(Id)"
+         style="width:100%; max-height:250px; overflow:auto;">
+         
+        <div class="grid-row">
+            @if (HideColumnNames.Contains("UserId") == false)
+            {
+                <div class="grid-header">UserId</div>
+            }
+            @if (HideColumnNames.Contains("LocationId") == false)
+            {
+                <div class="grid-header">LocationId</div>
+            }
+            @if (HideColumnNames.Contains("Name") == false)
+            {
+                <div class="grid-header">Name</div>
+            }
+            @if (HideColumnNames.Contains("DateOfBirth") == false)
+            {
+                <div class="grid-header">DateOfBirth</div>
+            }
+            @if (HideColumnNames.Contains("Length") == false)
+            {
+                <div class="grid-header">Length</div>
+            }
+            @if (HideColumnNames.Contains("Beroep") == false)
+            {
+                <div class="grid-header">Beroep</div>
+            }
+            @if (HideColumnNames.Contains("Bio") == false)
+            {
+                <div class="grid-header">Bio</div>
+            }
+            <div class="grid-header">Actions</div>
+        </div>
+
+        @foreach (var item in DataSource.Items)
+        {
+            <EditForm Model="item.Model" OnValidSubmit="() => DataSource.HandleValidSubmit(item)">
+                <DataAnnotationsValidator />
+                <div class="grid-row">
+                    @if (HideColumnNames.Contains("UserId") == false)
+                    {
+                        <div class="grid-cell">
+                            <UserDropDown 
+                                @bind-Value="item.Model!.UserId" bindtype_Value="Guid"
+                                @bind-ForeignName="item.Model!.UserName" bindtype_ForeignName="string?" 
+                                DataSource="Users" />
+                        </div>
+                    }
+                    @if (HideColumnNames.Contains("LocationId") == false)
+                    {
+                        <div class="grid-cell">
+                            <LocationDropDown 
+                                @bind-Value="item.Model!.LocationId" bindtype_Value="int"
+                                @bind-ForeignName="item.Model!.LocationName" bindtype_ForeignName="string?" 
+                                DataSource="Locations" />
+                        </div>
+                    }
+                    @if (HideColumnNames.Contains("Name") == false)
+                    {
+                        <div class="grid-cell">
+                            <InputText @bind-Value="item.Model!.Name" bindtype_Value="string" class="form-control" />
+                        </div>
+                    }
+                    @if (HideColumnNames.Contains("DateOfBirth") == false)
+                    {
+                        <div class="grid-cell">
+                            <InputDate @bind-Value="item.Model!.DateOfBirth" bindtype_Value="DateTimeOffset" class="form-control" />
+                        </div>
+                    }
+                    @if (HideColumnNames.Contains("Length") == false)
+                    {
+                        <div class="grid-cell">
+                            <InputNumber @bind-Value="item.Model!.Length" bindtype_Value="int" class="form-control" />
+                        </div>
+                    }
+                    @if (HideColumnNames.Contains("Beroep") == false)
+                    {
+                        <div class="grid-cell">
+                            <InputText @bind-Value="item.Model!.Beroep" bindtype_Value="string" class="form-control" />
+                        </div>
+                    }
+                    @if (HideColumnNames.Contains("Bio") == false)
+                    {
+                        <div class="grid-cell">
+                            <InputText @bind-Value="item.Model!.Bio" bindtype_Value="string" class="form-control" />
+                        </div>
+                    }
+                    <div class="grid-cell">
+                        <button type="submit" class="btn btn-primary btn-sm">💾 Save</button>
+                    </div>
+                </div>
+            </EditForm>
+        }
+
+        @if (DataSource.HasMore)
+        {
+            <div id="@(DataSource.SentinelId)" class="sentinel">@(LoadingMoreText)</div>
+        }
+    </div>
+}
+
+<style>
+    .grid-container {
+    }
+
+    .grid-row {
+        font-size: 9px;
+    }
+
+    .grid-header {
+        font-weight: bold;
+        border-bottom: 1px solid #ccc;
+        padding: 4px;
+        display: inline-block;
+        width: 100px;
+    }
+
+    .grid-cell {
+        border-bottom: 1px solid #ddd;
+        padding: 4px;
+        display: inline-block;
+        width: 100px;
+    }
+</style>
+
+@code {
+    [Parameter, EditorRequired]
+    public ListDataSource<Profile, Guid>? DataSource { get; set; }
+
+    [Parameter, EditorRequired]
+    public ListDataSource<User, Guid>? Users { get; set; }
+    [Parameter, EditorRequired]
+    public ListDataSource<Location, int>? Locations { get; set; }
+
+    [Parameter] public string Id { get; set; } = $"profileGridEdit_{Guid.NewGuid()}";
+    [Parameter] public string LoadingText { get; set; } = "Loading, please wait...";
+    [Parameter] public string LoadingMoreText { get; set; } = "Loading more...";
+    [Parameter] public string NoItemsText { get; set; } = "No Profiles to display.";
+
+    private string[] HideColumnNames = [];
+
+    [Parameter]
+    public string? HideColumns { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        HideColumnNames = string.IsNullOrWhiteSpace(HideColumns)
+            ? []
+            : HideColumns.Split(
+                ',',
+                StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries
+              );
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (//!firstRender || 
+            DataSource == null)
+            return;
+        await DataSource.AfterRenderAsync();
+    }
+}

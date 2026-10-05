@@ -8,35 +8,35 @@ var config = new FrontendConfig(
         typeof(gAPI.Core.Interfaces.IAccountService).Assembly,
         typeof(gAPI.Core.Client.Razor.FormFile).Assembly,
         typeof(TinderWithStats.Shared.Dtos.State).Assembly,
-        typeof(TinderWithStats.Frontend.Layout.MainLayout).Assembly
+        typeof(TinderWithStats.Frontend.Razor.Layout.MainLayout).Assembly
     ],
 
     BaseNamespaces: ["TinderWithStats"],
 
-    RootDirectory: EnvironmentPathHelper.GetDirectory(root, @"TinderWithStats.Frontend"),
-    RootNamespace: "TinderWithStats.Frontend",
-    BlazorMauiDirectory: EnvironmentPathHelper.GetDirectory(root, @"TinderWithStats.Frontend.Blazor.Maui"),
-    BlazorMauiNamespace: "TinderWithStats.Frontend.Blazor.Maui",
-    BlazorWebassemblyDirectory: EnvironmentPathHelper.GetDirectory(root, @"TinderWithStats.Frontend"),
-    BlazorWebassemblyServiceNamespace: "TinderWithStats.Frontend",
+    RootDirectory: EnvironmentPathHelper.GetDirectory(root, @"TinderWithStats.Frontend.Razor"),
+    RootNamespace: "TinderWithStats.Frontend.Razor",
+    BlazorMauiDirectory: EnvironmentPathHelper.GetDirectory(root, @"TinderWithStats.Frontend.Maui"),
+    BlazorMauiNamespace: "TinderWithStats.Frontend.Razor.Blazor.Maui",
+    BlazorWebassemblyDirectory: EnvironmentPathHelper.GetDirectory(root, @"TinderWithStats.Frontend.Webassembly"),
+    BlazorWebassemblyServiceNamespace: "TinderWithStats.Frontend.Razor",
 
-    LayoutDirectory: EnvironmentPathHelper.GetDirectory(root, @"TinderWithStats.Frontend\Layout"),
-    LayoutNamespace: "TinderWithStats.Frontend.Layout",
+    LayoutDirectory: EnvironmentPathHelper.GetDirectory(root, @"TinderWithStats.Frontend.Razor\Layout"),
+    LayoutNamespace: "TinderWithStats.Frontend.Razor.Layout",
 
-    PagesDirectory: EnvironmentPathHelper.GetDirectory(root, @"TinderWithStats.Frontend\Pages"),
-    PagesNamespace: "TinderWithStats.Frontend.Pages",
+    PagesDirectory: EnvironmentPathHelper.GetDirectory(root, @"TinderWithStats.Frontend.Razor\Pages"),
+    PagesNamespace: "TinderWithStats.Frontend.Razor.Pages",
 
-    ComponentsDirectory: EnvironmentPathHelper.GetDirectory(root, @"TinderWithStats.Frontend\Components"),
-    ComponentsNamespace: "TinderWithStats.Frontend.Components",
+    ComponentsDirectory: EnvironmentPathHelper.GetDirectory(root, @"TinderWithStats.Frontend.Razor.AutoComponents"),
+    ComponentsNamespace: "TinderWithStats.Frontend.Razor.AutoComponents",
 
-    UseAutoComponents: true,
+    UseAutoComponents: false,
 
-    GenerateIsPage: false,
-    GenerateComponents: false,
+    GenerateIsPage: true,
+    GenerateComponents: true,
 
     OverwritePages: true,
     OverwriteComponents: true,
-    OverwriteImports: true
+    OverwriteImports: false
 
     );
 

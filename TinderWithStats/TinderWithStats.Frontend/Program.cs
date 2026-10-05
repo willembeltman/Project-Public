@@ -3,7 +3,7 @@ using gAPI.Generated;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using System.Globalization;
-using TinderWithStats.Frontend;
+using TinderWithStats.Frontend.Webassembly;
 
 var invariantCulture = CultureInfo.InvariantCulture;
 CultureInfo.DefaultThreadCurrentCulture = invariantCulture;

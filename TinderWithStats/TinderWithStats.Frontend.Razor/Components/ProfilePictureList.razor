@@ -1,0 +1,248 @@
+@if (DataSource == null || DataSource.Items.Count == 0)
+{
+    @if (DataSource == null || DataSource.HasMore == false)
+    {
+        <p><em>@(NoItemsText)</em></p>
+    }
+    else
+    {
+        <p><em>@(LoadingText)</em></p>
+    }
+}
+else
+{
+    <div id="@(Id)">
+        <!-- Desktop weergave -->
+        <div class="d-none d-md-block">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        @if (HideColumnNames.Contains("StorageFileUrl") == false)
+                        {
+                            <th></th>
+                        }
+                        @if (HideColumnNames.Contains("UploadDate") == false)
+                        {
+                            <th>
+                                <a @onclick="OrderByUploadDateClicked" id="orderByUploadDateButton" style="cursor:pointer;">
+                                    UploadDate
+                                    @if (DataSource.OrderByColumn == "UploadDate asc")
+                                    {
+                                        <span>▲</span>
+                                    }
+                                    else if (DataSource.OrderByColumn == "UploadDate desc")
+                                    {
+                                        <span>▼</span>
+                                    }
+                                </a>
+                            </th>
+                        }
+                        @if (HideColumnNames.Contains("ProfileName") == false)
+                        {
+                            <th>
+                                <a @onclick="OrderByProfileNameClicked" id="orderByProfileNameButton" style="cursor:pointer;">
+                                    ProfileName
+                                    @if (DataSource.OrderByColumn == "ProfileName asc")
+                                    {
+                                        <span>▲</span>
+                                    }
+                                    else if (DataSource.OrderByColumn == "ProfileName desc")
+                                    {
+                                        <span>▼</span>
+                                    }
+                                </a>
+                            </th>
+                        }
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in DataSource.Items)
+                    {
+                        <tr>
+                            @if (HideColumnNames.Contains("StorageFileUrl") == false)
+                            {
+                                <td>
+                                    @if (!string.IsNullOrWhiteSpace(item.Model!.StorageFileUrl))
+                                    {
+                                        <img src="@(item.Model!.StorageFileUrl)" style="max-height: 32px;" />
+                                    } 
+                                </td>
+                            }
+                            @if (HideColumnNames.Contains("UploadDate") == false)
+                            {
+                                <td>@(item.Model!.UploadDate)</td>
+                            }
+                            @if (HideColumnNames.Contains("ProfileName") == false)
+                            {
+                                <td>@(item.Model!.ProfileName)</td>
+                            }
+                            <td>
+                                @if (item.Model!.CanUpdate)
+                                {
+                                    <a class="btn btn-sm btn-primary" href="/profilepictures/edit/@(item.Model!.Id)">✏️</a>
+                                }
+                                @if (item.Model!.CanDelete)
+                                {
+                                    <a class="btn btn-sm btn-danger ms-1" href="/profilepictures/delete/@(item.Model!.Id)">🗑️</a>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Mobiele weergave -->
+        <div class="d-md-none">
+            <div class="mb-2 d-flex gap-2 align-items-center">
+                <select @onchange="DataSource.OrderByChanged" class="form-select form-select-sm w-auto">
+                @if (Nothing__Selected)
+                {
+                    <option value="" selected>@(EmptyText)</option>
+                }
+                else
+                {
+                    <option value="">@(EmptyText)</option>
+                }
+
+                
+                @if (HideColumnNames.Contains("UploadDate") == false)
+                {
+                    @if (UploadDate__Selected)
+                    {
+                        <option value="UploadDate" selected>UploadDate</option>
+                    }
+                    else
+                    {
+                        <option value="UploadDate">UploadDate</option>
+                    }
+                }
+                @if (HideColumnNames.Contains("ProfileName") == false)
+                {
+                    @if (ProfileName__Selected)
+                    {
+                        <option value="ProfileName" selected>ProfileName</option>
+                    }
+                    else
+                    {
+                        <option value="ProfileName">ProfileName</option>
+                    }
+                }
+            </select>
+
+            @if (!string.IsNullOrEmpty(DataSource.OrderByColumn))
+            {
+                <select @onchange="DataSource.OrderByDirectionChanged" class="form-select form-select-sm w-auto">
+                    @if (DataSource.OrderByDirectionAsc)
+                    {
+                        <option value="false" selected>@(AscText)</option>
+                        <option value="true">@(DescText)</option>
+                    }
+                    else
+                    {
+                        <option value="false">@(AscText)</option>
+                        <option value="true" selected>@(DescText)</option>
+                    }
+                </select>
+            }
+            </div>
+
+            <div class="row row-cols-1 g-2">
+                @foreach (var item in DataSource.Items)
+                {
+                    <div class="col">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    @if (!string.IsNullOrWhiteSpace(item.Model!.StorageFileUrl) && 
+                                        HideColumnNames.Contains("StorageFileUrl") == false)
+                                    {
+                                        <img src="@(item.Model!.StorageFileUrl)" style="max-height: 32px; margin-right: 8px;" />
+                                    }
+                                    @if (HideColumnNames.Contains("UploadDate") == false)
+                                    {
+                                        <div class="text-muted">@(item.Model!.UploadDate)</div>
+                                    }
+                                    @if (HideColumnNames.Contains("ProfileName") == false)
+                                    {
+                                        <div class="text-muted">@(item.Model!.ProfileName)</div>
+                                    }
+                                </div>
+                                <div class="mt-2">
+                                    @if (item.Model!.CanUpdate)
+                                    {
+                                        <a class="btn btn-sm btn-primary" href="/profilepictures/edit/@(item.Model!.Id)">@(EditText)</a>
+                                    }
+                                    @if (item.Model!.CanDelete)
+                                    {
+                                        <a class="btn btn-sm btn-danger ms-1" href="/profilepictures/delete/@(item.Model!.Id)">@(DeleteText)</a>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        @if (DataSource.HasMore)
+        {
+            <div id="@(DataSource.SentinelId)" class="sentinel">@(LoadingModeText)</div>
+        }
+    </div>
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public ListDataSource<ProfilePicture, Guid>? DataSource { get; set; }
+
+    [Parameter] public string Id { get; set; } = $"profilepictureList_{Guid.NewGuid()}";
+    [Parameter] public string EmptyText { get; set; } = "Order by...";
+    [Parameter] public string AscText { get; set; } = "▲ asc";
+    [Parameter] public string DescText { get; set; } = "▼ desc";
+    [Parameter] public string EditText { get; set; } = "✏️ Edit";
+    [Parameter] public string DeleteText { get; set; } = "🗑️ Delete";
+    [Parameter] public string LoadingText { get; set; } = "Loading, please wait...";
+    [Parameter] public string LoadingModeText { get; set; } = "Loading more...";
+    [Parameter] public string NoItemsText { get; set; } = "No ProfilePictures to display.";
+
+    private string[] HideColumnNames = [];
+
+    [Parameter]
+    public string? HideColumns { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        HideColumnNames = string.IsNullOrWhiteSpace(HideColumns)
+            ? []
+            : HideColumns.Split(
+                ',',
+                StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries
+              );
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (//!firstRender || 
+            DataSource == null)
+            return;
+        await DataSource.AfterRenderAsync();
+    }
+
+    
+    private async Task OrderByUploadDateClicked()
+    {
+        if (DataSource != null)
+            await DataSource.OrderByColumnClicked("UploadDate");
+    }
+    private async Task OrderByProfileNameClicked()
+    {
+        if (DataSource != null)
+            await DataSource.OrderByColumnClicked("ProfileName");
+    }
+
+    private bool Nothing__Selected => string.IsNullOrEmpty(DataSource?.OrderByColumn);
+    private bool UploadDate__Selected => DataSource?.OrderByColumn == "UploadDate";
+    private bool ProfileName__Selected => DataSource?.OrderByColumn == "ProfileName";
+}

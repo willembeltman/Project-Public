@@ -1,0 +1,77 @@
+@page "/users/delete/{id?}"
+@implements IAsyncDisposable
+@inject IUsersApi iUsersApi
+@inject IClientAuthenticatedHttpClient ClientAuthenticatedHttpClient
+@inject IJSRuntime JS
+@inject NavigationManager NavigationManager
+
+<PageTitle>Delete User</PageTitle>
+
+<AuthorizeView>
+    <Authorized>
+        <h3>Delete User</h3>
+        <LoaderView Response="User?.Response">
+            <div class="alert alert-warning">
+                Are you sure you want to delete this User
+            </div>
+
+            <UserDetails DataSource="User" />
+            <ErrorView Response="User!.StatusResponse" />
+
+            <button id="delete" class="btn btn-danger" @onclick="User.HandleDelete">🗑️ Delete</button>
+            <button id="cancel" class="btn btn-secondary ms-2" @onclick="User.Cancel">Cancel</button>
+        </LoaderView>
+    </Authorized>
+    <NotAuthorized>
+        <RedirectToLogin />
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    [Parameter]
+    public string? id { get; set; }
+
+    private CancellationTokenSource? Cts;
+    private ItemDataSource<User, Guid>? User;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Cts != null)
+        {
+            await Cts.CancelAsync();
+            Cts.Dispose();
+        }
+
+        Cts = new CancellationTokenSource();
+
+        if (await ClientAuthenticatedHttpClient.IsAuthenticatedAsync(Cts.Token) == false || id == null)
+        {
+            return;
+        }
+
+        User = new ItemDataSource<User, Guid>(
+            GetPrimaryKey: item => item.Id,
+            AfterSaveAction: item => NavigationManager.NavigateTo("/users"),
+            AfterCancelAction: item => NavigationManager.NavigateTo("/users"),
+            Create: null,
+            Read: iUsersApi.Read,
+            Update: null,
+            Delete: iUsersApi.Delete,
+            FileUpdate: null,
+            FileDelete: null
+        );
+
+        await User.LoadModelAsync(Guid.TryParse(id, out var guidId) ? guidId : null);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (Cts != null)
+        {
+            await Cts.CancelAsync();
+            Cts.Dispose();
+        }
+        if (User != null) 
+            await User.DisposeAsync();
+    }
+}

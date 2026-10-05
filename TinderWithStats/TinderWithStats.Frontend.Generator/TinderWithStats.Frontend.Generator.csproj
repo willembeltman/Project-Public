@@ -9,7 +9,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\gAPI\gAPI.CodeGen.Frontend\gAPI.CodeGen.Frontend.csproj" />
-		<ProjectReference Include="..\TinderWithStats.Frontend\TinderWithStats.Frontend.csproj" />
+		<ProjectReference Include="..\TinderWithStats.Frontend\TinderWithStats.Frontend.Webassembly.csproj" />
 	</ItemGroup>
 
 </Project>

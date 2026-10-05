@@ -1,0 +1,312 @@
+@if (DataSource == null || DataSource.Items.Count == 0)
+{
+    @if (DataSource == null || DataSource.HasMore == false)
+    {
+        <p><em>@(NoItemsText)</em></p>
+    }
+    else
+    {
+        <p><em>@(LoadingText)</em></p>
+    }
+}
+else
+{
+    <div id="@(Id)">
+        <!-- Desktop weergave -->
+        <div class="d-none d-md-block">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        @if (HideColumnNames.Contains("Name") == false)
+                        {
+                            <th>
+                                <a @onclick="OrderByNameClicked" id="orderByNameButton" style="cursor:pointer;">
+                                    Name
+                                    @if (DataSource.OrderByColumn == "Name asc")
+                                    {
+                                        <span>▲</span>
+                                    }
+                                    else if (DataSource.OrderByColumn == "Name desc")
+                                    {
+                                        <span>▼</span>
+                                    }
+                                </a>
+                            </th>
+                        }
+                        @if (HideColumnNames.Contains("DateOfBirth") == false)
+                        {
+                            <th>
+                                <a @onclick="OrderByDateOfBirthClicked" id="orderByDateOfBirthButton" style="cursor:pointer;">
+                                    DateOfBirth
+                                    @if (DataSource.OrderByColumn == "DateOfBirth asc")
+                                    {
+                                        <span>▲</span>
+                                    }
+                                    else if (DataSource.OrderByColumn == "DateOfBirth desc")
+                                    {
+                                        <span>▼</span>
+                                    }
+                                </a>
+                            </th>
+                        }
+                        @if (HideColumnNames.Contains("UserName") == false)
+                        {
+                            <th>
+                                <a @onclick="OrderByUserNameClicked" id="orderByUserNameButton" style="cursor:pointer;">
+                                    UserName
+                                    @if (DataSource.OrderByColumn == "UserName asc")
+                                    {
+                                        <span>▲</span>
+                                    }
+                                    else if (DataSource.OrderByColumn == "UserName desc")
+                                    {
+                                        <span>▼</span>
+                                    }
+                                </a>
+                            </th>
+                        }
+                        @if (HideColumnNames.Contains("LocationName") == false)
+                        {
+                            <th>
+                                <a @onclick="OrderByLocationNameClicked" id="orderByLocationNameButton" style="cursor:pointer;">
+                                    LocationName
+                                    @if (DataSource.OrderByColumn == "LocationName asc")
+                                    {
+                                        <span>▲</span>
+                                    }
+                                    else if (DataSource.OrderByColumn == "LocationName desc")
+                                    {
+                                        <span>▼</span>
+                                    }
+                                </a>
+                            </th>
+                        }
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in DataSource.Items)
+                    {
+                        <tr>
+                            @if (HideColumnNames.Contains("Name") == false)
+                            {
+                                <td>@(item.Model!.Name)</td>
+                            }
+                            @if (HideColumnNames.Contains("DateOfBirth") == false)
+                            {
+                                <td>@(item.Model!.DateOfBirth)</td>
+                            }
+                            @if (HideColumnNames.Contains("UserName") == false)
+                            {
+                                <td>@(item.Model!.UserName)</td>
+                            }
+                            @if (HideColumnNames.Contains("LocationName") == false)
+                            {
+                                <td>@(item.Model!.LocationName)</td>
+                            }
+                            <td>
+                                @if (item.Model!.CanUpdate)
+                                {
+                                    <a class="btn btn-sm btn-primary" href="/profiles/edit/@(item.Model!.Id)">✏️</a>
+                                }
+                                @if (item.Model!.CanDelete)
+                                {
+                                    <a class="btn btn-sm btn-danger ms-1" href="/profiles/delete/@(item.Model!.Id)">🗑️</a>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Mobiele weergave -->
+        <div class="d-md-none">
+            <div class="mb-2 d-flex gap-2 align-items-center">
+                <select @onchange="DataSource.OrderByChanged" class="form-select form-select-sm w-auto">
+                @if (Nothing__Selected)
+                {
+                    <option value="" selected>@(EmptyText)</option>
+                }
+                else
+                {
+                    <option value="">@(EmptyText)</option>
+                }
+
+                
+                @if (HideColumnNames.Contains("Name") == false)
+                {
+                    @if (Name__Selected)
+                    {
+                        <option value="Name" selected>Name</option>
+                    }
+                    else
+                    {
+                        <option value="Name">Name</option>
+                    }
+                }
+                @if (HideColumnNames.Contains("DateOfBirth") == false)
+                {
+                    @if (DateOfBirth__Selected)
+                    {
+                        <option value="DateOfBirth" selected>DateOfBirth</option>
+                    }
+                    else
+                    {
+                        <option value="DateOfBirth">DateOfBirth</option>
+                    }
+                }
+                @if (HideColumnNames.Contains("UserName") == false)
+                {
+                    @if (UserName__Selected)
+                    {
+                        <option value="UserName" selected>UserName</option>
+                    }
+                    else
+                    {
+                        <option value="UserName">UserName</option>
+                    }
+                }
+                @if (HideColumnNames.Contains("LocationName") == false)
+                {
+                    @if (LocationName__Selected)
+                    {
+                        <option value="LocationName" selected>LocationName</option>
+                    }
+                    else
+                    {
+                        <option value="LocationName">LocationName</option>
+                    }
+                }
+            </select>
+
+            @if (!string.IsNullOrEmpty(DataSource.OrderByColumn))
+            {
+                <select @onchange="DataSource.OrderByDirectionChanged" class="form-select form-select-sm w-auto">
+                    @if (DataSource.OrderByDirectionAsc)
+                    {
+                        <option value="false" selected>@(AscText)</option>
+                        <option value="true">@(DescText)</option>
+                    }
+                    else
+                    {
+                        <option value="false">@(AscText)</option>
+                        <option value="true" selected>@(DescText)</option>
+                    }
+                </select>
+            }
+            </div>
+
+            <div class="row row-cols-1 g-2">
+                @foreach (var item in DataSource.Items)
+                {
+                    <div class="col">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    @if (HideColumnNames.Contains("Name") == false)
+                                    {
+                                        <div class="text-muted">@(item.Model!.Name)</div>
+                                    }
+                                    @if (HideColumnNames.Contains("DateOfBirth") == false)
+                                    {
+                                        <div class="text-muted">@(item.Model!.DateOfBirth)</div>
+                                    }
+                                    @if (HideColumnNames.Contains("UserName") == false)
+                                    {
+                                        <div class="text-muted">@(item.Model!.UserName)</div>
+                                    }
+                                    @if (HideColumnNames.Contains("LocationName") == false)
+                                    {
+                                        <div class="text-muted">@(item.Model!.LocationName)</div>
+                                    }
+                                </div>
+                                <div class="mt-2">
+                                    @if (item.Model!.CanUpdate)
+                                    {
+                                        <a class="btn btn-sm btn-primary" href="/profiles/edit/@(item.Model!.Id)">@(EditText)</a>
+                                    }
+                                    @if (item.Model!.CanDelete)
+                                    {
+                                        <a class="btn btn-sm btn-danger ms-1" href="/profiles/delete/@(item.Model!.Id)">@(DeleteText)</a>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        @if (DataSource.HasMore)
+        {
+            <div id="@(DataSource.SentinelId)" class="sentinel">@(LoadingModeText)</div>
+        }
+    </div>
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public ListDataSource<Profile, Guid>? DataSource { get; set; }
+
+    [Parameter] public string Id { get; set; } = $"profileList_{Guid.NewGuid()}";
+    [Parameter] public string EmptyText { get; set; } = "Order by...";
+    [Parameter] public string AscText { get; set; } = "▲ asc";
+    [Parameter] public string DescText { get; set; } = "▼ desc";
+    [Parameter] public string EditText { get; set; } = "✏️ Edit";
+    [Parameter] public string DeleteText { get; set; } = "🗑️ Delete";
+    [Parameter] public string LoadingText { get; set; } = "Loading, please wait...";
+    [Parameter] public string LoadingModeText { get; set; } = "Loading more...";
+    [Parameter] public string NoItemsText { get; set; } = "No Profiles to display.";
+
+    private string[] HideColumnNames = [];
+
+    [Parameter]
+    public string? HideColumns { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        HideColumnNames = string.IsNullOrWhiteSpace(HideColumns)
+            ? []
+            : HideColumns.Split(
+                ',',
+                StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries
+              );
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (//!firstRender || 
+            DataSource == null)
+            return;
+        await DataSource.AfterRenderAsync();
+    }
+
+    
+    private async Task OrderByNameClicked()
+    {
+        if (DataSource != null)
+            await DataSource.OrderByColumnClicked("Name");
+    }
+    private async Task OrderByDateOfBirthClicked()
+    {
+        if (DataSource != null)
+            await DataSource.OrderByColumnClicked("DateOfBirth");
+    }
+    private async Task OrderByUserNameClicked()
+    {
+        if (DataSource != null)
+            await DataSource.OrderByColumnClicked("UserName");
+    }
+    private async Task OrderByLocationNameClicked()
+    {
+        if (DataSource != null)
+            await DataSource.OrderByColumnClicked("LocationName");
+    }
+
+    private bool Nothing__Selected => string.IsNullOrEmpty(DataSource?.OrderByColumn);
+    private bool Name__Selected => DataSource?.OrderByColumn == "Name";
+    private bool DateOfBirth__Selected => DataSource?.OrderByColumn == "DateOfBirth";
+    private bool UserName__Selected => DataSource?.OrderByColumn == "UserName";
+    private bool LocationName__Selected => DataSource?.OrderByColumn == "LocationName";
+}

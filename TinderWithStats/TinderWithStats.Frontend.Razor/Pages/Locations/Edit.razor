@@ -1,0 +1,75 @@
+@page "/locations/edit/{id:int?}"
+@implements IAsyncDisposable
+@inject ILocationsApi iLocationsApi
+@inject IClientAuthenticatedHttpClient ClientAuthenticatedHttpClient
+@inject IJSRuntime JS
+@inject NavigationManager NavigationManager
+
+<PageTitle>Edit Location</PageTitle>
+
+<AuthorizeView>
+    <Authorized Context="_">
+        <h3>Edit Location</h3>
+        <LoaderView Response="Location?.Response">
+            <EditForm Model="Location!.Model" OnValidSubmit="Location.HandleValidSubmit">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <LocationForm DataSource="Location" />
+                <ErrorView Response="Location.StatusResponse" />
+                <button id="save" class="btn btn-primary" type="submit">💾 Save</button>
+                <button id="cancel" class="btn btn-secondary ms-2" @onclick="Location.Cancel">Cancel</button>
+            </EditForm>
+        </LoaderView>
+    </Authorized>
+    <NotAuthorized>
+        <RedirectToLogin />
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    [Parameter]
+    public int? id { get; set; }
+
+    private CancellationTokenSource? Cts;
+    private ItemDataSource<Location, int>? Location;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Cts != null)
+        {
+            await Cts.CancelAsync();
+            Cts.Dispose();
+        }
+
+        Cts = new CancellationTokenSource();
+
+        if (await ClientAuthenticatedHttpClient.IsAuthenticatedAsync(Cts.Token) == false || id == null)
+        {
+            return;
+        }
+
+        Location = new ItemDataSource<Location, int>(
+            GetPrimaryKey: e => e.Id,
+            AfterSaveAction: e => NavigationManager.NavigateTo("/locations"),
+            AfterCancelAction: e => NavigationManager.NavigateTo("/locations"),
+            Create: iLocationsApi.Create,
+            Read: iLocationsApi.Read,
+            Update: iLocationsApi.Update,
+            Delete: iLocationsApi.Delete,
+            FileUpdate: null,
+            FileDelete: null
+        );
+        await Location.LoadModelAsync(id);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (Cts != null)
+        {
+            await Cts.CancelAsync();
+            Cts.Dispose();
+        }
+        if (Location != null) 
+            await Location.DisposeAsync();
+    }
+}
