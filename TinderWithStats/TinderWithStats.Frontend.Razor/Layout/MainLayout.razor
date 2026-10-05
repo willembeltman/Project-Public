@@ -134,7 +134,7 @@
     protected override async Task OnInitializedAsync()
     {
         var state = await httpClient.GetStateAsync();
-        hasProfile = state.Profile != null;
+        hasProfile = state.ProfileId != null;
     }
 
     private void ToggleMenu()

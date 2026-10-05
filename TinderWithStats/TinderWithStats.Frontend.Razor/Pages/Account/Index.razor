@@ -43,13 +43,13 @@
 </AuthorizeView>
 
 @code {
-    private Guid UserId;
-    private Guid ProfileId;
+    private string? UserId;
+    private string? ProfileId;
 
     protected override async Task OnInitializedAsync()
     {
         var state = await httpClient.GetStateAsync();
-        UserId = state.User?.Id ?? Guid.Empty;
-        ProfileId = state.Profile?.Id ?? Guid.Empty;
+        UserId = state.User?.Id.ToString();
+        ProfileId = state.ProfileId;
     }
 }
