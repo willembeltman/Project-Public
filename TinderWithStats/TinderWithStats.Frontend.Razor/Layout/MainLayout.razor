@@ -1,12 +1,144 @@
 ﻿@inherits LayoutComponentBase
+@inject IAuthenticatedHttpClient httpClient
 
-<AuthorizeView>
-    <Authorized>
-        <NavMenuAuthenticated />
-    </Authorized>
-    <NotAuthorized>
-        <NavMenuNotAuthenticated />
-    </NotAuthorized>
-</AuthorizeView>
+<div class="page d-flex flex-column min-vh-100 bg-light-subtle">
+    <!-- Header: Warme donkerrode/roze tint (bg-danger of bg-gradient) -->
+    <header class="navbar navbar-dark bg-danger bg-gradient shadow px-3 py-2" style="border-bottom: 3px solid #ff4d6d;">
+        <div class="container-fluid px-0">
+            <!-- Titel met een dating-touch -->
+            <h1 class="navbar-brand mb-0 h1 fw-bold">
+                ❤️ HeartSpark <span class="fs-6 fw-light d-none d-sm-inline">| Vind jouw match</span>
+            </h1>
+            <button class="btn btn-outline-light border-2 fw-semibold px-3" type="button" @onclick="ToggleMenu">
+                ☰ Menu
+            </button>
+        </div>
+    </header>
 
-@Body
+    <!-- Side Panel (Bootstrap Offcanvas Layout via Blazor) -->
+    <div class="offcanvas offcanvas-start border-end @(isMenuOpen ? "show" : "")"
+         style="visibility: @(isMenuOpen ? "visible" : "hidden");"
+         tabindex="-1">
+        <!-- Header van het zijpaneel in zacht roze -->
+        <div class="offcanvas-header bg-danger-subtle text-danger-emphasis">
+            <h5 class="offcanvas-title fw-bold">Menu</h5>
+            <button type="button" class="btn-close" @onclick="ToggleMenu" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body bg-white">
+            <AuthorizeView>
+                <Authorized>
+                    @if (hasProfile)
+                    {
+                        <!-- Navigatie voor ingelogde singles -->
+                        <ul class="nav flex-column">
+                            <li class="nav-item mb-2">
+                                <a class="nav-link btn btn-outline-danger border-2 text-start fw-semibold shadow-sm" href="matches" @onclick="ToggleMenu">
+                                    💕 Mijn Matches
+                                </a>
+                            </li>
+                            <li class="nav-item mb-2">
+                                <a class="nav-link btn btn-outline-danger border-2 text-start fw-semibold shadow-sm" href="berichten" @onclick="ToggleMenu">
+                                    💬 Berichten
+                                </a>
+                            </li>
+                            <li class="nav-item mb-2">
+                                <a class="nav-link btn btn-outline-danger border-2 text-start fw-semibold shadow-sm" href="/Account" @onclick="ToggleMenu">
+                                    👤 Account
+                                </a>
+                            </li>
+                        </ul>
+                    }
+                    else
+                    {
+                        <!-- Navigatie voor ingelogde singles -->
+                        <ul class="nav flex-column">
+                            <li class="nav-item mb-2">
+                                <a class="nav-link btn btn-outline-danger border-2 text-start fw-semibold shadow-sm" href="/Account" @onclick="ToggleMenu">
+                                    👤 Account
+                                </a>
+                            </li>
+                        </ul>
+                        
+                    }
+                </Authorized>
+                <NotAuthorized>
+                    <!-- Navigatie voor bezoekers -->
+                    <ul class="nav flex-column">
+                        <li class="nav-item mb-2">
+                            <a class="nav-link btn btn-outline-secondary border-2 text-start fw-semibold" href="/Help" @onclick="ToggleMenu">
+                                ✨ How it works
+                            </a>
+                        </li>
+                        <li class="nav-item mb-2">
+                            <a class="nav-link btn btn-danger text-start fw-bold shadow-sm" href="/Account/Login" @onclick="ToggleMenu">
+                                🔑 Login now
+                            </a>
+                        </li>
+                        <li class="nav-item mb-2">
+                            <a class="nav-link btn btn-danger text-start fw-bold shadow-sm" href="/Account/Register" @onclick="ToggleMenu">
+                                🔑 Create a new account
+                            </a>
+                        </li>
+                    </ul>
+                </NotAuthorized>
+            </AuthorizeView>
+        </div>
+    </div>
+
+    <!-- Achtergrondoverlay wanneer menu open is -->
+    @if (isMenuOpen)
+    {
+        <div class="offcanvas-backdrop fade show" @onclick="ToggleMenu"></div>
+    }
+
+    <!-- Content Area -->
+    <main class="flex-fill container my-4">
+        @Body
+    </main>
+
+    <!-- Footer: Zacht grijs/roze met duidelijke scheiding -->
+    <footer class="bg-dark text-light border-top py-3 mt-auto">
+        <div class="container text-center">
+            <AuthorizeView>
+                <Authorized>
+                    @if (hasProfile)
+                    {
+                        <div class="container d-flex justify-content-center gap-3">
+                            <a class="btn btn-secondary" href="/MyMatches">Matches</a>
+                            <a class="btn btn-secondary" href="/Swipe">Swipe</a>
+                            <a class="btn btn-secondary" href="/Account">Account</a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="container d-flex justify-content-center gap-3">
+                            <a class="btn btn-secondary" href="/Account">Account</a>
+                        </div>
+                    }
+                </Authorized>
+                <NotAuthorized>
+                    <div class="container d-flex justify-content-center gap-3">
+                        <a class="btn btn-secondary" href="Help">Help</a>
+                    </div>
+                </NotAuthorized>
+            </AuthorizeView>
+
+        </div>
+    </footer>
+</div>
+
+@code {
+    private bool isMenuOpen = false;
+    private bool hasProfile = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var state = await httpClient.GetStateAsync();
+        hasProfile = state.Profile != null;
+    }
+
+    private void ToggleMenu()
+    {
+        isMenuOpen = !isMenuOpen;
+    }
+}

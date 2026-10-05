@@ -18,7 +18,7 @@ public class Profile
     [IsName]
     public string Name { get; set; } = string.Empty;
     [IsName(" (", gAPI.Core.Enums.FormattingOption.yyyy_MM_dd, ")")]
-    public DateTimeOffset DateOfBirth { get; set; }
+    public DateTime DateOfBirth { get; set; }
     public int Length { get; set; }
     public string Beroep { get; set; } = string.Empty;
     public string Bio { get; set; } = string.Empty;

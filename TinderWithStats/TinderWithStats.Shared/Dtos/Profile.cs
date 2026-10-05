@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations;
 namespace TinderWithStats.Shared.Dtos;
 
 [IsAuthorized]
+[GenerateSerializer]
 public class Profile : ICrudEntity
 {
     [Key]
@@ -22,7 +23,7 @@ public class Profile : ICrudEntity
     [IsName]
     public string Name { get; set; } = string.Empty;
     [IsName(" (", FormattingOption.yyyy_MM_dd, ")")]
-    public System.DateTimeOffset DateOfBirth { get; set; }
+    public DateTime DateOfBirth { get; set; } = DateTime.Now;
     public int Length { get; set; }
     [Required]
     public string Beroep { get; set; } = string.Empty;
