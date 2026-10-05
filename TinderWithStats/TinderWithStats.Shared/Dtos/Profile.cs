@@ -6,7 +6,6 @@ using System.ComponentModel.DataAnnotations;
 namespace TinderWithStats.Shared.Dtos;
 
 [IsAuthorized]
-[GenerateSerializer]
 public class Profile : ICrudEntity
 {
     [Key]

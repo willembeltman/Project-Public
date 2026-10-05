@@ -8,20 +8,29 @@
     <Authorized Context="_">
 
         <div class="px-3">
-            <NavLink class="nav-link" href="/Account/ChangePassword">
-                <span aria-hidden="true"></span> Change password
-            </NavLink>
-        </div> 
+            <a class="nav-link" href="@AccountUrl">
+                <span aria-hidden="true"></span> Account information
+            </a>
+        </div>
+
+        @if (ProfileId != null)
+        {
+            <div class="px-3">
+                <a class="nav-link" href="@ProfileUrl">
+                    <span aria-hidden="true"></span> Profile information
+                </a>
+            </div>
+        }
 
         <div class="px-3">
-            <NavLink class="nav-link" href="/Profiles/Edit">
-                <span aria-hidden="true"></span> Logoff
+            <NavLink class="nav-link" href="/Account/ChangePassword">
+                <span aria-hidden="true"></span> Change password
             </NavLink>
         </div>
 
         <div class="px-3">
             <NavLink class="nav-link" href="/Account/Logoff">
-                <span aria-hidden="true"></span> Logoff
+                <span aria-hidden="true"></span> Log off
             </NavLink>
         </div>
 
@@ -35,7 +44,7 @@
         </div>
         <div class="px-3">
             <NavLink class="nav-link" href="/Account/Login">
-                <span aria-hidden="true"></span> Login
+                <span aria-hidden="true"></span> Log in
             </NavLink>
         </div>
 
@@ -46,10 +55,16 @@
     private string? UserId;
     private string? ProfileId;
 
+    private string? AccountUrl { get; set; }
+    private string? ProfileUrl { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
         var state = await httpClient.GetStateAsync();
         UserId = state.User?.Id.ToString();
         ProfileId = state.ProfileId;
+
+        AccountUrl = $"/Users/Edit/{UserId}"; 
+        ProfileUrl = $"/Profiles/Edit/{ProfileId}";
     }
 }

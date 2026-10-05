@@ -15,10 +15,6 @@ else
          style="width:100%; max-height:250px; overflow:auto;">
          
         <div class="grid-row">
-            @if (HideColumnNames.Contains("IsAdmin") == false)
-            {
-                <div class="grid-header">IsAdmin</div>
-            }
             @if (HideColumnNames.Contains("UserName") == false)
             {
                 <div class="grid-header">UserName</div>
@@ -39,12 +35,6 @@ else
             <EditForm Model="item.Model" OnValidSubmit="() => DataSource.HandleValidSubmit(item)">
                 <DataAnnotationsValidator />
                 <div class="grid-row">
-                    @if (HideColumnNames.Contains("IsAdmin") == false)
-                    {
-                        <div class="grid-cell">
-                            <InputCheckbox @bind-Value="item.Model!.IsAdmin" bindtype_Value="bool" class="form-control" />
-                        </div>
-                    }
                     @if (HideColumnNames.Contains("UserName") == false)
                     {
                         <div class="grid-cell">

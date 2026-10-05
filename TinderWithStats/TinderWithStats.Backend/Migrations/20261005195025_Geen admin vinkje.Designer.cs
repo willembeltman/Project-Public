@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TinderWithStats.Backend.Entities;
 
@@ -11,9 +12,11 @@ using TinderWithStats.Backend.Entities;
 namespace TinderWithStats.Backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20261005195025_Geen admin vinkje")]
+    partial class Geenadminvinkje
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -157,21 +160,6 @@ namespace TinderWithStats.Backend.Migrations
                     b.ToTable("ProfilePictures");
                 });
 
-            modelBuilder.Entity("TinderWithStats.Backend.Entities.Role", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Role");
-                });
-
             modelBuilder.Entity("TinderWithStats.Backend.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -204,27 +192,6 @@ namespace TinderWithStats.Backend.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("TinderWithStats.Backend.Entities.UserRole", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("RoleId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RoleId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UserRole");
                 });
 
             modelBuilder.Entity("gAPI.Core.Server.Entities.Ip<TinderWithStats.Backend.Entities.User>", b =>
@@ -530,25 +497,6 @@ namespace TinderWithStats.Backend.Migrations
                     b.Navigation("Profile");
                 });
 
-            modelBuilder.Entity("TinderWithStats.Backend.Entities.UserRole", b =>
-                {
-                    b.HasOne("TinderWithStats.Backend.Entities.Role", "Role")
-                        .WithMany("UserRoles")
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("TinderWithStats.Backend.Entities.User", "User")
-                        .WithMany("UserRoles")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Role");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("gAPI.Core.Server.Entities.UserIp<TinderWithStats.Backend.Entities.User>", b =>
                 {
                     b.HasOne("gAPI.Core.Server.Entities.Ip<TinderWithStats.Backend.Entities.User>", "Ip")
@@ -667,16 +615,9 @@ namespace TinderWithStats.Backend.Migrations
                     b.Navigation("ProfilePictures");
                 });
 
-            modelBuilder.Entity("TinderWithStats.Backend.Entities.Role", b =>
-                {
-                    b.Navigation("UserRoles");
-                });
-
             modelBuilder.Entity("TinderWithStats.Backend.Entities.User", b =>
                 {
                     b.Navigation("Profiles");
-
-                    b.Navigation("UserRoles");
                 });
 
             modelBuilder.Entity("gAPI.Core.Server.Entities.Ip<TinderWithStats.Backend.Entities.User>", b =>

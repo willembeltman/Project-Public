@@ -78,7 +78,7 @@ else
                     @if (HideColumnNames.Contains("DateOfBirth") == false)
                     {
                         <div class="grid-cell">
-                            <InputDate @bind-Value="item.Model!.DateOfBirth" bindtype_Value="DateTimeOffset" class="form-control" />
+                            <InputDate @bind-Value="item.Model!.DateOfBirth" bindtype_Value="DateTime" class="form-control" />
                         </div>
                     }
                     @if (HideColumnNames.Contains("Length") == false)

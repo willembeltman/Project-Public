@@ -26,8 +26,8 @@ var config = new FrontendConfig(
     PagesDirectory: EnvironmentPathHelper.GetDirectory(root, @"TinderWithStats.Frontend.Razor\Pages"),
     PagesNamespace: "TinderWithStats.Frontend.Razor.Pages",
 
-    ComponentsDirectory: EnvironmentPathHelper.GetDirectory(root, @"TinderWithStats.Frontend.Razor.AutoComponents"),
-    ComponentsNamespace: "TinderWithStats.Frontend.Razor.AutoComponents",
+    ComponentsDirectory: EnvironmentPathHelper.GetDirectory(root, @"TinderWithStats.Frontend.Razor\Components"),
+    ComponentsNamespace: "TinderWithStats.Frontend.Razor.Components",
 
     UseAutoComponents: false,
 

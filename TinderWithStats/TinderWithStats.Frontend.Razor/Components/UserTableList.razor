@@ -65,22 +65,6 @@ else
                                 </a>
                             </th>
                         }
-                        @if (HideColumnNames.Contains("IsAdmin") == false)
-                        {
-                            <th>
-                                <a @onclick="OrderByIsAdminClicked" id="orderByIsAdminButton" style="cursor:pointer;">
-                                    IsAdmin
-                                    @if (DataSource.OrderByColumn == "IsAdmin asc")
-                                    {
-                                        <span>▲</span>
-                                    }
-                                    else if (DataSource.OrderByColumn == "IsAdmin desc")
-                                    {
-                                        <span>▼</span>
-                                    }
-                                </a>
-                            </th>
-                        }
                         @if (HideColumnNames.Contains("PhoneNumber") == false)
                         {
                             <th>
@@ -147,10 +131,6 @@ else
                             @if (HideColumnNames.Contains("Email") == false)
                             {
                                 <td>@(item.Model!.Email)</td>
-                            }
-                            @if (HideColumnNames.Contains("IsAdmin") == false)
-                            {
-                                <td>@(item.Model!.IsAdmin)</td>
                             }
                             @if (HideColumnNames.Contains("PhoneNumber") == false)
                             {
@@ -227,17 +207,6 @@ else
                             <option value="Email">Email</option>
                         }
                     }
-                    @if (HideColumnNames.Contains("IsAdmin") == false)
-                    {
-                        @if (IsAdmin__Selected)
-                        {
-                            <option value="IsAdmin" selected>IsAdmin</option>
-                        }
-                        else
-                        {
-                            <option value="IsAdmin">IsAdmin</option>
-                        }
-                    }
                     @if (HideColumnNames.Contains("PhoneNumber") == false)
                     {
                         @if (PhoneNumber__Selected)
@@ -308,10 +277,6 @@ else
                                     @if (HideColumnNames.Contains("Email") == false)
                                     {
                                         <div class="text-muted">@(item.Model!.Email)</div>
-                                    }
-                                    @if (HideColumnNames.Contains("IsAdmin") == false)
-                                    {
-                                        <div class="text-muted">@(item.Model!.IsAdmin)</div>
                                     }
                                     @if (HideColumnNames.Contains("PhoneNumber") == false)
                                     {
@@ -403,11 +368,6 @@ else
         if (DataSource != null)
             await DataSource.OrderByColumnClicked("Email");
     }
-    private async Task OrderByIsAdminClicked()
-    { 
-        if (DataSource != null)
-            await DataSource.OrderByColumnClicked("IsAdmin");
-    }
     private async Task OrderByPhoneNumberClicked()
     { 
         if (DataSource != null)
@@ -428,7 +388,6 @@ else
     private bool Id__Selected => DataSource?.OrderByColumn == "Id";
     private bool UserName__Selected => DataSource?.OrderByColumn == "UserName";
     private bool Email__Selected => DataSource?.OrderByColumn == "Email";
-    private bool IsAdmin__Selected => DataSource?.OrderByColumn == "IsAdmin";
     private bool PhoneNumber__Selected => DataSource?.OrderByColumn == "PhoneNumber";
     private bool CanUpdate__Selected => DataSource?.OrderByColumn == "CanUpdate";
     private bool CanDelete__Selected => DataSource?.OrderByColumn == "CanDelete";

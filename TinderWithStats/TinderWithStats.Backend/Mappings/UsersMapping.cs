@@ -10,7 +10,6 @@ public class UsersMapping(
         TinderWithStats.Shared.Dtos.User dto, 
         TinderWithStats.Backend.Entities.User entity)
     {
-        entity.IsAdmin = dto.IsAdmin;
         entity.Id = dto.Id;
         entity.UserName = dto.UserName;
         entity.Email = dto.Email;
@@ -24,7 +23,6 @@ public class UsersMapping(
         TinderWithStats.Shared.Dtos.User dto,
         CancellationToken ct)
     {
-        dto.IsAdmin = entity.IsAdmin;
         dto.Id = entity.Id;
         dto.UserName = entity.UserName;
         dto.Email = entity.Email;
@@ -45,7 +43,6 @@ public class UsersMapping(
         var dtos = entities
             .Select(entity => new TinderWithStats.Shared.Dtos.User()
             {
-                IsAdmin = entity.IsAdmin,
                 Id = entity.Id,
                 UserName = entity.UserName,
                 Email = entity.Email,

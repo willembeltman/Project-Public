@@ -5,15 +5,6 @@
 else
 {
 
-    @if (HideColumnNames.Contains("IsAdmin") == false)
-    {
-        <div class="mb-3">
-            <label for="isAdmin" class="form-label">IsAdmin</label>
-            <InputCheckbox @bind-Value="DataSource.Model.IsAdmin" bindtype_Value="bool"
-                id="isAdmin" class="form-check-input" />
-        </div>
-    }
-
     @if (HideColumnNames.Contains("UserName") == false)
     {
         <div class="mb-3">

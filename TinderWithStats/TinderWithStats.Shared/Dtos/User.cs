@@ -10,7 +10,6 @@ namespace TinderWithStats.Shared.Dtos;
 [IsEntryPoint]
 public class User : ICrudEntity
 {
-    public bool IsAdmin { get; set; }
     [Key]
     public Guid Id { get; set; }
     [IsName]
