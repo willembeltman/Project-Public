@@ -1,0 +1,48 @@
+@page "/Manage"
+
+<PageTitle>Manage</PageTitle>
+<h3>Manage</h3>
+
+<AuthorizeView>
+    <Authorized Context="_">
+
+        <div class="px-3">
+            <NavLink class="nav-link" href="/Manage/ProfileInformation">
+                <span aria-hidden="true"></span> Profile Information
+            </NavLink>
+        </div>
+
+        <div class="px-3">
+            <NavLink class="nav-link" href="/Manage/UserInformation">
+                <span aria-hidden="true"></span> User Information
+            </NavLink>
+        </div>
+
+        <div class="px-3">
+            <NavLink class="nav-link" href="/Account/ChangePassword">
+                <span aria-hidden="true"></span> Change Password
+            </NavLink>
+        </div>
+
+        <div class="px-3">
+            <NavLink class="nav-link" href="/Account/Logoff">
+                <span aria-hidden="true"></span> Logoff
+            </NavLink>
+        </div>
+
+    </Authorized>
+    <NotAuthorized Context="_">
+
+        <div class="px-3">
+            <NavLink class="nav-link" href="/Account/Register">
+                <span aria-hidden="true"></span> Register
+            </NavLink>
+        </div>
+        <div class="px-3">
+            <NavLink class="nav-link" href="/Account/Login">
+                <span aria-hidden="true"></span> Login
+            </NavLink>
+        </div>
+
+    </NotAuthorized>
+</AuthorizeView>

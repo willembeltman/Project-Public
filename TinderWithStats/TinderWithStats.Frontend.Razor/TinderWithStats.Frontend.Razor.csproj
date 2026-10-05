@@ -16,11 +16,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\gAPI\gAPI.AutoWss.Client\gAPI.AutoWss.Client.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
-		<ProjectReference Include="..\TinderWithStats.Shared\TinderWithStats.Shared.csproj" />
+		<ProjectReference Include="..\TinderWithStats.Frontend.Razor.AutoPages\TinderWithStats.Frontend.Razor.AutoPages.csproj" />
+		<!--<ProjectReference Include="..\TinderWithStats.Shared\TinderWithStats.Shared.csproj" />
 		<ProjectReference Include="..\gAPI\gAPI.Core.Client\gAPI.Core.Client.csproj" />
-		<ProjectReference Include="..\gAPI\gAPI.AutoAuth.Client\gAPI.AutoAuth.Client.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
-
+		<ProjectReference Include="..\gAPI\gAPI.AutoWss.Client\gAPI.AutoWss.Client.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+		<ProjectReference Include="..\gAPI\gAPI.AutoAuth.Client\gAPI.AutoAuth.Client.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />-->
 	</ItemGroup>
 
 </Project>

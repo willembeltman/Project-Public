@@ -17,6 +17,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\gAPI\gAPI.AutoComponent\gAPI.AutoComponent.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+		<ProjectReference Include="..\TinderWithStats.Frontend.Razor.AutoClients\TinderWithStats.Frontend.Razor.AutoClients.csproj" />
 	</ItemGroup>
 
 </Project>

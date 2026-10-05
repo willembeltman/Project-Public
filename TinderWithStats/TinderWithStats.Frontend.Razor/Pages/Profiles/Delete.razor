@@ -15,7 +15,7 @@
                 Are you sure you want to delete this Profile
             </div>
 
-            <ProfileDetails DataSource="Profile" />
+            <AutoProfileDetails DataSource="Profile" />
             <ErrorView Response="Profile!.StatusResponse" />
 
             <button id="delete" class="btn btn-danger" @onclick="Profile.HandleDelete">🗑️ Delete</button>

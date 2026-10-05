@@ -15,7 +15,7 @@
                 Are you sure you want to delete this ProfilePicture
             </div>
 
-            <ProfilePictureDetails DataSource="ProfilePicture" />
+            <AutoProfilePictureDetails DataSource="ProfilePicture" />
             <ErrorView Response="ProfilePicture!.StatusResponse" />
 
             <button id="delete" class="btn btn-danger" @onclick="ProfilePicture.HandleDelete">🗑️ Delete</button>

@@ -24,7 +24,10 @@
     private Assembly[] GetAdditionalAssemblies()
     {
         return [
-            typeof(Razor.Layout.MainLayout).Assembly
+            typeof(Razor.Layout.MainLayout).Assembly,
+            typeof(gAPI.Generated.Pages.Account.Index).Assembly,
+            typeof(gAPI.Generated.Components.AutoUserForm).Assembly,
+            typeof(gAPI.Core.Client.Razor.LoaderView).Assembly,
         ];
     }
 }

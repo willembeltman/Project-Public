@@ -30,8 +30,8 @@ public class UsersApi(
 
         dto = await mapping.ToDtoAsync(entity, new User(), ct);
 
-        return new BaseResponseT<User>() 
-        { 
+        return new BaseResponseT<User>()
+        {
             Success = true,
             Response = dto
         };
@@ -51,8 +51,8 @@ public class UsersApi(
         if (!await useCase.CanReadAsync(dto, ct))
             return new BaseResponseT<User>() { Error = BaseResponseErrorEnum.ErrorNotAuthorized };
 
-        return new BaseResponseT<User>() 
-        { 
+        return new BaseResponseT<User>()
+        {
             Success = true,
             Response = dto
         };
@@ -80,8 +80,8 @@ public class UsersApi(
 
         dto = await mapping.ToDtoAsync(entity, dto, ct);
 
-        return new BaseResponseT<User>() 
-        { 
+        return new BaseResponseT<User>()
+        {
             Success = true,
             Response = dto
         };
@@ -104,10 +104,10 @@ public class UsersApi(
         if (!await useCase.RemoveAsync(entity, ct))
             return new BaseResponseT<bool>() { Error = BaseResponseErrorEnum.ErrorUpdatingState };
 
-        return new BaseResponseT<bool>() 
-        { 
+        return new BaseResponseT<bool>()
+        {
             Success = true,
-            Response = true 
+            Response = true
         };
     }
 

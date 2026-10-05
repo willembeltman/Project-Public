@@ -17,7 +17,7 @@
             <EditForm Model="ChatMessage!.Model" OnValidSubmit="ChatMessage.HandleValidSubmit">
                 <DataAnnotationsValidator />
                 <ValidationSummary />
-                <ChatMessageForm DataSource="ChatMessage" MatchIds="MatchIds" ProfileSenderIds="ProfileSenderIds" ProfileReceiverIds="ProfileReceiverIds" />
+                <AutoChatMessageForm DataSource="ChatMessage" MatchIds="MatchIds" ProfileSenderIds="ProfileSenderIds" ProfileReceiverIds="ProfileReceiverIds" />
                 <ErrorView Response="ChatMessage.StatusResponse" />
                 <button id="create" class="btn btn-primary" type="submit">➕ Create</button>
                 <button id="cancel" class="btn btn-secondary ms-2" @onclick="ChatMessage.Cancel">Cancel</button>

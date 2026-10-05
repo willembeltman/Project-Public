@@ -15,7 +15,7 @@
                 Are you sure you want to delete this User
             </div>
 
-            <UserDetails DataSource="User" />
+            <AutoUserDetails DataSource="User" />
             <ErrorView Response="User!.StatusResponse" />
 
             <button id="delete" class="btn btn-danger" @onclick="User.HandleDelete">🗑️ Delete</button>

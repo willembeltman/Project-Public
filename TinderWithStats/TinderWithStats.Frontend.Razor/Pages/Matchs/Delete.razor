@@ -15,7 +15,7 @@
                 Are you sure you want to delete this Match
             </div>
 
-            <MatchDetails DataSource="Match" />
+            <AutoMatchDetails DataSource="Match" />
             <ErrorView Response="Match!.StatusResponse" />
 
             <button id="delete" class="btn btn-danger" @onclick="Match.HandleDelete">🗑️ Delete</button>

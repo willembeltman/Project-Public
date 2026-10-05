@@ -16,7 +16,7 @@
             <EditForm Model="Profile!.Model" OnValidSubmit="Profile.HandleValidSubmit">
                 <DataAnnotationsValidator />
                 <ValidationSummary />
-                <ProfileForm DataSource="Profile" UserIds="UserIds" LocationIds="LocationIds" />
+                <AutoProfileForm DataSource="Profile" UserIds="UserIds" LocationIds="LocationIds" />
                 <ErrorView Response="Profile.StatusResponse" />
                 <button id="create" class="btn btn-primary" type="submit">➕ Create</button>
                 <button id="cancel" class="btn btn-secondary ms-2" @onclick="Profile.Cancel">Cancel</button>

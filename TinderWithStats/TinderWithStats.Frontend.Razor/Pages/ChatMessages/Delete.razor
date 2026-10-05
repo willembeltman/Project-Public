@@ -15,7 +15,7 @@
                 Are you sure you want to delete this ChatMessage
             </div>
 
-            <ChatMessageDetails DataSource="ChatMessage" />
+            <AutoChatMessageDetails DataSource="ChatMessage" />
             <ErrorView Response="ChatMessage!.StatusResponse" />
 
             <button id="delete" class="btn btn-danger" @onclick="ChatMessage.HandleDelete">🗑️ Delete</button>

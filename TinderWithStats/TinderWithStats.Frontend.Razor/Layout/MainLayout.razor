@@ -7,10 +7,10 @@
         <div class="container-fluid px-0">
             <!-- Titel met een dating-touch -->
             <h1 class="navbar-brand mb-0 h1 fw-bold">
-                ❤️ HeartSpark <span class="fs-6 fw-light d-none d-sm-inline">| Vind jouw match</span>
+                ❤️ HeartSpark <span class="fs-6 fw-light d-none d-sm-inline">| Find your match</span>
             </h1>
             <button class="btn btn-outline-light border-2 fw-semibold px-3" type="button" @onclick="ToggleMenu">
-                ☰ Menu
+                ☰ @MenuText
             </button>
         </div>
     </header>
@@ -33,28 +33,28 @@
                         <ul class="nav flex-column">
                             <li class="nav-item mb-2">
                                 <a class="nav-link btn btn-outline-danger border-2 text-start fw-semibold shadow-sm" href="matches" @onclick="ToggleMenu">
-                                    💕 Mijn Matches
+                                    💕 My Matches
                                 </a>
                             </li>
                             <li class="nav-item mb-2">
                                 <a class="nav-link btn btn-outline-danger border-2 text-start fw-semibold shadow-sm" href="berichten" @onclick="ToggleMenu">
-                                    💬 Berichten
+                                    💬 Messages
                                 </a>
                             </li>
                             <li class="nav-item mb-2">
-                                <a class="nav-link btn btn-outline-danger border-2 text-start fw-semibold shadow-sm" href="/Account" @onclick="ToggleMenu">
-                                    👤 Account
+                                <a class="nav-link btn btn-outline-danger border-2 text-start fw-semibold shadow-sm" href="/Manage" @onclick="ToggleMenu">
+                                    👤 Manage
                                 </a>
                             </li>
                         </ul>
                     }
                     else
                     {
-                        <!-- Navigatie voor ingelogde singles -->
+                        <!-- Navigatie voor ingelogde singles zonder profiel -->
                         <ul class="nav flex-column">
                             <li class="nav-item mb-2">
-                                <a class="nav-link btn btn-outline-danger border-2 text-start fw-semibold shadow-sm" href="/Account" @onclick="ToggleMenu">
-                                    👤 Account
+                                <a class="nav-link btn btn-outline-danger border-2 text-start fw-semibold shadow-sm" href="/Manage" @onclick="ToggleMenu">
+                                    👤 Manage
                                 </a>
                             </li>
                         </ul>
@@ -130,11 +130,14 @@
 @code {
     private bool isMenuOpen = false;
     private bool hasProfile = false;
+    private string MenuText = "Menu";
 
     protected override async Task OnInitializedAsync()
     {
         var state = await httpClient.GetStateAsync();
         hasProfile = state.ProfileId != null;
+        if (state.User != null)
+            MenuText = state.User.UserName;
     }
 
     private void ToggleMenu()

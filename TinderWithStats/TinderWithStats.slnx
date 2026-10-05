@@ -4,6 +4,9 @@
     <Project Path="TinderWithStats.FileServer/TinderWithStats.FileServer.csproj" />
     <Project Path="TinderWithStats.Frontend.Generator/TinderWithStats.Frontend.Generator.csproj" Id="8439d2cf-fd18-491f-8efe-204a139fa610" />
     <Project Path="TinderWithStats.Frontend.Maui/TinderWithStats.Frontend.Maui.csproj" Id="f0814a99-00c2-41e9-ae2d-317c91e6aaf4" />
+    <Project Path="TinderWithStats.Frontend.Razor.AutoClients/TinderWithStats.Frontend.Razor.AutoClients.csproj" />
+    <Project Path="TinderWithStats.Frontend.Razor.AutoComponents/TinderWithStats.Frontend.Razor.AutoComponents.csproj" />
+    <Project Path="TinderWithStats.Frontend.Razor.AutoPages/TinderWithStats.Frontend.Razor.AutoPages.csproj" />
     <Project Path="TinderWithStats.Frontend/TinderWithStats.Frontend.Webassembly.csproj" />
   </Folder>
   <Folder Name="/gAPI/">

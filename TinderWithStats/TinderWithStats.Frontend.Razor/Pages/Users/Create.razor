@@ -14,7 +14,7 @@
             <EditForm Model="User!.Model" OnValidSubmit="User.HandleValidSubmit">
                 <DataAnnotationsValidator />
                 <ValidationSummary />
-                <UserForm DataSource="User" />
+                <AutoUserForm DataSource="User" />
                 <ErrorView Response="User.StatusResponse" />
                 <button id="create" class="btn btn-primary" type="submit">➕ Create</button>
                 <button id="cancel" class="btn btn-secondary ms-2" @onclick="User.Cancel">Cancel</button>

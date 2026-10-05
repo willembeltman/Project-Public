@@ -29,10 +29,11 @@ var config = new FrontendConfig(
     ComponentsDirectory: EnvironmentPathHelper.GetDirectory(root, @"TinderWithStats.Frontend.Razor\Components"),
     ComponentsNamespace: "TinderWithStats.Frontend.Razor.Components",
 
-    UseAutoComponents: false,
+    UseAutoComponents: true,
 
-    GenerateIsPage: true,
-    GenerateComponents: true,
+    GenerateIsPage: false,
+    GenerateComponents: false,
+    GenerateNavigation: false, 
 
     OverwritePages: true,
     OverwriteComponents: true,

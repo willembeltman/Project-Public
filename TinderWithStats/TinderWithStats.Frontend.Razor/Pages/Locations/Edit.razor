@@ -14,7 +14,7 @@
             <EditForm Model="Location!.Model" OnValidSubmit="Location.HandleValidSubmit">
                 <DataAnnotationsValidator />
                 <ValidationSummary />
-                <LocationForm DataSource="Location" />
+                <AutoLocationForm DataSource="Location" />
                 <ErrorView Response="Location.StatusResponse" />
                 <button id="save" class="btn btn-primary" type="submit">💾 Save</button>
                 <button id="cancel" class="btn btn-secondary ms-2" @onclick="Location.Cancel">Cancel</button>

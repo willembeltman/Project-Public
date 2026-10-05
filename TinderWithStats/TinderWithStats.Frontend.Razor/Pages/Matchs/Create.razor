@@ -16,7 +16,7 @@
             <EditForm Model="Match!.Model" OnValidSubmit="Match.HandleValidSubmit">
                 <DataAnnotationsValidator />
                 <ValidationSummary />
-                <MatchForm DataSource="Match" ProfileSenderIds="ProfileSenderIds" ProfileReceiverIds="ProfileReceiverIds" />
+                <AutoMatchForm DataSource="Match" ProfileSenderIds="ProfileSenderIds" ProfileReceiverIds="ProfileReceiverIds" />
                 <ErrorView Response="Match.StatusResponse" />
                 <button id="create" class="btn btn-primary" type="submit">➕ Create</button>
                 <button id="cancel" class="btn btn-secondary ms-2" @onclick="Match.Cancel">Cancel</button>
