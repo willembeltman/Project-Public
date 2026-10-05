@@ -11,7 +11,7 @@ else
             <label for="userId" class="form-label">User</label>
             <UserDropDown @bind-Value="DataSource.Model.UserId" bindtype_Value="Guid"
                 @bind-ForeignName="DataSource.Model.UserName" bindtype_ForeignName="string?"
-                DataSource="Users" id="userId" />
+                DataSource="UserIds" id="userId" />
         </div>
     }
 
@@ -21,7 +21,7 @@ else
             <label for="locationId" class="form-label">Location</label>
             <LocationDropDown @bind-Value="DataSource.Model.LocationId" bindtype_Value="int"
                 @bind-ForeignName="DataSource.Model.LocationName" bindtype_ForeignName="string?"
-                DataSource="Locations" id="locationId" />
+                DataSource="LocationIds" id="locationId" />
         </div>
     }
 
@@ -76,9 +76,9 @@ else
     public ItemDataSource<Profile, Guid>? DataSource { get; set; }
 
     [Parameter, EditorRequired]
-    public ListDataSource<User, Guid> Users { get; set; } = null!;
+    public ListDataSource<User, Guid> UserIds { get; set; } = null!;
     [Parameter, EditorRequired]
-    public ListDataSource<Location, int> Locations { get; set; } = null!;
+    public ListDataSource<Location, int> LocationIds { get; set; } = null!;
 
     private string[] HideColumnNames = [];
 

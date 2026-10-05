@@ -9,8 +9,12 @@ public class ChatMessagesUseCase(
     IAuthenticationService<TinderWithStats.Backend.Entities.User, TinderWithStats.Shared.Dtos.State> authenticationService)
     : gAPI.Core.Interfaces.IUseCase<TinderWithStats.Backend.Entities.ChatMessage, TinderWithStats.Shared.Dtos.ChatMessage, Guid>
 {
-    public async Task<bool> IsAllowedAsync(CancellationToken ct) => true;
-    public async Task<bool> CanListAsync(CancellationToken ct) => true;
+    public async Task<bool> IsAllowedAsync(CancellationToken ct)
+    {
+        if (authenticationService.State.User == null) return false;
+        return await db.UserRoles.AnyAsync(a => a.UserId == authenticationService.State.User.Id && a.Role!.Name == "Admin", ct);
+    }
+    public async Task<bool> CanListAsync(CancellationToken ct) => authenticationService.State.User != null;
     public async Task<bool> CanCreateAsync(CancellationToken ct) => authenticationService.State.User != null;
     public async Task<bool> CanCreateAsync(TinderWithStats.Shared.Dtos.ChatMessage dto, CancellationToken ct) => authenticationService.State.User != null;
     public async Task<bool> CanReadAsync(TinderWithStats.Shared.Dtos.ChatMessage dto, CancellationToken ct) => true;

@@ -1,0 +1,132 @@
+@page "/chatmessages/edit/{id?}"
+@implements IAsyncDisposable
+@inject IMatchsApi iMatchsApi
+@inject IProfilesApi iProfilesApi
+@inject IProfilesApi iProfilesApi
+@inject IChatMessagesApi iChatMessagesApi
+@inject IClientAuthenticatedHttpClient ClientAuthenticatedHttpClient
+@inject IJSRuntime JS
+@inject NavigationManager NavigationManager
+
+<PageTitle>Edit ChatMessage</PageTitle>
+
+<AuthorizeView>
+    <Authorized Context="_">
+        <h3>Edit ChatMessage</h3>
+        <LoaderView Response="ChatMessage?.Response">
+            <EditForm Model="ChatMessage!.Model" OnValidSubmit="ChatMessage.HandleValidSubmit">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <ChatMessageForm DataSource="ChatMessage" MatchIds="MatchIds" ProfileSenderIds="ProfileSenderIds" ProfileReceiverIds="ProfileReceiverIds" />
+                <ErrorView Response="ChatMessage.StatusResponse" />
+                <button id="save" class="btn btn-primary" type="submit">💾 Save</button>
+                <button id="cancel" class="btn btn-secondary ms-2" @onclick="ChatMessage.Cancel">Cancel</button>
+            </EditForm>
+        </LoaderView>
+    </Authorized>
+    <NotAuthorized>
+        <RedirectToLogin />
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    [Parameter]
+    public string? id { get; set; }
+
+    private CancellationTokenSource? Cts;
+    private ItemDataSource<ChatMessage, Guid>? ChatMessage;
+    private ListDataSource<Match, Guid>? MatchIds;
+    private ListDataSource<Profile, Guid>? ProfileSenderIds;
+    private ListDataSource<Profile, Guid>? ProfileReceiverIds;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Cts != null)
+        {
+            await Cts.CancelAsync();
+            Cts.Dispose();
+        }
+
+        Cts = new CancellationTokenSource();
+
+        if (await ClientAuthenticatedHttpClient.IsAuthenticatedAsync(Cts.Token) == false || id == null)
+        {
+            return;
+        }
+
+        ChatMessage = new ItemDataSource<ChatMessage, Guid>(
+            GetPrimaryKey: e => e.Id,
+            AfterSaveAction: e => NavigationManager.NavigateTo("/chatmessages"),
+            AfterCancelAction: e => NavigationManager.NavigateTo("/chatmessages"),
+            Create: iChatMessagesApi.Create,
+            Read: iChatMessagesApi.Read,
+            Update: iChatMessagesApi.Update,
+            Delete: iChatMessagesApi.Delete,
+            FileUpdate: null,
+            FileDelete: null
+        );
+        await ChatMessage.LoadModelAsync(Guid.TryParse(id, out var guidId) ? guidId : null);
+
+        MatchIds = new ListDataSource<Match, Guid>(
+            JS,
+            StateHasChanged,
+            GetPrimaryKey: x => x.Id,
+            List: (int? skip, int? take, string[]? orderBy, CancellationToken ct) => iMatchsApi.List(skip, take, orderBy, ct),
+            SetForeignKey: null,
+            AfterSaveAction: null,
+            AfterCancelAction: null,
+            Create: iMatchsApi.Create,
+            Read: iMatchsApi.Read,
+            Update: iMatchsApi.Update,
+            Delete: iMatchsApi.Delete
+        );
+        await MatchIds.InitialiseAsync();
+
+        ProfileSenderIds = new ListDataSource<Profile, Guid>(
+            JS,
+            StateHasChanged,
+            GetPrimaryKey: x => x.Id,
+            List: (int? skip, int? take, string[]? orderBy, CancellationToken ct) => iProfilesApi.List(skip, take, orderBy, ct),
+            SetForeignKey: null,
+            AfterSaveAction: null,
+            AfterCancelAction: null,
+            Create: iProfilesApi.Create,
+            Read: iProfilesApi.Read,
+            Update: iProfilesApi.Update,
+            Delete: iProfilesApi.Delete
+        );
+        await ProfileSenderIds.InitialiseAsync();
+
+        ProfileReceiverIds = new ListDataSource<Profile, Guid>(
+            JS,
+            StateHasChanged,
+            GetPrimaryKey: x => x.Id,
+            List: (int? skip, int? take, string[]? orderBy, CancellationToken ct) => iProfilesApi.List(skip, take, orderBy, ct),
+            SetForeignKey: null,
+            AfterSaveAction: null,
+            AfterCancelAction: null,
+            Create: iProfilesApi.Create,
+            Read: iProfilesApi.Read,
+            Update: iProfilesApi.Update,
+            Delete: iProfilesApi.Delete
+        );
+        await ProfileReceiverIds.InitialiseAsync();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (Cts != null)
+        {
+            await Cts.CancelAsync();
+            Cts.Dispose();
+        }
+        if (ChatMessage != null) 
+            await ChatMessage.DisposeAsync();
+        if (MatchIds != null) 
+            await MatchIds.DisposeAsync();
+        if (ProfileSenderIds != null) 
+            await ProfileSenderIds.DisposeAsync();
+        if (ProfileReceiverIds != null) 
+            await ProfileReceiverIds.DisposeAsync();
+    }
+}

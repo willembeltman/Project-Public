@@ -15,14 +15,21 @@ else
          style="width:100%; max-height:250px; overflow:auto;">
          
         <div class="grid-row">
-            <div class="grid-header">File</div>
-            @if (HideColumnNames.Contains("ProfileId") == false)
+            @if (HideColumnNames.Contains("ProfileSenderId") == false)
             {
-                <div class="grid-header">ProfileId</div>
+                <div class="grid-header">ProfileSenderId</div>
             }
-            @if (HideColumnNames.Contains("UploadDate") == false)
+            @if (HideColumnNames.Contains("ProfileReceiverId") == false)
             {
-                <div class="grid-header">UploadDate</div>
+                <div class="grid-header">ProfileReceiverId</div>
+            }
+            @if (HideColumnNames.Contains("MatchCreated") == false)
+            {
+                <div class="grid-header">MatchCreated</div>
+            }
+            @if (HideColumnNames.Contains("MatchAccepted") == false)
+            {
+                <div class="grid-header">MatchAccepted</div>
             }
             <div class="grid-header">Actions</div>
         </div>
@@ -32,38 +39,34 @@ else
             <EditForm Model="item.Model" OnValidSubmit="() => DataSource.HandleValidSubmit(item)">
                 <DataAnnotationsValidator />
                 <div class="grid-row">
-                    <div class="grid-cell">
-                        @if (!string.IsNullOrWhiteSpace(item.Model!.StorageFileUrl))
-                        {
-                            <div class="storageFilePreview">
-                                <img src="@(item.Model!.StorageFileUrl)" style="max-width: 100px;" />
-                                <button type="button" class="btn btn-sm btn-link text-danger" @onclick="() => DataSource.OnHandleFileRemoved(item)">❌ Remove</button>
-                            </div>
-                        }
-                        <div class="storageFile">
-                            <InputFile OnChange="(e) => DataSource.OnHandleFileSelected(item, e)" key="item.File.FileInputKey" />
-                            @if (item.File != null)
-                            {
-                                <div class="storageFileUploadPreview">
-                                    <span>📄 @(item.File.FileName)</span>
-                                    <button type="button" class="btn btn-sm btn-link text-danger" @onclick="() => DataSource.OnCancelFileSelected(item)">❌ Remove</button>
-                                </div>
-                            }
-                        </div>
-                    </div>
-                    @if (HideColumnNames.Contains("ProfileId") == false)
+                    @if (HideColumnNames.Contains("ProfileSenderId") == false)
                     {
                         <div class="grid-cell">
                             <ProfileDropDown 
-                                @bind-Value="item.Model!.ProfileId" bindtype_Value="Guid"
-                                @bind-ForeignName="item.Model!.ProfileName" bindtype_ForeignName="string?" 
-                                DataSource="ProfileIds" />
+                                @bind-Value="item.Model!.ProfileSenderId" bindtype_Value="Guid"
+                                @bind-ForeignName="item.Model!.ProfileSenderName" bindtype_ForeignName="string?" 
+                                DataSource="ProfileSenderIds" />
                         </div>
                     }
-                    @if (HideColumnNames.Contains("UploadDate") == false)
+                    @if (HideColumnNames.Contains("ProfileReceiverId") == false)
                     {
                         <div class="grid-cell">
-                            <InputDate @bind-Value="item.Model!.UploadDate" bindtype_Value="DateTimeOffset" class="form-control" />
+                            <ProfileDropDown 
+                                @bind-Value="item.Model!.ProfileReceiverId" bindtype_Value="Guid"
+                                @bind-ForeignName="item.Model!.ProfileReceiverName" bindtype_ForeignName="string?" 
+                                DataSource="ProfileReceiverIds" />
+                        </div>
+                    }
+                    @if (HideColumnNames.Contains("MatchCreated") == false)
+                    {
+                        <div class="grid-cell">
+                            <InputDate @bind-Value="item.Model!.MatchCreated" bindtype_Value="DateTimeOffset" class="form-control" />
+                        </div>
+                    }
+                    @if (HideColumnNames.Contains("MatchAccepted") == false)
+                    {
+                        <div class="grid-cell">
+                            <InputDate @bind-Value="item.Model!.MatchAccepted" bindtype_Value="DateTimeOffset?" class="form-control" />
                         </div>
                     }
                     <div class="grid-cell">
@@ -106,15 +109,17 @@ else
 
 @code {
     [Parameter, EditorRequired]
-    public ListDataSource<ProfilePicture, Guid>? DataSource { get; set; }
+    public ListDataSource<Match, Guid>? DataSource { get; set; }
 
     [Parameter, EditorRequired]
-    public ListDataSource<Profile, Guid>? ProfileIds { get; set; }
+    public ListDataSource<Profile, Guid>? ProfileSenderIds { get; set; }
+    [Parameter, EditorRequired]
+    public ListDataSource<Profile, Guid>? ProfileReceiverIds { get; set; }
 
-    [Parameter] public string Id { get; set; } = $"profilepictureGridEdit_{Guid.NewGuid()}";
+    [Parameter] public string Id { get; set; } = $"matchGridEdit_{Guid.NewGuid()}";
     [Parameter] public string LoadingText { get; set; } = "Loading, please wait...";
     [Parameter] public string LoadingMoreText { get; set; } = "Loading more...";
-    [Parameter] public string NoItemsText { get; set; } = "No ProfilePictures to display.";
+    [Parameter] public string NoItemsText { get; set; } = "No Matchs to display.";
 
     private string[] HideColumnNames = [];
 

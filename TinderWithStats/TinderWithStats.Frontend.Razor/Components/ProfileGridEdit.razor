@@ -57,7 +57,7 @@ else
                             <UserDropDown 
                                 @bind-Value="item.Model!.UserId" bindtype_Value="Guid"
                                 @bind-ForeignName="item.Model!.UserName" bindtype_ForeignName="string?" 
-                                DataSource="Users" />
+                                DataSource="UserIds" />
                         </div>
                     }
                     @if (HideColumnNames.Contains("LocationId") == false)
@@ -66,7 +66,7 @@ else
                             <LocationDropDown 
                                 @bind-Value="item.Model!.LocationId" bindtype_Value="int"
                                 @bind-ForeignName="item.Model!.LocationName" bindtype_ForeignName="string?" 
-                                DataSource="Locations" />
+                                DataSource="LocationIds" />
                         </div>
                     }
                     @if (HideColumnNames.Contains("Name") == false)
@@ -142,9 +142,9 @@ else
     public ListDataSource<Profile, Guid>? DataSource { get; set; }
 
     [Parameter, EditorRequired]
-    public ListDataSource<User, Guid>? Users { get; set; }
+    public ListDataSource<User, Guid>? UserIds { get; set; }
     [Parameter, EditorRequired]
-    public ListDataSource<Location, int>? Locations { get; set; }
+    public ListDataSource<Location, int>? LocationIds { get; set; }
 
     [Parameter] public string Id { get; set; } = $"profileGridEdit_{Guid.NewGuid()}";
     [Parameter] public string LoadingText { get; set; } = "Loading, please wait...";

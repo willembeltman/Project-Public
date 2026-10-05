@@ -15,7 +15,7 @@ public class StateMapping()
         CancellationToken ct)
     {
         var state = await base.ToDtoAsync(dbUser, dbToken, dbIp, receivedClientState, ct);
-        state.ProfileId = dbUser?.Profiles?.FirstOrDefault()?.Id.ToString();
+        state.ProfileId = dbUser?.Profiles?.FirstOrDefault()?.Id;
         return state;
     }
 }

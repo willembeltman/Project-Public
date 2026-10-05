@@ -1,0 +1,113 @@
+@page "/matchs/edit/{id?}"
+@implements IAsyncDisposable
+@inject IProfilesApi iProfilesApi
+@inject IProfilesApi iProfilesApi
+@inject IMatchsApi iMatchsApi
+@inject IClientAuthenticatedHttpClient ClientAuthenticatedHttpClient
+@inject IJSRuntime JS
+@inject NavigationManager NavigationManager
+
+<PageTitle>Edit Match</PageTitle>
+
+<AuthorizeView>
+    <Authorized Context="_">
+        <h3>Edit Match</h3>
+        <LoaderView Response="Match?.Response">
+            <EditForm Model="Match!.Model" OnValidSubmit="Match.HandleValidSubmit">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <MatchForm DataSource="Match" ProfileSenderIds="ProfileSenderIds" ProfileReceiverIds="ProfileReceiverIds" />
+                <ErrorView Response="Match.StatusResponse" />
+                <button id="save" class="btn btn-primary" type="submit">💾 Save</button>
+                <button id="cancel" class="btn btn-secondary ms-2" @onclick="Match.Cancel">Cancel</button>
+            </EditForm>
+        </LoaderView>
+    </Authorized>
+    <NotAuthorized>
+        <RedirectToLogin />
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    [Parameter]
+    public string? id { get; set; }
+
+    private CancellationTokenSource? Cts;
+    private ItemDataSource<Match, Guid>? Match;
+    private ListDataSource<Profile, Guid>? ProfileSenderIds;
+    private ListDataSource<Profile, Guid>? ProfileReceiverIds;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Cts != null)
+        {
+            await Cts.CancelAsync();
+            Cts.Dispose();
+        }
+
+        Cts = new CancellationTokenSource();
+
+        if (await ClientAuthenticatedHttpClient.IsAuthenticatedAsync(Cts.Token) == false || id == null)
+        {
+            return;
+        }
+
+        Match = new ItemDataSource<Match, Guid>(
+            GetPrimaryKey: e => e.Id,
+            AfterSaveAction: e => NavigationManager.NavigateTo("/matchs"),
+            AfterCancelAction: e => NavigationManager.NavigateTo("/matchs"),
+            Create: iMatchsApi.Create,
+            Read: iMatchsApi.Read,
+            Update: iMatchsApi.Update,
+            Delete: iMatchsApi.Delete,
+            FileUpdate: null,
+            FileDelete: null
+        );
+        await Match.LoadModelAsync(Guid.TryParse(id, out var guidId) ? guidId : null);
+
+        ProfileSenderIds = new ListDataSource<Profile, Guid>(
+            JS,
+            StateHasChanged,
+            GetPrimaryKey: x => x.Id,
+            List: (int? skip, int? take, string[]? orderBy, CancellationToken ct) => iProfilesApi.List(skip, take, orderBy, ct),
+            SetForeignKey: null,
+            AfterSaveAction: null,
+            AfterCancelAction: null,
+            Create: iProfilesApi.Create,
+            Read: iProfilesApi.Read,
+            Update: iProfilesApi.Update,
+            Delete: iProfilesApi.Delete
+        );
+        await ProfileSenderIds.InitialiseAsync();
+
+        ProfileReceiverIds = new ListDataSource<Profile, Guid>(
+            JS,
+            StateHasChanged,
+            GetPrimaryKey: x => x.Id,
+            List: (int? skip, int? take, string[]? orderBy, CancellationToken ct) => iProfilesApi.List(skip, take, orderBy, ct),
+            SetForeignKey: null,
+            AfterSaveAction: null,
+            AfterCancelAction: null,
+            Create: iProfilesApi.Create,
+            Read: iProfilesApi.Read,
+            Update: iProfilesApi.Update,
+            Delete: iProfilesApi.Delete
+        );
+        await ProfileReceiverIds.InitialiseAsync();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (Cts != null)
+        {
+            await Cts.CancelAsync();
+            Cts.Dispose();
+        }
+        if (Match != null) 
+            await Match.DisposeAsync();
+        if (ProfileSenderIds != null) 
+            await ProfileSenderIds.DisposeAsync();
+        if (ProfileReceiverIds != null) 
+            await ProfileReceiverIds.DisposeAsync();
+    }
+}

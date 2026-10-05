@@ -19,6 +19,12 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     {
         base.OnModelCreating(modelBuilder);
 
+        modelBuilder.Entity<Profile>(entity =>
+        {
+            entity.HasIndex(e => e.UserId)
+                  .IsUnique();
+        });
+
         modelBuilder.Entity<UserRole>(entity =>
         {
             entity.HasOne(p => p.User)
@@ -39,7 +45,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             entity.HasOne(p => p.User)
                   .WithMany(u => u.Profiles)
                   .HasForeignKey(p => p.UserId)
-                  .OnDelete(DeleteBehavior.Cascade); 
+                  .OnDelete(DeleteBehavior.Cascade);
         });
 
         modelBuilder.Entity<ProfilePicture>(entity =>
@@ -47,7 +53,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             entity.HasOne(p => p.Profile)
                   .WithMany(p => p.ProfilePictures)
                   .HasForeignKey(p => p.ProfileId)
-                  .OnDelete(DeleteBehavior.Cascade); 
+                  .OnDelete(DeleteBehavior.Cascade);
         });
 
         modelBuilder.Entity<Profile>(entity =>

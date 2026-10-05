@@ -1,0 +1,71 @@
+@page "/chatmessages"
+@implements IAsyncDisposable
+@inject IChatMessagesApi list
+@inject IClientAuthenticatedHttpClient ClientAuthenticatedHttpClient
+@inject IJSRuntime JS
+
+<PageTitle>ChatMessages</PageTitle>
+
+<AuthorizeView>
+    <Authorized>
+        <h3>ChatMessages</h3>
+        <LoaderView Response="ChatMessages?.Response">
+            @if (ChatMessages!.Response!.CanCreate)
+            {
+                <a id="createnew" href="/chatmessages/create">➕ Create a new chatmessage</a>
+            }
+            <ChatMessageList DataSource="ChatMessages" />
+        </LoaderView>
+    </Authorized>
+    <NotAuthorized>
+        <RedirectToLogin />
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private CancellationTokenSource? Cts;
+    private ListDataSource<ChatMessage, Guid>? ChatMessages;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Cts != null)
+        {
+            await Cts.CancelAsync();
+            Cts.Dispose();
+        }
+
+        Cts = new CancellationTokenSource();
+
+        if (await ClientAuthenticatedHttpClient.IsAuthenticatedAsync(Cts.Token) == false)
+        {
+            return;
+        }
+
+        ChatMessages = new ListDataSource<ChatMessage, Guid>(
+            JS,
+            StateHasChanged,
+            GetPrimaryKey: chatmessage => chatmessage.Id,
+            List: list.List,
+            SetForeignKey: null,
+            AfterSaveAction: null,
+            AfterCancelAction: null,
+            Create: null,
+            Read: null,
+            Update: null,
+            Delete: null
+        );
+
+        await ChatMessages.InitialiseAsync();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (Cts != null)
+        {
+            await Cts.CancelAsync();
+            Cts.Dispose();
+        }
+        if (ChatMessages != null)
+            await ChatMessages.DisposeAsync();
+    }
+}

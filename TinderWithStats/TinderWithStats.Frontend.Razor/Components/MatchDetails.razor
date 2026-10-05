@@ -1,0 +1,33 @@
+@if (DataSource?.Model == null)
+{
+    <text><!-- niets te tonen --></text>
+}
+else
+{    
+    
+    
+    <div class="mb-2">
+        <strong>Id</strong>: @(DataSource.Model.Id.ToString())
+    </div>
+
+    <div class="mb-2">
+        <strong>ProfileSenderName</strong>: @(DataSource.Model.ProfileSenderName?.ToString())
+    </div>
+
+    <div class="mb-2">
+        <strong>ProfileReceiverName</strong>: @(DataSource.Model.ProfileReceiverName?.ToString())
+    </div>
+
+    <div class="mb-2">
+        <strong>MatchCreated</strong>: @(DataSource.Model.MatchCreated.ToString())
+    </div>
+
+    <div class="mb-2">
+        <strong>MatchAccepted</strong>: @(DataSource.Model.MatchAccepted?.ToString())
+    </div>
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public ItemDataSource<Match, Guid>? DataSource { get; set; }
+}

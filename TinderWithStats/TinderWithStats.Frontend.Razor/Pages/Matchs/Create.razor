@@ -1,25 +1,25 @@
-@page "/profiles/create"
+@page "/matchs/create"
 @implements IAsyncDisposable
-@inject IUsersApi iUsersApi
-@inject ILocationsApi iLocationsApi
 @inject IProfilesApi iProfilesApi
+@inject IProfilesApi iProfilesApi
+@inject IMatchsApi iMatchsApi
 @inject IClientAuthenticatedHttpClient ClientAuthenticatedHttpClient
 @inject IJSRuntime JS
 @inject NavigationManager NavigationManager
 
-<PageTitle>Create Profile</PageTitle>
+<PageTitle>Create Match</PageTitle>
 
 <AuthorizeView>
     <Authorized Context="_">
-        <h3>Create Profile</h3>
-        <LoaderView Response="Profile?.Response">
-            <EditForm Model="Profile!.Model" OnValidSubmit="Profile.HandleValidSubmit">
+        <h3>Create Match</h3>
+        <LoaderView Response="Match?.Response">
+            <EditForm Model="Match!.Model" OnValidSubmit="Match.HandleValidSubmit">
                 <DataAnnotationsValidator />
                 <ValidationSummary />
-                <ProfileForm DataSource="Profile" UserIds="UserIds" LocationIds="LocationIds" />
-                <ErrorView Response="Profile.StatusResponse" />
+                <MatchForm DataSource="Match" ProfileSenderIds="ProfileSenderIds" ProfileReceiverIds="ProfileReceiverIds" />
+                <ErrorView Response="Match.StatusResponse" />
                 <button id="create" class="btn btn-primary" type="submit">➕ Create</button>
-                <button id="cancel" class="btn btn-secondary ms-2" @onclick="Profile.Cancel">Cancel</button>
+                <button id="cancel" class="btn btn-secondary ms-2" @onclick="Match.Cancel">Cancel</button>
             </EditForm>
         </LoaderView>
     </Authorized>
@@ -30,9 +30,9 @@
 
 @code {
     private CancellationTokenSource? Cts;
-    private ItemDataSource<Profile, Guid>? Profile;
-    private ListDataSource<User, Guid>? UserIds;
-    private ListDataSource<Location, int>? LocationIds;
+    private ItemDataSource<Match, Guid>? Match;
+    private ListDataSource<Profile, Guid>? ProfileSenderIds;
+    private ListDataSource<Profile, Guid>? ProfileReceiverIds;
 
     protected override async Task OnInitializedAsync()
     {
@@ -47,24 +47,24 @@
         if (await ClientAuthenticatedHttpClient.IsAuthenticatedAsync(Cts.Token) == false)
             return;
 
-        Profile = new ItemDataSource<Profile, Guid>(
-            GetPrimaryKey: profile => profile.Id,
-            AfterSaveAction: profile => NavigationManager.NavigateTo("/profiles"),
-            AfterCancelAction: profile => NavigationManager.NavigateTo("/profiles"),
-            Create: iProfilesApi.Create,
+        Match = new ItemDataSource<Match, Guid>(
+            GetPrimaryKey: match => match.Id,
+            AfterSaveAction: match => NavigationManager.NavigateTo("/matchs"),
+            AfterCancelAction: match => NavigationManager.NavigateTo("/matchs"),
+            Create: iMatchsApi.Create,
             Read: null,
             Update: null,
             Delete: null,
             FileUpdate: null,
             FileDelete: null
         );
-        Profile.NewModel();
+        Match.NewModel();
 
-        UserIds = new ListDataSource<User, Guid>(
+        ProfileSenderIds = new ListDataSource<Profile, Guid>(
             JS,
             StateHasChanged,
-            GetPrimaryKey: user => user.Id,
-            List: iUsersApi.List,
+            GetPrimaryKey: profile => profile.Id,
+            List: iProfilesApi.List,
             SetForeignKey: null,
             AfterSaveAction: null,
             AfterCancelAction: null,
@@ -73,13 +73,13 @@
             Update: null,
             Delete: null
         );
-        await UserIds.InitialiseAsync();
+        await ProfileSenderIds.InitialiseAsync();
 
-        LocationIds = new ListDataSource<Location, int>(
+        ProfileReceiverIds = new ListDataSource<Profile, Guid>(
             JS,
             StateHasChanged,
-            GetPrimaryKey: location => location.Id,
-            List: iLocationsApi.List,
+            GetPrimaryKey: profile => profile.Id,
+            List: iProfilesApi.List,
             SetForeignKey: null,
             AfterSaveAction: null,
             AfterCancelAction: null,
@@ -88,7 +88,7 @@
             Update: null,
             Delete: null
         );
-        await LocationIds.InitialiseAsync();
+        await ProfileReceiverIds.InitialiseAsync();
     }
 
     public async ValueTask DisposeAsync()
@@ -98,11 +98,11 @@
             await Cts.CancelAsync();
             Cts.Dispose();
         }
-        if (Profile != null) 
-            await Profile.DisposeAsync();
-        if (UserIds != null) 
-            await UserIds.DisposeAsync();
-        if (LocationIds != null) 
-            await LocationIds.DisposeAsync();
+        if (Match != null) 
+            await Match.DisposeAsync();
+        if (ProfileSenderIds != null) 
+            await ProfileSenderIds.DisposeAsync();
+        if (ProfileReceiverIds != null) 
+            await ProfileReceiverIds.DisposeAsync();
     }
 }

@@ -31,7 +31,7 @@ else
             <label for="profileId" class="form-label">Profile</label>
             <ProfileDropDown @bind-Value="DataSource.Model.ProfileId" bindtype_Value="Guid"
                 @bind-ForeignName="DataSource.Model.ProfileName" bindtype_ForeignName="string?"
-                DataSource="Profiles" id="profileId" />
+                DataSource="ProfileIds" id="profileId" />
         </div>
     }
 
@@ -50,7 +50,7 @@ else
     public ItemDataSource<ProfilePicture, Guid>? DataSource { get; set; }
 
     [Parameter, EditorRequired]
-    public ListDataSource<Profile, Guid> Profiles { get; set; } = null!;
+    public ListDataSource<Profile, Guid> ProfileIds { get; set; } = null!;
 
     private string[] HideColumnNames = [];
 

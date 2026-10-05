@@ -9,7 +9,11 @@ public class ProfilePicturesUseCase(
     IAuthenticationService<TinderWithStats.Backend.Entities.User, TinderWithStats.Shared.Dtos.State> authenticationService)
     : gAPI.Core.Interfaces.IUseCase<TinderWithStats.Backend.Entities.ProfilePicture, TinderWithStats.Shared.Dtos.ProfilePicture, Guid>
 {
-    public async Task<bool> IsAllowedAsync(CancellationToken ct) => authenticationService.State.User != null;
+    public async Task<bool> IsAllowedAsync(CancellationToken ct)
+    {
+        if (authenticationService.State.User == null) return false;
+        return await db.UserRoles.AnyAsync(a => a.UserId == authenticationService.State.User.Id && a.Role!.Name == "Admin", ct);
+    }
     public async Task<bool> CanListAsync(CancellationToken ct) => authenticationService.State.User != null;
     public async Task<bool> CanCreateAsync(CancellationToken ct) => authenticationService.State.User != null;
     public async Task<bool> CanCreateAsync(TinderWithStats.Shared.Dtos.ProfilePicture dto, CancellationToken ct) => authenticationService.State.User != null;

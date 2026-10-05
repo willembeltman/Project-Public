@@ -9,7 +9,11 @@ public class MatchsUseCase(
     IAuthenticationService<TinderWithStats.Backend.Entities.User, TinderWithStats.Shared.Dtos.State> authenticationService)
     : gAPI.Core.Interfaces.IUseCase<TinderWithStats.Backend.Entities.Match, TinderWithStats.Shared.Dtos.Match, Guid>
 {
-    public async Task<bool> IsAllowedAsync(CancellationToken ct) => authenticationService.State.User != null;
+    public async Task<bool> IsAllowedAsync(CancellationToken ct)
+    {
+        if (authenticationService.State.User == null) return false;
+        return await db.UserRoles.AnyAsync(a => a.UserId == authenticationService.State.User.Id && a.Role!.Name == "Admin", ct);
+    }
     public async Task<bool> CanListAsync(CancellationToken ct) => authenticationService.State.User != null;
     public async Task<bool> CanCreateAsync(CancellationToken ct) => authenticationService.State.User != null;
     public async Task<bool> CanCreateAsync(TinderWithStats.Shared.Dtos.Match dto, CancellationToken ct) => authenticationService.State.User != null;
@@ -22,8 +26,8 @@ public class MatchsUseCase(
             .Include("ProfileSender")
             .Include("ProfileReceiver") // Add your filter query
             .FirstOrDefaultAsync(a => 
-                a.MatchCreated == dto.MatchCreated &&
-                a.MatchAccepted == dto.MatchAccepted, ct);
+                a.ProfileReceiverId == dto.ProfileReceiverId &&
+                a.ProfileSenderId == dto.ProfileSenderId, ct);
     public async Task<Match?> FindByIdAsync(Guid id, CancellationToken ct) 
         => await db.Matches
             .Include("ProfileSender")

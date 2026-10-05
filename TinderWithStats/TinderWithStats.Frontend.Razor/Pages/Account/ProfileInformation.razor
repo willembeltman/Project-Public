@@ -1,24 +1,24 @@
-@page "/profiles/create"
+@page "/Account/ProfileInformation"
 @implements IAsyncDisposable
 @inject IUsersApi iUsersApi
 @inject ILocationsApi iLocationsApi
 @inject IProfilesApi iProfilesApi
-@inject IClientAuthenticatedHttpClient ClientAuthenticatedHttpClient
+@inject IAuthenticatedHttpClient HttpClient
 @inject IJSRuntime JS
 @inject NavigationManager NavigationManager
 
-<PageTitle>Create Profile</PageTitle>
+<PageTitle>Edit Profile</PageTitle>
 
 <AuthorizeView>
     <Authorized Context="_">
-        <h3>Create Profile</h3>
+        <h3>Edit Profile</h3>
         <LoaderView Response="Profile?.Response">
             <EditForm Model="Profile!.Model" OnValidSubmit="Profile.HandleValidSubmit">
                 <DataAnnotationsValidator />
                 <ValidationSummary />
-                <ProfileForm DataSource="Profile" UserIds="UserIds" LocationIds="LocationIds" />
+                <ProfileForm DataSource="Profile" UserIds="UserIds" LocationIds="LocationIds" HideColumns="UserId" />
                 <ErrorView Response="Profile.StatusResponse" />
-                <button id="create" class="btn btn-primary" type="submit">➕ Create</button>
+                <button id="save" class="btn btn-primary" type="submit">💾 Save</button>
                 <button id="cancel" class="btn btn-secondary ms-2" @onclick="Profile.Cancel">Cancel</button>
             </EditForm>
         </LoaderView>
@@ -29,12 +29,15 @@
 </AuthorizeView>
 
 @code {
+    [Parameter]
+    public string? id { get; set; }
+
     private CancellationTokenSource? Cts;
     private ItemDataSource<Profile, Guid>? Profile;
     private ListDataSource<User, Guid>? UserIds;
     private ListDataSource<Location, int>? LocationIds;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
         if (Cts != null)
         {
@@ -44,32 +47,35 @@
 
         Cts = new CancellationTokenSource();
 
-        if (await ClientAuthenticatedHttpClient.IsAuthenticatedAsync(Cts.Token) == false)
+        var state = await HttpClient.GetStateAsync(false, Cts.Token);
+        if (state.User == null || state.ProfileId == null)
+        {
             return;
+        }
 
         Profile = new ItemDataSource<Profile, Guid>(
-            GetPrimaryKey: profile => profile.Id,
-            AfterSaveAction: profile => NavigationManager.NavigateTo("/profiles"),
-            AfterCancelAction: profile => NavigationManager.NavigateTo("/profiles"),
-            Create: iProfilesApi.Create,
-            Read: null,
-            Update: null,
+            GetPrimaryKey: e => e.Id,
+            AfterSaveAction: e => NavigationManager.NavigateTo("/profiles"),
+            AfterCancelAction: e => NavigationManager.NavigateTo("/profiles"),
+            Create: null,
+            Read: iProfilesApi.Read,
+            Update: iProfilesApi.Update,
             Delete: null,
             FileUpdate: null,
             FileDelete: null
         );
-        Profile.NewModel();
+        await Profile.LoadModelAsync(state.ProfileId);
 
         UserIds = new ListDataSource<User, Guid>(
             JS,
             StateHasChanged,
-            GetPrimaryKey: user => user.Id,
-            List: iUsersApi.List,
+            GetPrimaryKey: x => x.Id,
+            List: (int? skip, int? take, string[]? orderBy, CancellationToken ct) => iUsersApi.List(skip, take, orderBy, ct),
             SetForeignKey: null,
             AfterSaveAction: null,
             AfterCancelAction: null,
             Create: null,
-            Read: null,
+            Read: iUsersApi.Read,
             Update: null,
             Delete: null
         );
@@ -78,13 +84,13 @@
         LocationIds = new ListDataSource<Location, int>(
             JS,
             StateHasChanged,
-            GetPrimaryKey: location => location.Id,
-            List: iLocationsApi.List,
+            GetPrimaryKey: x => x.Id,
+            List: (int? skip, int? take, string[]? orderBy, CancellationToken ct) => iLocationsApi.List(skip, take, orderBy, ct),
             SetForeignKey: null,
             AfterSaveAction: null,
             AfterCancelAction: null,
             Create: null,
-            Read: null,
+            Read: iLocationsApi.Read,
             Update: null,
             Delete: null
         );

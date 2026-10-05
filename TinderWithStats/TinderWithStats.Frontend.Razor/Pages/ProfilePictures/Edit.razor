@@ -15,7 +15,7 @@
             <EditForm Model="ProfilePicture!.Model" OnValidSubmit="ProfilePicture.HandleValidSubmit">
                 <DataAnnotationsValidator />
                 <ValidationSummary />
-                <ProfilePictureForm DataSource="ProfilePicture" Profiles="Profiles" />
+                <ProfilePictureForm DataSource="ProfilePicture" ProfileIds="ProfileIds" />
                 <ErrorView Response="ProfilePicture.StatusResponse" />
                 <button id="save" class="btn btn-primary" type="submit">💾 Save</button>
                 <button id="cancel" class="btn btn-secondary ms-2" @onclick="ProfilePicture.Cancel">Cancel</button>
@@ -33,7 +33,7 @@
 
     private CancellationTokenSource? Cts;
     private ItemDataSource<ProfilePicture, Guid>? ProfilePicture;
-    private ListDataSource<Profile, Guid>? Profiles;
+    private ListDataSource<Profile, Guid>? ProfileIds;
 
     protected override async Task OnParametersSetAsync()
     {
@@ -63,7 +63,7 @@
         );
         await ProfilePicture.LoadModelAsync(Guid.TryParse(id, out var guidId) ? guidId : null);
 
-        Profiles = new ListDataSource<Profile, Guid>(
+        ProfileIds = new ListDataSource<Profile, Guid>(
             JS,
             StateHasChanged,
             GetPrimaryKey: x => x.Id,
@@ -76,7 +76,7 @@
             Update: iProfilesApi.Update,
             Delete: iProfilesApi.Delete
         );
-        await Profiles.InitialiseAsync();
+        await ProfileIds.InitialiseAsync();
     }
 
     public async ValueTask DisposeAsync()
@@ -88,7 +88,7 @@
         }
         if (ProfilePicture != null) 
             await ProfilePicture.DisposeAsync();
-        if (Profiles != null) 
-            await Profiles.DisposeAsync();
+        if (ProfileIds != null) 
+            await ProfileIds.DisposeAsync();
     }
 }

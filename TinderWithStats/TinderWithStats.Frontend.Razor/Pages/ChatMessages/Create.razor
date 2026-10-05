@@ -1,0 +1,127 @@
+@page "/chatmessages/create"
+@implements IAsyncDisposable
+@inject IMatchsApi iMatchsApi
+@inject IProfilesApi iProfilesApi
+@inject IProfilesApi iProfilesApi
+@inject IChatMessagesApi iChatMessagesApi
+@inject IClientAuthenticatedHttpClient ClientAuthenticatedHttpClient
+@inject IJSRuntime JS
+@inject NavigationManager NavigationManager
+
+<PageTitle>Create ChatMessage</PageTitle>
+
+<AuthorizeView>
+    <Authorized Context="_">
+        <h3>Create ChatMessage</h3>
+        <LoaderView Response="ChatMessage?.Response">
+            <EditForm Model="ChatMessage!.Model" OnValidSubmit="ChatMessage.HandleValidSubmit">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <ChatMessageForm DataSource="ChatMessage" MatchIds="MatchIds" ProfileSenderIds="ProfileSenderIds" ProfileReceiverIds="ProfileReceiverIds" />
+                <ErrorView Response="ChatMessage.StatusResponse" />
+                <button id="create" class="btn btn-primary" type="submit">➕ Create</button>
+                <button id="cancel" class="btn btn-secondary ms-2" @onclick="ChatMessage.Cancel">Cancel</button>
+            </EditForm>
+        </LoaderView>
+    </Authorized>
+    <NotAuthorized>
+        <RedirectToLogin />
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private CancellationTokenSource? Cts;
+    private ItemDataSource<ChatMessage, Guid>? ChatMessage;
+    private ListDataSource<Match, Guid>? MatchIds;
+    private ListDataSource<Profile, Guid>? ProfileSenderIds;
+    private ListDataSource<Profile, Guid>? ProfileReceiverIds;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Cts != null)
+        {
+            await Cts.CancelAsync();
+            Cts.Dispose();
+        }
+
+        Cts = new CancellationTokenSource();
+
+        if (await ClientAuthenticatedHttpClient.IsAuthenticatedAsync(Cts.Token) == false)
+            return;
+
+        ChatMessage = new ItemDataSource<ChatMessage, Guid>(
+            GetPrimaryKey: chatmessage => chatmessage.Id,
+            AfterSaveAction: chatmessage => NavigationManager.NavigateTo("/chatmessages"),
+            AfterCancelAction: chatmessage => NavigationManager.NavigateTo("/chatmessages"),
+            Create: iChatMessagesApi.Create,
+            Read: null,
+            Update: null,
+            Delete: null,
+            FileUpdate: null,
+            FileDelete: null
+        );
+        ChatMessage.NewModel();
+
+        MatchIds = new ListDataSource<Match, Guid>(
+            JS,
+            StateHasChanged,
+            GetPrimaryKey: match => match.Id,
+            List: iMatchsApi.List,
+            SetForeignKey: null,
+            AfterSaveAction: null,
+            AfterCancelAction: null,
+            Create: null,
+            Read: null,
+            Update: null,
+            Delete: null
+        );
+        await MatchIds.InitialiseAsync();
+
+        ProfileSenderIds = new ListDataSource<Profile, Guid>(
+            JS,
+            StateHasChanged,
+            GetPrimaryKey: profile => profile.Id,
+            List: iProfilesApi.List,
+            SetForeignKey: null,
+            AfterSaveAction: null,
+            AfterCancelAction: null,
+            Create: null,
+            Read: null,
+            Update: null,
+            Delete: null
+        );
+        await ProfileSenderIds.InitialiseAsync();
+
+        ProfileReceiverIds = new ListDataSource<Profile, Guid>(
+            JS,
+            StateHasChanged,
+            GetPrimaryKey: profile => profile.Id,
+            List: iProfilesApi.List,
+            SetForeignKey: null,
+            AfterSaveAction: null,
+            AfterCancelAction: null,
+            Create: null,
+            Read: null,
+            Update: null,
+            Delete: null
+        );
+        await ProfileReceiverIds.InitialiseAsync();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (Cts != null)
+        {
+            await Cts.CancelAsync();
+            Cts.Dispose();
+        }
+        if (ChatMessage != null) 
+            await ChatMessage.DisposeAsync();
+        if (MatchIds != null) 
+            await MatchIds.DisposeAsync();
+        if (ProfileSenderIds != null) 
+            await ProfileSenderIds.DisposeAsync();
+        if (ProfileReceiverIds != null) 
+            await ProfileReceiverIds.DisposeAsync();
+    }
+}

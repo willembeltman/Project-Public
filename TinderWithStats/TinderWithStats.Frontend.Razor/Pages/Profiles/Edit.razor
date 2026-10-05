@@ -16,7 +16,7 @@
             <EditForm Model="Profile!.Model" OnValidSubmit="Profile.HandleValidSubmit">
                 <DataAnnotationsValidator />
                 <ValidationSummary />
-                <ProfileForm DataSource="Profile" Users="Users" Locations="Locations" />
+                <ProfileForm DataSource="Profile" UserIds="UserIds" LocationIds="LocationIds" />
                 <ErrorView Response="Profile.StatusResponse" />
                 <button id="save" class="btn btn-primary" type="submit">💾 Save</button>
                 <button id="cancel" class="btn btn-secondary ms-2" @onclick="Profile.Cancel">Cancel</button>
@@ -34,8 +34,8 @@
 
     private CancellationTokenSource? Cts;
     private ItemDataSource<Profile, Guid>? Profile;
-    private ListDataSource<User, Guid>? Users;
-    private ListDataSource<Location, int>? Locations;
+    private ListDataSource<User, Guid>? UserIds;
+    private ListDataSource<Location, int>? LocationIds;
 
     protected override async Task OnParametersSetAsync()
     {
@@ -65,7 +65,7 @@
         );
         await Profile.LoadModelAsync(Guid.TryParse(id, out var guidId) ? guidId : null);
 
-        Users = new ListDataSource<User, Guid>(
+        UserIds = new ListDataSource<User, Guid>(
             JS,
             StateHasChanged,
             GetPrimaryKey: x => x.Id,
@@ -78,9 +78,9 @@
             Update: iUsersApi.Update,
             Delete: iUsersApi.Delete
         );
-        await Users.InitialiseAsync();
+        await UserIds.InitialiseAsync();
 
-        Locations = new ListDataSource<Location, int>(
+        LocationIds = new ListDataSource<Location, int>(
             JS,
             StateHasChanged,
             GetPrimaryKey: x => x.Id,
@@ -93,7 +93,7 @@
             Update: iLocationsApi.Update,
             Delete: iLocationsApi.Delete
         );
-        await Locations.InitialiseAsync();
+        await LocationIds.InitialiseAsync();
     }
 
     public async ValueTask DisposeAsync()
@@ -105,9 +105,9 @@
         }
         if (Profile != null) 
             await Profile.DisposeAsync();
-        if (Users != null) 
-            await Users.DisposeAsync();
-        if (Locations != null) 
-            await Locations.DisposeAsync();
+        if (UserIds != null) 
+            await UserIds.DisposeAsync();
+        if (LocationIds != null) 
+            await LocationIds.DisposeAsync();
     }
 }

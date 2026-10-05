@@ -18,7 +18,8 @@ public class Match
     [IsName(gAPI.Core.Enums.FormattingOption.yyyy_MM_dd)]
     public DateTimeOffset MatchCreated { get; set; } = DateTimeOffset.Now;
     [IsName(gAPI.Core.Enums.FormattingOption.yyyy_MM_dd)]
-    public DateTimeOffset? MatchAccepted { get; set; } = DateTimeOffset.Now;
+    public DateTimeOffset? MatchAccepted { get; set; }
+    public DateTimeOffset? MatchRemoved { get; set; }
 
     public virtual ICollection<ChatMessage>? ChatMessages { get; set; }
 }

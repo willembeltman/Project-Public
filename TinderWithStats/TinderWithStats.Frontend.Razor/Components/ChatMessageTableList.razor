@@ -1,0 +1,599 @@
+@if (DataSource == null || DataSource.Items.Count == 0)
+{
+    @if (DataSource == null || DataSource.HasMore == false)
+    {
+        <p><em>@(NoItemsText)</em></p>
+    }
+    else
+    {
+        <p><em>@(LoadingText)</em></p>
+    }
+}
+else
+{
+    <div>
+        <!-- Desktop weergave -->
+        <div class="d-none d-md-block">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        @if (HideColumnNames.Contains("Id") == false)
+                        {
+                            <th>
+                                <a @onclick="OrderByIdClicked" id="orderByIdButton" style="cursor:pointer;">
+                                    Id
+                                    @if (DataSource.OrderByColumn == "Id asc")
+                                    {
+                                        <span>▲</span>
+                                    }
+                                    else if (DataSource.OrderByColumn == "Id desc")
+                                    {
+                                        <span>▼</span>
+                                    }
+                                </a>
+                            </th>
+                        }
+                        @if (HideColumnNames.Contains("Date") == false)
+                        {
+                            <th>
+                                <a @onclick="OrderByDateClicked" id="orderByDateButton" style="cursor:pointer;">
+                                    Date
+                                    @if (DataSource.OrderByColumn == "Date asc")
+                                    {
+                                        <span>▲</span>
+                                    }
+                                    else if (DataSource.OrderByColumn == "Date desc")
+                                    {
+                                        <span>▼</span>
+                                    }
+                                </a>
+                            </th>
+                        }
+                        @if (HideColumnNames.Contains("Message") == false)
+                        {
+                            <th>
+                                <a @onclick="OrderByMessageClicked" id="orderByMessageButton" style="cursor:pointer;">
+                                    Message
+                                    @if (DataSource.OrderByColumn == "Message asc")
+                                    {
+                                        <span>▲</span>
+                                    }
+                                    else if (DataSource.OrderByColumn == "Message desc")
+                                    {
+                                        <span>▼</span>
+                                    }
+                                </a>
+                            </th>
+                        }
+                        @if (HideColumnNames.Contains("MatchName") == false)
+                        {
+                            <th>
+                                <a @onclick="OrderByMatchNameClicked" id="orderByMatchNameButton" style="cursor:pointer;">
+                                    MatchName
+                                    @if (DataSource.OrderByColumn == "MatchName asc")
+                                    {
+                                        <span>▲</span>
+                                    }
+                                    else if (DataSource.OrderByColumn == "MatchName desc")
+                                    {
+                                        <span>▼</span>
+                                    }
+                                </a>
+                            </th>
+                        }
+                        @if (HideColumnNames.Contains("ProfileSenderName") == false)
+                        {
+                            <th>
+                                <a @onclick="OrderByProfileSenderNameClicked" id="orderByProfileSenderNameButton" style="cursor:pointer;">
+                                    ProfileSenderName
+                                    @if (DataSource.OrderByColumn == "ProfileSenderName asc")
+                                    {
+                                        <span>▲</span>
+                                    }
+                                    else if (DataSource.OrderByColumn == "ProfileSenderName desc")
+                                    {
+                                        <span>▼</span>
+                                    }
+                                </a>
+                            </th>
+                        }
+                        @if (HideColumnNames.Contains("ProfileReceiverName") == false)
+                        {
+                            <th>
+                                <a @onclick="OrderByProfileReceiverNameClicked" id="orderByProfileReceiverNameButton" style="cursor:pointer;">
+                                    ProfileReceiverName
+                                    @if (DataSource.OrderByColumn == "ProfileReceiverName asc")
+                                    {
+                                        <span>▲</span>
+                                    }
+                                    else if (DataSource.OrderByColumn == "ProfileReceiverName desc")
+                                    {
+                                        <span>▼</span>
+                                    }
+                                </a>
+                            </th>
+                        }
+                        @if (HideColumnNames.Contains("MatchId") == false)
+                        {
+                            <th>
+                                <a @onclick="OrderByMatchIdClicked" id="orderByMatchIdButton" style="cursor:pointer;">
+                                    MatchId
+                                    @if (DataSource.OrderByColumn == "MatchId asc")
+                                    {
+                                        <span>▲</span>
+                                    }
+                                    else if (DataSource.OrderByColumn == "MatchId desc")
+                                    {
+                                        <span>▼</span>
+                                    }
+                                </a>
+                            </th>
+                        }
+                        @if (HideColumnNames.Contains("ProfileSenderId") == false)
+                        {
+                            <th>
+                                <a @onclick="OrderByProfileSenderIdClicked" id="orderByProfileSenderIdButton" style="cursor:pointer;">
+                                    ProfileSenderId
+                                    @if (DataSource.OrderByColumn == "ProfileSenderId asc")
+                                    {
+                                        <span>▲</span>
+                                    }
+                                    else if (DataSource.OrderByColumn == "ProfileSenderId desc")
+                                    {
+                                        <span>▼</span>
+                                    }
+                                </a>
+                            </th>
+                        }
+                        @if (HideColumnNames.Contains("ProfileReceiverId") == false)
+                        {
+                            <th>
+                                <a @onclick="OrderByProfileReceiverIdClicked" id="orderByProfileReceiverIdButton" style="cursor:pointer;">
+                                    ProfileReceiverId
+                                    @if (DataSource.OrderByColumn == "ProfileReceiverId asc")
+                                    {
+                                        <span>▲</span>
+                                    }
+                                    else if (DataSource.OrderByColumn == "ProfileReceiverId desc")
+                                    {
+                                        <span>▼</span>
+                                    }
+                                </a>
+                            </th>
+                        }
+                        @if (HideColumnNames.Contains("CanUpdate") == false)
+                        {
+                            <th>
+                                <a @onclick="OrderByCanUpdateClicked" id="orderByCanUpdateButton" style="cursor:pointer;">
+                                    CanUpdate
+                                    @if (DataSource.OrderByColumn == "CanUpdate asc")
+                                    {
+                                        <span>▲</span>
+                                    }
+                                    else if (DataSource.OrderByColumn == "CanUpdate desc")
+                                    {
+                                        <span>▼</span>
+                                    }
+                                </a>
+                            </th>
+                        }
+                        @if (HideColumnNames.Contains("CanDelete") == false)
+                        {
+                            <th>
+                                <a @onclick="OrderByCanDeleteClicked" id="orderByCanDeleteButton" style="cursor:pointer;">
+                                    CanDelete
+                                    @if (DataSource.OrderByColumn == "CanDelete asc")
+                                    {
+                                        <span>▲</span>
+                                    }
+                                    else if (DataSource.OrderByColumn == "CanDelete desc")
+                                    {
+                                        <span>▼</span>
+                                    }
+                                </a>
+                            </th>
+                        }
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in DataSource.Items)
+                    {
+                        <tr>
+                            @if (HideColumnNames.Contains("Id") == false)
+                            {
+                                <td>@(item.Model!.Id)</td>
+                            }
+                            @if (HideColumnNames.Contains("Date") == false)
+                            {
+                                <td>@(item.Model!.Date)</td>
+                            }
+                            @if (HideColumnNames.Contains("Message") == false)
+                            {
+                                <td>@(item.Model!.Message)</td>
+                            }
+                            @if (HideColumnNames.Contains("MatchName") == false)
+                            {
+                                <td>@(item.Model!.MatchName)</td>
+                            }
+                            @if (HideColumnNames.Contains("ProfileSenderName") == false)
+                            {
+                                <td>@(item.Model!.ProfileSenderName)</td>
+                            }
+                            @if (HideColumnNames.Contains("ProfileReceiverName") == false)
+                            {
+                                <td>@(item.Model!.ProfileReceiverName)</td>
+                            }
+                            @if (HideColumnNames.Contains("MatchId") == false)
+                            {
+                                <td>@(item.Model!.MatchId)</td>
+                            }
+                            @if (HideColumnNames.Contains("ProfileSenderId") == false)
+                            {
+                                <td>@(item.Model!.ProfileSenderId)</td>
+                            }
+                            @if (HideColumnNames.Contains("ProfileReceiverId") == false)
+                            {
+                                <td>@(item.Model!.ProfileReceiverId)</td>
+                            }
+                            @if (HideColumnNames.Contains("CanUpdate") == false)
+                            {
+                                <td>@(item.Model!.CanUpdate)</td>
+                            }
+                            @if (HideColumnNames.Contains("CanDelete") == false)
+                            {
+                                <td>@(item.Model!.CanDelete)</td>
+                            }
+                            <td>
+                                @if (item.Model!.CanUpdate)
+                                {
+                                    <a class="btn btn-sm btn-primary" href="/chatmessages/edit/@(item.Model!.Id)">✏️</a>
+                                }
+                                @if (item.Model!.CanDelete)
+                                {
+                                    <a class="btn btn-sm btn-danger ms-1" href="/chatmessages/delete/@(item.Model!.Id)">🗑️</a>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Mobiele weergave -->
+        <div class="d-md-none">
+            <div class="mb-2 d-flex gap-2 align-items-center">
+                <select @onchange="DataSource.OrderByChanged" class="form-select form-select-sm w-auto">
+                    @if (Nothing__Selected)
+                    {
+                        <option value="" selected>@(EmptyText)</option>
+                    }
+                    else
+                    {
+                        <option value="">@(EmptyText)</option>
+                    }
+
+                    
+                    @if (HideColumnNames.Contains("Id") == false)
+                    {
+                        @if (Id__Selected)
+                        {
+                            <option value="Id" selected>Id</option>
+                        }
+                        else
+                        {
+                            <option value="Id">Id</option>
+                        }
+                    }
+                    @if (HideColumnNames.Contains("Date") == false)
+                    {
+                        @if (Date__Selected)
+                        {
+                            <option value="Date" selected>Date</option>
+                        }
+                        else
+                        {
+                            <option value="Date">Date</option>
+                        }
+                    }
+                    @if (HideColumnNames.Contains("Message") == false)
+                    {
+                        @if (Message__Selected)
+                        {
+                            <option value="Message" selected>Message</option>
+                        }
+                        else
+                        {
+                            <option value="Message">Message</option>
+                        }
+                    }
+                    @if (HideColumnNames.Contains("MatchName") == false)
+                    {
+                        @if (MatchName__Selected)
+                        {
+                            <option value="MatchName" selected>MatchName</option>
+                        }
+                        else
+                        {
+                            <option value="MatchName">MatchName</option>
+                        }
+                    }
+                    @if (HideColumnNames.Contains("ProfileSenderName") == false)
+                    {
+                        @if (ProfileSenderName__Selected)
+                        {
+                            <option value="ProfileSenderName" selected>ProfileSenderName</option>
+                        }
+                        else
+                        {
+                            <option value="ProfileSenderName">ProfileSenderName</option>
+                        }
+                    }
+                    @if (HideColumnNames.Contains("ProfileReceiverName") == false)
+                    {
+                        @if (ProfileReceiverName__Selected)
+                        {
+                            <option value="ProfileReceiverName" selected>ProfileReceiverName</option>
+                        }
+                        else
+                        {
+                            <option value="ProfileReceiverName">ProfileReceiverName</option>
+                        }
+                    }
+                    @if (HideColumnNames.Contains("MatchId") == false)
+                    {
+                        @if (MatchId__Selected)
+                        {
+                            <option value="MatchId" selected>MatchId</option>
+                        }
+                        else
+                        {
+                            <option value="MatchId">MatchId</option>
+                        }
+                    }
+                    @if (HideColumnNames.Contains("ProfileSenderId") == false)
+                    {
+                        @if (ProfileSenderId__Selected)
+                        {
+                            <option value="ProfileSenderId" selected>ProfileSenderId</option>
+                        }
+                        else
+                        {
+                            <option value="ProfileSenderId">ProfileSenderId</option>
+                        }
+                    }
+                    @if (HideColumnNames.Contains("ProfileReceiverId") == false)
+                    {
+                        @if (ProfileReceiverId__Selected)
+                        {
+                            <option value="ProfileReceiverId" selected>ProfileReceiverId</option>
+                        }
+                        else
+                        {
+                            <option value="ProfileReceiverId">ProfileReceiverId</option>
+                        }
+                    }
+                    @if (HideColumnNames.Contains("CanUpdate") == false)
+                    {
+                        @if (CanUpdate__Selected)
+                        {
+                            <option value="CanUpdate" selected>CanUpdate</option>
+                        }
+                        else
+                        {
+                            <option value="CanUpdate">CanUpdate</option>
+                        }
+                    }
+                    @if (HideColumnNames.Contains("CanDelete") == false)
+                    {
+                        @if (CanDelete__Selected)
+                        {
+                            <option value="CanDelete" selected>CanDelete</option>
+                        }
+                        else
+                        {
+                            <option value="CanDelete">CanDelete</option>
+                        }
+                    }
+                </select>
+
+                @if (!string.IsNullOrEmpty(DataSource.OrderByColumn))
+                {
+                    <select @onchange="DataSource.OrderByDirectionChanged" class="form-select form-select-sm w-auto">
+                        @if (DataSource.OrderByDirectionAsc)
+                        {
+                            <option value="false" selected>@(AscText)</option>
+                            <option value="true">@(DescText)</option>
+                        }
+                        else
+                        {
+                            <option value="false">@(AscText)</option>
+                            <option value="true" selected>@(DescText)</option>
+                        }
+                    </select>
+                }
+            </div>
+
+            <div class="row row-cols-1 g-2">
+                @foreach (var item in DataSource.Items)
+                {
+                    <div class="col">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    @if (HideColumnNames.Contains("Id") == false)
+                                    {
+                                        <div class="text-muted">@(item.Model!.Id)</div>
+                                    }
+                                    @if (HideColumnNames.Contains("Date") == false)
+                                    {
+                                        <div class="text-muted">@(item.Model!.Date)</div>
+                                    }
+                                    @if (HideColumnNames.Contains("Message") == false)
+                                    {
+                                        <div class="text-muted">@(item.Model!.Message)</div>
+                                    }
+                                    @if (HideColumnNames.Contains("MatchName") == false)
+                                    {
+                                        <div class="text-muted">@(item.Model!.MatchName)</div>
+                                    }
+                                    @if (HideColumnNames.Contains("ProfileSenderName") == false)
+                                    {
+                                        <div class="text-muted">@(item.Model!.ProfileSenderName)</div>
+                                    }
+                                    @if (HideColumnNames.Contains("ProfileReceiverName") == false)
+                                    {
+                                        <div class="text-muted">@(item.Model!.ProfileReceiverName)</div>
+                                    }
+                                    @if (HideColumnNames.Contains("MatchId") == false)
+                                    {
+                                        <div class="text-muted">@(item.Model!.MatchId)</div>
+                                    }
+                                    @if (HideColumnNames.Contains("ProfileSenderId") == false)
+                                    {
+                                        <div class="text-muted">@(item.Model!.ProfileSenderId)</div>
+                                    }
+                                    @if (HideColumnNames.Contains("ProfileReceiverId") == false)
+                                    {
+                                        <div class="text-muted">@(item.Model!.ProfileReceiverId)</div>
+                                    }
+                                    @if (HideColumnNames.Contains("CanUpdate") == false)
+                                    {
+                                        <div class="text-muted">@(item.Model!.CanUpdate)</div>
+                                    }
+                                    @if (HideColumnNames.Contains("CanDelete") == false)
+                                    {
+                                        <div class="text-muted">@(item.Model!.CanDelete)</div>
+                                    }
+                                </div>
+                                <div class="mt-2">
+                                    @if (item.Model!.CanUpdate)
+                                    {
+                                        <a class="btn btn-sm btn-primary" href="/chatmessages/edit/@(item.Model!.Id)">@(EditText)</a>
+                                    }
+                                    @if (item.Model!.CanDelete)
+                                    {
+                                        <a class="btn btn-sm btn-danger ms-1" href="/chatmessages/delete/@(item.Model!.Id)">@(DeleteText)</a>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        @if (DataSource.HasMore)
+        {
+            <div id="@(DataSource.SentinelId)" class="sentinel">@(LoadingModeText)</div>
+        }
+    </div>
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public ListDataSource<ChatMessage, Guid>? DataSource { get; set; }
+
+    [Parameter] public string Id { get; set; } = $"chatmessageTableList_{Guid.NewGuid()}";
+    [Parameter] public string EmptyText { get; set; } = "Order by...";
+    [Parameter] public string AscText { get; set; } = "▲ asc";
+    [Parameter] public string DescText { get; set; } = "▼ desc";
+    [Parameter] public string EditText { get; set; } = "✏️ Edit";
+    [Parameter] public string DeleteText { get; set; } = "🗑️ Delete";
+    [Parameter] public string LoadingText { get; set; } = "Loading, please wait...";
+    [Parameter] public string LoadingModeText { get; set; } = "Loading more...";
+    [Parameter] public string NoItemsText { get; set; } = "No ChatMessages to display.";
+    
+    private string[] HideColumnNames = [];
+
+    [Parameter]
+    public string? HideColumns { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        HideColumnNames = string.IsNullOrWhiteSpace(HideColumns)
+            ? []
+            : HideColumns.Split(
+                ',',
+                StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries
+              );
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (//!firstRender || 
+            DataSource == null)
+            return;
+        await DataSource.AfterRenderAsync();
+    }
+
+
+    private async Task OrderByIdClicked()
+    { 
+        if (DataSource != null)
+            await DataSource.OrderByColumnClicked("Id");
+    }
+    private async Task OrderByDateClicked()
+    { 
+        if (DataSource != null)
+            await DataSource.OrderByColumnClicked("Date");
+    }
+    private async Task OrderByMessageClicked()
+    { 
+        if (DataSource != null)
+            await DataSource.OrderByColumnClicked("Message");
+    }
+    private async Task OrderByMatchNameClicked()
+    { 
+        if (DataSource != null)
+            await DataSource.OrderByColumnClicked("MatchName");
+    }
+    private async Task OrderByProfileSenderNameClicked()
+    { 
+        if (DataSource != null)
+            await DataSource.OrderByColumnClicked("ProfileSenderName");
+    }
+    private async Task OrderByProfileReceiverNameClicked()
+    { 
+        if (DataSource != null)
+            await DataSource.OrderByColumnClicked("ProfileReceiverName");
+    }
+    private async Task OrderByMatchIdClicked()
+    { 
+        if (DataSource != null)
+            await DataSource.OrderByColumnClicked("MatchId");
+    }
+    private async Task OrderByProfileSenderIdClicked()
+    { 
+        if (DataSource != null)
+            await DataSource.OrderByColumnClicked("ProfileSenderId");
+    }
+    private async Task OrderByProfileReceiverIdClicked()
+    { 
+        if (DataSource != null)
+            await DataSource.OrderByColumnClicked("ProfileReceiverId");
+    }
+    private async Task OrderByCanUpdateClicked()
+    { 
+        if (DataSource != null)
+            await DataSource.OrderByColumnClicked("CanUpdate");
+    }
+    private async Task OrderByCanDeleteClicked()
+    { 
+        if (DataSource != null)
+            await DataSource.OrderByColumnClicked("CanDelete");
+    }
+
+    private bool Nothing__Selected => string.IsNullOrEmpty(DataSource?.OrderByColumn);
+    private bool Id__Selected => DataSource?.OrderByColumn == "Id";
+    private bool Date__Selected => DataSource?.OrderByColumn == "Date";
+    private bool Message__Selected => DataSource?.OrderByColumn == "Message";
+    private bool MatchName__Selected => DataSource?.OrderByColumn == "MatchName";
+    private bool ProfileSenderName__Selected => DataSource?.OrderByColumn == "ProfileSenderName";
+    private bool ProfileReceiverName__Selected => DataSource?.OrderByColumn == "ProfileReceiverName";
+    private bool MatchId__Selected => DataSource?.OrderByColumn == "MatchId";
+    private bool ProfileSenderId__Selected => DataSource?.OrderByColumn == "ProfileSenderId";
+    private bool ProfileReceiverId__Selected => DataSource?.OrderByColumn == "ProfileReceiverId";
+    private bool CanUpdate__Selected => DataSource?.OrderByColumn == "CanUpdate";
+    private bool CanDelete__Selected => DataSource?.OrderByColumn == "CanDelete";
+}

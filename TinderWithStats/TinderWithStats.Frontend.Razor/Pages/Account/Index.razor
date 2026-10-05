@@ -8,15 +8,15 @@
     <Authorized Context="_">
 
         <div class="px-3">
-            <a class="nav-link" href="@AccountUrl">
+            <a class="nav-link" href="/Account/UserInformation">
                 <span aria-hidden="true"></span> Account information
             </a>
         </div>
 
-        @if (ProfileId != null)
+        @if (HasProfile)
         {
             <div class="px-3">
-                <a class="nav-link" href="@ProfileUrl">
+                <a class="nav-link" href="/Account/ProfileInformation">
                     <span aria-hidden="true"></span> Profile information
                 </a>
             </div>
@@ -53,18 +53,12 @@
 
 @code {
     private string? UserId;
-    private string? ProfileId;
-
-    private string? AccountUrl { get; set; }
-    private string? ProfileUrl { get; set; }
+    private bool HasProfile;
 
     protected override async Task OnInitializedAsync()
     {
         var state = await httpClient.GetStateAsync();
         UserId = state.User?.Id.ToString();
-        ProfileId = state.ProfileId;
-
-        AccountUrl = $"/Users/Edit/{UserId}"; 
-        ProfileUrl = $"/Profiles/Edit/{ProfileId}";
+        HasProfile = state.ProfileId != null;
     }
 }
