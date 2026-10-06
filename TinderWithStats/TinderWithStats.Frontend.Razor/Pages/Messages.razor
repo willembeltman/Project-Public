@@ -1,0 +1,74 @@
+﻿@using gAPI.Core.Client.Razor
+@using Microsoft.AspNetCore.Components
+@using System.Threading.Tasks
+@using TinderWithStats.Shared.Dtos
+@if (DataSource == null || DataSource.Items.Count == 0)
+{
+    @if (DataSource == null || DataSource.HasMore == false)
+    {
+        <p><em>@(NoItemsText)</em></p>
+    }
+    else
+    {
+        <p><em>@(LoadingText)</em></p>
+    }
+}
+else
+{
+    <div id="@(Id)">
+        @if (DataSource.HasMore)
+        {
+            <div id="@(DataSource.SentinelId)" class="sentinel">@(LoadingModeText)</div>
+        }
+        <div class="d-md-none">
+            <div class="row row-cols-1 g-2">
+                @foreach (var item in DataSource.Items)
+                {
+                    <div class="col">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="text-muted">@(item.Model!.Date)</div>
+                                    <div class="text-muted">@(item.Model!.Message)</div>
+                                    <div class="text-muted">@(item.Model!.MatchName)</div>
+                                    <div class="text-muted">@(item.Model!.ProfileSenderName)</div>
+                                    <div class="text-muted">@(item.Model!.ProfileReceiverName)</div>
+                                </div>
+                                <div class="mt-2">
+                                    @if (item.Model!.CanUpdate)
+                                    {
+                                        <a class="btn btn-sm btn-primary" href="/chatmessages/edit/@(item.Model!.Id)">@(EditText)</a>
+                                    }
+                                    @if (item.Model!.CanDelete)
+                                    {
+                                        <a class="btn btn-sm btn-danger ms-1" href="/chatmessages/delete/@(item.Model!.Id)">@(DeleteText)</a>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}
+@code {
+    [Parameter, EditorRequired]
+    public ListDataSource<ChatMessage, Guid>? DataSource { get; set; }
+    [Parameter] public string Id { get; set; } = $"chatmessageList_{Guid.NewGuid()}";
+    [Parameter] public string EditText { get; set; } = "✏️ Edit";
+    [Parameter] public string DeleteText { get; set; } = "🗑️ Delete";
+    [Parameter] public string LoadingText { get; set; } = "Loading, please wait...";
+    [Parameter] public string LoadingModeText { get; set; } = "Loading more...";
+    [Parameter] public string NoItemsText { get; set; } = "No ChatMessages to display.";
+    protected override void OnParametersSet()
+    {
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (//!firstRender ||
+            DataSource == null)
+            return;
+        await DataSource.AfterRenderAsync();
+    }
+}

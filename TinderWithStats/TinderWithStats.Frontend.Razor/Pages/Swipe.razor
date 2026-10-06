@@ -1,0 +1,51 @@
+@page "/Swipe"
+@implements IAsyncDisposable
+@inject ISwipeApi SwipeApi
+@inject IAuthenticatedHttpClient HttpClient
+@inject NavigationManager NavigationManager
+
+<PageTitle>Profile</PageTitle>
+
+<AuthorizeView>
+    <Authorized>
+        <h3>Profile</h3>
+        <LoaderView Response="Response">
+            @Response!.Response!.Name
+        </LoaderView>
+    </Authorized>
+    <NotAuthorized>
+        <RedirectToLogin />
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private CancellationTokenSource? Cts;
+    private BaseResponseT<Profile>? Response;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Cts != null)
+        {
+            await Cts.CancelAsync();
+            Cts.Dispose();
+        }
+
+        Cts = new CancellationTokenSource();
+
+        if (await HttpClient.IsAuthenticatedAsync(Cts.Token) == false)
+        {
+            return;
+        }
+
+        Response = await SwipeApi.GetSwipeProfileAsync(Cts.Token);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (Cts != null)
+        {
+            await Cts.CancelAsync();
+            Cts.Dispose();
+        }
+    }
+}

@@ -1,0 +1,70 @@
+@page "/chat/{MatchId?}"
+@implements IAsyncDisposable
+@inject IChatMessagesApi list
+@inject IClientAuthenticatedHttpClient ClientAuthenticatedHttpClient
+@inject IJSRuntime JS
+
+<PageTitle>ChatMessages</PageTitle>
+
+<AuthorizeView>
+    <Authorized>
+        <h3>ChatMessages</h3>
+        <LoaderView Response="ChatMessages?.Response">
+            <Messages DataSource="ChatMessages" />
+        </LoaderView>
+    </Authorized>
+    <NotAuthorized>
+        <RedirectToLogin />
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    [Parameter]
+    public string? MatchId { get; set; }
+
+    private CancellationTokenSource? Cts;
+    private ListDataSource<ChatMessage, Guid>? ChatMessages;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Cts != null)
+        {
+            await Cts.CancelAsync();
+            Cts.Dispose();
+        }
+
+        Cts = new CancellationTokenSource();
+
+        if (await ClientAuthenticatedHttpClient.IsAuthenticatedAsync(Cts.Token) == false || MatchId == null)
+        {
+            return;
+        }
+
+        ChatMessages = new ListDataSource<ChatMessage, Guid>(
+            JS,
+            StateHasChanged,
+            GetPrimaryKey: chatmessage => chatmessage.Id,
+            List: (skip, take, orderby, ct) => list.ListByMatchId(Guid.Parse(MatchId), skip, take, orderby, ct),
+            SetForeignKey: null,
+            AfterSaveAction: null,
+            AfterCancelAction: null,
+            Create: null,
+            Read: null,
+            Update: null,
+            Delete: null
+        );
+
+        await ChatMessages.InitialiseAsync();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (Cts != null)
+        {
+            await Cts.CancelAsync();
+            Cts.Dispose();
+        }
+        if (ChatMessages != null)
+            await ChatMessages.DisposeAsync();
+    }
+}

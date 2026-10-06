@@ -117,7 +117,6 @@ public class ProfilesUseCase(
             .FirstOrDefaultAsync(a => a.Id == id, ct);
     }
 
-
     public IQueryable<Profile> ListAll()
     {
         if (auth.State.User == null)

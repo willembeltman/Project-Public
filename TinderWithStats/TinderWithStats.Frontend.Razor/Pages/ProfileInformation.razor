@@ -1,8 +1,9 @@
 @page "/Manage/ProfileInformation"
 @implements IAsyncDisposable
-@inject IUsersApi iUsersApi
-@inject ILocationsApi iLocationsApi
-@inject IProfilesApi iProfilesApi
+@inject IUsersApi UsersApi
+@inject ILocationsApi LocationsApi
+@inject IProfilesApi ProfilesApi
+@inject IProfilePicturesApi ProfilePicturesApi
 @inject IAuthenticatedHttpClient HttpClient
 @inject IJSRuntime JS
 @inject NavigationManager NavigationManager
@@ -16,7 +17,7 @@
             <EditForm Model="Profile!.Model" OnValidSubmit="Profile.HandleValidSubmit">
                 <DataAnnotationsValidator />
                 <ValidationSummary />
-                <AutoProfileForm DataSource="Profile" LocationIds="LocationIds" />
+                <AutoProfileForm DataSource="Profile" LocationIds="Locations" />
                 <ErrorView Response="Profile.StatusResponse" />
                 <button id="save" class="btn btn-primary" type="submit">💾 Save</button>
                 <button id="cancel" class="btn btn-secondary ms-2" @onclick="Profile.Cancel">Cancel</button>
@@ -31,7 +32,9 @@
 @code {
     private CancellationTokenSource? Cts;
     private ItemDataSource<Profile, Guid>? Profile;
-    private ListDataSource<Location, int>? LocationIds;
+
+    private ListDataSource<ProfilePicture, Guid>? ProfilePictures;
+    private ListDataSource<Location, int>? Locations;
 
     protected override async Task OnParametersSetAsync()
     {
@@ -48,8 +51,8 @@
             AfterSaveAction: e => NavigationManager.NavigateTo("/Manage"),
             AfterCancelAction: e => NavigationManager.NavigateTo("/Manage"),
             Create: null,
-            Read: iProfilesApi.Read,
-            Update: iProfilesApi.Update,
+            Read: ProfilesApi.Read,
+            Update: ProfilesApi.Update,
             Delete: null,
             FileUpdate: null,
             FileDelete: null
@@ -62,24 +65,43 @@
             {
                 Error = gAPI.Core.Enums.BaseResponseErrorEnum.ErrorInApp
             };
+            return;
         }
 
         await Profile.LoadModelAsync(state.ProfileId);
 
-        LocationIds = new ListDataSource<Location, int>(
+
+        ProfilePictures = new ListDataSource<ProfilePicture, Guid>(
             JS,
             StateHasChanged,
-            GetPrimaryKey: x => x.Id,
-            List: (int? skip, int? take, string[]? orderBy, CancellationToken ct) => iLocationsApi.List(skip, take, orderBy, ct),
+            GetPrimaryKey: profilepicture => profilepicture.Id,
+            List: (skip, take, orderby, ct) => ProfilePicturesApi.ListByProfileId(state.ProfileId, skip, take, orderby, c),
             SetForeignKey: null,
             AfterSaveAction: null,
             AfterCancelAction: null,
             Create: null,
-            Read: iLocationsApi.Read,
+            Read: null,
             Update: null,
             Delete: null
         );
-        await LocationIds.InitialiseAsync();
+
+        await ProfilePictures.InitialiseAsync();
+
+
+        Locations = new ListDataSource<Location, int>(
+            JS,
+            StateHasChanged,
+            GetPrimaryKey: x => x.Id,
+            List: (int? skip, int? take, string[]? orderBy, CancellationToken ct) => LocationsApi.List(skip, take, orderBy, ct),
+            SetForeignKey: null,
+            AfterSaveAction: null,
+            AfterCancelAction: null,
+            Create: null,
+            Read: LocationsApi.Read,
+            Update: null,
+            Delete: null
+        );
+        await Locations.InitialiseAsync();
     }
 
     public async ValueTask DisposeAsync()
@@ -91,7 +113,7 @@
         }
         if (Profile != null)
             await Profile.DisposeAsync();
-        if (LocationIds != null)
-            await LocationIds.DisposeAsync();
+        if (Locations != null)
+            await Locations.DisposeAsync();
     }
 }

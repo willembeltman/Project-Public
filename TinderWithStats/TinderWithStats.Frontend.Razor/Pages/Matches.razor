@@ -1,0 +1,67 @@
+@page "/Matches"
+@implements IAsyncDisposable
+@inject IMatchsApi list
+@inject IClientAuthenticatedHttpClient ClientAuthenticatedHttpClient
+@inject IJSRuntime JS
+
+<PageTitle>Matchs</PageTitle>
+
+<AuthorizeView>
+    <Authorized>
+        <h3>Matchs</h3>
+        <LoaderView Response="Matchs?.Response">
+            <AutoMatchList DataSource="Matchs" />
+        </LoaderView>
+    </Authorized>
+    <NotAuthorized>
+        <RedirectToLogin />
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private CancellationTokenSource? Cts;
+    private ListDataSource<Match, Guid>? Matchs;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Cts != null)
+        {
+            await Cts.CancelAsync();
+            Cts.Dispose();
+        }
+
+        Cts = new CancellationTokenSource();
+
+        if (await ClientAuthenticatedHttpClient.IsAuthenticatedAsync(Cts.Token) == false)
+        {
+            return;
+        }
+
+        Matchs = new ListDataSource<Match, Guid>(
+            JS,
+            StateHasChanged,
+            GetPrimaryKey: match => match.Id,
+            List: list.List,
+            SetForeignKey: null,
+            AfterSaveAction: null,
+            AfterCancelAction: null,
+            Create: null,
+            Read: null,
+            Update: null,
+            Delete: null
+        );
+
+        await Matchs.InitialiseAsync();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (Cts != null)
+        {
+            await Cts.CancelAsync();
+            Cts.Dispose();
+        }
+        if (Matchs != null)
+            await Matchs.DisposeAsync();
+    }
+}

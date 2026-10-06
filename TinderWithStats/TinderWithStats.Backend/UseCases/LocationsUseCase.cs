@@ -15,11 +15,27 @@ public class LocationsUseCase(
         return await db.UserRoles.AnyAsync(a => a.UserId == authenticationService.State.User.Id && a.Role!.Name == "Admin", ct);
     }
     public async Task<bool> CanListAsync(CancellationToken ct) => authenticationService.State.User != null;
-    public async Task<bool> CanCreateAsync(CancellationToken ct) => authenticationService.State.User != null;
-    public async Task<bool> CanCreateAsync(TinderWithStats.Shared.Dtos.Location dto, CancellationToken ct) => authenticationService.State.User != null;
+    public async Task<bool> CanCreateAsync(CancellationToken ct)
+    {
+        if (authenticationService.State.User == null) return false;
+        return await db.UserRoles.AnyAsync(a => a.UserId == authenticationService.State.User.Id && a.Role!.Name == "Admin", ct);
+    }
+    public async Task<bool> CanCreateAsync(TinderWithStats.Shared.Dtos.Location dto, CancellationToken ct)
+    {
+        if (authenticationService.State.User == null) return false;
+        return await db.UserRoles.AnyAsync(a => a.UserId == authenticationService.State.User.Id && a.Role!.Name == "Admin", ct);
+    }
     public async Task<bool> CanReadAsync(TinderWithStats.Shared.Dtos.Location dto, CancellationToken ct) => authenticationService.State.User != null;
-    public async Task<bool> CanUpdateAsync(TinderWithStats.Shared.Dtos.Location dto, CancellationToken ct) => authenticationService.State.User != null;
-    public async Task<bool> CanDeleteAsync(TinderWithStats.Shared.Dtos.Location dto, CancellationToken ct) => authenticationService.State.User != null;
+    public async Task<bool> CanUpdateAsync(TinderWithStats.Shared.Dtos.Location dto, CancellationToken ct)
+    {
+        if (authenticationService.State.User == null) return false;
+        return await db.UserRoles.AnyAsync(a => a.UserId == authenticationService.State.User.Id && a.Role!.Name == "Admin", ct);
+    }
+    public async Task<bool> CanDeleteAsync(TinderWithStats.Shared.Dtos.Location dto, CancellationToken ct)
+    {
+        if (authenticationService.State.User == null) return false;
+        return await db.UserRoles.AnyAsync(a => a.UserId == authenticationService.State.User.Id && a.Role!.Name == "Admin", ct);
+    }
 
     public async Task<Location?> FindByMatchAsync(TinderWithStats.Shared.Dtos.Location dto, CancellationToken ct) 
         => null; // If you implement this, also use includes
