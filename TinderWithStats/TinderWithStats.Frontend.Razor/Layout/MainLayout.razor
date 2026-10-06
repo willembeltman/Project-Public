@@ -7,7 +7,10 @@
         <div class="container-fluid px-0">
             <!-- Titel met een dating-touch -->
             <h1 class="navbar-brand mb-0 h1 fw-bold">
-                ❤️ HeartSpark <span class="fs-6 fw-light d-none d-sm-inline">| Find your match</span>
+                <a href="/" style="color: white; text-decoration: none;">
+                    ❤️ HeartSpark
+                </a>
+                <span class="fs-6 fw-light d-none d-sm-inline">| Find your match</span>
             </h1>
             <button class="btn btn-outline-light border-2 fw-semibold px-3" type="button" @onclick="ToggleMenu">
                 ☰ @MenuText
@@ -58,7 +61,7 @@
                                 </a>
                             </li>
                         </ul>
-                        
+
                     }
                 </Authorized>
                 <NotAuthorized>
@@ -106,13 +109,13 @@
                         <div class="container d-flex justify-content-center gap-3">
                             <a class="btn btn-secondary" href="/MyMatches">Matches</a>
                             <a class="btn btn-secondary" href="/Swipe">Swipe</a>
-                            <a class="btn btn-secondary" href="/Account">Account</a>
+                            <a class="btn btn-secondary" href="/Manage">Manage</a>
                         </div>
                     }
                     else
                     {
                         <div class="container d-flex justify-content-center gap-3">
-                            <a class="btn btn-secondary" href="/Account">Account</a>
+                            <a class="btn btn-secondary" href="/Manage">Manage</a>
                         </div>
                     }
                 </Authorized>

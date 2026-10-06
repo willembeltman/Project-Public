@@ -1,6 +1,5 @@
 @page "/profiles/create"
 @implements IAsyncDisposable
-@inject IUsersApi iUsersApi
 @inject ILocationsApi iLocationsApi
 @inject IProfilesApi iProfilesApi
 @inject IClientAuthenticatedHttpClient ClientAuthenticatedHttpClient
@@ -16,7 +15,7 @@
             <EditForm Model="Profile!.Model" OnValidSubmit="Profile.HandleValidSubmit">
                 <DataAnnotationsValidator />
                 <ValidationSummary />
-                <AutoProfileForm DataSource="Profile" UserIds="UserIds" LocationIds="LocationIds" />
+                <AutoProfileForm DataSource="Profile" LocationIds="LocationIds" />
                 <ErrorView Response="Profile.StatusResponse" />
                 <button id="create" class="btn btn-primary" type="submit">➕ Create</button>
                 <button id="cancel" class="btn btn-secondary ms-2" @onclick="Profile.Cancel">Cancel</button>
@@ -31,7 +30,6 @@
 @code {
     private CancellationTokenSource? Cts;
     private ItemDataSource<Profile, Guid>? Profile;
-    private ListDataSource<User, Guid>? UserIds;
     private ListDataSource<Location, int>? LocationIds;
 
     protected override async Task OnInitializedAsync()
@@ -60,21 +58,6 @@
         );
         Profile.NewModel();
 
-        UserIds = new ListDataSource<User, Guid>(
-            JS,
-            StateHasChanged,
-            GetPrimaryKey: user => user.Id,
-            List: iUsersApi.List,
-            SetForeignKey: null,
-            AfterSaveAction: null,
-            AfterCancelAction: null,
-            Create: null,
-            Read: null,
-            Update: null,
-            Delete: null
-        );
-        await UserIds.InitialiseAsync();
-
         LocationIds = new ListDataSource<Location, int>(
             JS,
             StateHasChanged,
@@ -100,8 +83,6 @@
         }
         if (Profile != null) 
             await Profile.DisposeAsync();
-        if (UserIds != null) 
-            await UserIds.DisposeAsync();
         if (LocationIds != null) 
             await LocationIds.DisposeAsync();
     }

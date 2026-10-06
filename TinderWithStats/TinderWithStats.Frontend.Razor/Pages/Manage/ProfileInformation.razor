@@ -16,7 +16,7 @@
             <EditForm Model="Profile!.Model" OnValidSubmit="Profile.HandleValidSubmit">
                 <DataAnnotationsValidator />
                 <ValidationSummary />
-                <ProfileForm DataSource="Profile" UserIds="UserIds" LocationIds="LocationIds" HideColumns="UserId" />
+                <AutoProfileForm DataSource="Profile" LocationIds="LocationIds" />
                 <ErrorView Response="Profile.StatusResponse" />
                 <button id="save" class="btn btn-primary" type="submit">💾 Save</button>
                 <button id="cancel" class="btn btn-secondary ms-2" @onclick="Profile.Cancel">Cancel</button>
@@ -29,12 +29,8 @@
 </AuthorizeView>
 
 @code {
-    [Parameter]
-    public string? id { get; set; }
-
     private CancellationTokenSource? Cts;
     private ItemDataSource<Profile, Guid>? Profile;
-    private ListDataSource<User, Guid>? UserIds;
     private ListDataSource<Location, int>? LocationIds;
 
     protected override async Task OnParametersSetAsync()
@@ -47,16 +43,10 @@
 
         Cts = new CancellationTokenSource();
 
-        var state = await HttpClient.GetStateAsync(false, Cts.Token);
-        if (state.User == null || state.ProfileId == null)
-        {
-            return;
-        }
-
         Profile = new ItemDataSource<Profile, Guid>(
             GetPrimaryKey: e => e.Id,
-            AfterSaveAction: e => NavigationManager.NavigateTo("/profiles"),
-            AfterCancelAction: e => NavigationManager.NavigateTo("/profiles"),
+            AfterSaveAction: e => NavigationManager.NavigateTo("/Manage"),
+            AfterCancelAction: e => NavigationManager.NavigateTo("/Manage"),
             Create: null,
             Read: iProfilesApi.Read,
             Update: iProfilesApi.Update,
@@ -64,22 +54,17 @@
             FileUpdate: null,
             FileDelete: null
         );
-        await Profile.LoadModelAsync(state.ProfileId);
 
-        UserIds = new ListDataSource<User, Guid>(
-            JS,
-            StateHasChanged,
-            GetPrimaryKey: x => x.Id,
-            List: (int? skip, int? take, string[]? orderBy, CancellationToken ct) => iUsersApi.List(skip, take, orderBy, ct),
-            SetForeignKey: null,
-            AfterSaveAction: null,
-            AfterCancelAction: null,
-            Create: null,
-            Read: iUsersApi.Read,
-            Update: null,
-            Delete: null
-        );
-        await UserIds.InitialiseAsync();
+        var state = await HttpClient.GetStateAsync(false, Cts.Token);
+        if (state.User == null || state.ProfileId == null)
+        {
+            Profile.Response = new BaseResponseT<Profile>()
+            {
+                Error = gAPI.Core.Enums.BaseResponseErrorEnum.ErrorInApp
+            };
+        }
+
+        await Profile.LoadModelAsync(state.ProfileId);
 
         LocationIds = new ListDataSource<Location, int>(
             JS,
@@ -104,11 +89,9 @@
             await Cts.CancelAsync();
             Cts.Dispose();
         }
-        if (Profile != null) 
+        if (Profile != null)
             await Profile.DisposeAsync();
-        if (UserIds != null) 
-            await UserIds.DisposeAsync();
-        if (LocationIds != null) 
+        if (LocationIds != null)
             await LocationIds.DisposeAsync();
     }
 }

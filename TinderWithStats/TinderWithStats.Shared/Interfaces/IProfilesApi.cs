@@ -23,12 +23,6 @@ public interface IProfilesApi
     [IsList]
     Task<BaseListResponseT<Profile>> List(int? skip, int? take, string[]? orderby, CancellationToken ct);
 
-    [IsListBy(nameof(Profile.UserId), typeof(User))]
-    Task<BaseListResponseT<Profile>> ListByUserId(Guid UserId, int? skip, int? take, string[]? orderby, CancellationToken ct);
-
-    [IsListNotBy(nameof(Profile.UserId), typeof(User))]
-    Task<BaseListResponseT<Profile>> ListNotByUserId(Guid UserId, int? skip, int? take, string[]? orderby, CancellationToken ct);
-
     [IsListBy(nameof(Profile.LocationId), typeof(Location))]
     Task<BaseListResponseT<Profile>> ListByLocationId(int LocationId, int? skip, int? take, string[]? orderby, CancellationToken ct);
 

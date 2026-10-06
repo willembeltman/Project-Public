@@ -1,6 +1,5 @@
 @page "/profiles/edit/{id?}"
 @implements IAsyncDisposable
-@inject IUsersApi iUsersApi
 @inject ILocationsApi iLocationsApi
 @inject IProfilesApi iProfilesApi
 @inject IClientAuthenticatedHttpClient ClientAuthenticatedHttpClient
@@ -16,7 +15,7 @@
             <EditForm Model="Profile!.Model" OnValidSubmit="Profile.HandleValidSubmit">
                 <DataAnnotationsValidator />
                 <ValidationSummary />
-                <AutoProfileForm DataSource="Profile" UserIds="UserIds" LocationIds="LocationIds" />
+                <AutoProfileForm DataSource="Profile" LocationIds="LocationIds" />
                 <ErrorView Response="Profile.StatusResponse" />
                 <button id="save" class="btn btn-primary" type="submit">💾 Save</button>
                 <button id="cancel" class="btn btn-secondary ms-2" @onclick="Profile.Cancel">Cancel</button>
@@ -34,7 +33,6 @@
 
     private CancellationTokenSource? Cts;
     private ItemDataSource<Profile, Guid>? Profile;
-    private ListDataSource<User, Guid>? UserIds;
     private ListDataSource<Location, int>? LocationIds;
 
     protected override async Task OnParametersSetAsync()
@@ -65,21 +63,6 @@
         );
         await Profile.LoadModelAsync(Guid.TryParse(id, out var guidId) ? guidId : null);
 
-        UserIds = new ListDataSource<User, Guid>(
-            JS,
-            StateHasChanged,
-            GetPrimaryKey: x => x.Id,
-            List: (int? skip, int? take, string[]? orderBy, CancellationToken ct) => iUsersApi.List(skip, take, orderBy, ct),
-            SetForeignKey: null,
-            AfterSaveAction: null,
-            AfterCancelAction: null,
-            Create: iUsersApi.Create,
-            Read: iUsersApi.Read,
-            Update: iUsersApi.Update,
-            Delete: iUsersApi.Delete
-        );
-        await UserIds.InitialiseAsync();
-
         LocationIds = new ListDataSource<Location, int>(
             JS,
             StateHasChanged,
@@ -105,8 +88,6 @@
         }
         if (Profile != null) 
             await Profile.DisposeAsync();
-        if (UserIds != null) 
-            await UserIds.DisposeAsync();
         if (LocationIds != null) 
             await LocationIds.DisposeAsync();
     }

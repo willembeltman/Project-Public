@@ -9,7 +9,9 @@ public class Profile
     [Key]
     public Guid Id { get; set; }
 
+    [IsHidden]
     public virtual User? User { get; set; }
+    [IsHidden]
     public Guid UserId { get; set; }
 
     public virtual Location? Location { get; set; }

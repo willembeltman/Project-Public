@@ -14,7 +14,7 @@
             <EditForm Model="User!.Model" OnValidSubmit="User.HandleValidSubmit">
                 <DataAnnotationsValidator />
                 <ValidationSummary />
-                <UserForm DataSource="User" />
+                <AutoUserForm DataSource="User" />
                 <ErrorView Response="User.StatusResponse" />
                 <button id="save" class="btn btn-primary" type="submit">💾 Save</button>
                 <button id="cancel" class="btn btn-secondary ms-2" @onclick="User.Cancel">Cancel</button>
@@ -48,8 +48,8 @@
 
         User = new ItemDataSource<User, Guid>(
             GetPrimaryKey: e => e.Id,
-            AfterSaveAction: e => NavigationManager.NavigateTo("/Account"),
-            AfterCancelAction: e => NavigationManager.NavigateTo("/Account"),
+            AfterSaveAction: e => NavigationManager.NavigateTo("/Manage"),
+            AfterCancelAction: e => NavigationManager.NavigateTo("/Manage"),
             Create: null,
             Read: UsersApi.Read,
             Update: UsersApi.Update,

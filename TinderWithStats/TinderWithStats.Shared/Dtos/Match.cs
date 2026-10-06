@@ -22,6 +22,7 @@ public class Match : ICrudEntity
     public System.DateTimeOffset MatchCreated { get; set; }
     [IsName(FormattingOption.yyyy_MM_dd)]
     public System.DateTimeOffset? MatchAccepted { get; set; }
+    public System.DateTimeOffset? MatchRemoved { get; set; }
     [IsReadOnly]
     public bool CanUpdate { get; set; }
     [IsReadOnly]

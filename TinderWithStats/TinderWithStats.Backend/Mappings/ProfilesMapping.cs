@@ -11,7 +11,6 @@ public class ProfilesMapping(
         TinderWithStats.Backend.Entities.Profile entity)
     {
         entity.Id = dto.Id;
-        entity.UserId = dto.UserId;
         entity.LocationId = dto.LocationId;
         entity.Name = dto.Name;
         entity.DateOfBirth = dto.DateOfBirth;
@@ -28,7 +27,6 @@ public class ProfilesMapping(
         CancellationToken ct)
     {
         dto.Id = entity.Id;
-        dto.UserId = entity.UserId;
         dto.LocationId = entity.LocationId;
         dto.Name = entity.Name;
         dto.DateOfBirth = entity.DateOfBirth;
@@ -36,10 +34,6 @@ public class ProfilesMapping(
         dto.Beroep = entity.Beroep;
         dto.Bio = entity.Bio;
         
-        dto.UserName = 
-            ("" + (entity?.User?.UserName ?? default) + "") + " " + 
-                (" (" + (entity?.User?.Email ?? default) + ")");
-
         dto.LocationName = 
             ("" + (entity?.Location?.LocationName ?? default) + "");
 
@@ -59,7 +53,6 @@ public class ProfilesMapping(
             .Select(entity => new TinderWithStats.Shared.Dtos.Profile()
             {
                 Id = entity.Id,
-                UserId = entity.UserId,
                 LocationId = entity.LocationId,
                 Name = entity.Name,
                 DateOfBirth = entity.DateOfBirth,
@@ -67,9 +60,6 @@ public class ProfilesMapping(
                 Beroep = entity.Beroep,
                 Bio = entity.Bio,
 #nullable disable
-                UserName = 
-                    ("" + entity.User.UserName + "") + " " + 
-                        (" (" + entity.User.Email + ")"),
                 LocationName = 
                     ("" + entity.Location.LocationName + ""),
 #nullable enable

@@ -15,6 +15,7 @@ public class MatchsMapping(
         entity.ProfileReceiverId = dto.ProfileReceiverId;
         entity.MatchCreated = dto.MatchCreated;
         entity.MatchAccepted = dto.MatchAccepted;
+        entity.MatchRemoved = dto.MatchRemoved;
 
         return entity;
     }
@@ -29,6 +30,7 @@ public class MatchsMapping(
         dto.ProfileReceiverId = entity.ProfileReceiverId;
         dto.MatchCreated = entity.MatchCreated;
         dto.MatchAccepted = entity.MatchAccepted;
+        dto.MatchRemoved = entity.MatchRemoved;
         
         dto.ProfileSenderName = 
             ("" + (entity?.ProfileSender?.Name ?? default) + "") + " " + 
@@ -58,6 +60,7 @@ public class MatchsMapping(
                 ProfileReceiverId = entity.ProfileReceiverId,
                 MatchCreated = entity.MatchCreated,
                 MatchAccepted = entity.MatchAccepted,
+                MatchRemoved = entity.MatchRemoved,
 #nullable disable
                 ProfileSenderName = 
                     ("" + entity.ProfileSender.Name + "") + " " + 

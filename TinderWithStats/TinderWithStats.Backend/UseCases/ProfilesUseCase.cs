@@ -14,24 +14,35 @@ public class ProfilesUseCase(
     public async Task<bool> CanCreateAsync(CancellationToken ct) => auth.State.User != null;
     public async Task<bool> CanCreateAsync(TinderWithStats.Shared.Dtos.Profile dto, CancellationToken ct)
     {
-        if (auth.AuthenticationState.User == null) return false;
-        var isAdmin = await db.UserRoles.AnyAsync(a => a.UserId == auth.AuthenticationState.User.Id && a.Role!.Name == "Admin", ct);
+        // Is user logged in?
+        if (auth.State.User == null) return false;
+
+        // Is admin?
+        var isAdmin = await db.UserRoles.AnyAsync(a => a.UserId == auth.State.User.Id && a.Role!.Name == "Admin", ct);
         if (isAdmin) return true;
-        if (dto.UserId == auth.AuthenticationState.User.Id) return true;
-        return false;
+
+        // User already has a profile?
+        var userProfile = db.Profiles.FirstOrDefault(p => p.UserId == auth.State.User.Id);
+        if (userProfile != null) return false;
+
+        // Ok, fine by me
+        return true;
     }
     public async Task<bool> CanReadAsync(TinderWithStats.Shared.Dtos.Profile dto, CancellationToken ct)
     {
+        // Is user logged in?
         if (auth.State.User == null) return false;
-        var currentUserId = auth.State.User.Id;
 
-        var isAdmin = await db.UserRoles.AnyAsync(a => a.UserId == currentUserId && a.Role!.Name == "Admin", ct);
+        // Is admin?
+        var isAdmin = await db.UserRoles.AnyAsync(a => a.UserId == auth.State.User.Id && a.Role!.Name == "Admin", ct);
         if (isAdmin) return true;
 
-        if (dto.UserId == currentUserId) return true;
+        // User already has a profile?
+        var userProfile = db.Profiles.FirstOrDefault(p => p.UserId == auth.State.User.Id);
+        if (userProfile != null) return false;
 
         var currentProfileId = await db.Profiles
-            .Where(p => p.UserId == currentUserId)
+            .Where(p => p.UserId == auth.State.User.Id)
             .Select(p => p.Id)
             .FirstOrDefaultAsync(ct);
 
@@ -46,25 +57,42 @@ public class ProfilesUseCase(
                     (a.ProfileReceiverId == currentProfileId && a.ProfileSenderId == dto.Id)
                 ), ct);
     }
-
     public async Task<bool> CanUpdateAsync(TinderWithStats.Shared.Dtos.Profile dto, CancellationToken ct)
     {
+        // Logged in?
         if (auth.State.User == null) return false;
 
+        // Is admin?
         var isAdmin = await db.UserRoles.AnyAsync(a => a.UserId == auth.State.User.Id && a.Role!.Name == "Admin", ct);
         if (isAdmin) return true;
 
-        if (dto.UserId == auth.State.User.Id) return true;
+        // Get db profile (yes I know, this needs to be better)
+        var profile = db.Profiles.FirstOrDefault(p => p.Id == dto.Id);
+        if (profile == null) return false;
+
+        // Check if it our profile?
+        if (profile.UserId == auth.State.User.Id) return true;
+
+        // Else: no.
         return false;
     }
     public async Task<bool> CanDeleteAsync(TinderWithStats.Shared.Dtos.Profile dto, CancellationToken ct)
     {
+        // Logged in?
         if (auth.State.User == null) return false;
 
+        // Is admin?
         var isAdmin = await db.UserRoles.AnyAsync(a => a.UserId == auth.State.User.Id && a.Role!.Name == "Admin", ct);
         if (isAdmin) return true;
 
-        if (dto.UserId == auth.State.User.Id) return true;
+        // Get db profile (yes I know, this needs to be better)
+        var profile = db.Profiles.FirstOrDefault(p => p.Id == dto.Id);
+        if (profile == null) return false;
+
+        // Check if it our profile?
+        if (profile.UserId == auth.State.User.Id) return true;
+
+        // Else: no.
         return false;
     }
 
@@ -111,17 +139,35 @@ public class ProfilesUseCase(
 
     public async Task<bool> AddAsync(Profile entityToAdd, CancellationToken ct)
     {
+        if (auth.State.User == null)
+            return false;
+
+        entityToAdd.UserId = auth.State.User.Id;
+
         await db.Profiles.AddAsync(entityToAdd, ct);
-        await db.SaveChangesAsync(ct);
+        try
+        {
+            await db.SaveChangesAsync(ct);
+        }
+        catch(Exception ex)
+        {
+
+        }
         return true;
     }
     public async Task<bool> UpdateAsync(Profile updatedEntity, TinderWithStats.Shared.Dtos.Profile dto, CancellationToken ct)
     {
+        if (auth.State.User == null || updatedEntity.UserId != auth.State.User.Id)
+            return false;
+
         await db.SaveChangesAsync();
         return true;
     }
     public async Task<bool> RemoveAsync(Profile entity, CancellationToken ct)
     {
+        if (auth.State.User == null || entity.UserId != auth.State.User.Id)
+            return false;
+
         db.Profiles.Remove(entity);
         await db.SaveChangesAsync();
         return true;

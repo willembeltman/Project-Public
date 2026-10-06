@@ -1,4 +1,5 @@
 @page "/Manage"
+@inject IAuthenticatedHttpClient httpClient
 
 <PageTitle>Manage</PageTitle>
 <h3>Manage</h3>
@@ -6,11 +7,14 @@
 <AuthorizeView>
     <Authorized Context="_">
 
-        <div class="px-3">
-            <NavLink class="nav-link" href="/Manage/ProfileInformation">
-                <span aria-hidden="true"></span> Profile Information
-            </NavLink>
-        </div>
+        @if (hasProfile)
+        {
+            <div class="px-3">
+                <NavLink class="nav-link" href="/Manage/ProfileInformation">
+                    <span aria-hidden="true"></span> Profile Information
+                </NavLink>
+            </div>
+        }
 
         <div class="px-3">
             <NavLink class="nav-link" href="/Manage/UserInformation">
@@ -46,3 +50,13 @@
 
     </NotAuthorized>
 </AuthorizeView>
+
+@code {
+    private bool hasProfile = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var state = await httpClient.GetStateAsync();
+        hasProfile = state.ProfileId != null;
+    }
+}

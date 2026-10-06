@@ -10,10 +10,6 @@ public class Profile : ICrudEntity
 {
     [Key]
     public Guid Id { get; set; }
-    [IsForeignName(nameof(UserId))]
-    public string? UserName { get; set; }
-    [IsForeignKey(typeof(User))]
-    public Guid UserId { get; set; }
     [IsForeignName(nameof(LocationId))]
     public string? LocationName { get; set; }
     [IsForeignKey(typeof(Location))]

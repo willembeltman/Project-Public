@@ -7,7 +7,7 @@ namespace TinderWithStats.Backend.Entities;
 public class UserRole
 {
     [Key]
-    public Guid Id { get; set; }
+    public long Id { get; set; }
 
     public virtual User? User { get; set; }
     public Guid UserId { get; set; }

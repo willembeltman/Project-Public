@@ -1,7 +1,103 @@
-﻿@page "/"
+@page "/"
+@implements IAsyncDisposable
+@inject ILocationsApi iLocationsApi
+@inject IProfilesApi iProfilesApi
+@inject IAuthenticatedHttpClient HttpClient
+@inject IJSRuntime JS
+@inject NavigationManager NavigationManager
 
 <PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
+<AuthorizeView>
+    <Authorized Context="_">
+        @if (State?.ProfileId != null)
+        {
+            // Swipen?
+        }
+        else
+        {
+            <h3>Create Profile</h3>
+            <LoaderView Response="Profile?.Response">
+                <EditForm Model="Profile!.Model" OnValidSubmit="Profile.HandleValidSubmit">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
+                    <AutoProfileForm DataSource="Profile" LocationIds="LocationIds" />
+                    <ErrorView Response="Profile.StatusResponse" />
+                    <button id="create" class="btn btn-primary" type="submit">➕ Create</button>
+                </EditForm>
+            </LoaderView>
+        }
+    </Authorized>
+    <NotAuthorized>
+        <RedirectToLogin />
+    </NotAuthorized>
+</AuthorizeView>
 
-Welcome to your new app.
+@code {
+    private CancellationTokenSource? Cts;
+
+    private State? State;
+
+    private ItemDataSource<Profile, Guid>? Profile;
+    private ListDataSource<Location, int>? LocationIds;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Cts != null)
+        {
+            await Cts.CancelAsync();
+            Cts.Dispose();
+        }
+
+        Cts = new CancellationTokenSource();
+
+        State = await HttpClient.GetStateAsync(false, Cts.Token);
+
+        if (State.User == null)
+            return;
+
+        if (State.ProfileId == null)
+        {
+            Profile = new ItemDataSource<Profile, Guid>(
+                GetPrimaryKey: profile => profile.Id,
+                AfterSaveAction: profile => { NavigationManager.NavigateTo("/", forceLoad: true); },
+                AfterCancelAction: profile => NavigationManager.NavigateTo("/profiles"),
+                Create: iProfilesApi.Create,
+                Read: null,
+                Update: null,
+                Delete: null,
+                FileUpdate: null,
+                FileDelete: null
+            );
+            Profile.NewModel();
+
+            LocationIds = new ListDataSource<Location, int>(
+                JS,
+                StateHasChanged,
+                GetPrimaryKey: location => location.Id,
+                List: iLocationsApi.List,
+                SetForeignKey: null,
+                AfterSaveAction: null,
+                AfterCancelAction: null,
+                Create: null,
+                Read: null,
+                Update: null,
+                Delete: null
+            );
+            await LocationIds.InitialiseAsync();
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (Cts != null)
+        {
+            await Cts.CancelAsync();
+            Cts.Dispose();
+        }
+        if (Profile != null) 
+            await Profile.DisposeAsync();
+        if (LocationIds != null) 
+            await LocationIds.DisposeAsync();
+    }
+}
