@@ -46,6 +46,18 @@ namespace TinderWithStats.Backend.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Roles",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Roles", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Routes",
                 columns: table => new
                 {
@@ -76,7 +88,6 @@ namespace TinderWithStats.Backend.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    IsAdmin = table.Column<bool>(type: "bit", nullable: false),
                     PasswordHash = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
                     LockedOut = table.Column<bool>(type: "bit", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
@@ -96,7 +107,7 @@ namespace TinderWithStats.Backend.Migrations
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     LocationId = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    DateOfBirth = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    DateOfBirth = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Length = table.Column<int>(type: "int", nullable: false),
                     Beroep = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Bio = table.Column<string>(type: "nvarchar(max)", nullable: false)
@@ -142,6 +153,30 @@ namespace TinderWithStats.Backend.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "UserRoles",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    RoleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserRoles", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UserRoles_Roles_RoleId",
+                        column: x => x.RoleId,
+                        principalTable: "Roles",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_UserRoles_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "UserTokens",
                 columns: table => new
                 {
@@ -163,25 +198,26 @@ namespace TinderWithStats.Backend.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Match",
+                name: "Matches",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ProfileSenderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ProfileReceiverId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     MatchCreated = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
-                    MatchAccepted = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true)
+                    MatchAccepted = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    MatchRemoved = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Match", x => x.Id);
+                    table.PrimaryKey("PK_Matches", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Match_Profiles_ProfileReceiverId",
+                        name: "FK_Matches_Profiles_ProfileReceiverId",
                         column: x => x.ProfileReceiverId,
                         principalTable: "Profiles",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Match_Profiles_ProfileSenderId",
+                        name: "FK_Matches_Profiles_ProfileSenderId",
                         column: x => x.ProfileSenderId,
                         principalTable: "Profiles",
                         principalColumn: "Id");
@@ -231,7 +267,7 @@ namespace TinderWithStats.Backend.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ChatMessage",
+                name: "ChatMessages",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -243,19 +279,19 @@ namespace TinderWithStats.Backend.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ChatMessage", x => x.Id);
+                    table.PrimaryKey("PK_ChatMessages", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ChatMessage_Match_MatchId",
+                        name: "FK_ChatMessages_Matches_MatchId",
                         column: x => x.MatchId,
-                        principalTable: "Match",
+                        principalTable: "Matches",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_ChatMessage_Profiles_ProfileReceiverId",
+                        name: "FK_ChatMessages_Profiles_ProfileReceiverId",
                         column: x => x.ProfileReceiverId,
                         principalTable: "Profiles",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_ChatMessage_Profiles_ProfileSenderId",
+                        name: "FK_ChatMessages_Profiles_ProfileSenderId",
                         column: x => x.ProfileSenderId,
                         principalTable: "Profiles",
                         principalColumn: "Id");
@@ -333,28 +369,28 @@ namespace TinderWithStats.Backend.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ChatMessage_MatchId",
-                table: "ChatMessage",
+                name: "IX_ChatMessages_MatchId",
+                table: "ChatMessages",
                 column: "MatchId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ChatMessage_ProfileReceiverId",
-                table: "ChatMessage",
+                name: "IX_ChatMessages_ProfileReceiverId",
+                table: "ChatMessages",
                 column: "ProfileReceiverId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ChatMessage_ProfileSenderId",
-                table: "ChatMessage",
+                name: "IX_ChatMessages_ProfileSenderId",
+                table: "ChatMessages",
                 column: "ProfileSenderId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Match_ProfileReceiverId",
-                table: "Match",
+                name: "IX_Matches_ProfileReceiverId",
+                table: "Matches",
                 column: "ProfileReceiverId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Match_ProfileSenderId",
-                table: "Match",
+                name: "IX_Matches_ProfileSenderId",
+                table: "Matches",
                 column: "ProfileSenderId");
 
             migrationBuilder.CreateIndex(
@@ -370,7 +406,8 @@ namespace TinderWithStats.Backend.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Profiles_UserId",
                 table: "Profiles",
-                column: "UserId");
+                column: "UserId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserIps_IpId",
@@ -418,6 +455,16 @@ namespace TinderWithStats.Backend.Migrations
                 column: "UserIpSessionId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_UserRoles_RoleId",
+                table: "UserRoles",
+                column: "RoleId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserRoles_UserId",
+                table: "UserRoles",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_UserTokens_UserId",
                 table: "UserTokens",
                 column: "UserId");
@@ -427,7 +474,7 @@ namespace TinderWithStats.Backend.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "ChatMessage");
+                name: "ChatMessages");
 
             migrationBuilder.DropTable(
                 name: "ProfilePictures");
@@ -436,10 +483,16 @@ namespace TinderWithStats.Backend.Migrations
                 name: "UserIpSessionTokenRouteRequests");
 
             migrationBuilder.DropTable(
-                name: "Match");
+                name: "UserRoles");
+
+            migrationBuilder.DropTable(
+                name: "Matches");
 
             migrationBuilder.DropTable(
                 name: "UserIpSessionTokenRoutes");
+
+            migrationBuilder.DropTable(
+                name: "Roles");
 
             migrationBuilder.DropTable(
                 name: "Profiles");

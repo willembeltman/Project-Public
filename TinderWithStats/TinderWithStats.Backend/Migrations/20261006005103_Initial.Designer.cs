@@ -12,8 +12,8 @@ using TinderWithStats.Backend.Entities;
 namespace TinderWithStats.Backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20261005225808_UserRoles2")]
-    partial class UserRoles2
+    [Migration("20261006005103_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -215,9 +215,11 @@ namespace TinderWithStats.Backend.Migrations
 
             modelBuilder.Entity("TinderWithStats.Backend.Entities.UserRole", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<Guid>("RoleId")
                         .HasColumnType("uniqueidentifier");

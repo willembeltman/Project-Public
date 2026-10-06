@@ -4,7 +4,8 @@ using TinderWithStats.Backend.Entities;
 
 namespace TinderWithStats.Backend.Mappings;
 
-public class StateMapping() 
+public class StateMapping(
+    ApplicationDbContext db) 
     : AuthenticationStateMapping<User, Shared.Dtos.State>
 {
     public override async Task<Shared.Dtos.State> ToDtoAsync(
@@ -15,7 +16,12 @@ public class StateMapping()
         CancellationToken ct)
     {
         var state = await base.ToDtoAsync(dbUser, dbToken, dbIp, receivedClientState, ct);
-        state.ProfileId = dbUser?.Profiles?.FirstOrDefault()?.Id;
+
+        if (dbUser == null)
+            return state;
+        
+        var profile = db.Profiles.FirstOrDefault(a => a.UserId == dbUser.Id);
+        state.ProfileId = profile?.Id;
         return state;
     }
 }
