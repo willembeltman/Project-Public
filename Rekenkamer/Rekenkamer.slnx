@@ -1,0 +1,37 @@
+<Solution>
+  <Folder Name="/AutomaticGenerators/">
+    <Project Path="Rekenkamer.Frontend.AutoClients/Rekenkamer.Frontend.AutoClients.csproj" Id="5a301460-995e-4fa9-998a-11fa58e728b2" />
+    <Project Path="Rekenkamer.Frontend.AutoComponents/Rekenkamer.Frontend.AutoComponents.csproj" Id="8dee2985-7d3d-4344-a2e4-c58264e062aa" />
+    <Project Path="Rekenkamer.Frontend.AutoPages/Rekenkamer.Frontend.AutoPages.csproj" Id="696e19f6-7cf1-432c-84cc-d4f28ab24a89" />
+  </Folder>
+  <Folder Name="/AutomaticGenerators/gAPI/">
+    <Project Path="gAPI/gAPI.AutoAuth.Client/gAPI.AutoAuth.Client.csproj" />
+    <Project Path="gAPI/gAPI.AutoAuth.Server/gAPI.AutoAuth.Server.csproj" />
+    <Project Path="gAPI/gAPI.AutoComponent/gAPI.AutoComponent.csproj" />
+    <Project Path="gAPI/gAPI.AutoPage/gAPI.AutoPage.csproj" />
+    <Project Path="gAPI/gAPI.AutoSerializer/gAPI.AutoSerializer.csproj" />
+    <Project Path="gAPI/gAPI.AutoWss.Client/gAPI.AutoWss.Client.csproj" />
+    <Project Path="gAPI/gAPI.AutoWss.Server/gAPI.AutoWss.Server.csproj" />
+    <Project Path="gAPI/gAPI.CodeGen.Backend/gAPI.CodeGen.Backend.csproj" />
+    <Project Path="gAPI/gAPI.CodeGen.Frontend/gAPI.CodeGen.Frontend.csproj" />
+    <Project Path="gAPI/gAPI.Core.Client/gAPI.Core.Client.csproj" />
+    <Project Path="gAPI/gAPI.Core.Server/gAPI.Core.Server.csproj" />
+    <Project Path="gAPI/gAPI.Core/gAPI.Core.csproj" />
+  </Folder>
+  <Folder Name="/Generators/">
+    <Project Path="Rekenkamer.Backend.Generator/Rekenkamer.Backend.Generator.csproj" Id="78f70269-7cc6-47b9-b7a1-a26997d66ff3" />
+    <Project Path="Rekenkamer.Frontend.Generator/Rekenkamer.Frontend.Generator.csproj" Id="9ff98b8d-7c54-4cc8-8e23-136b441e20e6" />
+  </Folder>
+  <Folder Name="/Infrastructure/">
+    <Project Path="Rekenkamer.Infrastructure.Data/Rekenkamer.Infrastructure.Data.csproj" Id="555288f7-53e2-4bc7-b77f-f7f46421abb5" />
+    <Project Path="Rekenkamer.Infrastructure.Import/Rekenkamer.Infrastructure.Import.csproj" Id="01828af5-9b75-4427-b32c-c09fe78730a6" />
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path=".dockerignore" />
+    <File Path="docker-compose.yml" />
+  </Folder>
+  <Project Path="Rekenkamer.Backend/Rekenkamer.Backend.csproj" Id="d6ee3c5e-5ceb-4da6-a2b6-cb3f62dabb99" />
+  <Project Path="Rekenkamer.Frontend/Rekenkamer.Frontend.csproj" Id="a69def22-98ec-4416-8853-e3528f363c57" />
+  <Project Path="Rekenkamer.ImportApp/Rekenkamer.ImportApp.csproj" Id="1fc0311b-ae40-4dc2-ae72-adaae815f822" />
+  <Project Path="Rekenkamer.Shared/Rekenkamer.Shared.csproj" Id="0be94b03-d40e-40ed-ad73-4c42bdac5830" />
+</Solution>

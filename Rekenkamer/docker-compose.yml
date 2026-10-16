@@ -1,0 +1,86 @@
+version: '3.8'
+
+services:
+  # 1. De PostgreSQL Database Container met pgvector ondersteuning
+  rekenkamer-db:
+    image: pgvector/pgvector:pg17
+    container_name: rekenkamer-postgres-db
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=${DB_USER:-postgres}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-GeheimWachtwoord123}
+      - POSTGRES_DB=${DB_NAME:-rekenkamer_db}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 3s
+      timeout: 3s
+      retries: 5
+
+  # 2. De Ollama Container
+  rekenkamer-ollama:
+    image: ollama/ollama:latest
+    container_name: rekenkamer-ollama-service
+    restart: always
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    environment:
+      - OLLAMA_DEBUG=false
+    logging:
+      driver: "none"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+
+  # 3. De Backend API Container
+  rekenkamer-backend:
+    image: rekenkamer-backend
+    build:
+      context: .
+      dockerfile: Rekenkamer.Backend/Dockerfile
+    ports:
+      - "7092:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - FrontendUrl=http://localhost:7070  
+      - OllamaUrl=${OllamaUrl:-http://rekenkamer-ollama:11434}
+      - VectorModel=${VectorModel:-nomic-embed-text}
+      - VectorDimensions=${VectorDimensions:-768}
+      - UseMemoryDatabase=${UseMemoryDatabase:-false}
+      - ConnectionStrings__DefaultConnection=Host=rekenkamer-db;Database=${DB_NAME:-rekenkamer_db};Username=${DB_USER:-postgres};Password=${DB_PASSWORD:-GeheimWachtwoord123};Trust Server Certificate=true;
+      - ConnectionStrings__StorageConnection=${StorageConnection}
+      - ConnectionStrings__FabricConnection=${FabricConnection}
+      - Logging__LogLevel__Default=Warning
+    depends_on:
+      rekenkamer-db:
+        condition: service_healthy
+      rekenkamer-ollama:
+        condition: service_started
+
+  # 4. De Frontend Blazor Container
+  rekenkamer-frontend:
+    image: rekenkamer-frontend
+    build:
+      context: .
+      dockerfile: Rekenkamer.Frontend/Dockerfile
+    ports:
+      - "7070:80"
+    environment:
+      - ApiBackendUrl=http://localhost:7092   
+      - WssBackendUrl=ws://localhost:7092
+    depends_on:
+      - rekenkamer-backend
+
+volumes:
+  postgres_data:
+  ollama_data:

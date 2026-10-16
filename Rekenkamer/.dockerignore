@@ -1,0 +1,14 @@
+# Build mappen
+**/bin/
+**/obj/
+
+# Git & IDE's
+.git/
+.gitignore
+.vs/
+.vscode/
+
+# Local instellingen
+*.user
+*.mkv
+*.zip

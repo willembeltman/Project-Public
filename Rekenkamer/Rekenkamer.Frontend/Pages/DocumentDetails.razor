@@ -1,0 +1,143 @@
+@page "/DocumentDetails/{id?}"
+@implements IAsyncDisposable
+@inject IDocumentsApi iDocumentsApi
+@inject IDocumentChunksApi iDocumentChunksApi
+@inject IClientAuthenticatedHttpClient ClientAuthenticatedHttpClient
+@inject IJSRuntime JS
+@inject NavigationManager NavigationManager
+<PageTitle>Document Details</PageTitle>
+
+<AuthorizeView>
+    <Authorized>
+        <div class="container-fluid py-4">
+
+            <!-- Header met Terug-knop -->
+            <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3 border-bottom pb-3">
+                <div class="d-flex align-items-center">
+                    <div class="bg-primary text-white p-2 rounded-3 me-3 shadow-sm">
+                        <i class="bi bi-file-earmark-richtext-fill fs-3"></i>
+                    </div>
+                    <div>
+                        <h3 class="mb-0 fw-bold text-dark">Document inzien</h3>
+                        <small class="text-muted">Gedetailleerde weergave en volledige tekstinhoud</small>
+                    </div>
+                </div>
+                <div>
+                    <a class="btn btn-outline-secondary d-flex align-items-center gap-2 px-3 shadow-sm" href="/DocumentOverview">
+                        <i class="bi bi-arrow-left"></i> Terug naar bibliotheek
+                    </a>
+                </div>
+            </div>
+
+            <!-- Loader Logica -->
+            <LoaderView Response="Document?.Response">
+                <LoaderView Response="DocumentChunksResponse">
+
+                    <div class="row g-4">
+                        <!-- Linkerkant: Document Metadata -->
+                        <div class="col-12 col-lg-4">
+                            <div class="card shadow-sm border-0 bg-white sticky-lg-top" style="top: 2rem; z-index: 10;">
+                                <div class="card-header bg-light py-3 border-bottom">
+                                    <h6 class="mb-0 fw-bold text-secondary text-uppercase tracking-wider small">
+                                        <i class="bi bi-info-circle-fill me-1 text-primary"></i> Systeeminformatie
+                                    </h6>
+                                </div>
+                                <div class="card-body p-4">
+                                    <!-- Ingebouwde details component mooi omsloten -->
+                                    <AutoDocumentDetails DataSource="Document" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Rechterkant: Volledige Document Tekst -->
+                        <div class="col-12 col-lg-8">
+                            <div class="card shadow-sm border-0 bg-white">
+                                <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0 text-primary fw-semibold">
+                                        <i class="bi bi-file-text me-1"></i> Volledige documentinhoud
+                                    </h5>
+                                    <span class="badge bg-secondary-subtle text-secondary-emphasis border px-2 py-1 small font-monospace">
+                                        @DocumentChunksResponse!.Response!.Count() segmenten
+                                    </span>
+                                </div>
+                                <div class="card-body p-4 bg-body-tertiary rounded-bottom-3"
+                                     style="max-height: 70vh; overflow-y: auto; font-family: var(--bs-font-sans-serif);">
+
+                                    @foreach (var chunk in DocumentChunksResponse!.Response!.OrderBy(a => a.ChunkIndex))
+                                    {
+                                        <div class="mb-3 p-3 bg-white rounded-3 shadow-xs border border-light-subtle position-relative chunk-box">
+                                            <!-- Subtiele indicator voor de chunks (segmenten) -->
+                                            <span class="position-absolute top-0 end-0 m-2 badge bg-light text-muted font-monospace border" style="font-size: 0.7rem;">
+                                                #@(chunk.ChunkIndex + 1)
+                                            </span>
+                                            <p class="mb-0 lh-base text-dark" style="white-space: pre-line;">
+                                                @chunk.Content
+                                            </p>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </LoaderView>
+            </LoaderView>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <RedirectToLogin />
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    [Parameter]
+    public string? id { get; set; }
+
+    private CancellationTokenSource? Cts;
+    private ItemDataSource<Document, Guid>? Document;
+    private BaseListResponseT<DocumentChunk>? DocumentChunksResponse;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Cts != null)
+        {
+            await Cts.CancelAsync();
+            Cts.Dispose();
+        }
+
+        Cts = new CancellationTokenSource();
+
+        if (await ClientAuthenticatedHttpClient.IsAuthenticatedAsync(Cts.Token) == false || id == null)
+        {
+            return;
+        }
+
+        Document = new ItemDataSource<Document, Guid>(
+            GetPrimaryKey: item => item.Id,
+            AfterSaveAction: item => NavigationManager.NavigateTo("/documents"),
+            AfterCancelAction: item => NavigationManager.NavigateTo("/documents"),
+            Create: null,
+            Read: iDocumentsApi.Read,
+            Update: null,
+            Delete: iDocumentsApi.Delete,
+            FileUpdate: null,
+            FileDelete: null
+        );
+
+        var documentId = Guid.Parse(id);
+        await Document.LoadModelAsync(documentId);
+
+        DocumentChunksResponse = await iDocumentChunksApi.ListByDocumentId(documentId, null, null, null, Cts.Token);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (Cts != null)
+        {
+            await Cts.CancelAsync();
+            Cts.Dispose();
+        }
+        if (Document != null)
+            await Document.DisposeAsync();
+    }
+}

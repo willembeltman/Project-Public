@@ -1,0 +1,127 @@
+﻿@page "/"
+
+<PageTitle>Home - DocumentenPortaal Rijksoverheid</PageTitle>
+
+<div class="container py-2">
+    <!-- Hero Welkomstsectie -->
+    <div class="p-5 mb-4 bg-primary-subtle rounded-3 border border-primary-subtle shadow-sm position-relative overflow-hidden">
+        <div class="position-absolute end-0 bottom-0 opacity-10 d-none d-lg-block" style="transform: translate(10%, 20%);">
+            <i class="bi bi-shield-shaded" style="font-size: 15rem;"></i>
+        </div>
+        <div class="container-fluid py-2 position-relative" style="z-index: 2;">
+            <span class="badge mb-2 px-3 py-2 rounded-pill tracking-wider text-uppercase small fw-bold"
+                  style="background-color: #f1eef4; color: #42145F; border: 1px solid #714F87;">
+                <i class="bi bi-cpu-fill me-1"></i> AI-Powered Kennisbeheer
+            </span>
+            <h1 class="display-5 fw-bold text-dark mb-2">Welkom bij het DocumentenPortaal</h1>
+            <p class="col-md-9 fs-5 text-secondary mb-4">
+                Efficiënt, intelligent en veilig toegang tot alle overheidsdocumenten. Maak gebruik van geavanceerde
+                <strong>Vector Search</strong> om documenten te doorzoeken op betekenis en context, in plaats van alleen losse trefwoorden.
+            </p>
+            <a class="btn btn-primary btn-lg px-4 fw-bold shadow-sm" href="/VectorSearch">
+                <i class="bi bi-search me-2"></i> Direct intelligent zoeken
+            </a>
+        </div>
+    </div>
+
+    <!-- Snelkoppelingen Grid -->
+    <h4 class="fw-bold text-dark mb-3"><i class="bi bi-grid-1x2-fill text-primary me-2"></i> Direct aan de slag</h4>
+    <div class="row row-cols-1 row-cols-md-3 g-4 mb-4">
+
+        <!-- Blok 1: Zoeken -->
+        <div class="col">
+            <div class="card h-100 border border-light-subtle shadow-sm card-hover">
+                <div class="card-body p-4 d-flex flex-column">
+                    <div class="text-primary fs-2 mb-2"><i class="bi bi-search-heart"></i></div>
+                    <h5 class="fw-bold text-dark card-title">Vector &amp; Hybride zoeken</h5>
+                    <p class="text-muted small flex-grow-1">
+                        Doorzoek de volledige database op basis van contextuele vragen of trefwoorden. Vind direct de exacte tekstfragmenten (chunks).
+                    </p>
+                    <a href="/VectorSearch" class="btn btn-sm btn-outline-primary mt-3 align-self-start fw-semibold">
+                        Naar zoeken <i class="bi bi-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Blok 2: Alle documenten -->
+        <div class="col">
+            <div class="card h-100 border border-light-subtle shadow-sm card-hover">
+                <div class="card-body p-4 d-flex flex-column">
+                    <div class="text-success fs-2 mb-2"><i class="bi bi-file-earmark-text"></i></div>
+                    <h5 class="fw-bold text-dark card-title">Documentenbibliotheek</h5>
+                    <p class="text-muted small flex-grow-1">
+                        Blader door de volledige lijst van beschikbare documenten in het portaal. Bekijk metadata, aanmaakdatums en bestandsnamen.
+                    </p>
+                    <a href="/DocumentOverview" class="btn btn-sm btn-outline-success mt-3 align-self-start fw-semibold">
+                        Bekijk bibliotheek <i class="bi bi-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Blok 3: Beheer -->
+        <div class="col">
+            <div class="card h-100 border border-light-subtle shadow-sm card-hover">
+                <div class="card-body p-4 d-flex flex-column">
+                    <div class="text-dark-emphasis fs-2 mb-2"><i class="bi bi-sliders"></i></div>
+                    <h5 class="fw-bold text-dark card-title">Systeembeheer</h5>
+                    <p class="text-muted small flex-grow-1">
+                        Upload nieuwe bestanden, bewerk bestaande tekstfragmenten (chunks) en beheer gebruikersrechten binnen de applicatie.
+                    </p>
+                    <a href="/Manage" class="btn btn-sm btn-outline-dark mt-3 align-self-start fw-semibold">
+                        Naar beheer <i class="bi bi-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Systeeminformatie / Statusbar voor de demo -->
+    <div class="alert alert-light border shadow-sm d-flex flex-wrap justify-content-between align-items-center p-3 small text-muted">
+        <div class="d-flex align-items-center gap-2">
+            <span class="position-relative d-inline-flex me-1">
+                <span class="animate-ping position-absolute inline-flex h-100 w-100 rounded-full bg-success opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-3 w-3 bg-success"></span>
+            </span>
+            <span>Verbinding met <strong>Vector Database</strong> operationeel</span>
+        </div>
+        <div class="mt-2 mt-md-0">
+            <span class="me-3"><i class="bi bi-hdd-network me-1"></i> gAPI Core v2.6</span>
+            <span><i class="bi bi-shield-check me-1"></i> Beveiligde sessie</span>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Subtiel effect voor een dynamisch gevoel tijdens de demo */
+    .card-hover {
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 .4rem .8rem rgba(0,0,0,.12) !important;
+        }
+
+    /* Groene pulse indicator voor de status */
+    .animate-ping {
+        animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+    }
+
+    @@keyframes ping {
+        75%, 100% {
+            transform: scale(2);
+            opacity: 0;
+        }
+    }
+
+    .h-3 {
+        height: 0.6rem;
+    }
+
+    .w-3 {
+        width: 0.6rem;
+    }
+</style>

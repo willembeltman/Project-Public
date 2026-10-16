@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\gAPI\gAPI.AutoWss.Server\gAPI.AutoWss.Server.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    <ProjectReference Include="..\gAPI\gAPI.Core.Server\gAPI.Core.Server.csproj" />
+    <ProjectReference Include="..\Rekenkamer.Infrastructure.Data\Rekenkamer.Infrastructure.Data.csproj" />
+    <ProjectReference Include="..\Rekenkamer.Infrastructure.Import\Rekenkamer.Infrastructure.Import.csproj" />
+    <ProjectReference Include="..\Rekenkamer.Shared\Rekenkamer.Shared.csproj" />
+  </ItemGroup>
+
+</Project>

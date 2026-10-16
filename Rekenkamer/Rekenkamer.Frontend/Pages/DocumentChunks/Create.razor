@@ -1,0 +1,89 @@
+@page "/documentchunks/create"
+@implements IAsyncDisposable
+@inject IDocumentsApi iDocumentsApi
+@inject IDocumentChunksApi iDocumentChunksApi
+@inject IClientAuthenticatedHttpClient ClientAuthenticatedHttpClient
+@inject IJSRuntime JS
+@inject NavigationManager NavigationManager
+
+<PageTitle>Create DocumentChunk</PageTitle>
+
+<AuthorizeView>
+    <Authorized Context="_">
+        <h3>Create DocumentChunk</h3>
+        <LoaderView Response="DocumentChunk?.Response">
+            <EditForm Model="DocumentChunk!.Model" OnValidSubmit="DocumentChunk.HandleValidSubmit">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <AutoDocumentChunkForm DataSource="DocumentChunk" DocumentIds="DocumentIds" />
+                <ErrorView Response="DocumentChunk.StatusResponse" />
+                <button id="create" class="btn btn-primary" type="submit">➕ Create</button>
+                <button id="cancel" class="btn btn-secondary ms-2" @onclick="DocumentChunk.Cancel">Cancel</button>
+            </EditForm>
+        </LoaderView>
+    </Authorized>
+    <NotAuthorized>
+        <RedirectToLogin />
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private CancellationTokenSource? Cts;
+    private ItemDataSource<DocumentChunk, Guid>? DocumentChunk;
+    private ListDataSource<Document, Guid>? DocumentIds;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Cts != null)
+        {
+            await Cts.CancelAsync();
+            Cts.Dispose();
+        }
+
+        Cts = new CancellationTokenSource();
+
+        if (await ClientAuthenticatedHttpClient.IsAuthenticatedAsync(Cts.Token) == false)
+            return;
+
+        DocumentChunk = new ItemDataSource<DocumentChunk, Guid>(
+            GetPrimaryKey: documentchunk => documentchunk.Id,
+            AfterSaveAction: documentchunk => NavigationManager.NavigateTo("/documentchunks"),
+            AfterCancelAction: documentchunk => NavigationManager.NavigateTo("/documentchunks"),
+            Create: iDocumentChunksApi.Create,
+            Read: null,
+            Update: null,
+            Delete: null,
+            FileUpdate: null,
+            FileDelete: null
+        );
+        DocumentChunk.NewModel();
+
+        DocumentIds = new ListDataSource<Document, Guid>(
+            JS,
+            StateHasChanged,
+            GetPrimaryKey: document => document.Id,
+            List: iDocumentsApi.List,
+            SetForeignKey: null,
+            AfterSaveAction: null,
+            AfterCancelAction: null,
+            Create: null,
+            Read: null,
+            Update: null,
+            Delete: null
+        );
+        await DocumentIds.InitialiseAsync();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (Cts != null)
+        {
+            await Cts.CancelAsync();
+            Cts.Dispose();
+        }
+        if (DocumentChunk != null) 
+            await DocumentChunk.DisposeAsync();
+        if (DocumentIds != null) 
+            await DocumentIds.DisposeAsync();
+    }
+}

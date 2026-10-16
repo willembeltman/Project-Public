@@ -1,0 +1,70 @@
+@page "/documents/create"
+@implements IAsyncDisposable
+@inject IDocumentsApi iDocumentsApi
+@inject IClientAuthenticatedHttpClient ClientAuthenticatedHttpClient
+@inject IJSRuntime JS
+@inject NavigationManager NavigationManager
+
+<PageTitle>Create Document</PageTitle>
+
+<AuthorizeView>
+    <Authorized Context="_">
+        <h3>Create Document</h3>
+        <LoaderView Response="Document?.Response">
+            <EditForm Model="Document!.Model" OnValidSubmit="Document.HandleValidSubmit">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <AutoDocumentForm DataSource="Document" />
+                <ErrorView Response="Document.StatusResponse" />
+                <button id="create" class="btn btn-primary" type="submit">➕ Create</button>
+                <button id="cancel" class="btn btn-secondary ms-2" @onclick="Document.Cancel">Cancel</button>
+            </EditForm>
+        </LoaderView>
+    </Authorized>
+    <NotAuthorized>
+        <RedirectToLogin />
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private CancellationTokenSource? Cts;
+    private ItemDataSource<Document, Guid>? Document;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Cts != null)
+        {
+            await Cts.CancelAsync();
+            Cts.Dispose();
+        }
+
+        Cts = new CancellationTokenSource();
+
+        if (await ClientAuthenticatedHttpClient.IsAuthenticatedAsync(Cts.Token) == false)
+            return;
+
+        Document = new ItemDataSource<Document, Guid>(
+            GetPrimaryKey: document => document.Id,
+            AfterSaveAction: document => NavigationManager.NavigateTo("/documents"),
+            AfterCancelAction: document => NavigationManager.NavigateTo("/documents"),
+            Create: iDocumentsApi.Create,
+            Read: null,
+            Update: null,
+            Delete: null,
+            FileUpdate: null,
+            FileDelete: null
+        );
+        Document.NewModel();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (Cts != null)
+        {
+            await Cts.CancelAsync();
+            Cts.Dispose();
+        }
+        if (Document != null) 
+            await Document.DisposeAsync();
+    }
+}

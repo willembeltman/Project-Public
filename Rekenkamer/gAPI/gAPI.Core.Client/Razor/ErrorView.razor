@@ -1,0 +1,94 @@
+@using gAPI.Core.Dtos
+@using gAPI.Core.Enums
+
+@if (Response != null && Response.Success == false)
+{
+    <div class="error-container" style="border:1px solid #e74c3c; background-color:#fdecea; color:#c0392b; padding:1.5rem; border-radius:8px; max-width:600px;">
+        <h2 style="margin-top:0;">An error has occurred</h2>
+        <p>Unfortunately, we were unable to complete your request due to the following issues:</p>
+        <ul style="list-style-type: disc; padding-left:1.5rem;">
+            @if (Response.Error == BaseResponseErrorEnum.ErrorGettingState)
+            {
+                <li>We could not retrieve the current state of the item.</li>
+            }
+            @if (Response.Error == BaseResponseErrorEnum.ErrorItemNotSupplied)
+            {
+                <li>No item was provided for this operation.</li>
+            }
+            @if (Response.Error == BaseResponseErrorEnum.ErrorNotAuthorized)
+            {
+                <li>You are not authorized to perform this action.</li>
+            }
+            @if (Response.Error == BaseResponseErrorEnum.ErrorItemNotFound)
+            {
+                <li>The requested item could not be found.</li>
+            }
+            @if (Response.Error == BaseResponseErrorEnum.ErrorAlreadyUsed)
+            {
+                <li>The item you are trying to use has already been used.</li>
+            }
+            @if (Response.Error == BaseResponseErrorEnum.ErrorAttachingState)
+            {
+                <li>The system was unable to attach the necessary state information.</li>
+            }
+            @if (Response.Error == BaseResponseErrorEnum.ErrorUpdatingState)
+            {
+                <li>There was a problem updating the state of the item.</li>
+            }
+            @if (Response.Error == BaseResponseErrorEnum.ErrorGettingData)
+            {
+                <li>There was a problem getting the data from the server.</li>
+            }
+            @if (Response.Error == BaseResponseErrorEnum.ErrorLockedOut)
+            {
+                <li>Your account has been temporarily locked out.</li>
+            }
+            @if (Response.Error == BaseResponseErrorEnum.ErrorCouldNotAuthenticateUser)
+            {
+                <li>We could not authenticate the user.</li>
+            }
+            @if (Response.Error == BaseResponseErrorEnum.ErrorEmailEmpty)
+            {
+                <li>The email address is required.</li>
+            }
+            @if (Response.Error == BaseResponseErrorEnum.ErrorUsernameEmpty)
+            {
+                <li>The username is required.</li>
+            }
+            @if (Response.Error == BaseResponseErrorEnum.ErrorPasswordEmpty)
+            {
+                <li>The password is required.</li>
+            }
+            @if (Response.Error == BaseResponseErrorEnum.ErrorPasswordsDoNotMatch)
+            {
+                <li>The passwords do not match.</li>
+            }
+            @if (Response.Error == BaseResponseErrorEnum.ErrorUsernameInUse)
+            {
+                <li>The username is already in use.</li>
+            }
+            @if (Response.Error == BaseResponseErrorEnum.ErrorEmailInUse)
+            {
+                <li>The email address is already in use.</li>
+            }
+            @if (Response.Error == BaseResponseErrorEnum.ErrorNotSpecified)
+            {
+                <li>An unspecified error occurred.</li>
+            }
+            @if (Response.Error == BaseResponseErrorEnum.ErrorInApp)
+            {
+                <li>An error occurred while processing the request in the application.</li>
+            }
+        </ul>
+        <p>Please review the above messages and try again. If the problem persists, contact support.</p>
+        <a id="backtohome" href="/" style="display:inline-block; margin-top:1rem; padding:0.5rem 1rem; background-color:#c0392b; color:white; text-decoration:none; border-radius:4px;">
+            ⬅ Back to Homepage
+        </a>
+    </div>
+}
+
+@code
+{
+    [Parameter, EditorRequired]
+    public BaseResponse? Response { get; set; }
+}

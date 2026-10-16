@@ -1,0 +1,33 @@
+﻿@using System.Reflection
+
+<CascadingAuthenticationState>
+    <Router AppAssembly="@typeof(App).Assembly" AdditionalAssemblies="@GetAdditionalAssemblies()">
+        <Found Context="routeData">
+            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+                <NotAuthorized>
+                    <p>You are not authorized. <a href="/account/login">Go to login page</a></p>
+                </NotAuthorized>
+                <Authorizing>
+                    <p>Checking authentication...</p>
+                </Authorizing>
+            </AuthorizeRouteView>
+        </Found>
+        <NotFound>
+            <LayoutView Layout="@typeof(MainLayout)">
+                <p>Sorry, nothing found here.</p>
+            </LayoutView>
+        </NotFound>
+    </Router>
+</CascadingAuthenticationState>
+
+@code {
+    private Assembly[] GetAdditionalAssemblies()
+    {
+        return [
+            typeof(Home).Assembly,
+            typeof(MainLayout).Assembly,
+            typeof(gAPI.Generated.Components.AutoUserForm).Assembly,
+            typeof(gAPI.Generated.Pages.Account.Index).Assembly
+        ];
+    }
+}

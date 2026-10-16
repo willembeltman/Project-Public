@@ -1,0 +1,278 @@
+﻿@page "/UploadFiles"
+@implements IAsyncDisposable
+@implements IUploadHub
+@inject IUploadApi uploadApi
+@inject IAuthenticatedHttpClient httpClient
+@inject IClientConnection clientConnection
+
+<PageTitle>Documenten Uploaden</PageTitle>
+
+<AuthorizeView>
+    <Authorized>
+        <div class="container-fluid py-4">
+
+            <!-- Header -->
+            <div class="d-flex align-items-center mb-4">
+                <div class="bg-success text-white p-2 rounded-3 me-3 shadow-sm">
+                    <i class="bi bi-cloud-arrow-up-fill fs-3"></i>
+                </div>
+                <div>
+                    <h3 class="mb-0 fw-bold">Documenten uploaden</h3>
+                    <small class="text-muted">Voeg nieuwe PDF-bestanden toe aan de vector database voor indexering</small>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <!-- Linkerkant: Upload Formulier -->
+                <div class="col-12 col-lg-5">
+                    <div class="card shadow-sm h-100 border-0 bg-white">
+                        <div class="card-body p-4 d-flex flex-column justify-content-between">
+
+                            <div>
+                                <!-- Stap 1: Bestand Kiezen -->
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold text-secondary mb-2">
+                                        <span class="badge bg-primary me-2">1</span> Selecteer PDF-bestanden:
+                                    </label>
+                                    <div class="p-4 border border-2 border-dashed border-secondary-subtle rounded-3 bg-light text-center position-relative card-hover">
+                                        <i class="bi bi-file-earmark-pdf text-danger display-4 d-block mb-2"></i>
+                                        <InputFile @key="inputFileId" OnChange="LoadFiles" multiple class="form-control" accept=".pdf" />
+                                        <small class="text-muted d-block mt-2">Maximaal 8MB per bestand</small>
+                                    </div>
+                                    @if (SelectedFiles.Any())
+                                    {
+                                        <div class="alert alert-info py-2 px-3 mt-2 mb-0 rounded-3 small d-flex align-items-center gap-2">
+                                            <i class="bi bi-check-circle-fill text-info"></i>
+                                            <span><strong>@SelectedFiles.Count</strong> bestand(en) gereed voor verzending.</span>
+                                        </div>
+                                    }
+                                </div>
+
+                                <!-- Stap 2: Relatief Pad -->
+                                <div class="mb-4">
+                                    <label for="relPath" class="form-label fw-bold text-secondary mb-2">
+                                        <span class="badge bg-primary me-2">2</span> Relatief opslagpad (optioneel):
+                                    </label>
+                                    <div class="input-group shadow-sm">
+                                        <span class="input-group-text bg-body-secondary text-muted"><i class="bi bi-folder-fill"></i></span>
+                                        <input type="text" id="relPath" class="form-control" @bind-value="RelativePath" placeholder="bijv. /beleid/2026" />
+                                    </div>
+                                    <div class="form-text text-muted small">Bepaalt de virtuele mappenstructuur binnen het portaal.</div>
+                                </div>
+                            </div>
+
+                            <!-- Stap 3: Upload Actieknop -->
+                            <div class="mt-4">
+                                <button class="btn btn-success btn-lg w-100 py-2.5 fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2"
+                                        @onclick="UploadFile"
+                                        disabled="@(!SelectedFiles.Any())">
+                                    <i class="bi bi-cloud-upload-fill fs-5"></i> Start verwerking &amp; indexering
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rechterkant: Realtime Status Monitor (De opschep-terminal!) -->
+                <div class="col-12 col-lg-7">
+                    <div class="card shadow-sm h-100 border-0 bg-dark text-light overflow-hidden">
+                        <!-- Terminal Header -->
+                        <div class="card-header bg-dark border-secondary d-flex justify-content-between align-items-center py-3">
+                            <div class="d-flex align-items-center gap-2">
+                                <!-- Gekleurde MacOS style bolletjes voor het terminal gevoel -->
+                                <span class="rounded-circle bg-danger" style="width:12px; height:12px; display:inline-block;"></span>
+                                <span class="rounded-circle bg-warning" style="width:12px; height:12px; display:inline-block;"></span>
+                                <span class="rounded-circle bg-success me-2" style="width:12px; height:12px; display:inline-block;"></span>
+                                <h6 class="mb-0 text-white-50 font-monospace small tracking-wider">LIVE PROCESSING MONITOR</h6>
+                            </div>
+                            <div class="d-flex align-items-center gap-2 small text-success font-monospace">
+                                <span class="position-relative d-inline-flex">
+                                    <span class="animate-ping position-absolute inline-flex h-100 w-100 rounded-full bg-success opacity-75"></span>
+                                    <span class="relative inline-flex rounded-full bg-success" style="width:8px; height:8px;"></span>
+                                </span>
+                                <span style="font-size: 0.75rem;">CONNECTED</span>
+                            </div>
+                        </div>
+
+                        <!-- Terminal Body -->
+                        <div class="card-body p-3 font-monospace bg-black overflow-y-auto border-top border-secondary-subtle"
+                             style="height: 380px; font-size: 0.85rem; line-height: 1.5; color: #39ff14;">
+
+                            @if (!LogLines.Any())
+                            {
+                                <div class="text-muted italic py-2">Wachtend op invoer of serveractiviteit...</div>
+                            }
+                            else
+                            {
+                                @foreach (var log in LogLines)
+                                {
+                                    // Geef fouten een rode kleur en succes/klaar een blauwe of witte kleur
+                                    var isError = log.content.Contains("Fout", StringComparison.OrdinalIgnoreCase);
+                                    var isSuccess = log.content.Contains("Succes", StringComparison.OrdinalIgnoreCase) || log.content.Contains("Klaar", StringComparison.OrdinalIgnoreCase);
+
+                                    <div class="mb-1 d-flex align-items-start gap-2">
+                                        <span class="text-secondary select-none" style="font-size: 0.5rem;">@(log.index).@(log.index2)&gt;</span>
+                                        <span class="@(isError ? "text-danger" : isSuccess ? "text-info fw-bold" : "text-light")">@log.content</span>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <RedirectToLogin />
+    </NotAuthorized>
+</AuthorizeView>
+
+<style>
+    /* Fijne interactie op de upload-zone */
+    .border-dashed {
+        border-style: dashed !important;
+    }
+
+    .card-hover {
+        transition: background-color 0.2s ease;
+    }
+
+        .card-hover:hover {
+            background-color: var(--bs-secondary-bg) !important;
+        }
+
+    /* Live pulse indicator */
+    .animate-ping {
+        animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+    }
+
+    @@keyframes ping {
+        75%, 100% {
+            transform: scale(2.5);
+            opacity: 0;
+        }
+    }
+</style>
+
+@code {
+    private CancellationTokenSource? Cts;
+    private List<(long index, long index2, string content)> LogLines = new();
+    public long CurrentIndex;
+    public long CurrentIndex2;
+
+    private string RelativePath = string.Empty;
+
+    private List<IBrowserFile> SelectedFiles = new();
+    private const long MaxFileSize = 32 * 1024 * 1024;
+    private Guid inputFileId = Guid.NewGuid();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Cts != null)
+        {
+            await Cts.CancelAsync();
+            Cts.Dispose();
+        }
+
+        Cts = new CancellationTokenSource();
+
+        if (await httpClient.IsAuthenticatedAsync(Cts.Token) == false)
+            return;
+
+        await clientConnection.SubscribeAsync(this, Cts.Token);
+
+        uploadApi.GetStatus();
+    }
+
+    private void LoadFiles(InputFileChangeEventArgs e)
+    {
+        SelectedFiles = e.GetMultipleFiles(255).ToList();
+        UpdateStatus($"{SelectedFiles.Count} bestand(en) geselecteerd.");
+    }
+
+    public async Task UploadFile()
+    {
+        if (Cts == null || !SelectedFiles.Any())
+            return;
+
+        try
+        {
+            foreach (var file in SelectedFiles)
+            {
+                UpdateStatus($"Bezig met uploaden van: {file.Name}...");
+
+                using var stream = file.OpenReadStream(MaxFileSize);
+                var bytes = new byte[file.Size];
+                await stream.ReadExactlyAsync(bytes, 0, (int)file.Size, Cts.Token);
+
+                var uploadFileModel = new UploadFile(file.Name, RelativePath, bytes);
+                await uploadApi.UploadPdf(uploadFileModel, Cts.Token);
+
+                UpdateStatus($"Succesvol geüpload: {file.Name}");
+            }
+
+            SelectedFiles.Clear();
+            inputFileId = Guid.NewGuid();
+            UpdateStatus($"Klaar! Selectie is geleegd.");
+        }
+        catch (OperationCanceledException)
+        {
+            UpdateStatus($"Upload geannuleerd.");
+        }
+        catch (Exception ex)
+        {
+            UpdateStatus($"Fout tijdens uploaden: {ex.Message}");
+        }
+    }
+
+    public void UpdateStatus(string line)
+    {
+        var index = CurrentIndex;
+        // Voeg de nieuwe regel toe aan het begin van de lijst (index 0)
+        LogLines.Add(new(CurrentIndex, ++CurrentIndex2, line));
+        LogLines = LogLines
+            .OrderByDescending(a => a.index)
+            .ThenByDescending(a => a.index2)
+            .ToList();
+
+        // Verwijder de oudste regel als de lijst langer is dan 50
+        if (LogLines.Count > 50)
+        {
+            LogLines.RemoveAt(LogLines.Count - 1);
+        }
+
+        StateHasChanged();
+    }
+
+    public void UpdateStatus(long index, string line)
+    {
+        // Voeg de nieuwe regel toe aan het begin van de lijst (index 0)
+        LogLines.Add(new(index, CurrentIndex2, line));
+        LogLines = LogLines
+            .OrderByDescending(a => a.index)
+            .ThenByDescending(a => a.index2)
+            .ToList();
+        CurrentIndex = index;
+
+        // Verwijder de oudste regel als de lijst langer is dan 50
+        if (LogLines.Count > 50)
+        {
+            LogLines.RemoveAt(LogLines.Count - 1);
+        }
+
+        StateHasChanged();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (Cts != null)
+        {
+            await Cts.CancelAsync();
+            Cts.Dispose();
+        }
+
+        await clientConnection.UnsubscribeAsync(this, default);
+    }
+}

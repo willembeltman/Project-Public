@@ -1,0 +1,96 @@
+﻿@page "/Manage"
+
+<PageTitle>Beheer &amp; Bewerken</PageTitle>
+
+<AuthorizeView>
+    <Authorized>
+        <div class="container-fluid py-2">
+            <!-- Header met actieknop aan de rechterkant -->
+            <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+                <div>
+                    <h3 class="mb-1 fw-bold text-dark">Systeembeheer</h3>
+                    <p class="text-muted mb-0">Beheer de documenten, tekstsegmenten en gebruikersrechten binnen het portaal.</p>
+                </div>
+                <div>
+                    <a class="btn btn-success px-4 py-2 shadow-sm d-flex align-items-center gap-2" href="/UploadFiles">
+                        <i class="bi bi-cloud-upload-fill fs-5"></i> Nieuw document uploaden
+                    </a>
+                </div>
+            </div>
+
+            <!-- Dashboard Grid -->
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+
+                <!-- Kaart 1: Documenten -->
+                <div class="col">
+                    <div class="card h-100 border border-light-subtle shadow-sm transition-card">
+                        <div class="card-body d-flex flex-column p-4">
+                            <div class="bg-primary-subtle text-primary rounded-3 p-3 d-inline-block mb-3 align-self-start">
+                                <i class="bi bi-file-earmark-text-fill fs-3"></i>
+                            </div>
+                            <h5 class="card-title fw-bold text-dark">Documenten beheren</h5>
+                            <p class="card-text text-muted flex-grow-1">
+                                Bekijk de geüploade bestanden, wijzig metadata of verwijder documenten die niet langer relevant zijn.
+                            </p>
+                            <a href="/Documents" class="btn btn-outline-primary w-100 mt-3 d-flex align-items-center justify-content-center gap-2">
+                                Documenten openen <i class="bi bi-arrow-right-short fs-5"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Kaart 2: Document Chunks / Segmenten -->
+                <div class="col">
+                    <div class="card h-100 border border-light-subtle shadow-sm transition-card">
+                        <div class="card-body d-flex flex-column p-4">
+                            <div class="bg-info-subtle text-info rounded-3 p-3 d-inline-block mb-3 align-self-start">
+                                <i class="bi bi-database-fill-gear fs-3"></i>
+                            </div>
+                            <h5 class="card-title fw-bold text-dark">Segmenten bewerken</h5>
+                            <p class="card-text text-muted flex-grow-1">
+                                Bekijk en bewerk de losse tekstblokken (chunks) die door de AI gebruikt worden voor de vector search.
+                            </p>
+                            <a href="/DocumentChunks" class="btn btn-outline-info w-100 mt-3 d-flex align-items-center justify-content-center gap-2 text-dark">
+                                Segmenten openen <i class="bi bi-arrow-right-short fs-5"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Kaart 3: Gebruikers -->
+                <div class="col">
+                    <div class="card h-100 border border-light-subtle shadow-sm transition-card">
+                        <div class="card-body d-flex flex-column p-4">
+                            <div class="bg-warning-subtle text-warning-emphasis rounded-3 p-3 d-inline-block mb-3 align-self-start">
+                                <i class="bi bi-people-fill fs-3"></i>
+                            </div>
+                            <h5 class="card-title fw-bold text-dark">Gebruikersbeheer</h5>
+                            <p class="card-text text-muted flex-grow-1">
+                                Beheer de accounts, wijzig rollen en controleer wie toegang heeft tot het DocumentenPortaal.
+                            </p>
+                            <a href="/Users" class="btn btn-outline-warning w-100 mt-3 d-flex align-items-center justify-content-center gap-2 text-dark">
+                                Gebruikers openen <i class="bi bi-arrow-right-short fs-5"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <RedirectToLogin />
+    </NotAuthorized>
+</AuthorizeView>
+
+<style>
+    /* Subtiel effect voor de demo om het net wat levendiger te maken */
+    .transition-card {
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+
+        .transition-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 .5rem 1rem rgba(0,0,0,.15) !important;
+        }
+</style>

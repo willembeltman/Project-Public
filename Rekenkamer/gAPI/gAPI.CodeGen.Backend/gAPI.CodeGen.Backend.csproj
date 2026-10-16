@@ -1,0 +1,72 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+
+		<Version>0.0.3-beta</Version>
+
+		<Authors>Willem Beltman</Authors>
+		<Company>Willem Beltman</Company>
+
+		<PackageId>gAPI.CodeGen.Backend</PackageId>
+
+		<Title>
+			gAPI.CodeGen.Backend – Backend domain &amp; CRUD service generator for gAPI
+		</Title>
+
+		<Description>
+			gAPI.CodeGen.Backend is the primary backend generator of the gAPI platform.
+			It generates your complete domain layer, shared DTOs, interfaces, CRUD services and mappings
+			directly from your Entity Framework Core DbContext.
+
+			Based on reflection and Roslyn analyzers, it scans your database model and automatically produces:
+			- Domain models
+			- Shared DTOs and response DTOs
+			- Service and repository interfaces
+			- CRUD handlers and services
+			- Mapping layers
+			- Core service contracts
+
+			Your DbContext becomes the single source of truth.
+			Run the generator — get a fully wired backend core.
+		</Description>
+
+		<PackageTags>
+			backend;crud;codegen;generator;efcore;domain;microservice;api;rpc;gapi;server
+		</PackageTags>
+
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+
+		<PackageProjectUrl>https://github.com/willembeltman/gAPI</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/willembeltman/gAPI</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+
+		<IncludeSymbols>false</IncludeSymbols>
+		<IncludeSource>false</IncludeSource>
+
+		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+	</PropertyGroup>
+
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.12" />
+		<PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="10.0.12" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+	  <ProjectReference Include="..\gAPI.Core.Server\gAPI.Core.Server.csproj" />
+	  <ProjectReference Include="..\gAPI.Core\gAPI.Core.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Update="README.md">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+	</ItemGroup>
+
+</Project>

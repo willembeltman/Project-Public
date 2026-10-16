@@ -1,0 +1,71 @@
+@page "/documents"
+@implements IAsyncDisposable
+@inject IDocumentsApi list
+@inject IClientAuthenticatedHttpClient ClientAuthenticatedHttpClient
+@inject IJSRuntime JS
+
+<PageTitle>Documents</PageTitle>
+
+<AuthorizeView>
+    <Authorized>
+        <h3>Documents</h3>
+        <LoaderView Response="Documents?.Response">
+            @if (Documents!.Response!.CanCreate)
+            {
+                <a id="createnew" href="/documents/create">➕ Create a new document</a>
+            }
+            <AutoDocumentList DataSource="Documents" />
+        </LoaderView>
+    </Authorized>
+    <NotAuthorized>
+        <RedirectToLogin />
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private CancellationTokenSource? Cts;
+    private ListDataSource<Document, Guid>? Documents;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Cts != null)
+        {
+            await Cts.CancelAsync();
+            Cts.Dispose();
+        }
+
+        Cts = new CancellationTokenSource();
+
+        if (await ClientAuthenticatedHttpClient.IsAuthenticatedAsync(Cts.Token) == false)
+        {
+            return;
+        }
+
+        Documents = new ListDataSource<Document, Guid>(
+            JS,
+            StateHasChanged,
+            GetPrimaryKey: document => document.Id,
+            List: list.List,
+            SetForeignKey: null,
+            AfterSaveAction: null,
+            AfterCancelAction: null,
+            Create: null,
+            Read: null,
+            Update: null,
+            Delete: null
+        );
+
+        await Documents.InitialiseAsync();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (Cts != null)
+        {
+            await Cts.CancelAsync();
+            Cts.Dispose();
+        }
+        if (Documents != null)
+            await Documents.DisposeAsync();
+    }
+}

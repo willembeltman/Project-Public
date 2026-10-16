@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Rekenkamer.Infrastructure.Data\Rekenkamer.Infrastructure.Data.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="PdfPig" Version="0.1.16" />
+		<PackageReference Include="Tesseract" Version="5.2.0" />
+		<PackageReference Include="PdfPig.Rendering.Skia" Version="0.1.16.4" />
+		<PackageReference Include="Microsoft.SemanticKernel.Core" Version="1.81.0" />
+		<PackageReference Include="Pgvector" Version="0.3.2" />
+	</ItemGroup>
+
+</Project>

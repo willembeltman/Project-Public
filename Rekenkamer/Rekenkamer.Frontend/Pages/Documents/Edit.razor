@@ -1,0 +1,75 @@
+@page "/documents/edit/{id?}"
+@implements IAsyncDisposable
+@inject IDocumentsApi iDocumentsApi
+@inject IClientAuthenticatedHttpClient ClientAuthenticatedHttpClient
+@inject IJSRuntime JS
+@inject NavigationManager NavigationManager
+
+<PageTitle>Edit Document</PageTitle>
+
+<AuthorizeView>
+    <Authorized Context="_">
+        <h3>Edit Document</h3>
+        <LoaderView Response="Document?.Response">
+            <EditForm Model="Document!.Model" OnValidSubmit="Document.HandleValidSubmit">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <AutoDocumentForm DataSource="Document" />
+                <ErrorView Response="Document.StatusResponse" />
+                <button id="save" class="btn btn-primary" type="submit">💾 Save</button>
+                <button id="cancel" class="btn btn-secondary ms-2" @onclick="Document.Cancel">Cancel</button>
+            </EditForm>
+        </LoaderView>
+    </Authorized>
+    <NotAuthorized>
+        <RedirectToLogin />
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    [Parameter]
+    public string? id { get; set; }
+
+    private CancellationTokenSource? Cts;
+    private ItemDataSource<Document, Guid>? Document;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Cts != null)
+        {
+            await Cts.CancelAsync();
+            Cts.Dispose();
+        }
+
+        Cts = new CancellationTokenSource();
+
+        if (await ClientAuthenticatedHttpClient.IsAuthenticatedAsync(Cts.Token) == false || id == null)
+        {
+            return;
+        }
+
+        Document = new ItemDataSource<Document, Guid>(
+            GetPrimaryKey: e => e.Id,
+            AfterSaveAction: e => NavigationManager.NavigateTo("/documents"),
+            AfterCancelAction: e => NavigationManager.NavigateTo("/documents"),
+            Create: iDocumentsApi.Create,
+            Read: iDocumentsApi.Read,
+            Update: iDocumentsApi.Update,
+            Delete: iDocumentsApi.Delete,
+            FileUpdate: null,
+            FileDelete: null
+        );
+        await Document.LoadModelAsync(Guid.TryParse(id, out var guidId) ? guidId : null);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (Cts != null)
+        {
+            await Cts.CancelAsync();
+            Cts.Dispose();
+        }
+        if (Document != null) 
+            await Document.DisposeAsync();
+    }
+}

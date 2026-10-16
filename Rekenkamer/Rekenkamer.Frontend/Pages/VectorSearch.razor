@@ -1,0 +1,290 @@
+@page "/VectorSearch"
+@implements IAsyncDisposable
+@inject IVectorSearchApi DocumentsVectorApi
+@inject IDocumentsApi DocumentsApi
+@inject IDocumentChunksApi DocumentChunksApi
+@inject IAuthenticatedHttpClient HttpClient
+@inject IJSRuntime JS
+
+<PageTitle>Vector zoeken</PageTitle>
+
+<AuthorizeView>
+    <Authorized>
+        <div class="container-fluid py-4">
+            <!-- Header -->
+            <div class="d-flex align-items-center mb-4">
+                <div class="bg-primary text-white p-2 rounded-3 me-3">
+                    <i class="bi bi-cpu-fill fs-3"></i>
+                </div>
+                <div>
+                    <h3 class="mb-0 fw-bold">Vector zoeken</h3>
+                    <small class="text-muted">Doorzoek documenten op basis van semantische context of trefwoorden</small>
+                </div>
+            </div>
+
+            <!-- Zoeksectie -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-body bg-light p-4">
+
+                    <!-- Nieuwe regel: Grote, opvallende selectieknoppen BOVEN het tekstveld -->
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-secondary d-block mb-2">Kies de zoekstrategie:</label>
+                        <div class="btn-group w-100 w-md-auto shadow-sm" role="group" aria-label="Zoekmethode">
+
+                            <!-- Knop 1: Standaard Vector Search -->
+                            <input type="radio"
+                                   class="btn-check"
+                                   name="searchMethod"
+                                   id="methodVector"
+                                   autocomplete="off"
+                                   disabled="@IsSearching"
+                                   checked="@(!HybridSearch)"
+                                   @onchange="() => HybridSearch = false" />
+                            <label class="btn btn-outline-primary px-4 py-2.5 d-flex align-items-center justify-content-center gap-2 fw-semibold" for="methodVector">
+                                <i class="bi bi-bezier2 fs-5"></i> Standaard Vector Search
+                            </label>
+
+                            <!-- Knop 2: Hybrid Search -->
+                            <input type="radio"
+                                   class="btn-check"
+                                   name="searchMethod"
+                                   id="methodHybrid"
+                                   autocomplete="off"
+                                   disabled="@IsSearching"
+                                   checked="@(HybridSearch)"
+                                   @onchange="() => HybridSearch = true" />
+                            <label class="btn btn-outline-primary px-4 py-2.5 d-flex align-items-center justify-content-center gap-2 fw-semibold" for="methodHybrid">
+                                <i class="bi bi-lightning-charge-fill fs-5 text-warning"></i> Hybrid Search
+                                <span class="badge bg-warning text-dark border border-warning-subtle ms-1 small">Aanbevolen</span>
+                            </label>
+
+                        </div>
+                    </div>
+
+                    <!-- Textarea -->
+                    <div class="form-group mb-3">
+                        <label for="searchQuery" class="form-label fw-semibold text-secondary">Zoekopdracht of context prompt:</label>
+                        <textarea id="searchQuery"
+                                  class="form-control shadow-inner"
+                                  rows="3"
+                                  disabled="@IsSearching"
+                                  placeholder="Typ hier je zoekvraag... (Druk op Ctrl + Enter om te zoeken)"
+                                  @bind="Query"
+                                  @onkeydown="HandleKeyDown">
+                        </textarea>
+                    </div>
+
+                    <!-- Actieknop onderkant rechts -->
+                    <div class="d-flex justify-content-end">
+                        @if (IsSearching)
+                        {
+                            <button class="btn btn-primary btn-lg px-5 d-flex align-items-center gap-2 shadow-sm fw-bold" disabled>
+                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                Bezig met zoeken...
+                            </button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-primary btn-lg px-5 d-flex align-items-center gap-2 shadow-sm fw-bold" @onclick="DoSearch">
+                                <i class="bi bi-search"></i> Zoeken
+                            </button>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Foutmeldingen -->
+            @if (Exception != null)
+            {
+                <div class="alert alert-danger d-flex align-items-center shadow-sm" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill me-2 fs-5"></i>
+                    <div>
+                        <strong>Fout bij het zoeken:</strong> @Exception.Message
+                    </div>
+                </div>
+            }
+
+            <!-- Laadscherm / "Bezig met zoeken" animatie -->
+            @if (IsSearching)
+            {
+                <div class="card shadow-sm border border-light-subtle">
+                    <div class="card-body text-center py-5 my-3">
+                        <div class="position-relative d-inline-flex mb-4">
+                            <!-- Pulserende AI-icoon animatie -->
+                            <div class="animate-pulse-bg position-absolute bg-primary opacity-10 rounded-circle" style="width: 80px; height: 80px; top: -16px; left: -16px;"></div>
+                            <div class="bg-primary-subtle text-primary rounded-circle p-3 position-relative" style="z-index: 2;">
+                                <i class="bi bi-cpu-fill fs-1 animate-pulse-icon"></i>
+                            </div>
+                        </div>
+                        <h5 class="fw-bold text-dark mb-1">AI model raadplegen...</h5>
+                        <p class="text-muted small mx-auto mb-0" style="max-width: 400px;">
+                            De vector database wordt doorzocht op semantische overeenkomsten en tekstsegmenten (chunks) worden samengesteld.
+                        </p>
+                    </div>
+                </div>
+            }
+            else if (Searched)
+            {
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white py-3">
+                        <h5 class="mb-0 text-primary fw-semibold">Zoekresultaten</h5>
+                    </div>
+                    <div class="card-body">
+                        <LoaderView Response="Documents?.Response">
+                            <VectorSearchList DataSource="Documents" />
+                        </LoaderView>
+                    </div>
+                </div>
+            }
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <RedirectToLogin />
+    </NotAuthorized>
+</AuthorizeView>
+
+<style>
+    /* Prachtige CSS animaties voor het laadscherm */
+    .animate-pulse-bg {
+        animation: pulseBg 2s infinite ease-in-out;
+    }
+
+    .animate-pulse-icon {
+        display: inline-block;
+        animation: pulseIcon 2s infinite ease-in-out;
+    }
+
+    @@keyframes pulseBg {
+        0%, 100% {
+            transform: scale(1);
+            opacity: 0.1;
+        }
+
+        50% {
+            transform: scale(1.4);
+            opacity: 0.2;
+        }
+    }
+
+    @@keyframes pulseIcon {
+        0%, 100% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.1);
+        }
+    }
+</style>
+
+@code {
+    private CancellationTokenSource? Cts;
+    private string Query = string.Empty;
+    private bool Searched;
+    private bool IsSearching;
+    private BaseListResponseT<DocumentChunk>? DocumentChunksResponse;
+
+    private Exception? Exception;
+    private ListDataSource<VectorSearchResult, Guid>? Documents;
+    private bool HybridSearch = true;
+
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter" && e.CtrlKey && !IsSearching)
+        {
+            await DoSearch();
+        }
+    }
+
+    private async Task DoSearch()
+    {
+        if (string.IsNullOrWhiteSpace(Query) || IsSearching) return;
+
+        if (Cts != null)
+        {
+            await Cts.CancelAsync();
+            Cts.Dispose();
+        }
+        if (Documents != null)
+        {
+            await Documents.DisposeAsync();
+            Documents = null;
+        }
+
+        Cts = new CancellationTokenSource();
+
+        try
+        {
+            // Start laadstatus
+            IsSearching = true;
+            Searched = false;
+            Exception = null;
+            StateHasChanged();
+
+            Documents = new ListDataSource<VectorSearchResult, Guid>(
+                JS,
+                StateHasChanged,
+                GetPrimaryKey: document => document.Document.Id,
+                List: async (skip, take, orderby, ct) =>
+                {
+                    if (skip == null || take == null)
+                        return new BaseListResponseT<VectorSearchResult>()
+                        {
+                            Error = gAPI.Core.Enums.BaseResponseErrorEnum.ErrorGettingData
+                        };
+
+                    var resultsTask =
+                        HybridSearch
+                        ? DocumentsVectorApi.HybridSearchAsync(Query, skip.Value, take.Value, ct)
+                        : DocumentsVectorApi.VectorSearchAsync(Query, skip.Value, take.Value, ct);
+                    var results = await resultsTask;
+
+                    Searched = true;
+                    Exception = null;
+                    IsSearching = false;
+                    StateHasChanged();
+
+                    return results;
+                },
+                SetForeignKey: null,
+                AfterSaveAction: null,
+                AfterCancelAction: null,
+                Create: null,
+                Read: null,
+                Update: null,
+                Delete: null
+            )
+            {
+                Take = 3
+            };
+            await Documents.InitialiseAsync();
+        }
+        catch (Exception ex)
+        {
+            DocumentChunksResponse = new()
+            {
+                Error = gAPI.Core.Enums.BaseResponseErrorEnum.ErrorGettingData
+            };
+            Exception = ex;
+        }
+        finally
+        {
+            Searched = true;
+            IsSearching = false;
+            Exception = null;
+            StateHasChanged();
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (Cts != null)
+        {
+            await Cts.CancelAsync();
+            Cts.Dispose();
+        }
+
+        if (Documents != null)
+            await Documents.DisposeAsync();
+    }
+}

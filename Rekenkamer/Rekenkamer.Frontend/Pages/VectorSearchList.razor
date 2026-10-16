@@ -1,0 +1,93 @@
+﻿@if (DataSource == null || DataSource.Items.Count == 0)
+{
+    @if (DataSource == null || DataSource.HasMore == false)
+    {
+        <div class="text-center py-5 text-muted">
+            <i class="bi bi-folder-x fs-1 d-block mb-2"></i>
+            <span>Geen documenten gevonden die matchen met de zoekopdracht.</span>
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-5 text-muted">
+            <div class="spinner-border text-primary mb-2" role="status"></div>
+            <span class="d-block">Resultaten ophalen, even geduld...</span>
+        </div>
+    }
+}
+else
+{
+    <div id="@(Id)">
+        <div class="row row-cols-1 g-4">
+            @foreach (var item in DataSource.Items)
+            {
+                <div class="col">
+                    <div class="card border border-light-subtle shadow-sm h-100">
+                        <!-- Card Header met Metadata -->
+                        <div class="card-header bg-light border-bottom d-flex flex-wrap justify-content-between align-items-center gap-2 py-3">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="bi bi-file-earmark-text text-primary fs-5"></i>
+                                <h6 class="mb-0 fw-bold text-dark">@(item.Model!.Document.FullName)</h6>
+                            </div>
+                            <div class="d-flex gap-3 text-muted small">
+                                <span><i class="bi bi-graph-up me-1"></i> Match: <strong class="text-success">@(item.Model!.Distance.ToString("F4"))</strong></span>
+                                <span><i class="bi bi-calendar3 me-1"></i> @(item.Model!.Document.CreatedAt.ToString("g"))</span>
+                            </div>
+                        </div>
+
+                        <!-- Card Body met Inhoud -->
+                        <div class="card-body p-4">
+                            <!-- Gevonden fragment -->
+                            <div class="mb-4 p-3 bg-warning-subtle border-start border-warning border-3 rounded-end">
+                                <h6 class="text-warning-emphasis fw-bold mb-2 small text-uppercase tracking-wider">
+                                    <i class="bi bi-quote me-1"></i> Best herkenbare fragment (Matching part)
+                                </h6>
+                                <p class="mb-0 lh-base">@item.Model.MatchingDocumentChunk.Content</p>
+                            </div>
+
+                            <!-- Volledige document view -->
+                            <div>
+                                <h6 class="text-secondary fw-semibold mb-2 small text-uppercase tracking-wider">
+                                    <i class="bi bi-file-text me-1"></i> Volledige document context
+                                </h6>
+                                <div class="bg-body-tertiary p-3 rounded-3 border border-secondary-subtle overflow-auto"
+                                     style="max-height: 40vh; font-family: var(--bs-font-sans-serif);">
+                                    @foreach (var chunk in item.Model.DocumentChunks.OrderBy(a => a.ChunkIndex))
+                                    {
+                                        // Highlight de chunk als deze overeenkomt met de matching chunk
+                                        bool isMatch = chunk.Id == item.Model.MatchingDocumentChunk.Id;
+                                        <p class="mb-3 lh-base p-1 rounded @(isMatch ? "bg-warning-subtle fw-semibold" : "")" style="white-space: pre-line;">
+                                            @chunk.Content
+                                        </p>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        @if (DataSource.HasMore)
+        {
+            <div id="@(DataSource.SentinelId)" class="sentinel text-center my-4 py-2 text-muted bg-light rounded-3 border border-dashed">
+                <div class="spinner-border spinner-border-sm me-2 text-primary" role="status"></div>
+                Meer resultaten laden...
+            </div>
+        }
+    </div>
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public ListDataSource<VectorSearchResult, Guid>? DataSource { get; set; }
+
+    [Parameter] public string Id { get; set; } = $"documentList_{Guid.NewGuid()}";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (DataSource == null)
+            return;
+        await DataSource.AfterRenderAsync();
+    }
+}

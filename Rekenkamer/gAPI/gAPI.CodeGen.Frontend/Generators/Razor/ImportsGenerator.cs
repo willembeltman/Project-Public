@@ -1,0 +1,38 @@
+﻿using gAPI.CodeGen.Frontend.Models.Configs;
+
+namespace gAPI.CodeGen.Frontend.Generators.Razor;
+
+public class ImportsGenerator : BaseGenerator
+{
+    public ImportsGenerator(FrontendConfig config)
+    {
+        Config = config;
+
+        Name = "_Imports";
+
+        Directory = config.RootDirectory;
+        Namespace = config.RootNamespace;
+
+        FileName = $"_Imports.razor";
+    }
+
+    public FrontendConfig Config { get; }
+
+    public void GenerateCode()
+    {
+        Reg("Microsoft.AspNetCore.Components.Web");
+        Reg("Microsoft.AspNetCore.Components.Forms");
+        Reg("Microsoft.AspNetCore.Components.Routing");
+        Reg("Microsoft.AspNetCore.Components.Authorization");
+        Reg("gAPI.Core.Interfaces");
+        Reg("gAPI.Core.Dtos");
+        Reg("gAPI.Core.Client");
+        Reg("gAPI.Generated");
+        //Reg(Config.ComponentsNamespace);
+        //Reg(Config.HelpersNamespace);
+
+        Code = GetRazorNamespacesCode();
+
+        Save(Config.OverwriteImports);
+    }
+}

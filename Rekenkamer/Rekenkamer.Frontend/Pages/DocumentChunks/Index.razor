@@ -1,0 +1,71 @@
+@page "/documentchunks"
+@implements IAsyncDisposable
+@inject IDocumentChunksApi list
+@inject IClientAuthenticatedHttpClient ClientAuthenticatedHttpClient
+@inject IJSRuntime JS
+
+<PageTitle>DocumentChunks</PageTitle>
+
+<AuthorizeView>
+    <Authorized>
+        <h3>DocumentChunks</h3>
+        <LoaderView Response="DocumentChunks?.Response">
+            @if (DocumentChunks!.Response!.CanCreate)
+            {
+                <a id="createnew" href="/documentchunks/create">➕ Create a new documentchunk</a>
+            }
+            <AutoDocumentChunkList DataSource="DocumentChunks" />
+        </LoaderView>
+    </Authorized>
+    <NotAuthorized>
+        <RedirectToLogin />
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private CancellationTokenSource? Cts;
+    private ListDataSource<DocumentChunk, Guid>? DocumentChunks;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Cts != null)
+        {
+            await Cts.CancelAsync();
+            Cts.Dispose();
+        }
+
+        Cts = new CancellationTokenSource();
+
+        if (await ClientAuthenticatedHttpClient.IsAuthenticatedAsync(Cts.Token) == false)
+        {
+            return;
+        }
+
+        DocumentChunks = new ListDataSource<DocumentChunk, Guid>(
+            JS,
+            StateHasChanged,
+            GetPrimaryKey: documentchunk => documentchunk.Id,
+            List: list.List,
+            SetForeignKey: null,
+            AfterSaveAction: null,
+            AfterCancelAction: null,
+            Create: null,
+            Read: null,
+            Update: null,
+            Delete: null
+        );
+
+        await DocumentChunks.InitialiseAsync();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (Cts != null)
+        {
+            await Cts.CancelAsync();
+            Cts.Dispose();
+        }
+        if (DocumentChunks != null)
+            await DocumentChunks.DisposeAsync();
+    }
+}
