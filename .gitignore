@@ -23,7 +23,7 @@ packages/
 *.bak
 *.mkv
 *.zip
-
+*.srt
 
 # MSTest test Results
 [Tt]est[Rr]esult*/
